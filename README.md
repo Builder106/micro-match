@@ -176,9 +176,9 @@ Three layers of coverage:
 
 The demo suite in `e2e/demo/` is deliberately *not* part of this. It shares Playwright but exists to record the GIFs above, so it's slow by design (`slowMo`, dwell beats), needs seeded fixtures, and never runs in CI.
 
-## 📦 Data model
+## 📦 Data model & Provisioning
 
-Stored in Appwrite TablesDB:
+Stored in Appwrite TablesDB (see [docs/appwrite-schema.md](docs/appwrite-schema.md) for full schema details):
 
 | Table | Holds |
 |---|---|
@@ -188,7 +188,11 @@ Stored in Appwrite TablesDB:
 | `badgeDefinitions` | Org-owned badge templates (orgId, label, criteria, taskId for task-specific) |
 | `ngoVerifications` | Verification queue (orgName, country, taxId, docFileId, status, reason) |
 
-Plus three Appwrite Teams (`volunteers`, `ngos`, `admins`) for role + moderation gating. Storage is one bucket with file-level permissions for both avatars and verification docs.
+Plus three Appwrite Teams (`volunteers`, `ngos`, `admins`) for role + moderation gating. Storage is one bucket with file-level permissions for both avatars and verification docs. To automatically provision the database tables, attributes, and storage buckets:
+
+```sh
+bun scripts/setup-appwrite.ts
+```
 
 ## 📝 Documentation
 
@@ -196,7 +200,8 @@ Plus three Appwrite Teams (`volunteers`, `ngos`, `admins`) for role + moderation
 - [docs/index.md](docs/index.md) — platform docs index
 - [docs/volunteer.md](docs/volunteer.md) — volunteer guide
 - [docs/ngo.md](docs/ngo.md) — NGO guide
-- [docs/api.md](docs/api.md) — public API reference
+- [docs/api.md](docs/api.md) — full API specification (public & authenticated endpoints)
+- [docs/appwrite-schema.md](docs/appwrite-schema.md) — database schema and Appwrite resources specification
 - [docs/faq.md](docs/faq.md) — FAQ
 
 ## 📜 License
