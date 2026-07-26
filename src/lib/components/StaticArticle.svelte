@@ -6,6 +6,10 @@
   export let updated: string | undefined = undefined;
 
   const siblings = [
+    { href: '/how-it-works', label: 'How It Works' },
+    { href: '/for-ngos', label: 'For NGOs' },
+    { href: '/for-volunteers', label: 'For Volunteers' },
+    { href: '/impact', label: 'Impact' },
     { href: '/about', label: 'About' },
     { href: '/contact', label: 'Contact' },
     { href: '/help', label: 'Help' },

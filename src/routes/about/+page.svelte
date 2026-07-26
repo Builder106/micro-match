@@ -12,6 +12,10 @@
   <p>
     NGOs post needs as small units—translation, tagging, light design, data checks—so volunteers can help without a long onboarding. Volunteers earn recognition through badges and a clear record of completed work.
   </p>
+  <h2>How the project works</h2>
+  <p>
+    Every task on MicroMatch moves through the same lifecycle: an NGO posts it, a volunteer claims and completes it, the NGO reviews the submission, and an approved submission earns a badge. See the full walkthrough on <a href="/how-it-works">How It Works</a>, or the community's real numbers on <a href="/impact">Impact</a>.
+  </p>
   <p>
     The platform is open to grow with your organization: self-host Appwrite for full control, or use managed hosting when you want less ops overhead.
   </p>

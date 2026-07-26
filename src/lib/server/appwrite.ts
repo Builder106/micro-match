@@ -482,6 +482,27 @@ export async function awardBadge(input: Omit<Badge, 'id' | 'awardedAt'> & { awar
   });
 }
 
+export async function getPublicImpactStats(): Promise<{
+  tasksCompleted: number;
+  activeVolunteers: number;
+  ngosOnboarded: number;
+  badgesAwarded: number;
+}> {
+  const [tasks, claims, badges] = await Promise.all([
+    getTasks({ includeInactive: true }),
+    getClaims(),
+    getBadges()
+  ]);
+
+  const approvedClaims = claims.filter((c) => c.status === 'approved');
+  const tasksCompleted = approvedClaims.length;
+  const activeVolunteers = new Set(approvedClaims.map((c) => c.userId).filter(Boolean)).size;
+  const ngosOnboarded = new Set(tasks.map((t) => t.orgId).filter(Boolean)).size;
+  const badgesAwarded = badges.length;
+
+  return { tasksCompleted, activeVolunteers, ngosOnboarded, badgesAwarded };
+}
+
 // PROD: Move analytics to a dedicated analytics service
 // PROD: Implement proper data aggregation and caching
 // PROD: Add real-time analytics dashboards

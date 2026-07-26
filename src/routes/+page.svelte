@@ -131,9 +131,10 @@
         <span>MicroMatch</span>
       </a>
       <nav class="header-nav">
-        <a href="#how-it-works">How it Works</a>
-        <a href="#tasks">Browse Tasks</a>
-        <a href="#impact">Impact</a>
+        <a href="/how-it-works">How it Works</a>
+        <a href="/tasks">Browse Tasks</a>
+        <a href="/for-ngos">For NGOs</a>
+        <a href="/for-volunteers">For Volunteers</a>
       </nav>
       <div class="header-actions">
         <button
@@ -181,9 +182,10 @@
       aria-label="Mobile"
       transition:fly={{ y: -12, duration: 200 }}
     >
-      <a href="#how-it-works" bind:this={firstMenuLinkEl} on:click={closeMenu}>How it Works</a>
-      <a href="#tasks" on:click={closeMenu}>Browse Tasks</a>
-      <a href="#impact" on:click={closeMenu}>Impact</a>
+      <a href="/how-it-works" bind:this={firstMenuLinkEl} on:click={closeMenu}>How it Works</a>
+      <a href="/tasks" on:click={closeMenu}>Browse Tasks</a>
+      <a href="/for-ngos" on:click={closeMenu}>For NGOs</a>
+      <a href="/for-volunteers" on:click={closeMenu}>For Volunteers</a>
       <div class="mobile-menu-divider"></div>
       {#if page.data.userRole && page.data.userRole !== 'anonymous'}
         <a href="/tasks" on:click={closeMenu}>Browse tasks</a>
@@ -417,6 +419,10 @@
           </div>
           <div class="link-col">
             <h4>Resources</h4>
+            <a href="/how-it-works">How It Works</a>
+            <a href="/for-ngos">For NGOs</a>
+            <a href="/for-volunteers">For Volunteers</a>
+            <a href="/impact">Impact</a>
             <a href="/docs/api">API Docs</a>
             <a href="/about">About Us</a>
             <a href="/help">Help Center</a>
