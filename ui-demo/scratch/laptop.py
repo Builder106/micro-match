@@ -9,6 +9,7 @@ AgX), three-point lighting, transparent film, render at 2x display size.
 """
 
 import bpy
+import glob
 import math
 import os
 
@@ -173,6 +174,10 @@ if STILL:
     bpy.ops.render.render(write_still=True)
     print("STILL DONE:", scene.render.filepath)
 else:
+    # Wipe any stale frames from a previous run before rendering fresh ones,
+    # so a shorter re-render never leaves old high-numbered frames behind.
+    for stale in glob.glob(os.path.join(PUBLIC, "mm_laptop_*.png")):
+        os.remove(stale)
     scene.render.filepath = os.path.join(PUBLIC, "mm_laptop_")
     bpy.ops.render.render(animation=True)
     print("SEQUENCE DONE:", scene.render.filepath)

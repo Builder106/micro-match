@@ -26,6 +26,7 @@
   "scripts": {
     "dev": "remotion studio",
     "build": "remotion bundle",
+    "render": "remotion render src/index.ts MicroMatchUiDemo out/micromatch-ui-demo.mp4",
     "upgrade": "remotion upgrade",
     "lint": "eslint src && tsc"
   },

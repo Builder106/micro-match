@@ -22,7 +22,7 @@
   "scripts": {
     "dev": "remotion studio",
     "build": "remotion bundle",
-    "render": "remotion render src/index.ts MicroMatchTrailer out/micromatch-trailer.mp4",
+    "render": "remotion render src/index.ts MicroMatchTrailer out/micromatch-trailer.mp4 && rm -f public/mm_laptop_*.png",
     "lint": "tsc"
   },
   "sideEffects": [

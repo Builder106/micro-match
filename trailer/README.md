@@ -26,6 +26,8 @@ npm run render
 ```
 
 The render lands at `out/micromatch-trailer.mp4` (gitignored, like ui-demo's).
+`npm run render` deletes the copied `public/mm_laptop_*.png` frames once the
+render finishes — re-copy them from `ui-demo/public/` before rendering again.
 
 Check `df -h /` before rendering — this machine runs low on disk, and a render
 that dies instantly with `npm error could not determine executable to run`
