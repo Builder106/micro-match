@@ -663,18 +663,19 @@
   }
 
   .diagram-grid {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
     align-items: center;
-    justify-content: center;
-    gap: 16px;
-    flex-wrap: wrap;
+    gap: 12px;
+    max-width: 1100px;
+    margin: 0 auto;
   }
   .diag-box {
     background: #FFFFFF;
     border: 1px solid #E2E8F0;
     border-radius: 20px;
-    padding: 24px;
-    max-width: 220px;
+    padding: 20px 14px;
+    width: 100%;
     text-align: center;
     box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -689,8 +690,8 @@
     background: #FFF5F0;
   }
   .diag-icon {
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
     border-radius: 14px;
     background: #FFF5F0;
     color: #FF6B6B;
@@ -711,18 +712,19 @@
   }
   .diag-box h4 {
     font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 700;
     margin: 0 0 6px;
+    white-space: nowrap;
   }
   .diag-box p {
     font-size: 12px;
     color: #64748B;
-    line-height: 1.5;
+    line-height: 1.4;
     margin: 0;
   }
   .diag-arrow {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 800;
     color: #CBD5E1;
     transition: all 0.3s ease;
@@ -730,6 +732,21 @@
   .diag-box:hover + .diag-arrow {
     color: #FF6B6B;
     transform: translateX(4px);
+  }
+
+  @media (max-width: 900px) {
+    .diagram-grid {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    .diag-arrow {
+      transform: rotate(90deg);
+    }
+    .diag-box {
+      max-width: 320px;
+    }
   }
 
   /* FAQ */
