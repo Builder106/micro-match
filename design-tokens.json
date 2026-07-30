@@ -1,0 +1,147 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "name": "MicroMatch Design Tokens",
+  "version": "1.0.0",
+  "description": "Design system tokens for MicroMatch — warm cream and coral micro-volunteering platform.",
+  "color": {
+    "primary": {
+      "base": { "$value": "#FF6B6B", "$type": "color", "$description": "Warm coral brand primary color" },
+      "variant": { "$value": "#E85555", "$type": "color", "$description": "Darker coral for hover and active states" },
+      "light": { "$value": "#FF9E5E", "$type": "color", "$description": "Lighter coral gradient accent" },
+      "onPrimary": { "$value": "#FFFFFF", "$type": "color", "$description": "Text/icon color on primary background" }
+    },
+    "secondary": {
+      "base": { "$value": "#FDBA74", "$type": "color", "$description": "Warm peach secondary accent" },
+      "variant": { "$value": "#FB923C", "$type": "color", "$description": "Deeper peach accent variant" },
+      "light": { "$value": "#FED7AA", "$type": "color", "$description": "Soft peach surface highlight" }
+    },
+    "surface": {
+      "light": { "$value": "#FFFFFF", "$type": "color", "$description": "Default card and container background in light mode" },
+      "variant": { "$value": "#FAF7F0", "$type": "color", "$description": "Secondary surface background in light mode" },
+      "container": { "$value": "#F5F0E8", "$type": "color", "$description": "Elevated container background in light mode" },
+      "dark": { "$value": "#1E293B", "$type": "color", "$description": "Default surface background in dark mode" },
+      "darkVariant": { "$value": "#334155", "$type": "color", "$description": "Secondary surface background in dark mode" },
+      "darkContainer": { "$value": "#475569", "$type": "color", "$description": "Elevated container background in dark mode" }
+    },
+    "background": {
+      "light": { "$value": "#FDFCF8", "$type": "color", "$description": "Page canvas background in light mode" },
+      "dark": { "$value": "#0F172A", "$type": "color", "$description": "Page canvas background in dark mode" }
+    },
+    "outline": {
+      "light": { "$value": "#CBD5E1", "$type": "color", "$description": "Border and divider line color in light mode" },
+      "variantLight": { "$value": "#E2E8F0", "$type": "color", "$description": "Subtle border color in light mode" },
+      "dark": { "$value": "#475569", "$type": "color", "$description": "Border and divider line color in dark mode" },
+      "variantDark": { "$value": "#334155", "$type": "color", "$description": "Subtle border color in dark mode" }
+    },
+    "text": {
+      "primaryLight": { "$value": "#0F172A", "$type": "color", "$description": "Primary high-contrast text in light mode" },
+      "secondaryLight": { "$value": "#475569", "$type": "color", "$description": "Secondary muted text in light mode" },
+      "tertiaryLight": { "$value": "#64748B", "$type": "color", "$description": "Tertiary subtle text in light mode" },
+      "primaryDark": { "$value": "#F1F5F9", "$type": "color", "$description": "Primary high-contrast text in dark mode" },
+      "secondaryDark": { "$value": "#CBD5E1", "$type": "color", "$description": "Secondary muted text in dark mode" },
+      "tertiaryDark": { "$value": "#94A3B8", "$type": "color", "$description": "Tertiary subtle text in dark mode" }
+    },
+    "feedback": {
+      "success": { "$value": "#059669", "$type": "color", "$description": "Approved claims, verified status, success indicators" },
+      "warning": { "$value": "#D97706", "$type": "color", "$description": "Pending verification, expiring deadlines" },
+      "error": { "$value": "#DC2626", "$type": "color", "$description": "Rejected claims, destructive action alerts" }
+    },
+    "accent": {
+      "coral50": { "$value": "#FFF5F0", "$type": "color", "$description": "Light coral background tint" },
+      "coral100": { "$value": "#FFE5DC", "$type": "color", "$description": "Soft coral chip fill" },
+      "coral200": { "$value": "#FFD1C2", "$type": "color", "$description": "Coral border highlight" },
+      "coral500": { "$value": "#FF6B6B", "$type": "color", "$description": "Main brand coral" },
+      "coral600": { "$value": "#E85555", "$type": "color", "$description": "Deep coral" },
+      "coral700": { "$value": "#CF4444", "$type": "color", "$description": "Dark coral" }
+    },
+    "tags": {
+      "spanish": { "bg": { "$value": "#F3E8FF", "$type": "color" }, "color": { "$value": "#7C3AED", "$type": "color" } },
+      "french": { "bg": { "$value": "#F3E8FF", "$type": "color" }, "color": { "$value": "#7C3AED", "$type": "color" } },
+      "health": { "bg": { "$value": "#D1FAE5", "$type": "color" }, "color": { "$value": "#059669", "$type": "color" } },
+      "translation": { "bg": { "$value": "#DBEAFE", "$type": "color" }, "color": { "$value": "#2563EB", "$type": "color" } },
+      "design": { "bg": { "$value": "#FCE7F3", "$type": "color" }, "color": { "$value": "#DB2777", "$type": "color" } },
+      "data": { "bg": { "$value": "#FEF3C7", "$type": "color" }, "color": { "$value": "#D97706", "$type": "color" } },
+      "history": { "bg": { "$value": "#DBEAFE", "$type": "color" }, "color": { "$value": "#2563EB", "$type": "color" } },
+      "environment": { "bg": { "$value": "#D1FAE5", "$type": "color" }, "color": { "$value": "#059669", "$type": "color" } },
+      "excel": { "bg": { "$value": "#D1FAE5", "$type": "color" }, "color": { "$value": "#059669", "$type": "color" } },
+      "education": { "bg": { "$value": "#FEF3C7", "$type": "color" }, "color": { "$value": "#D97706", "$type": "color" } },
+      "research": { "bg": { "$value": "#FCE7F3", "$type": "color" }, "color": { "$value": "#DB2777", "$type": "color" } },
+      "default": { "bg": { "$value": "#F1F5F9", "$type": "color" }, "color": { "$value": "#475569", "$type": "color" } }
+    }
+  },
+  "typography": {
+    "fontFamily": {
+      "heading": { "$value": "'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif", "$type": "fontFamily" },
+      "body": { "$value": "'Inter', 'Roboto', system-ui, -apple-system, sans-serif", "$type": "fontFamily" }
+    },
+    "fontSize": {
+      "xs": { "$value": "12px", "$type": "dimension" },
+      "sm": { "$value": "14px", "$type": "dimension" },
+      "base": { "$value": "16px", "$type": "dimension" },
+      "lg": { "$value": "18px", "$type": "dimension" },
+      "xl": { "$value": "20px", "$type": "dimension" },
+      "2xl": { "$value": "24px", "$type": "dimension" },
+      "3xl": { "$value": "30px", "$type": "dimension" },
+      "4xl": { "$value": "36px", "$type": "dimension" }
+    },
+    "fontWeight": {
+      "light": { "$value": "300", "$type": "fontWeight" },
+      "normal": { "$value": "400", "$type": "fontWeight" },
+      "medium": { "$value": "500", "$type": "fontWeight" },
+      "semibold": { "$value": "600", "$type": "fontWeight" },
+      "bold": { "$value": "700", "$type": "fontWeight" },
+      "extrabold": { "$value": "800", "$type": "fontWeight" }
+    },
+    "lineHeight": {
+      "tight": { "$value": "1.2", "$type": "number" },
+      "normal": { "$value": "1.5", "$type": "number" },
+      "relaxed": { "$value": "1.6", "$type": "number" }
+    }
+  },
+  "space": {
+    "0": { "$value": "0px", "$type": "dimension" },
+    "1": { "$value": "4px", "$type": "dimension" },
+    "2": { "$value": "8px", "$type": "dimension" },
+    "3": { "$value": "12px", "$type": "dimension" },
+    "4": { "$value": "16px", "$type": "dimension" },
+    "5": { "$value": "20px", "$type": "dimension" },
+    "6": { "$value": "24px", "$type": "dimension" },
+    "7": { "$value": "28px", "$type": "dimension" },
+    "8": { "$value": "32px", "$type": "dimension" },
+    "10": { "$value": "40px", "$type": "dimension" },
+    "12": { "$value": "48px", "$type": "dimension" },
+    "16": { "$value": "64px", "$type": "dimension" },
+    "20": { "$value": "80px", "$type": "dimension" }
+  },
+  "radius": {
+    "xs": { "$value": "4px", "$type": "dimension" },
+    "sm": { "$value": "8px", "$type": "dimension" },
+    "md": { "$value": "12px", "$type": "dimension" },
+    "lg": { "$value": "16px", "$type": "dimension" },
+    "xl": { "$value": "24px", "$type": "dimension" },
+    "2xl": { "$value": "32px", "$type": "dimension" },
+    "full": { "$value": "9999px", "$type": "dimension" }
+  },
+  "elevation": {
+    "0": { "$value": "none", "$type": "shadow" },
+    "1": { "$value": "0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04)", "$type": "shadow" },
+    "2": { "$value": "0 4px 12px rgba(15, 23, 42, 0.08), 0 2px 4px rgba(15, 23, 42, 0.05)", "$type": "shadow" },
+    "3": { "$value": "0 12px 24px rgba(15, 23, 42, 0.10), 0 6px 8px rgba(15, 23, 42, 0.06)", "$type": "shadow" },
+    "4": { "$value": "0 20px 40px rgba(15, 23, 42, 0.14), 0 10px 12px rgba(15, 23, 42, 0.08)", "$type": "shadow" },
+    "5": { "$value": "0 32px 64px rgba(15, 23, 42, 0.18), 0 16px 20px rgba(15, 23, 42, 0.10)", "$type": "shadow" }
+  },
+  "motion": {
+    "duration": {
+      "fast": { "$value": "0.2s", "$type": "duration" },
+      "normal": { "$value": "0.3s", "$type": "duration" },
+      "slow": { "$value": "0.4s", "$type": "duration" }
+    },
+    "easing": {
+      "default": { "$value": "cubic-bezier(0.4, 0, 0.2, 1)", "$type": "cubicBezier" }
+    }
+  },
+  "layout": {
+    "sidebarWidth": { "$value": "256px", "$type": "dimension" },
+    "containerPadding": { "$value": "16px", "$type": "dimension" }
+  }
+}
