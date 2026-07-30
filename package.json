@@ -67,7 +67,7 @@
     "eslint-plugin-svelte": "^3.20.0",
     "jsdom": "^29.1.1",
     "postcss": "^8.5.19",
-    "prettier": "^3.9.5",
+    "prettier": "^3.9.6",
     "svelte-check": "^4.7.2",
     "tailwindcss": "^4.3.2",
     "typescript": "^5.9.3",
