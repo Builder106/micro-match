@@ -15,8 +15,8 @@ cp ../ui-demo/public/mm_laptop_00*.png public/
 
 The laptop sway sequence is gitignored here (60 frames, ~120 MB, deterministic).
 Copy it from `ui-demo/public/` as above, or re-render it from scratch with
-`../ui-demo/scratch/laptop.py` in Blender (about an hour; test a single still
-first).
+`../tools/device-render/laptop.py` in Blender (about an hour; test a single
+still first — see that directory's README).
 
 ## Preview and render
 

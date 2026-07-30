@@ -27,5 +27,5 @@ npx remotion render src/index.ts MicroMatchUiDemo out/micromatch-ui-demo.mp4
 ## Rebuilding assets
 
 - **Screenshots** (`public/mm_*.png`): run `bun run seed` in the repo root first (demo tasks auto-archive after 30 days), then `node scratch/capture.cjs` with `SEED_DEMO_PASSWORD` exported. The login page has two submit buttons; the script scopes to `form.auth-form`. Each account needs a fresh browser context.
-- **Laptop sequence** (`public/mm_laptop_0001–0060.png`): `blender -b -P scratch/laptop.py` renders the ±35° sway loop at 2400×1600 with the current `mm_home.png` on screen. `STILL=1` renders a single test frame to `scratch/test_still.png` — always eyeball that before committing to the full hour of rendering.
+- **Laptop sequence** (`public/mm_laptop_0001–0060.png`): `../tools/device-render/laptop.py` renders the ±35° sway loop at 2400×1600 with the current `mm_home.png` on screen. `STILL=1` renders a single test frame instead — always eyeball that before committing to the full hour of rendering. That directory's README has the exact command and the environment variables it reads.
 - **Audio**: `public/audio.mp3` is Kevin MacLeod's "Wallpaper" (CC BY 4.0), trimmed and loudness-normalized; the publish description must carry the credit in `public/CREDITS.md`. SFX are ffmpeg-synthesized, no license needed.
