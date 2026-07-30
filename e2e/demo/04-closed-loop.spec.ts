@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import {
+  demoClick,
   dwellForDemo,
   setupDemoPage,
   patchFillForDemo,
@@ -72,7 +73,7 @@ test.describe('04-closed-loop', () => {
     await dwellForDemo(page, 2200);
 
     // Beat 3: open a task
-    await page.getByRole('link', { name: TASK_TITLE, exact: true }).first().click();
+    await demoClick(page.getByRole('link', { name: TASK_TITLE, exact: true }).first());
     await page.getByRole('heading', { name: TASK_TITLE }).waitFor({ state: 'visible' });
     await dwellForDemo(page, 1800);
 
@@ -82,7 +83,7 @@ test.describe('04-closed-loop', () => {
     await dwellForDemo(page, 2500);
 
     // Beat 5: claim it
-    await page.getByRole('link', { name: /Claim this task/i }).click();
+    await demoClick(page.getByRole('link', { name: /Claim this task/i }));
     await page.getByRole('heading', { name: /Send your work for review/i }).waitFor({ state: 'visible' });
     await dwellForDemo(page, 1800);
 
@@ -92,7 +93,7 @@ test.describe('04-closed-loop', () => {
     await slowFill(page.getByPlaceholder(/Describe your approach/), NOTES);
     await dwellForDemo(page, 1200);
 
-    await page.getByRole('button', { name: /Submit for review/i }).click();
+    await demoClick(page.getByRole('button', { name: /Submit for review/i }));
 
     // Beat 7: confetti + "Submission sent for review" toast. The money shot.
     await page.waitForURL(/\/dashboard/, { timeout: 30_000 });
@@ -121,7 +122,7 @@ test.describe('04-closed-loop', () => {
     await dwellForDemo(page, 3000);
 
     // Beat 10: approve — this is what mints the badge
-    await reviewCard.getByRole('button', { name: /Approve/i }).click();
+    await demoClick(reviewCard.getByRole('button', { name: /Approve/i }));
     await dwellForDemo(page, 3000);
 
     await signOut(page);

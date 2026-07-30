@@ -34,7 +34,12 @@ export async function setupDemoPage(page: Page, opts: { zoom?: number } = {}): P
 
   // Visible cursor — headless mode hides the system cursor, so the viewer
   // can't see where the test is "looking" without this.
-  await page.addInitScript(() => {
+  //
+  // The dot lives inside the zoomed <html>, so its left/top are interpreted
+  // in zoomed coordinates while MouseEvent clientX/Y arrive in unzoomed
+  // viewport pixels. Without dividing by the zoom factor the dot renders
+  // zoom× past the actual target (visibly off the button it "clicks").
+  await page.addInitScript((zoom) => {
     const install = () => {
       if (document.getElementById('demo-cursor')) return;
       const dot = document.createElement('div');
@@ -49,13 +54,47 @@ export async function setupDemoPage(page: Page, opts: { zoom?: number } = {}): P
         'z-index: 2147483647',
         'transform: translate(-50%, -50%)',
         'box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35)',
-        'transition: transform 120ms ease-out, background 120ms ease-out'
+        // left/top get a transition so the dot *glides* between action targets.
+        // Playwright teleports the pointer to each target in a single hop, so
+        // without this the dot jumps around the page between clicks.
+        'transition: left 380ms cubic-bezier(0.22, 1, 0.36, 1), top 380ms cubic-bezier(0.22, 1, 0.36, 1), transform 120ms ease-out, background 120ms ease-out'
       ].join(';');
       document.body.appendChild(dot);
 
+      // Tween toward each new pointer position instead of relying on a CSS
+      // transition: a fixed-duration transition turns long hops into a dash,
+      // while a distance-proportional tween keeps short moves snappy and
+      // stretches big ones into a visible glide.
+      let cx = -100;
+      let cy = -100;
+      let raf = 0;
+      const render = () => {
+        dot.style.left = cx + 'px';
+        dot.style.top = cy + 'px';
+      };
       window.addEventListener('mousemove', (e) => {
-        dot.style.left = e.clientX + 'px';
-        dot.style.top = e.clientY + 'px';
+        const tx = e.clientX / zoom;
+        const ty = e.clientY / zoom;
+        const dist = Math.hypot(tx - cx, ty - cy);
+        if (cx < 0 || dist < 24) {
+          cancelAnimationFrame(raf);
+          cx = tx; cy = ty; render();
+          return;
+        }
+        const sx = cx;
+        const sy = cy;
+        const dur = Math.min(900, Math.max(260, dist * 0.9));
+        const t0 = performance.now();
+        cancelAnimationFrame(raf);
+        const step = (now: number) => {
+          const p = Math.min(1, (now - t0) / dur);
+          const eased = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+          cx = sx + (tx - sx) * eased;
+          cy = sy + (ty - sy) * eased;
+          render();
+          if (p < 1) raf = requestAnimationFrame(step);
+        };
+        raf = requestAnimationFrame(step);
       }, { passive: true });
       window.addEventListener('mousedown', () => {
         dot.style.transform = 'translate(-50%, -50%) scale(0.7)';
@@ -68,7 +107,7 @@ export async function setupDemoPage(page: Page, opts: { zoom?: number } = {}): P
     };
     if (document.body) install();
     else document.addEventListener('DOMContentLoaded', install);
-  });
+  }, zoomFactor);
 
   // CSS zoom + counter-scale for "filmed close" feel without losing centered
   // content. zoom: 1.3 on <html> makes min-h-screen render at 130vh, so we
@@ -107,13 +146,40 @@ export async function slowFill(locator: Locator, value: string): Promise<void> {
     await locator.fill(value);
     return;
   }
-  await locator.click();
+  await demoClick(locator);
   await locator.pressSequentially(value, { delay: DEMO_TYPE_DELAY });
 }
 
 /** No-op kept so existing `patchFillForDemo()` calls in demo specs still compile. */
 export function patchFillForDemo(): void {
   /* see slowFill() — explicit helper replaces the prototype patch */
+}
+
+/**
+ * Click with a visible glide. Playwright's click() moves the pointer to the
+ * target in one hop, so the dot would otherwise sit parked through every
+ * dwell and then dash at the last moment. Two separate actions fix that:
+ * a mouse.move to the halfway point (starts the travel a slowMo-beat early),
+ * then hover() (finishes the approach), then the click lands at rest.
+ */
+const lastPointer = new WeakMap<Page, { x: number; y: number }>();
+
+export async function demoClick(locator: Locator): Promise<void> {
+  if (DEMO) {
+    const pg = locator.page();
+    const box = await locator.boundingBox().catch(() => null);
+    if (box) {
+      const tx = box.x + box.width / 2;
+      const ty = box.y + box.height / 2;
+      const from = lastPointer.get(pg);
+      if (from && Math.hypot(tx - from.x, ty - from.y) > 80) {
+        await pg.mouse.move((from.x + tx) / 2, (from.y + ty) / 2);
+      }
+      lastPointer.set(pg, { x: tx, y: ty });
+    }
+    await locator.hover();
+  }
+  await locator.click();
 }
 
 // ───────────────────────────── Demo accounts ─────────────────────────────
@@ -155,13 +221,13 @@ export async function signIn(page: Page, email: string, password: string): Promi
   await dwellForDemo(page, 1200);
   await slowFill(page.getByLabel(/Email address/i), email);
   await slowFill(page.getByLabel(/Password/i), password);
-  await page.getByRole('button', { name: /Sign in/i }).click();
+  await demoClick(page.getByRole('button', { name: /Sign in/i }));
   await page.waitForURL(/\/dashboard/, { timeout: 30_000 });
   await page.getByRole('heading', { level: 1 }).first().waitFor({ state: 'visible' });
 }
 
 /** Sign out via the sidebar link. Lands back on the landing page. */
 export async function signOut(page: Page): Promise<void> {
-  await page.getByRole('link', { name: /Sign out/i }).click();
+  await demoClick(page.getByRole('link', { name: /Sign out/i }));
   await page.waitForURL(/\/$/, { timeout: 30_000 });
 }

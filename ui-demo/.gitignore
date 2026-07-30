@@ -1,0 +1,10 @@
+node_modules/
+out/
+
+# Blender laptop sway loop: 119 MB of deterministic output from
+# ../tools/device-render/laptop.py. Regenerate it (about an hour) rather than
+# carrying it in history — see that directory's README.
+# feed.mp4 and loop.mp4 are NOT ignored on purpose: the SFX frame
+# constants in src/Composition.tsx are pinned to exact timestamps
+# inside those files, so re-recording them means re-pinning by hand.
+public/mm_laptop_*.png

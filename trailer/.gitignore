@@ -1,0 +1,11 @@
+node_modules/
+out/
+scratch/
+# Regenerable capture output, two kinds:
+#   mm_laptop_*.png — deterministic Blender frames; regenerate with
+#     tools/device-render/laptop.py or copy from ui-demo/public/.
+#   mm_home / mm_dashboard / mm_org / mm_tasks / mm_badges_* — Playwright
+#     page captures from the e2e demo suite; re-run it to recreate them.
+# A hand-authored asset that happens to start with mm_ needs an explicit
+# negation below, or it will be silently skipped.
+public/mm_*.png

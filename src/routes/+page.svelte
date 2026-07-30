@@ -456,7 +456,7 @@
   .section-head { text-align: center; max-width: 640px; margin: 0 auto 64px; }
   .section-head h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.75rem, 3vw + 0.5rem, 2.75rem); font-weight: 800; margin: 0 0 12px; }
   .section-head p { color: #1E293B99; font-size: 18px; font-weight: 500; margin: 0; }
-  h1, h2, h3, h4, h5, h6 { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; color: #1E293B; }
+  h1, h2, h3, h4 { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; color: #1E293B; }
 
   /* ──────────── Buttons ──────────── */
   .btn-coral { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #FF6B6B; color: #fff; font-weight: 700; border: none; border-radius: 9999px; cursor: pointer; text-decoration: none; transition: all .3s; }
@@ -568,7 +568,7 @@
   .tc-body h3 { font-size: 22px; font-weight: 700; line-height: 1.3; margin: 0 0 8px; }
   .tc-body h3 a { color: inherit; text-decoration: none; }
   .tc-body h3 a:hover { color: #FF6B6B; }
-  .tc-desc { color: #1E293Bb3; font-size: 15px; line-height: 1.6; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .tc-desc { color: #1E293Bb3; font-size: 15px; line-height: 1.6; margin: 0; display: -webkit-box; line-clamp: 2; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .tc-foot { display: flex; flex-direction: column; gap: 16px; }
   .tc-tags { display: flex; flex-wrap: wrap; gap: 8px; }
   .tc-tags span { padding: 5px 14px; border-radius: 9999px; font-size: 12px; font-weight: 700; }

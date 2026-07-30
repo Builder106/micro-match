@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { dwellForDemo, setupDemoPage, patchFillForDemo, slowFill, DEMO_TAIL_MS } from './helpers';
+import { demoClick, dwellForDemo, setupDemoPage, patchFillForDemo, slowFill, DEMO_TAIL_MS } from './helpers';
 
 test.describe('03-feed-tour', () => {
   test.beforeEach(async ({ page }) => {
@@ -30,26 +30,26 @@ test.describe('03-feed-tour', () => {
     await dwellForDemo(page, 1500);
 
     // Beat 3: clear it via the X button
-    await page.getByLabel('Clear search').click();
+    await demoClick(page.getByLabel('Clear search'));
     await dwellForDemo(page, 800);
 
     // Beat 4: click each time-filter chip
-    await page.getByRole('button', { name: /≤ 15 min/ }).click();
+    await demoClick(page.getByRole('button', { name: /≤ 15 min/ }));
     await dwellForDemo(page, 1200);
-    await page.getByRole('button', { name: /≤ 15 min/ }).click(); // toggle off
+    await demoClick(page.getByRole('button', { name: /≤ 15 min/ })); // toggle off
     await dwellForDemo(page, 600);
 
-    await page.getByRole('button', { name: /≤ 30 min/ }).click();
+    await demoClick(page.getByRole('button', { name: /≤ 30 min/ }));
     await dwellForDemo(page, 1200);
 
     // Beat 5: pick a hashtag
-    await page.getByRole('button', { name: /#design/ }).click();
+    await demoClick(page.getByRole('button', { name: /#design/ }));
     await dwellForDemo(page, 1800);
 
     // Beat 6: clear filters — the full feed comes back
     const clearBtn = page.getByRole('button', { name: /Clear filters/i });
     if (await clearBtn.isVisible().catch(() => false)) {
-      await clearBtn.click();
+      await demoClick(clearBtn);
       await dwellForDemo(page, 1500);
     }
 
