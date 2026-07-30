@@ -640,42 +640,48 @@
 
   /* Closed Loop Diagram */
   .hiw-diagram-section {
-    padding: 80px 0;
+    padding: 96px 0;
     background: #FAF7F0;
     width: 100%;
   }
   .section-head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
-    max-width: 600px;
+    max-width: 640px;
     margin: 0 auto 56px;
   }
   .section-head h2 {
     font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 32px;
+    font-size: clamp(2rem, 3vw, 2.5rem);
     font-weight: 800;
     color: #0F172A;
     margin: 0 0 12px;
+    text-align: center;
   }
   .section-head p {
     font-size: 18px;
     color: #64748B;
     margin: 0;
+    text-align: center;
   }
 
   .diagram-grid {
     display: grid;
     grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
     align-items: center;
-    gap: 12px;
-    max-width: 1100px;
+    gap: 16px;
+    max-width: 1160px;
     margin: 0 auto;
   }
   .diag-box {
     background: #FFFFFF;
     border: 1px solid #E2E8F0;
     border-radius: 20px;
-    padding: 20px 14px;
+    padding: 24px 18px;
     width: 100%;
+    box-sizing: border-box;
     text-align: center;
     box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -690,8 +696,8 @@
     background: #FFF5F0;
   }
   .diag-icon {
-    width: 44px;
-    height: 44px;
+    width: 48px;
+    height: 48px;
     border-radius: 14px;
     background: #FFF5F0;
     color: #FF6B6B;
@@ -712,15 +718,15 @@
   }
   .diag-box h4 {
     font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 700;
     margin: 0 0 6px;
-    white-space: nowrap;
+    color: #0F172A;
   }
   .diag-box p {
     font-size: 12px;
     color: #64748B;
-    line-height: 1.4;
+    line-height: 1.45;
     margin: 0;
   }
   .diag-arrow {
