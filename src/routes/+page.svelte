@@ -119,26 +119,82 @@
       <div class="hero-visual">
         {#if visible}
         <div class="hero-glow"></div>
-        <div class="mock-card mock-card-front" in:fly={{ x: 50, duration: 900, delay: 400 }}>
+
+        <!-- Card 1: Front Main -->
+        <div class="mock-card mock-card-1">
+          <div class="mc-sheen"></div>
           <div class="mc-top">
-            <img src="https://images.unsplash.com/photo-1638897212550-b0f4c5d8eb3d?w=150&h=150&fit=crop" alt="" class="mc-avatar" />
+            <img src="https://images.unsplash.com/photo-1638897212550-b0f4c5d8eb3d?w=150&h=150&fit=crop" alt="Volunteer avatar" class="mc-avatar" />
             <span class="mc-time"><Icon icon="lucide:clock" width="14" height="14" /> 15 mins</span>
           </div>
           <h3>Translate a medical flyer</h3>
-          <p class="mc-ngo">Doctors Without Borders</p>
-          <div class="mc-tags">
-            <span style="background:#F3E8FF;color:#7C3AED">#Spanish</span>
-            <span style="background:#D1FAE5;color:#059669">#Health</span>
+          <p class="mc-ngo">Doctors Without Borders <Icon icon="lucide:badge-check" width="14" height="14" class="mc-verified" /></p>
+          <div class="mc-bottom">
+            <div class="mc-tags">
+              <span style="background:#F3E8FF;color:#7C3AED">#Spanish</span>
+              <span style="background:#D1FAE5;color:#059669">#Health</span>
+            </div>
+            <a href="/tasks" class="mc-claim-btn">
+              Claim <Icon icon="lucide:arrow-right" width="12" height="12" />
+            </a>
           </div>
         </div>
-        <div class="mock-card mock-card-back" in:fly={{ x: 30, duration: 900, delay: 600 }}>
+
+        <!-- Card 2: Bottom Left Deck Card -->
+        <div class="mock-card mock-card-2">
+          <div class="mc-sheen"></div>
           <div class="mc-top">
-            <img src="https://images.unsplash.com/photo-1614807536394-cd67bd4a634b?w=150&h=150&fit=crop" alt="" class="mc-avatar" />
+            <img src="https://images.unsplash.com/photo-1614807536394-cd67bd4a634b?w=150&h=150&fit=crop" alt="Volunteer avatar" class="mc-avatar" />
             <span class="mc-time"><Icon icon="lucide:clock" width="14" height="14" /> 5 mins</span>
           </div>
           <h3>Tag historical photos</h3>
-          <div class="mc-tags">
-            <span style="background:#DBEAFE;color:#2563EB">#History</span>
+          <p class="mc-ngo">Smithsonian Archives <Icon icon="lucide:badge-check" width="14" height="14" class="mc-verified" /></p>
+          <div class="mc-bottom">
+            <div class="mc-tags">
+              <span style="background:#DBEAFE;color:#2563EB">#History</span>
+            </div>
+            <a href="/tasks" class="mc-claim-btn">
+              Claim <Icon icon="lucide:arrow-right" width="12" height="12" />
+            </a>
+          </div>
+        </div>
+
+        <!-- Card 3: Top Right Deck Card -->
+        <div class="mock-card mock-card-3">
+          <div class="mc-sheen"></div>
+          <div class="mc-top">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop" alt="Volunteer avatar" class="mc-avatar" />
+            <span class="mc-time"><Icon icon="lucide:clock" width="14" height="14" /> 10 mins</span>
+          </div>
+          <h3>Verify water pump data</h3>
+          <p class="mc-ngo">Charity: Water <Icon icon="lucide:badge-check" width="14" height="14" class="mc-verified" /></p>
+          <div class="mc-bottom">
+            <div class="mc-tags">
+              <span style="background:#FEF3C7;color:#D97706">#Data</span>
+              <span style="background:#E0F2FE;color:#0284C7">#Water</span>
+            </div>
+            <a href="/tasks" class="mc-claim-btn">
+              Claim <Icon icon="lucide:arrow-right" width="12" height="12" />
+            </a>
+          </div>
+        </div>
+
+        <!-- Card 4: Top Left Deck Card -->
+        <div class="mock-card mock-card-4">
+          <div class="mc-sheen"></div>
+          <div class="mc-top">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop" alt="Volunteer avatar" class="mc-avatar" />
+            <span class="mc-time"><Icon icon="lucide:clock" width="14" height="14" /> 8 mins</span>
+          </div>
+          <h3>Proofread storybook</h3>
+          <p class="mc-ngo">Room to Read <Icon icon="lucide:badge-check" width="14" height="14" class="mc-verified" /></p>
+          <div class="mc-bottom">
+            <div class="mc-tags">
+              <span style="background:#FCE7F3;color:#DB2777">#Education</span>
+            </div>
+            <a href="/tasks" class="mc-claim-btn">
+              Claim <Icon icon="lucide:arrow-right" width="12" height="12" />
+            </a>
           </div>
         </div>
         {/if}
@@ -322,20 +378,268 @@
   .hero-buttons { display: flex; flex-wrap: wrap; gap: 16px; width: 100%; }
   @media (max-width: 639px) { .hero-buttons { flex-direction: column; } .hero-buttons a { width: 100%; } }
 
-  /* Hero Mockup Cards */
-  .hero-visual { position: relative; width: 100%; height: 480px; display: flex; align-items: center; justify-content: center; }
-  @media (max-width: 1023px) { .hero-visual { height: 380px; } }
-  .hero-glow { position: absolute; width: 80%; height: 80%; background: linear-gradient(135deg, rgba(255,107,107,0.15), rgba(253,224,71,0.15)); border-radius: 50%; filter: blur(60px); }
-  .mock-card { position: absolute; background: #fff; border-radius: 24px; padding: 24px; border: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 8px; }
-  .mock-card-front { z-index: 2; width: min(320px, 80vw); box-shadow: 0 24px 60px rgba(0,0,0,0.08); transform: rotate(6deg); top: 50%; left: 50%; translate: -40% -55%; }
-  .mock-card-back { z-index: 1; width: min(280px, 70vw); box-shadow: 0 16px 40px rgba(0,0,0,0.05); opacity: 0.92; transform: rotate(-8deg) scale(0.95); top: 50%; left: 50%; translate: -65% -35%; }
-  .mc-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-  .mc-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
-  .mc-time { padding: 4px 12px; background: #FDFCF8; border-radius: 9999px; font-size: 13px; font-weight: 700; border: 1px solid rgba(0,0,0,0.05); }
-  .mock-card h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 700; line-height: 1.3; margin: 0; }
-  .mc-ngo { color: #1E293B99; font-size: 14px; font-weight: 600; margin: 0; }
-  .mc-tags { display: flex; gap: 8px; margin-top: 8px; }
-  .mc-tags span { padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: 700; }
+  /* Hero Mockup Cards - Deck Unfold System */
+  .hero-visual {
+    position: relative;
+    width: 100%;
+    height: 520px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    perspective: 1000px;
+    cursor: pointer;
+  }
+  @media (max-width: 1023px) { .hero-visual { height: 440px; } }
+
+  .hero-glow {
+    position: absolute;
+    width: 85%;
+    height: 85%;
+    background: radial-gradient(circle, rgba(255,107,107,0.2) 0%, rgba(253,224,71,0.15) 45%, transparent 70%);
+    border-radius: 50%;
+    filter: blur(60px);
+    transition: transform 0.6s ease, opacity 0.6s ease;
+  }
+  .hero-visual:hover .hero-glow {
+    transform: scale(1.15);
+    opacity: 0.95;
+  }
+
+  .mock-card-slot {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  .mock-card {
+    position: absolute;
+    background: #fff;
+    border-radius: 24px;
+    padding: 20px;
+    border: 1px solid rgba(0,0,0,0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    overflow: hidden;
+    pointer-events: auto;
+    will-change: transform, translate, opacity, filter;
+    transition: 
+      translate 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+      filter 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 0.3s ease;
+  }
+
+  /* Glassmorphic Light Sheen */
+  .mc-sheen {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 65%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+  }
+  .mock-card:hover .mc-sheen {
+    opacity: 1;
+  }
+
+  /* --- Stacked Idle Positions & Pre-Slanted Entrance --- */
+  .mock-card-1 {
+    z-index: 4;
+    width: min(300px, 78vw);
+    box-shadow: 0 24px 50px rgba(0,0,0,0.08);
+    top: 50%;
+    left: 50%;
+    translate: -44% -48%;
+    transform: rotate(5deg);
+    animation: 
+      deal-in-1 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both,
+      float-1 6s ease-in-out infinite 1s;
+  }
+
+  .mock-card-2 {
+    z-index: 3;
+    width: min(270px, 72vw);
+    box-shadow: 0 16px 36px rgba(0,0,0,0.06);
+    opacity: 0.94;
+    top: 50%;
+    left: 50%;
+    translate: -72% -28%;
+    transform: rotate(-7deg) scale(0.96);
+    animation: 
+      deal-in-2 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both,
+      float-2 6.5s ease-in-out infinite 1.15s;
+  }
+
+  .mock-card-3 {
+    z-index: 2;
+    width: min(260px, 70vw);
+    box-shadow: 0 14px 32px rgba(0,0,0,0.05);
+    opacity: 0.88;
+    top: 50%;
+    left: 50%;
+    translate: -20% -74%;
+    transform: rotate(11deg) scale(0.92);
+    animation: 
+      deal-in-3 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both,
+      float-3 7s ease-in-out infinite 1.3s;
+  }
+
+  .mock-card-4 {
+    z-index: 1;
+    width: min(250px, 68vw);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.04);
+    opacity: 0.82;
+    top: 50%;
+    left: 50%;
+    translate: -68% -80%;
+    transform: rotate(-13deg) scale(0.88);
+    animation: 
+      deal-in-4 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.65s both,
+      float-4 7.5s ease-in-out infinite 1.45s;
+  }
+
+  /* --- Pre-Slanted Entrance Keyframes --- */
+  @keyframes deal-in-1 {
+    0% {
+      opacity: 0;
+      transform: rotate(5deg) translate(60px, 20px) scale(0.92);
+    }
+    100% {
+      opacity: 1;
+      transform: rotate(5deg) translate(0, 0) scale(1);
+    }
+  }
+
+  @keyframes deal-in-2 {
+    0% {
+      opacity: 0;
+      transform: rotate(-7deg) scale(0.96) translate(-50px, 30px);
+    }
+    100% {
+      opacity: 0.94;
+      transform: rotate(-7deg) scale(0.96) translate(0, 0);
+    }
+  }
+
+  @keyframes deal-in-3 {
+    0% {
+      opacity: 0;
+      transform: rotate(11deg) scale(0.92) translate(40px, -40px);
+    }
+    100% {
+      opacity: 0.88;
+      transform: rotate(11deg) scale(0.92) translate(0, 0);
+    }
+  }
+
+  @keyframes deal-in-4 {
+    0% {
+      opacity: 0;
+      transform: rotate(-13deg) scale(0.88) translate(-40px, -40px);
+    }
+    100% {
+      opacity: 0.82;
+      transform: rotate(-13deg) scale(0.88) translate(0, 0);
+    }
+  }
+
+  /* --- Idle Floating Keyframes --- */
+  @keyframes float-1 {
+    0%, 100% { transform: rotate(5deg) translateY(0); }
+    50% { transform: rotate(3deg) translateY(-8px); }
+  }
+  @keyframes float-2 {
+    0%, 100% { transform: rotate(-7deg) scale(0.96) translateY(0); }
+    50% { transform: rotate(-5deg) scale(0.97) translateY(7px); }
+  }
+  @keyframes float-3 {
+    0%, 100% { transform: rotate(11deg) scale(0.92) translateY(0); }
+    50% { transform: rotate(9deg) scale(0.94) translateY(-6px); }
+  }
+  @keyframes float-4 {
+    0%, 100% { transform: rotate(-13deg) scale(0.88) translateY(0); }
+    50% { transform: rotate(-11deg) scale(0.9) translateY(8px); }
+  }
+
+  /* --- Concept 2: Deck Unfold / Fan Out on Container Hover --- */
+  .hero-visual:hover .mock-card {
+    animation-play-state: paused;
+  }
+
+  .hero-visual:hover .mock-card-1 {
+    translate: -12% -22%;
+    transform: rotate(3deg) scale(1.02);
+    opacity: 0.95;
+  }
+  .hero-visual:hover .mock-card-2 {
+    translate: -88% -22%;
+    transform: rotate(-4deg) scale(1.02);
+    opacity: 0.95;
+  }
+  .hero-visual:hover .mock-card-3 {
+    translate: -10% -86%;
+    transform: rotate(5deg) scale(1.02);
+    opacity: 0.95;
+  }
+  .hero-visual:hover .mock-card-4 {
+    translate: -88% -86%;
+    transform: rotate(-5deg) scale(1.02);
+    opacity: 0.95;
+  }
+
+  /* Mobile Unfold Offsets */
+  @media (max-width: 639px) {
+    .hero-visual:hover .mock-card-1 { translate: -10% -25%; }
+    .hero-visual:hover .mock-card-2 { translate: -85% -25%; }
+    .hero-visual:hover .mock-card-3 { translate: -10% -82%; }
+    .hero-visual:hover .mock-card-4 { translate: -85% -82%; }
+  }
+
+  /* Smooth Sibling Recede when any card is directly hovered */
+  .hero-visual:has(.mock-card:hover) .mock-card:not(:hover) {
+    opacity: 0.7 !important;
+    transform: scale(0.97) !important;
+    filter: blur(0.4px);
+  }
+
+  /* --- Direct Card Hover Pop --- */
+  .mock-card:hover {
+    z-index: 30 !important;
+    opacity: 1 !important;
+    transform: rotate(0deg) scale(1.06) !important;
+    box-shadow: 0 32px 70px rgba(255, 107, 107, 0.25), 0 0 0 2px rgba(255, 107, 107, 0.3) !important;
+    border-color: rgba(255, 107, 107, 0.35) !important;
+    filter: none !important;
+  }
+
+  .mc-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .mc-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform 0.3s ease; }
+  .mock-card:hover .mc-avatar { transform: scale(1.12); }
+  .mc-time { padding: 4px 12px; background: #FDFCF8; border-radius: 9999px; font-size: 12px; font-weight: 700; border: 1px solid rgba(0,0,0,0.05); transition: all 0.3s ease; }
+  .mock-card:hover .mc-time { background: rgba(255,107,107,0.12); color: #FF6B6B; border-color: rgba(255,107,107,0.2); }
+  .mock-card h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; font-weight: 700; line-height: 1.3; margin: 0; }
+  
+  /* Verified NGO Badge */
+  .mc-ngo { color: #1E293B99; font-size: 13px; font-weight: 600; margin: 0; display: flex; align-items: center; gap: 4px; }
+  .mc-verified { color: #0284C7; flex-shrink: 0; }
+
+  /* Bottom Row with Tag Stagger and Claim Button */
+  .mc-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; gap: 8px; }
+  .mc-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .mc-tags span { padding: 4px 10px; border-radius: 9999px; font-size: 11px; font-weight: 700; transition: transform 0.25s cubic-bezier(0.34, 1.4, 0.64, 1); }
+  .mock-card:hover .mc-tags span:nth-child(1) { transform: translateY(-2px) scale(1.04); }
+  .mock-card:hover .mc-tags span:nth-child(2) { transform: translateY(-2px) scale(1.04); transition-delay: 0.05s; }
+
+  /* Quick Claim Button */
+  .mc-claim-btn { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 9999px; background: #FF6B6B; color: #fff; font-size: 11px; font-weight: 700; text-decoration: none; opacity: 0; transform: scale(0.92) translateX(4px); transition: all 0.3s cubic-bezier(0.34, 1.4, 0.64, 1); white-space: nowrap; }
+  .mock-card:hover .mc-claim-btn { opacity: 1; transform: scale(1) translateX(0); }
+  .mc-claim-btn:hover { background: #ff5252; transform: scale(1.06) !important; box-shadow: 0 4px 12px rgba(255,107,107,0.35); }
 
   /* ──────────── How It Works ──────────── */
   .steps { display: grid; grid-template-columns: 1fr; gap: 48px; max-width: 1000px; margin: 0 auto; }
