@@ -1,6 +1,7 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
   import PublicShell from '$lib/components/PublicShell.svelte';
+  import { fly, fade, slide } from 'svelte/transition';
 
   let activeStep = 0;
 
@@ -121,7 +122,7 @@
 </script>
 
 <svelte:head>
-  <title>How It Works · MicroMatch</title>
+  <title>How It Works | MicroMatch</title>
   <meta name="description" content="Discover the 5-step lifecycle of micro-volunteering on MicroMatch." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
@@ -133,10 +134,6 @@
   <section class="hiw-hero">
     <div class="container">
       <div class="hiw-hero-head">
-        <div class="eyebrow-pill">
-          <Icon icon="lucide:repeat" width="14" height="14" />
-          <span>The MicroMatch Lifecycle</span>
-        </div>
         <h1>How Micro-Volunteering <br /><span class="coral-gradient">Works</span></h1>
         <p>
           From task discovery to verified badge minting — explore how MicroMatch connects volunteers and NGOs in a 5-step closed loop.
@@ -167,67 +164,69 @@
   <section class="hiw-inspector">
     <div class="container">
       <div class="inspector-card">
-        <div class="inspector-left">
-          <div class="ins-badge">Step {steps[activeStep].num} of 05</div>
-          <h2>{steps[activeStep].title}</h2>
-          <p class="ins-summary">{steps[activeStep].summary}</p>
+        {#key activeStep}
+          <div class="inspector-left" in:fly={{ y: 16, duration: 350, delay: 50 }} out:fade={{ duration: 150 }}>
+            <div class="ins-badge">Step {steps[activeStep].num} of 05</div>
+            <h2>{steps[activeStep].title}</h2>
+            <p class="ins-summary">{steps[activeStep].summary}</p>
 
-          <ul class="ins-bullets">
-            {#each steps[activeStep].bullets as bullet}
-              <li>
-                <Icon icon="lucide:check-circle-2" width="18" height="18" class="ins-icon" />
-                <span>{bullet}</span>
-              </li>
-            {/each}
-          </ul>
+            <ul class="ins-bullets">
+              {#each steps[activeStep].bullets as bullet}
+                <li>
+                  <Icon icon="lucide:check-circle-2" width="18" height="18" class="ins-icon" />
+                  <span>{bullet}</span>
+                </li>
+              {/each}
+            </ul>
 
-          <div class="ins-nav-btns">
-            <button
-              type="button"
-              class="btn-nav-prev"
-              disabled={activeStep === 0}
-              on:click={() => activeStep--}
-            >
-              ← Previous Step
-            </button>
-            <button
-              type="button"
-              class="btn-nav-next"
-              disabled={activeStep === steps.length - 1}
-              on:click={() => activeStep++}
-            >
-              Next Step →
-            </button>
-          </div>
-        </div>
-
-        <div class="inspector-right">
-          <div class="ins-mockup-frame">
-            <div class="im-topbar">
-              <span class="im-dot"></span>
-              <span class="im-dot"></span>
-              <span class="im-dot"></span>
-              <span class="im-title">Live Simulator · Step {steps[activeStep].num}</span>
+            <div class="ins-nav-btns">
+              <button
+                type="button"
+                class="btn-nav-prev"
+                disabled={activeStep === 0}
+                on:click={() => activeStep--}
+              >
+                ← Previous Step
+              </button>
+              <button
+                type="button"
+                class="btn-nav-next"
+                disabled={activeStep === steps.length - 1}
+                on:click={() => activeStep++}
+              >
+                Next Step →
+              </button>
             </div>
+          </div>
 
-            <div class="im-content">
-              <div class="im-card">
-                <div class="im-card-top">
-                  <span class="im-ngo">{steps[activeStep].demoNgo}</span>
-                  <span class="im-time"><Icon icon="lucide:clock" width="12" height="12" /> {steps[activeStep].demoTime}</span>
-                </div>
+          <div class="inspector-right" in:fly={{ x: 20, duration: 350, delay: 100 }} out:fade={{ duration: 150 }}>
+            <div class="ins-mockup-frame">
+              <div class="im-topbar">
+                <span class="im-dot"></span>
+                <span class="im-dot"></span>
+                <span class="im-dot"></span>
+                <span class="im-title">Interactive Simulator | Step {steps[activeStep].num}</span>
+              </div>
 
-                <h3>{steps[activeStep].demoTitle}</h3>
+              <div class="im-content">
+                <div class="im-card">
+                  <div class="im-card-top">
+                    <span class="im-ngo">{steps[activeStep].demoNgo}</span>
+                    <span class="im-time"><Icon icon="lucide:clock" width="12" height="12" /> {steps[activeStep].demoTime}</span>
+                  </div>
 
-                <div class="im-tags">
-                  {#each steps[activeStep].demoTags as t}
-                    <span style="background:{t.bg}; color:{t.color}">{t.label}</span>
-                  {/each}
+                  <h3>{steps[activeStep].demoTitle}</h3>
+
+                  <div class="im-tags">
+                    {#each steps[activeStep].demoTags as t}
+                      <span style="background:{t.bg}; color:{t.color}">{t.label}</span>
+                    {/each}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        {/key}
       </div>
     </div>
   </section>
@@ -281,10 +280,10 @@
           <div class="faq-item" class:open={openFaq === i}>
             <button type="button" class="faq-question" on:click={() => (openFaq = openFaq === i ? -1 : i)}>
               <span>{faq.q}</span>
-              <Icon icon={openFaq === i ? "lucide:chevron-up" : "lucide:chevron-down"} width="20" height="20" />
+              <Icon icon={openFaq === i ? "lucide:chevron-up" : "lucide:chevron-down"} width="20" height="20" class="faq-chevron" />
             </button>
             {#if openFaq === i}
-              <div class="faq-answer">
+              <div class="faq-answer" transition:slide={{ duration: 250 }}>
                 <p>{faq.a}</p>
               </div>
             {/if}
@@ -312,27 +311,14 @@
 <style>
   /* Base Background */
   .hiw-hero {
-    padding: 80px 0 40px;
+    padding: 56px 0 40px;
     background: #FDFCF8;
     text-align: center;
+    width: 100%;
   }
   .hiw-hero-head {
     max-width: 700px;
     margin: 0 auto 48px;
-  }
-  .eyebrow-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 16px;
-    background: #FFF;
-    border: 1px solid #FFD1C2;
-    border-radius: 9999px;
-    font-size: 13px;
-    font-weight: 700;
-    color: #FF6B6B;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 8px rgba(255,107,107,0.1);
   }
   .hiw-hero-head h1 {
     font-family: 'Plus Jakarta Sans', sans-serif;
@@ -378,7 +364,22 @@
     cursor: pointer;
     padding: 8px 16px;
     border-radius: 9999px;
-    transition: all 0.2s ease;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .ribbon-step:hover:not(.active) {
+    background: rgba(255, 107, 107, 0.08);
+    transform: translateY(-2px) scale(1.04);
+  }
+  .ribbon-step:hover:not(.active) .ribbon-num {
+    background: #FF6B6B;
+    color: #FFFFFF;
+    transform: rotate(8deg);
+  }
+  .ribbon-step:hover:not(.active) .ribbon-label {
+    color: #FF6B6B;
+  }
+  .ribbon-step:active {
+    transform: scale(0.96);
   }
   .ribbon-num {
     width: 28px;
@@ -392,14 +393,24 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .ribbon-label {
     font-size: 14px;
     font-weight: 700;
     color: #475569;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .ribbon-step.active {
     background: #FF6B6B;
+    box-shadow: 0 4px 14px rgba(255, 107, 107, 0.25);
+  }
+  .ribbon-step.active:hover {
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 8px 22px rgba(255, 107, 107, 0.35);
+  }
+  .ribbon-step.active:hover .ribbon-num {
+    transform: rotate(-8deg) scale(1.05);
   }
   .ribbon-step.active .ribbon-num {
     background: #FFFFFF;
@@ -424,6 +435,7 @@
   .hiw-inspector {
     padding: 40px 0 96px;
     background: #FDFCF8;
+    width: 100%;
   }
   .inspector-card {
     background: #FFFFFF;
@@ -478,10 +490,19 @@
     font-size: 15px;
     font-weight: 600;
     color: #0F172A;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .ins-icon {
+  .ins-bullets li:hover {
+    transform: translateX(4px);
+  }
+  .ins-bullets li:hover :global(.ins-icon) {
+    transform: scale(1.25) rotate(6deg);
+    color: #FF6B6B;
+  }
+  :global(.ins-icon) {
     color: #FF6B6B;
     flex-shrink: 0;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .ins-nav-btns {
@@ -497,12 +518,26 @@
     border: 1px solid #CBD5E1;
     background: #FFF;
     color: #0F172A;
-    transition: all 0.2s ease;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .btn-nav-prev:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+    border-color: #94A3B8;
   }
   .btn-nav-next {
     background: #FF6B6B;
     color: #FFF;
     border-color: #FF6B6B;
+    box-shadow: 0 4px 14px rgba(255, 107, 107, 0.25);
+  }
+  .btn-nav-next:hover:not(:disabled) {
+    background: #ff5252;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(255, 107, 107, 0.35);
+  }
+  .btn-nav-prev:active:not(:disabled), .btn-nav-next:active:not(:disabled) {
+    transform: scale(0.96);
   }
   .btn-nav-prev:disabled, .btn-nav-next:disabled {
     opacity: 0.4;
@@ -516,6 +551,12 @@
     border-radius: 24px;
     overflow: hidden;
     box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .ins-mockup-frame:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 44px rgba(15, 23, 42, 0.1);
+    border-color: #CBD5E1;
   }
   .im-topbar {
     background: #FAF7F0;
@@ -530,7 +571,12 @@
     height: 8px;
     border-radius: 50%;
     background: #CBD5E1;
+    transition: background 0.2s ease;
   }
+  .ins-mockup-frame:hover .im-dot:nth-child(1) { background: #FF6B6B; }
+  .ins-mockup-frame:hover .im-dot:nth-child(2) { background: #F59E0B; }
+  .ins-mockup-frame:hover .im-dot:nth-child(3) { background: #10B981; }
+
   .im-title {
     font-size: 12px;
     font-weight: 700;
@@ -547,6 +593,10 @@
     border-radius: 20px;
     padding: 24px;
     box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .ins-mockup-frame:hover .im-card {
+    transform: scale(1.02);
   }
   .im-card-top {
     display: flex;
@@ -592,6 +642,7 @@
   .hiw-diagram-section {
     padding: 80px 0;
     background: #FAF7F0;
+    width: 100%;
   }
   .section-head {
     text-align: center;
@@ -626,6 +677,12 @@
     max-width: 220px;
     text-align: center;
     box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .diag-box:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
+    border-color: #FF6B6B;
   }
   .diag-box.highlight {
     border-color: #FF6B6B;
@@ -641,6 +698,12 @@
     align-items: center;
     justify-content: center;
     margin: 0 auto 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .diag-box:hover .diag-icon {
+    transform: scale(1.15) rotate(4deg);
+    background: #FF6B6B;
+    color: #FFF;
   }
   .diag-box.highlight .diag-icon {
     background: #FF6B6B;
@@ -662,12 +725,18 @@
     font-size: 20px;
     font-weight: 800;
     color: #CBD5E1;
+    transition: all 0.3s ease;
+  }
+  .diag-box:hover + .diag-arrow {
+    color: #FF6B6B;
+    transform: translateX(4px);
   }
 
   /* FAQ */
   .hiw-faq-section {
     padding: 96px 0;
     background: #FDFCF8;
+    width: 100%;
   }
   .faq-list {
     max-width: 760px;
@@ -681,6 +750,11 @@
     border: 1px solid #E2E8F0;
     border-radius: 20px;
     overflow: hidden;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .faq-item:hover {
+    border-color: #FFD1C2;
+    box-shadow: 0 8px 24px rgba(255, 107, 107, 0.08);
   }
   .faq-question {
     width: 100%;
@@ -696,6 +770,11 @@
     color: #0F172A;
     cursor: pointer;
     text-align: left;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  .faq-question:hover {
+    background: #FFF5F0;
+    color: #FF6B6B;
   }
   .faq-answer {
     padding: 0 24px 20px;
@@ -708,15 +787,21 @@
   /* CTA */
   .hiw-cta-section {
     padding: 80px 0 96px;
-    background: #FDFCF8;
+    background: #FAF7F0;
+    width: 100%;
   }
   .cta-banner {
     background: linear-gradient(135deg, #FF6B6B, #E85555);
     color: #FFFFFF;
     border-radius: 36px;
-    padding: clamp(40px, 6vw, 64px);
+    padding: clamp(40px, 6vw, 64px) 24px;
     text-align: center;
     box-shadow: 0 20px 50px rgba(255, 107, 107, 0.25);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .cta-banner:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 28px 60px rgba(255, 107, 107, 0.35);
   }
   .cta-banner h2 {
     font-family: 'Plus Jakarta Sans', sans-serif;
@@ -739,10 +824,23 @@
   .cta-btns .btn-coral {
     background: #FFFFFF;
     color: #FF6B6B;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .cta-btns .btn-coral:hover {
+    background: #FFF;
+    color: #E85555;
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
   }
   .cta-btns .btn-outline-dark {
     background: transparent;
     color: #FFFFFF;
     border-color: rgba(255, 255, 255, 0.4);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .cta-btns .btn-outline-dark:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: #FFFFFF;
+    transform: translateY(-2px) scale(1.03);
   }
 </style>

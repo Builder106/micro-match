@@ -192,7 +192,7 @@ export const Invitation: React.FC<Props> = ({ durationInFrames }) => {
             >
               Free &amp; open source — use it, or build it with us.
               <br />
-              github.com/Builder106/MicroMatch
+              github.com/Builder106/micro-match
             </div>
           </div>
 

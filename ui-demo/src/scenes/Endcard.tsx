@@ -131,7 +131,7 @@ export const Endcard: React.FC = () => {
               ...reveal(frame, 44),
             }}
           >
-            Free &amp; open source · github.com/Builder106/MicroMatch
+            Free &amp; open source · github.com/Builder106/micro-match
           </div>
         </div>
 

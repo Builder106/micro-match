@@ -5,7 +5,7 @@
 
 <StaticArticle
   title="Our Impact"
-  lede="Real numbers from the MicroMatch community — updated live, never estimated."
+  lede="Real numbers from the MicroMatch community — updated continuously, never estimated."
 >
   <div class="stat-grid">
     <div class="stat">

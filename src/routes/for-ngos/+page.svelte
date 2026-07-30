@@ -62,7 +62,7 @@
 </script>
 
 <svelte:head>
-  <title>For NGOs · MicroMatch</title>
+  <title>For NGOs | MicroMatch</title>
   <meta name="description" content="Clear your non-profit backlog in minutes with verified volunteer submissions." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
@@ -276,17 +276,22 @@
 <style>
   /* Hero */
   .ngo-hero {
-    padding: 80px 0 60px;
+    padding: 56px 0 64px;
     background: #FDFCF8;
+    width: 100%;
   }
   .ngo-hero-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 48px;
+    gap: 40px;
     align-items: center;
   }
   @media (min-width: 1024px) {
-    .ngo-hero-grid { grid-template-columns: 1.1fr 1fr; }
+    .ngo-hero-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
+  }
+
+  .ngo-hero-text {
+    max-width: 520px;
   }
 
   .ngo-pill {
@@ -300,7 +305,7 @@
     font-size: 13px;
     font-weight: 700;
     color: #FF6B6B;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
     box-shadow: 0 2px 8px rgba(255,107,107,0.1);
   }
   .ngo-hero-text h1 {
@@ -308,8 +313,9 @@
     font-size: clamp(2.25rem, 4vw, 3.5rem);
     font-weight: 800;
     line-height: 1.15;
+    letter-spacing: -0.02em;
     color: #0F172A;
-    margin: 0 0 20px;
+    margin: 0 0 16px;
   }
   .coral-gradient {
     background: linear-gradient(135deg, #FF6B6B, #FF9E5E);
@@ -318,10 +324,11 @@
     background-clip: text;
   }
   .ngo-hero-text p {
-    font-size: 18px;
+    font-size: 17px;
     color: #475569;
     line-height: 1.6;
-    margin: 0 0 32px;
+    margin: 0 0 28px;
+    max-width: 480px;
   }
   .ngo-hero-btns {
     display: flex;
@@ -340,7 +347,15 @@
     border-radius: 9999px;
     text-decoration: none;
     box-shadow: 0 4px 14px rgba(255, 107, 107, 0.25);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
+  .btn-coral:hover {
+    background: #ff5252;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(255, 107, 107, 0.35);
+  }
+  .btn-coral:active { transform: scale(0.97); }
+
   .btn-outline-dark {
     display: inline-flex;
     align-items: center;
@@ -352,15 +367,34 @@
     font-size: 15px;
     border-radius: 9999px;
     text-decoration: none;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
+  .btn-outline-dark:hover {
+    transform: translateY(-2px);
+    border-color: #94A3B8;
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+  }
+  .btn-outline-dark:active { transform: scale(0.97); }
 
   /* NGO Card Mockup */
+  .ngo-hero-visual {
+    display: flex;
+    justify-content: flex-end;
+  }
   .ngo-card-mockup {
     background: #FFFFFF;
     border: 1px solid #E2E8F0;
     border-radius: 28px;
     padding: 28px;
+    max-width: 480px;
+    width: 100%;
     box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .ngo-card-mockup:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 28px 60px rgba(15, 23, 42, 0.12);
+    border-color: #CBD5E1;
   }
   .ncm-top {
     display: flex;
@@ -378,6 +412,10 @@
     border-radius: 9999px;
     font-size: 12px;
     font-weight: 700;
+    transition: transform 0.2s ease;
+  }
+  .ngo-card-mockup:hover .ncm-verified-chip {
+    transform: scale(1.05);
   }
   .ncm-count {
     font-size: 12px;
@@ -403,6 +441,10 @@
     border: 1px solid #E2E8F0;
     border-radius: 18px;
     padding: 16px;
+    transition: border-color 0.2s ease;
+  }
+  .ngo-card-mockup:hover .ncm-queue {
+    border-color: #FFD1C2;
   }
   .nq-head {
     display: flex;
@@ -433,6 +475,7 @@
   .section-pillars {
     padding: 96px 0;
     background: #FFFFFF;
+    width: 100%;
   }
   .section-title {
     text-align: center;
@@ -469,6 +512,12 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .pillar-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
+    border-color: #FF6B6B;
   }
   .pillar-icon {
     width: 56px;
@@ -478,6 +527,10 @@
     align-items: center;
     justify-content: center;
     margin-bottom: 20px;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .pillar-card:hover .pillar-icon {
+    transform: scale(1.15) rotate(4deg);
   }
   .pillar-tag {
     display: inline-block;
@@ -486,6 +539,10 @@
     font-size: 12px;
     font-weight: 700;
     margin-bottom: 12px;
+    transition: transform 0.2s ease;
+  }
+  .pillar-card:hover .pillar-tag {
+    transform: scale(1.05);
   }
   .pillar-card h3 {
     font-family: 'Plus Jakarta Sans', sans-serif;
@@ -505,6 +562,7 @@
   .section-comparison {
     padding: 96px 0;
     background: #FAF7F0;
+    width: 100%;
   }
   .comp-table {
     background: #FFFFFF;
@@ -530,13 +588,19 @@
     border-bottom: 1px solid #E2E8F0;
     align-items: center;
     font-size: 14px;
+    transition: background 0.2s ease;
+  }
+  .comp-row:hover {
+    background: #FFF5F0;
   }
   .comp-row:last-child { border-bottom: none; }
   .comp-cell { display: flex; align-items: center; gap: 10px; }
   .comp-cell.old { color: #64748B; }
   .comp-cell.new { color: #0F172A; font-weight: 600; }
-  .icon-bad { color: #DC2626; flex-shrink: 0; }
-  .icon-good { color: #059669; flex-shrink: 0; }
+  :global(.icon-bad) { color: #DC2626; flex-shrink: 0; transition: transform 0.2s ease; }
+  :global(.icon-good) { color: #059669; flex-shrink: 0; transition: transform 0.2s ease; }
+  .comp-row:hover :global(.icon-good) { transform: scale(1.2); }
+  .comp-row:hover :global(.icon-bad) { transform: scale(1.1); }
 
   @media (max-width: 768px) {
     .comp-header { display: none; }
@@ -547,12 +611,17 @@
   .section-calc {
     padding: 96px 0;
     background: #FFFFFF;
+    width: 100%;
   }
   .calc-card {
     background: #FDFCF8;
     border: 1px solid #E2E8F0;
     border-radius: 32px;
     padding: clamp(32px, 5vw, 56px);
+    transition: box-shadow 0.3s ease;
+  }
+  .calc-card:hover {
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.06);
   }
   .calc-head { text-align: center; max-width: 600px; margin: 0 auto 40px; }
   .calc-tag { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: #FFF5F0; color: #FF6B6B; border-radius: 9999px; font-size: 12px; font-weight: 700; margin-bottom: 12px; }
@@ -567,23 +636,91 @@
   .range-input { width: 100%; accent-color: #FF6B6B; cursor: pointer; }
 
   .duration-chips { display: flex; gap: 10px; }
-  .dur-chip { flex: 1; padding: 10px; border-radius: 12px; border: 1px solid #CBD5E1; background: #FFF; font-weight: 700; font-size: 14px; color: #475569; cursor: pointer; }
-  .dur-chip.selected { background: #FF6B6B; color: #FFF; border-color: #FF6B6B; }
+  .dur-chip {
+    flex: 1;
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid #CBD5E1;
+    background: #FFF;
+    font-weight: 700;
+    font-size: 14px;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .dur-chip:hover:not(.selected) {
+    border-color: #FF6B6B;
+    color: #FF6B6B;
+    transform: translateY(-2px);
+  }
+  .dur-chip.selected {
+    background: #FF6B6B;
+    color: #FFF;
+    border-color: #FF6B6B;
+    box-shadow: 0 4px 14px rgba(255, 107, 107, 0.25);
+  }
+  .dur-chip:active { transform: scale(0.96); }
 
   .calc-outputs { display: grid; grid-template-columns: 1fr; gap: 16px; }
-  .out-box { background: #FFF; border: 1px solid #E2E8F0; border-radius: 20px; padding: 20px; text-align: center; }
+  .out-box {
+    background: #FFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .out-box:hover {
+    transform: scale(1.03);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+  }
   .out-box.highlight { background: #FF6B6B; color: #FFF; border-color: #FF6B6B; }
+  .out-box.highlight:hover {
+    box-shadow: 0 10px 24px rgba(255, 107, 107, 0.3);
+  }
   .out-num { display: block; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 32px; font-weight: 800; color: #FF6B6B; }
   .out-box.highlight .out-num { color: #FFFFFF; }
   .out-lbl { font-size: 13px; font-weight: 700; color: #64748B; }
   .out-box.highlight .out-lbl { color: rgba(255, 255, 255, 0.9); }
 
   /* CTA */
-  .ngo-cta-section { padding: 96px 0; background: #FAF7F0; }
-  .cta-box { background: linear-gradient(135deg, #FF6B6B, #E85555); color: #FFFFFF; border-radius: 36px; padding: clamp(40px, 6vw, 64px); text-align: center; box-shadow: 0 20px 50px rgba(255, 107, 107, 0.25); }
+  .ngo-cta-section { padding: 96px 0; background: #FAF7F0; width: 100%; }
+  .cta-box {
+    background: linear-gradient(135deg, #FF6B6B, #E85555);
+    color: #FFFFFF;
+    border-radius: 36px;
+    padding: clamp(40px, 6vw, 64px);
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(255, 107, 107, 0.25);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .cta-box:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 28px 60px rgba(255, 107, 107, 0.35);
+  }
   .cta-box h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.8rem, 3vw, 2.75rem); font-weight: 800; color: #FFFFFF; margin: 0 0 12px; }
   .cta-box p { font-size: 18px; color: rgba(255, 255, 255, 0.9); margin: 0 0 32px; }
   .cta-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
-  .cta-actions .btn-coral { background: #FFFFFF; color: #FF6B6B; }
-  .cta-actions .btn-outline-dark { background: transparent; color: #FFFFFF; border-color: rgba(255, 255, 255, 0.4); }
+  .cta-actions .btn-coral {
+    background: #FFFFFF;
+    color: #FF6B6B;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .cta-actions .btn-coral:hover {
+    background: #FFF;
+    color: #E85555;
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+  }
+  .cta-actions .btn-outline-dark {
+    background: transparent;
+    color: #FFFFFF;
+    border-color: rgba(255, 255, 255, 0.4);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .cta-actions .btn-outline-dark:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: #FFFFFF;
+    transform: translateY(-2px) scale(1.03);
+  }
 </style>

@@ -15,7 +15,7 @@
    import { dev } from '$app/environment';
    import { inject } from '@vercel/analytics';
   const authPaths = ['/login', '/signup', '/forgot-password', '/reset-password'];
-  const publicPaths = ['/about', '/contact', '/cookies', '/docs', '/help', '/privacy', '/terms'];
+  const publicPaths = ['/about', '/contact', '/cookies', '/docs', '/help', '/privacy', '/terms', '/how-it-works', '/for-ngos', '/for-volunteers'];
 
   const ogTitle = 'MicroMatch — Make a big impact in a few minutes';
   const ogDescription = 'Pair with NGOs on 5–30 minute volunteer tasks. Claim what fits your skills, submit your work, and earn badges that build a verified track record.';
@@ -180,7 +180,7 @@
    {#if showAppChrome}
       <Sidebar />
    {/if}
- {#if isLanding || isAuthPath}
+ {#if isLanding || isAuthPath || isPublicPath}
     <div style="flex: 1 1 auto; width: 100%;">
       <slot />
     </div>

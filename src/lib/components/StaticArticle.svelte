@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state';
+  import PublicShell from '$lib/components/PublicShell.svelte';
 
   export let title: string;
   export let lede: string | undefined = undefined;
@@ -20,118 +21,41 @@
   ];
 
   $: pathname = page.url.pathname;
-  $: userRole = (page.data?.userRole as string | undefined) ?? 'anonymous';
-  $: isSignedIn = userRole !== 'anonymous';
-  $: year = new Date().getFullYear();
 </script>
 
 <svelte:head>
-  <title>{title} · MicroMatch</title>
+  <title>{title} | MicroMatch</title>
 </svelte:head>
 
-<div class="public-shell">
-  <header class="public-header">
-    <a class="brand" href="/" aria-label="MicroMatch home">
-      <img src="/logo.png" alt="" width="32" height="32" />
-      <span>MicroMatch</span>
-    </a>
-    <nav class="public-actions" aria-label="Account">
-      {#if isSignedIn}
-        <a class="nav-link" href="/dashboard">Dashboard</a>
-      {:else}
-        <a class="nav-link" href="/login">Sign in</a>
-        <a class="nav-cta" href="/signup">Create account</a>
-      {/if}
+<PublicShell activeTab={pathname === '/impact' ? 'impact' : undefined}>
+  <div class="static-container">
+    <article class="static-article">
+      <header class="article-head">
+        <h1>{title}</h1>
+        {#if lede}<p class="lede">{lede}</p>{/if}
+        {#if updated}<p class="updated">Last updated: {updated}</p>{/if}
+      </header>
+      <div class="static-body">
+        <slot />
+      </div>
+    </article>
+
+    <nav class="related" aria-label="Related pages">
+      {#each siblings.filter((s) => s.href !== pathname) as s}
+        <a href={s.href}>{s.label}</a>
+      {/each}
     </nav>
-  </header>
-
-  <article class="static-article">
-    <header class="article-head">
-      <h1>{title}</h1>
-      {#if lede}<p class="lede">{lede}</p>{/if}
-      {#if updated}<p class="updated">Last updated · {updated}</p>{/if}
-    </header>
-    <div class="static-body">
-      <slot />
-    </div>
-  </article>
-
-  <nav class="related" aria-label="Related pages">
-    {#each siblings.filter((s) => s.href !== pathname) as s}
-      <a href={s.href}>{s.label}</a>
-    {/each}
-  </nav>
-
-  <footer class="public-footer">
-    <small>© {year} MicroMatch</small>
-    <small><a href="/">Back to home</a></small>
-  </footer>
-</div>
+  </div>
+</PublicShell>
 
 <style>
-  .public-shell {
-    max-width: 760px;
+  .static-container {
+    max-width: 800px;
     margin: 0 auto;
+    padding: 48px 24px 80px;
     display: flex;
     flex-direction: column;
     gap: var(--space-6);
-  }
-
-  .public-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-4);
-    padding: var(--space-2) 0;
-  }
-  .brand {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    color: var(--color-text);
-    text-decoration: none;
-  }
-  .brand img {
-    display: block;
-    border-radius: 8px;
-  }
-  .brand span {
-    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
-    font-weight: 700;
-    font-size: 1.1rem;
-    letter-spacing: -0.01em;
-  }
-  .public-actions {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-3);
-  }
-  .nav-link {
-    color: var(--color-text-secondary);
-    text-decoration: none;
-    font-size: 0.95rem;
-    font-weight: 600;
-    padding: 8px 12px;
-    border-radius: 9999px;
-    transition: color 0.15s ease, background 0.15s ease;
-  }
-  .nav-link:hover {
-    color: var(--color-text);
-    background: rgba(0, 0, 0, 0.04);
-  }
-  .nav-cta {
-    background: var(--color-primary, #ff6b6b);
-    color: #fff;
-    padding: 9px 16px;
-    border-radius: 9999px;
-    font-size: 0.95rem;
-    font-weight: 700;
-    text-decoration: none;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-  }
-  .nav-cta:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 8px 22px rgba(255, 107, 107, 0.3);
   }
 
   .static-article {
@@ -235,40 +159,9 @@
     color: var(--color-primary, #ff6b6b);
   }
 
-  .public-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--space-2);
-    padding: var(--space-4) 0 var(--space-6);
-    color: var(--color-text-secondary);
-  }
-  .public-footer a {
-    color: inherit;
-    text-decoration: none;
-    font-weight: 600;
-  }
-  .public-footer a:hover {
-    color: var(--color-primary, #ff6b6b);
-  }
-
   @media (max-width: 540px) {
-    .public-header {
-      gap: var(--space-2);
-    }
-    .nav-link {
-      padding: 6px 10px;
-      white-space: nowrap;
-    }
-    .nav-cta {
-      display: none;
-    }
     .related {
       gap: var(--space-2) var(--space-3);
-    }
-    .public-footer {
-      flex-direction: column;
-      align-items: flex-start;
     }
   }
 </style>

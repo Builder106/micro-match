@@ -140,7 +140,7 @@ sequenceDiagram
 Quick path:
 
 ```sh
-git clone https://github.com/Builder106/MicroMatch.git
+git clone https://github.com/Builder106/micro-match.git
 cd MicroMatch
 bun install
 cp .env.example .env

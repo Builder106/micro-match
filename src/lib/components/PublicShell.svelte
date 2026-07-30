@@ -4,7 +4,7 @@
   import { tick, onDestroy } from 'svelte';
   import { fly, fade } from 'svelte/transition';
 
-  export let activeTab: 'how-it-works' | 'for-ngos' | 'for-volunteers' | 'tasks' | 'impact' | undefined = undefined;
+  export let activeTab: 'home' | 'how-it-works' | 'for-ngos' | 'for-volunteers' | 'tasks' | 'impact' | undefined = undefined;
 
   let mobileMenuOpen = false;
   let menuToggleEl: HTMLButtonElement | null = null;
@@ -69,7 +69,7 @@
           <Icon icon={mobileMenuOpen ? 'lucide:x' : 'lucide:menu'} width="22" height="22" />
         </button>
         <a
-          href="https://github.com/Builder106/MicroMatch"
+          href="https://github.com/Builder106/micro-match"
           class="header-github"
           target="_blank"
           rel="noopener noreferrer"
@@ -115,7 +115,7 @@
         <a href="/signup" class="mobile-menu-cta" on:click={closeMenu}>Join Now</a>
       {/if}
       <a
-        href="https://github.com/Builder106/MicroMatch"
+        href="https://github.com/Builder106/micro-match"
         class="mobile-menu-github"
         target="_blank"
         rel="noopener noreferrer"
@@ -185,9 +185,9 @@
     -webkit-font-smoothing: antialiased;
   }
   .landing *, .landing *::before, .landing *::after { box-sizing: border-box; }
-  main { flex: 1; }
+  main { flex: 1; width: 100%; }
 
-  .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+  .container, :global(.container) { max-width: 1200px !important; margin: 0 auto !important; padding: 0 24px !important; box-sizing: border-box !important; }
 
   /* Buttons */
   .btn-coral { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #FF6B6B; color: #fff; font-weight: 700; border: none; border-radius: 9999px; cursor: pointer; text-decoration: none; transition: all .3s; }
@@ -196,13 +196,14 @@
   .btn-sm { padding: 10px 24px; font-size: 14px; }
 
   /* Header */
-  .site-header { position: sticky; top: 0; z-index: 50; background: rgba(253,252,248,0.85); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(0,0,0,0.05); }
+  .site-header { position: sticky; top: 0; z-index: 50; background: rgba(253,252,248,0.8); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(0,0,0,0.05); }
   .header-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; height: 72px; display: flex; align-items: center; justify-content: space-between; }
   .header-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: #1E293B; }
   .header-brand span { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
   .header-nav { display: none; gap: 32px; }
   .header-nav a { font-size: 14px; font-weight: 500; color: #1E293Bb3; text-decoration: none; transition: color .2s; }
-  .header-nav a:hover, .header-nav a.active { color: #FF6B6B; font-weight: 600; }
+  .header-nav a:hover { color: #FF6B6B; }
+  .header-nav a.active { color: #FF6B6B; font-weight: 600; }
   .header-actions { display: flex; align-items: center; gap: 12px; }
   .header-signin { font-size: 14px; font-weight: 600; color: #1E293B; text-decoration: none; display: none; }
   .header-signin:hover { color: #FF6B6B; }
@@ -239,7 +240,7 @@
   .footer-logo span { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 700; }
   .footer-brand p { color: rgba(255,255,255,0.6); font-weight: 500; line-height: 1.7; margin: 0; max-width: 360px; }
   .footer-links { display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px; }
-  .link-col h4 { font-size: 18px; font-weight: 700; margin: 0 0 16px; }
+  .link-col h4 { font-size: 18px; font-weight: 700; margin: 0 0 16px; color: #fff; }
   .link-col a { display: block; color: rgba(255,255,255,0.6); text-decoration: none; margin-bottom: 12px; font-weight: 500; transition: color .2s; }
   .link-col a:hover { color: #fff; }
   .footer-bottom { padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 16px; align-items: center; text-align: center; color: rgba(255,255,255,0.4); font-size: 14px; font-weight: 500; }

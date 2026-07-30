@@ -19,7 +19,7 @@ from a pull request.
 ## Local setup
 
 ```sh
-git clone https://github.com/Builder106/MicroMatch.git
+git clone https://github.com/Builder106/micro-match.git
 cd MicroMatch
 bun install
 cp .env.example .env
@@ -204,7 +204,7 @@ The split between `src/tests/api/` (vitest, node env) and `src/tests/components/
 
 ## Reporting bugs
 
-Open a [GitHub issue](https://github.com/Builder106/MicroMatch/issues) with:
+Open a [GitHub issue](https://github.com/Builder106/micro-match/issues) with:
 
 - A summary of what you expected and what happened
 - Steps to reproduce (ideally a minimal scenario)
