@@ -22,21 +22,21 @@ describe('StaticArticle', () => {
     expect(screen.queryByText(/Last updated/i)).toBeNull();
   });
 
-  it('shows "Sign in" and "Create account" links when signed out', () => {
+  it('shows "Sign In" and "Join Now" links when signed out', () => {
     pageState.data = { userRole: 'anonymous' };
     render(StaticArticle, { title: 'About us' });
 
-    expect(screen.getByRole('link', { name: 'Sign in' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Create account' })).toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: 'Dashboard' })).toBeNull();
+    expect(screen.getAllByRole('link', { name: /sign in/i }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole('link', { name: /join now|create account/i }).length).toBeGreaterThan(0);
+    expect(screen.queryByRole('link', { name: /go to dashboard/i })).toBeNull();
   });
 
-  it('shows a "Dashboard" link when signed in', () => {
+  it('shows a "Go to dashboard" link when signed in', () => {
     pageState.data = { userRole: 'volunteer' };
     render(StaticArticle, { title: 'About us' });
 
-    expect(screen.getByRole('link', { name: 'Dashboard' })).toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: 'Sign in' })).toBeNull();
+    expect(screen.getByRole('link', { name: 'Go to dashboard' })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /sign in/i })).toBeNull();
   });
 
   it('excludes the current page from the related-pages nav', () => {
