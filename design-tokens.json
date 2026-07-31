@@ -143,5 +143,20 @@
   "layout": {
     "sidebarWidth": { "$value": "256px", "$type": "dimension" },
     "containerPadding": { "$value": "16px", "$type": "dimension" }
+  },
+  "iconography": {
+    "engine": { "$value": "@iconify/svelte", "$type": "other", "$description": "Unified universal vector icon engine" },
+    "families": {
+      "heroicons": { "$value": "heroicons:*", "$type": "other", "$description": "Primary navigation, status, and card header icons" },
+      "lucide": { "$value": "lucide:*", "$type": "other", "$description": "Secondary technical, workflow, and action icons" },
+      "mdi": { "$value": "mdi:*", "$type": "other", "$description": "Material Design navigation & form icons" },
+      "logos": { "$value": "logos:*", "$type": "other", "$description": "OAuth provider & technology logos" }
+    },
+    "sizes": {
+      "xs": { "$value": "14px", "$type": "dimension", "$description": "Inline text badges, chips, and metadata" },
+      "sm": { "$value": "18px", "$type": "dimension", "$description": "Standard buttons, tiles, and navigation items" },
+      "md": { "$value": "24px", "$type": "dimension", "$description": "Card headers and section feature highlights" },
+      "lg": { "$value": "32px", "$type": "dimension", "$description": "Large hero elements and empty state indicators" }
+    }
   }
 }

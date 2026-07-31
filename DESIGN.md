@@ -222,17 +222,33 @@ We use neutral slate alpha shadows to prevent dark color pollution on warm surfa
 - `.chip`: Inline-flex pill, supports `aria-pressed="true"` active state with coral gradient.
 - `.tag`: Category hashtag pill formatted dynamically via `getTagStyle`.
 
-### 4. Forms & Inputs
+### 4. Iconography & Iconify System
 
-- Rounded inputs with `--radius-sm` or `--radius-md`.
-- Focus state: `border-color: var(--color-primary)` with subtle ring shadow (`3px color-mix(in srgb, var(--color-primary) 12%, transparent)`).
+MicroMatch uses **[@iconify/svelte](https://iconify.design)** as its unified, cross-framework vector icon engine across all components and pages.
 
-### 5. Navigation & Layout
+```svelte
+<script>
+  import Icon from '@iconify/svelte';
+</script>
 
-- **Header (`.site-header`)**: Sticky top bar with logo mark, navigation links, and mobile hamburger drawer.
-- **Desktop Sidebar (`.sidebar`)**: Sticky `256px` navigation panel visible on screens `≥1024px`.
-- **Bottom Navigation (`.bottom-nav`)**: Touch-friendly bottom bar visible on screens `<1024px`.
-- **Floating Action Button (`.fab`)**: Fixed compose action button offset by mobile safe area insets.
+<Icon icon="heroicons:sparkles-20-solid" width="18" height="18" />
+```
+
+#### Official Icon Sets & Standard Roles
+
+| Icon Family Prefix | Usage & Context | Recommended Icon Identifiers |
+| --- | --- | --- |
+| `heroicons:*` | Core UI navigation, status badges, buttons, cards | `heroicons:sparkles-20-solid`, `heroicons:code-bracket-20-solid`, `heroicons:building-office-20-solid` |
+| `lucide:*` | Technical indicators, status checks, workflow steps | `lucide:user-check`, `lucide:bar-chart-2`, `lucide:help-circle`, `lucide:cpu` |
+| `mdi:*` | Secondary navigation & form utility icons | `mdi:arrow-right`, `mdi:account-group-outline`, `mdi:office-building-outline` |
+| `logos:*` | OAuth identity providers & tech stack badges | `logos:google-icon`, `logos:svelte-icon` |
+
+#### Icon Size & Container Tokens
+
+- **Inline Chips / Badges**: `14px` (`<Icon width="14" height="14" />`)
+- **Buttons, Navigation & Tiles**: `18px` (`<Icon width="18" height="18" />`)
+- **Card Headers & Feature Icons**: `22px` - `24px` (`<Icon width="24" height="24" />`)
+- **Icon Container Badges**: `.icon-wrap`, `.step-icon-badge`, `.tile-icon-badge` with themed glow tints (`.coral-glow`, `.indigo-glow`, `.rose-glow`, `.teal-glow`).
 
 ---
 

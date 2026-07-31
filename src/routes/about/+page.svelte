@@ -70,7 +70,7 @@
       <div class="step-card">
         <div class="step-card-top">
           <div class="step-icon-badge indigo-bg">
-            <Icon icon="heroicons:user-check-20-solid" width="18" height="18" />
+            <Icon icon="lucide:user-check" width="18" height="18" />
           </div>
           <span class="step-num">02</span>
         </div>
