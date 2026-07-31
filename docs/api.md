@@ -7,7 +7,7 @@ This document details the complete REST API endpoints provided by the MicroMatch
 ## Overview
 
 ### Base URL
-- Production: `https://micromatch.org`
+- Production: `https://trymicromatch.com`
 - Local Development: `http://localhost:5174`
 
 ### Authentication
@@ -320,7 +320,7 @@ Uploads a user profile avatar image.
 
 * **Authentication**: Required
 * **Request Format**: `multipart/form-data` with key `avatar`
-* **Response (200 OK)**: `{ "avatarUrl": "https://storage.micromatch.org/avatars/user_123.jpg" }`
+* **Response (200 OK)**: `{ "avatarUrl": "https://storage.trymicromatch.com/avatars/user_123.jpg" }`
 
 ### `POST /api/teams/assign`
 Assigns a task to team members.

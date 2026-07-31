@@ -490,7 +490,7 @@
       summary: 'Upload user profile avatar image.',
       requestBody: 'FormData: avatar (JPEG, PNG, WEBP max 5MB)',
       responseStatus: '200 OK',
-      responseBody: JSON.stringify({ avatarUrl: 'https://micromatch.org/storage/avatars/user_vol_77.jpg' }, null, 2)
+      responseBody: JSON.stringify({ avatarUrl: 'https://trymicromatch.com/storage/avatars/user_vol_77.jpg' }, null, 2)
     },
     {
       id: 'post-teams-assign',
@@ -568,7 +568,7 @@
     <div class="overview-grid">
       <div class="overview-card">
         <h3>Base URL</h3>
-        <code>https://micromatch.org</code>
+        <code>https://trymicromatch.com</code>
         <p class="subtext">Development: <code>http://localhost:5174</code></p>
       </div>
       <div class="overview-card">
@@ -631,7 +631,7 @@
               <span class="auth-badge">{ep.auth}</span>
               <button
                 class="copy-btn"
-                onclick={() => copySnippet(ep.id, `curl -X ${ep.method} https://micromatch.org${ep.path}`)}
+                onclick={() => copySnippet(ep.id, `curl -X ${ep.method} https://trymicromatch.com${ep.path}`)}
                 title="Copy cURL snippet"
               >
                 {#if copiedId === ep.id}
