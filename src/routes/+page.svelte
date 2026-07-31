@@ -571,25 +571,25 @@
   .hero-visual:hover .mock-card-1 {
     top: 48%;
     left: 44%;
-    transform: rotate(3deg) scale(1.02);
+    transform: rotate(0deg) scale(1);
     opacity: 0.95;
   }
   .hero-visual:hover .mock-card-2 {
     top: 48%;
     left: 4%;
-    transform: rotate(-4deg) scale(1.02);
+    transform: rotate(0deg) scale(1);
     opacity: 0.95;
   }
   .hero-visual:hover .mock-card-3 {
     top: 4%;
     left: 44%;
-    transform: rotate(5deg) scale(1.02);
+    transform: rotate(0deg) scale(1);
     opacity: 0.95;
   }
   .hero-visual:hover .mock-card-4 {
     top: 4%;
     left: 4%;
-    transform: rotate(-5deg) scale(1.02);
+    transform: rotate(0deg) scale(1);
     opacity: 0.95;
   }
 
