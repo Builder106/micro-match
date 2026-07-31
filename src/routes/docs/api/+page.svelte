@@ -3,6 +3,7 @@
 
   type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'DELETE';
   type Category = 'Tasks' | 'Claims' | 'Verifications' | 'Badges' | 'Profile & Teams' | 'Auth';
+  type AuthType = 'public' | 'user' | 'ngo' | 'admin';
 
   interface Endpoint {
     id: string;
@@ -19,6 +20,7 @@
   }
 
   let selectedCategory = $state<'All' | Category>('All');
+  let selectedAuth = $state<'All' | AuthType>('All');
   let searchQuery = $state('');
   let copiedId = $state<string | null>(null);
 
@@ -30,6 +32,14 @@
     'Badges',
     'Profile & Teams',
     'Auth'
+  ];
+
+  const authRoles: { id: 'All' | AuthType; label: string }[] = [
+    { id: 'All', label: 'All Roles' },
+    { id: 'public', label: 'Public' },
+    { id: 'user', label: 'Volunteer' },
+    { id: 'ngo', label: 'NGO' },
+    { id: 'admin', label: 'Admin' }
   ];
 
   const endpoints: Endpoint[] = [
@@ -535,17 +545,27 @@
     }
   ];
 
+  function getAuthType(auth: string): AuthType {
+    const lower = auth.toLowerCase();
+    if (lower.includes('admin')) return 'admin';
+    if (lower.includes('ngo')) return 'ngo';
+    if (lower.includes('authenticated') || lower.includes('volunteer')) return 'user';
+    return 'public';
+  }
+
   const filteredEndpoints = $derived(
     endpoints.filter((ep) => {
       const matchCat = selectedCategory === 'All' || ep.category === selectedCategory;
+      const matchAuth = selectedAuth === 'All' || getAuthType(ep.auth) === selectedAuth;
       const q = searchQuery.trim().toLowerCase();
       const matchSearch =
         !q ||
         ep.path.toLowerCase().includes(q) ||
         ep.method.toLowerCase().includes(q) ||
         ep.summary.toLowerCase().includes(q) ||
-        ep.category.toLowerCase().includes(q);
-      return matchCat && matchSearch;
+        ep.category.toLowerCase().includes(q) ||
+        ep.auth.toLowerCase().includes(q);
+      return matchCat && matchAuth && matchSearch;
     })
   );
 
@@ -557,12 +577,10 @@
     }, 2000);
   }
 
-  function getAuthType(auth: string): 'public' | 'user' | 'ngo' | 'admin' {
-    const lower = auth.toLowerCase();
-    if (lower.includes('admin')) return 'admin';
-    if (lower.includes('ngo')) return 'ngo';
-    if (lower.includes('authenticated') || lower.includes('volunteer')) return 'user';
-    return 'public';
+  function resetFilters() {
+    searchQuery = '';
+    selectedCategory = 'All';
+    selectedAuth = 'All';
   }
 </script>
 
@@ -591,41 +609,98 @@
   </div>
 
   <div class="controls-bar">
-    <div class="search-box">
-      <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
-        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-      </svg>
-      <input
-        type="text"
-        placeholder="Filter endpoints by keyword or path (e.g., /api/tasks, claim)..."
-        bind:value={searchQuery}
-      />
-      {#if searchQuery}
-        <button class="clear-btn" onclick={() => (searchQuery = '')}>&times;</button>
+    <div class="search-row">
+      <div class="search-box">
+        <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+          <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+        </svg>
+        <input
+          type="text"
+          placeholder="Filter endpoints by keyword, path, or role (e.g., /api/tasks, NGO, claim)..."
+          bind:value={searchQuery}
+        />
+        {#if searchQuery}
+          <button class="clear-btn" onclick={() => (searchQuery = '')}>&times;</button>
+        {/if}
+      </div>
+
+      {#if selectedCategory !== 'All' || selectedAuth !== 'All' || searchQuery}
+        <button class="reset-all-btn" onclick={resetFilters}>
+          Reset Filters &times;
+        </button>
       {/if}
     </div>
 
-    <div class="category-pills" role="tablist" aria-label="API Categories">
-      {#each categories as cat}
-        <button
-          class="pill-btn"
-          class:active={selectedCategory === cat}
-          onclick={() => (selectedCategory = cat)}
-        >
-          {cat}
-          <span class="count-tag">
-            {cat === 'All' ? endpoints.length : endpoints.filter((e) => e.category === cat).length}
-          </span>
-        </button>
-      {/each}
+    <div class="filters-row">
+      <div class="filter-group">
+        <span class="group-label">Category:</span>
+        <div class="category-pills" role="tablist" aria-label="API Categories">
+          {#each categories as cat}
+            <button
+              class="pill-btn"
+              class:active={selectedCategory === cat}
+              onclick={() => (selectedCategory = cat)}
+            >
+              {cat}
+              <span class="count-tag">
+                {cat === 'All' ? endpoints.length : endpoints.filter((e) => e.category === cat).length}
+              </span>
+            </button>
+          {/each}
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <span class="group-label">Access Role:</span>
+        <div class="auth-filter-pills" role="tablist" aria-label="Auth Role Filters">
+          {#each authRoles as role}
+            <button
+              class="auth-pill-btn auth-{role.id}"
+              class:active={selectedAuth === role.id}
+              onclick={() => (selectedAuth = selectedAuth === role.id ? 'All' : role.id)}
+            >
+              {#if role.id === 'public'}
+                <svg class="auth-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="2" y1="12" x2="22" y2="12"></line>
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                </svg>
+              {:else if role.id === 'user'}
+                <svg class="auth-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              {:else if role.id === 'ngo'}
+                <svg class="auth-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 21h18"></path>
+                  <path d="M6 21V7l6-4 6 4v14"></path>
+                  <path d="M9 10h.01"></path>
+                  <path d="M15 10h.01"></path>
+                  <path d="M9 14h.01"></path>
+                  <path d="M15 14h.01"></path>
+                </svg>
+              {:else if role.id === 'admin'}
+                <svg class="auth-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  <path d="m9 12 2 2 4-4"></path>
+                </svg>
+              {/if}
+              {role.label}
+              <span class="count-tag">
+                {role.id === 'All' ? endpoints.length : endpoints.filter((e) => getAuthType(e.auth) === role.id).length}
+              </span>
+            </button>
+          {/each}
+        </div>
+      </div>
     </div>
   </div>
 
   <div class="endpoints-list">
     {#if filteredEndpoints.length === 0}
       <div class="empty-state">
-        <p>No endpoints match your query <strong>"{searchQuery}"</strong>.</p>
-        <button class="reset-link" onclick={() => { searchQuery = ''; selectedCategory = 'All'; }}>Clear search filters</button>
+        <p>No endpoints match your active filter parameters.</p>
+        <button class="reset-link" onclick={resetFilters}>Reset all filters</button>
       </div>
     {:else}
       {#each filteredEndpoints as ep (ep.id)}
@@ -636,20 +711,26 @@
               <span class="path-text">{ep.path}</span>
             </div>
             <div class="meta-group">
-              <span class="auth-badge auth-{getAuthType(ep.auth)}">
+              <button
+                type="button"
+                class="auth-badge auth-{getAuthType(ep.auth)}"
+                class:active-filter={selectedAuth === getAuthType(ep.auth)}
+                onclick={() => (selectedAuth = selectedAuth === getAuthType(ep.auth) ? 'All' : getAuthType(ep.auth))}
+                title="Click to toggle filter by this role"
+              >
                 {#if getAuthType(ep.auth) === 'public'}
-                  <svg class="auth-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <svg class="auth-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="12" r="10"></circle>
                     <line x1="2" y1="12" x2="22" y2="12"></line>
                     <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
                   </svg>
                 {:else if getAuthType(ep.auth) === 'user'}
-                  <svg class="auth-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <svg class="auth-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                     <circle cx="12" cy="7" r="4"></circle>
                   </svg>
                 {:else if getAuthType(ep.auth) === 'ngo'}
-                  <svg class="auth-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <svg class="auth-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M3 21h18"></path>
                     <path d="M6 21V7l6-4 6 4v14"></path>
                     <path d="M9 10h.01"></path>
@@ -658,13 +739,13 @@
                     <path d="M15 14h.01"></path>
                   </svg>
                 {:else if getAuthType(ep.auth) === 'admin'}
-                  <svg class="auth-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <svg class="auth-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                     <path d="m9 12 2 2 4-4"></path>
                   </svg>
                 {/if}
                 {ep.auth}
-              </span>
+              </button>
               <button
                 class="copy-btn"
                 onclick={() => copySnippet(ep.id, `curl -X ${ep.method} https://trymicromatch.com${ep.path}`)}
@@ -800,22 +881,19 @@
     border-bottom: 1px solid var(--color-outline-variant, rgba(0, 0, 0, 0.08));
   }
 
-  @media (min-width: 960px) {
-    .controls-bar {
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .search-box {
-      max-width: 440px;
-    }
+  .search-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
   }
 
   .search-box {
     position: relative;
     display: flex;
     align-items: center;
-    width: 100%;
+    flex: 1;
+    min-width: 280px;
   }
 
   .search-icon {
@@ -853,19 +931,59 @@
     padding: 0 4px;
   }
 
-  .category-pills {
+  .reset-all-btn {
+    font-size: 0.825rem;
+    font-weight: 700;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid #fca5a5;
+    background: #fef2f2;
+    color: #b91c1c;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .reset-all-btn:hover {
+    background: #fee2e2;
+  }
+
+  .filters-row {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .filter-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .group-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-text-secondary, #64748b);
+    min-width: 90px;
+  }
+
+  .category-pills,
+  .auth-filter-pills {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
   }
 
-  .pill-btn {
+  .pill-btn,
+  .auth-pill-btn {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 14px;
+    padding: 5px 12px;
     border-radius: 20px;
-    font-size: 0.85rem;
+    font-size: 0.825rem;
     font-weight: 600;
     border: 1px solid var(--color-outline-variant, rgba(0, 0, 0, 0.1));
     background: var(--color-surface-variant, #f1f5f9);
@@ -874,15 +992,39 @@
     transition: all 0.15s ease;
   }
 
-  .pill-btn:hover {
-    background: #e2e8f0;
-    color: var(--color-text, #0f172a);
+  .pill-btn:hover,
+  .auth-pill-btn:hover {
+    filter: brightness(0.96);
   }
 
   .pill-btn.active {
     background: var(--color-primary, #ff6b6b);
     color: #ffffff;
     border-color: var(--color-primary, #ff6b6b);
+  }
+
+  .auth-pill-btn.auth-public.active {
+    background: #047857;
+    color: #ffffff;
+    border-color: #047857;
+  }
+
+  .auth-pill-btn.auth-user.active {
+    background: #1d4ed8;
+    color: #ffffff;
+    border-color: #1d4ed8;
+  }
+
+  .auth-pill-btn.auth-ngo.active {
+    background: #be123c;
+    color: #ffffff;
+    border-color: #be123c;
+  }
+
+  .auth-pill-btn.auth-admin.active {
+    background: #b45309;
+    color: #ffffff;
+    border-color: #b45309;
   }
 
   .count-tag {
@@ -892,7 +1034,7 @@
     background: rgba(0, 0, 0, 0.08);
   }
 
-  .pill-btn.active .count-tag {
+  .active .count-tag {
     background: rgba(255, 255, 255, 0.25);
   }
 
@@ -985,7 +1127,19 @@
     font-weight: 600;
     padding: 4px 10px;
     border-radius: 20px;
+    cursor: pointer;
     transition: all 0.15s ease;
+  }
+
+  .auth-badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  }
+
+  .auth-badge.active-filter {
+    outline: 2px solid currentColor;
+    outline-offset: 1px;
+    font-weight: 700;
   }
 
   .auth-icon {
