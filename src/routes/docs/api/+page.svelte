@@ -590,12 +590,18 @@
   updated="July 31, 2026"
   wide={true}
 >
+  <div class="api-header-hero">
+    <div class="header-title-badge">
+      <span class="brand-pill">MicroMatch</span>
+      <span class="title-tech-tag">REST API v1</span>
+    </div>
+  </div>
+
   <div class="api-overview">
     <div class="overview-grid">
       <div class="overview-card">
         <h3>Base URL</h3>
         <code>https://trymicromatch.com</code>
-        <p class="subtext">Development: <code>http://localhost:5174</code></p>
       </div>
       <div class="overview-card">
         <h3>Authentication</h3>
@@ -827,6 +833,39 @@
 </StaticArticle>
 
 <style>
+  .api-header-hero {
+    margin-bottom: 20px;
+  }
+
+  .header-title-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 6px 4px 6px;
+    background: var(--color-surface-variant, #f8fafc);
+    border: 1px solid var(--color-outline-variant, rgba(0, 0, 0, 0.08));
+    border-radius: 24px;
+  }
+
+  .brand-pill {
+    font-size: 0.775rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 16px;
+    background: var(--color-primary, #ff6b6b);
+    color: #ffffff;
+    letter-spacing: 0.02em;
+  }
+
+  .title-tech-tag {
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 0.775rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    color: var(--color-text-secondary, #475569);
+    letter-spacing: 0.04em;
+  }
+
   .api-overview {
     margin-bottom: var(--space-6, 24px);
   }
