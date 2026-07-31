@@ -1,5 +1,6 @@
 <script lang="ts">
   import StaticArticle from '$lib/components/StaticArticle.svelte';
+  import Icon from '@iconify/svelte';
 </script>
 
 <StaticArticle
@@ -17,10 +18,7 @@
     <div class="doc-card featured-card">
       <div class="card-top">
         <div class="icon-wrap coral-glow">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="card-icon">
-            <polyline points="16 18 22 12 16 6"></polyline>
-            <polyline points="8 6 2 12 8 18"></polyline>
-          </svg>
+          <Icon icon="heroicons:code-bracket-20-solid" width="24" height="24" />
         </div>
         <span class="role-badge role-api">REST API v1</span>
       </div>
@@ -35,17 +33,17 @@
       </div>
 
       <div class="card-action">
-        <a href="/docs/api" class="btn-primary-coral">Explore API Reference →</a>
+        <a href="/docs/api" class="btn-coral">
+          Explore API Reference
+          <Icon icon="heroicons:arrow-right-20-solid" width="18" height="18" />
+        </a>
       </div>
     </div>
 
     <div class="doc-card">
       <div class="card-top">
         <div class="icon-wrap indigo-glow">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="card-icon">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-          </svg>
+          <Icon icon="heroicons:user-group-20-solid" width="24" height="24" />
         </div>
         <span class="role-badge role-user">Volunteer Guide</span>
       </div>
@@ -59,19 +57,17 @@
       </ul>
 
       <div class="card-action">
-        <a href="/for-volunteers" class="btn-secondary-link">Read Volunteer Guide →</a>
+        <a href="/for-volunteers" class="btn-secondary-link">
+          Read Volunteer Guide
+          <Icon icon="heroicons:arrow-right-20-solid" width="16" height="16" />
+        </a>
       </div>
     </div>
 
     <div class="doc-card">
       <div class="card-top">
         <div class="icon-wrap rose-glow">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="card-icon">
-            <path d="M3 21h18"></path>
-            <path d="M6 21V7l6-4 6 4v14"></path>
-            <path d="M9 10h.01"></path>
-            <path d="M15 10h.01"></path>
-          </svg>
+          <Icon icon="heroicons:building-office-20-solid" width="24" height="24" />
         </div>
         <span class="role-badge role-ngo">NGO Handbook</span>
       </div>
@@ -85,18 +81,17 @@
       </ul>
 
       <div class="card-action">
-        <a href="/for-ngos" class="btn-secondary-link">Read NGO Guide →</a>
+        <a href="/for-ngos" class="btn-secondary-link">
+          Read NGO Guide
+          <Icon icon="heroicons:arrow-right-20-solid" width="16" height="16" />
+        </a>
       </div>
     </div>
 
     <div class="doc-card">
       <div class="card-top">
         <div class="icon-wrap teal-glow">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="card-icon">
-            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-            <line x1="8" y1="21" x2="16" y2="21"></line>
-            <line x1="12" y1="17" x2="12" y2="21"></line>
-          </svg>
+          <Icon icon="heroicons:cpu-chip-20-solid" width="24" height="24" />
         </div>
         <span class="role-badge role-system">Platform Spec</span>
       </div>
@@ -110,7 +105,10 @@
       </ul>
 
       <div class="card-action">
-        <a href="/how-it-works" class="btn-secondary-link">How MicroMatch Works →</a>
+        <a href="/how-it-works" class="btn-secondary-link">
+          How MicroMatch Works
+          <Icon icon="heroicons:arrow-right-20-solid" width="16" height="16" />
+        </a>
       </div>
     </div>
   </div>
@@ -120,7 +118,9 @@
     <div class="resources-grid">
       <a href="/impact" class="resource-tile">
         <div class="resource-title">
-          <span class="tile-icon">📊</span>
+          <div class="tile-icon-badge coral-bg">
+            <Icon icon="heroicons:chart-bar-20-solid" width="18" height="18" />
+          </div>
           <strong>Platform Impact</strong>
         </div>
         <p>Live stats on completed micro-tasks, participating NGOs, and volunteer hours.</p>
@@ -128,7 +128,9 @@
 
       <a href="/about" class="resource-tile">
         <div class="resource-title">
-          <span class="tile-icon">🌱</span>
+          <div class="tile-icon-badge teal-bg">
+            <Icon icon="heroicons:sparkles-20-solid" width="18" height="18" />
+          </div>
           <strong>About MicroMatch</strong>
         </div>
         <p>Our mission to lower civic barriers and empower grassroots global initiatives.</p>
@@ -136,7 +138,9 @@
 
       <a href="/help" class="resource-tile">
         <div class="resource-title">
-          <span class="tile-icon">💬</span>
+          <div class="tile-icon-badge indigo-bg">
+            <Icon icon="heroicons:question-mark-circle-20-solid" width="18" height="18" />
+          </div>
           <strong>Help & Support</strong>
         </div>
         <p>Frequently asked questions and support for volunteers and organization admins.</p>
@@ -182,6 +186,7 @@
   }
 
   .doc-card {
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     background: var(--color-surface, #ffffff);
@@ -190,6 +195,7 @@
     padding: 26px;
     box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
     transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden;
   }
 
   .doc-card:hover {
@@ -218,11 +224,6 @@
     align-items: center;
     justify-content: center;
     background: var(--color-surface-variant, #f8fafc);
-  }
-
-  .card-icon {
-    width: 22px;
-    height: 22px;
   }
 
   .coral-glow {
@@ -333,31 +334,37 @@
 
   .card-action {
     margin-top: auto;
+    width: 100%;
+    box-sizing: border-box;
   }
 
-  .btn-primary-coral {
+  .card-action .btn-coral {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 8px;
     width: 100%;
     padding: 10px 18px;
-    border-radius: 10px;
-    background: var(--color-primary, #ff6b6b);
+    border-radius: 9999px;
+    background: #FF6B6B;
     color: #ffffff !important;
     font-weight: 700 !important;
     font-size: 0.9rem;
     text-decoration: none !important;
-    transition: background 0.15s ease, transform 0.15s ease;
+    box-sizing: border-box;
+    transition: all 0.25s ease;
   }
 
-  .btn-primary-coral:hover {
+  .card-action .btn-coral:hover {
     background: #ff5252;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(255, 107, 107, 0.35);
   }
 
   .btn-secondary-link {
     display: inline-flex;
     align-items: center;
+    gap: 6px;
     font-weight: 700 !important;
     font-size: 0.9rem;
     color: var(--color-primary, #ff6b6b) !important;
@@ -367,6 +374,7 @@
 
   .btn-secondary-link:hover {
     text-decoration: underline !important;
+    gap: 8px;
   }
 
   .quick-resources {
@@ -395,18 +403,20 @@
     background: var(--color-surface-variant, #f8fafc);
     border: 1px solid var(--color-outline-variant, rgba(0, 0, 0, 0.08));
     text-decoration: none !important;
-    transition: background 0.15s ease, border-color 0.15s ease;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
   }
 
   .resource-tile:hover {
-    background: #f1f5f9;
-    border-color: rgba(255, 107, 107, 0.3);
+    background: #ffffff;
+    border-color: rgba(255, 107, 107, 0.35);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
   }
 
   .resource-title {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     margin-bottom: 6px;
   }
 
@@ -415,8 +425,29 @@
     color: var(--color-text, #0f172a);
   }
 
-  .tile-icon {
-    font-size: 1.1rem;
+  .tile-icon-badge {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .coral-bg {
+    background: #fff1f1;
+    color: #ff6b6b;
+  }
+
+  .teal-bg {
+    background: #f0fdf4;
+    color: #10b981;
+  }
+
+  .indigo-bg {
+    background: #eff6ff;
+    color: #3b82f6;
   }
 
   .resource-tile p {
