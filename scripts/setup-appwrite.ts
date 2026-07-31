@@ -2,8 +2,52 @@
 // Programmatically provisions Appwrite TablesDB collections, attributes, indexes, and storage buckets
 // based on appwrite.config.json and environment variables.
 
-import { Client, Databases, Storage, Teams, Compression } from 'node-appwrite';
-import config from '../appwrite.config.json' assert { type: 'json' };
+import fs from 'node:fs';
+import path from 'node:path';
+import { Client, Databases, Storage, Teams, type Compression } from 'node-appwrite';
+
+interface AppwriteDatabaseConfig {
+  $id: string;
+  name: string;
+  enabled?: boolean;
+}
+
+interface AppwriteBucketConfig {
+  $id: string;
+  name: string;
+  $permissions?: string[];
+  fileSecurity?: boolean;
+  enabled?: boolean;
+  maximumFileSize?: number;
+  allowedFileExtensions?: string[];
+  compression?: Compression;
+  encryption?: boolean;
+  antivirus?: boolean;
+}
+
+interface AppwriteTeamConfig {
+  $id: string;
+  name: string;
+}
+
+interface AppwriteConfig {
+  endpoint?: string;
+  projectId?: string;
+  databases?: AppwriteDatabaseConfig[];
+  buckets?: AppwriteBucketConfig[];
+  teams?: AppwriteTeamConfig[];
+}
+
+const configPath = path.resolve(process.cwd(), 'appwrite.config.json');
+let config: AppwriteConfig = {};
+
+if (fs.existsSync(configPath)) {
+  try {
+    config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+  } catch (e) {
+    console.warn('Warning: Could not parse appwrite.config.json:', e);
+  }
+}
 
 const endpoint = process.env.APPWRITE_ENDPOINT || config.endpoint || 'https://cloud.appwrite.io/v1';
 const projectId = process.env.APPWRITE_PROJECT_ID || config.projectId;
