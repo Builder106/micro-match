@@ -452,9 +452,8 @@
     z-index: 4;
     width: min(340px, 82vw);
     box-shadow: 0 24px 50px rgba(0,0,0,0.08);
-    top: 46%;
-    left: 42%;
-    translate: -50% -50%;
+    top: 24%;
+    left: 16%;
     transform: rotate(5deg);
     animation: 
       deal-in-1 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both,
@@ -466,9 +465,8 @@
     width: min(310px, 76vw);
     box-shadow: 0 16px 36px rgba(0,0,0,0.06);
     opacity: 0.94;
-    top: 46%;
-    left: 42%;
-    translate: -72% -30%;
+    top: 36%;
+    left: 6%;
     transform: rotate(-7deg) scale(0.96);
     animation: 
       deal-in-2 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both,
@@ -480,9 +478,8 @@
     width: min(300px, 74vw);
     box-shadow: 0 14px 32px rgba(0,0,0,0.05);
     opacity: 0.88;
-    top: 46%;
-    left: 42%;
-    translate: -28% -70%;
+    top: 10%;
+    left: 28%;
     transform: rotate(11deg) scale(0.92);
     animation: 
       deal-in-3 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both,
@@ -494,9 +491,8 @@
     width: min(290px, 72vw);
     box-shadow: 0 10px 24px rgba(0,0,0,0.04);
     opacity: 0.82;
-    top: 46%;
-    left: 42%;
-    translate: -68% -72%;
+    top: 12%;
+    left: 8%;
     transform: rotate(-13deg) scale(0.88);
     animation: 
       deal-in-4 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.65s both,
@@ -572,32 +568,36 @@
   }
 
   .hero-visual:hover .mock-card-1 {
-    translate: -5% -10%;
+    top: 48%;
+    left: 44%;
     transform: rotate(3deg) scale(1.02);
     opacity: 0.95;
   }
   .hero-visual:hover .mock-card-2 {
-    translate: -95% -10%;
+    top: 48%;
+    left: 4%;
     transform: rotate(-4deg) scale(1.02);
     opacity: 0.95;
   }
   .hero-visual:hover .mock-card-3 {
-    translate: -5% -90%;
+    top: 4%;
+    left: 44%;
     transform: rotate(5deg) scale(1.02);
     opacity: 0.95;
   }
   .hero-visual:hover .mock-card-4 {
-    translate: -95% -90%;
+    top: 4%;
+    left: 4%;
     transform: rotate(-5deg) scale(1.02);
     opacity: 0.95;
   }
 
   /* Mobile Unfold Offsets */
   @media (max-width: 639px) {
-    .hero-visual:hover .mock-card-1 { translate: -10% -25%; }
-    .hero-visual:hover .mock-card-2 { translate: -85% -25%; }
-    .hero-visual:hover .mock-card-3 { translate: -10% -82%; }
-    .hero-visual:hover .mock-card-4 { translate: -85% -82%; }
+    .hero-visual:hover .mock-card-1 { top: 48%; left: 40%; }
+    .hero-visual:hover .mock-card-2 { top: 48%; left: 2%; }
+    .hero-visual:hover .mock-card-3 { top: 4%; left: 40%; }
+    .hero-visual:hover .mock-card-4 { top: 4%; left: 2%; }
   }
 
   /* Smooth Sibling Recede when any card is directly hovered */
