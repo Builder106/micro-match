@@ -17,7 +17,10 @@ export default [
     languageOptions: {
       globals: {
         ...globals.browser,
-        ...globals.node
+        ...globals.node,
+        RequestInfo: 'readonly',
+        RequestInit: 'readonly',
+        ResponseInit: 'readonly'
       }
     }
   },
@@ -53,7 +56,7 @@ export default [
       'no-unused-private-class-members': 'warn',
       'no-sparse-arrays': 'warn',
       'no-self-assign': 'warn',
-      'svelte/no-navigation-without-resolve': 'warn',
+      'svelte/no-navigation-without-resolve': 'off',
       'svelte/no-immutable-reactive-statements': 'warn',
       'svelte/require-each-key': 'warn',
       'svelte/prefer-svelte-reactivity': 'warn',
