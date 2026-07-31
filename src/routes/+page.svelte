@@ -427,10 +427,11 @@
     -webkit-font-smoothing: antialiased;
     backface-visibility: hidden;
     transition: 
-      translate 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-      transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-      box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-      opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+      top 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+      left 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1),
       border-color 0.3s ease;
   }
 
