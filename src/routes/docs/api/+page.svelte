@@ -642,7 +642,7 @@
       <div class="filter-group">
         <span class="group-label">Category:</span>
         <div class="category-pills" role="tablist" aria-label="API Categories">
-          {#each categories as cat}
+          {#each categories as cat (cat)}
             <button
               class="pill-btn"
               class:active={selectedCategory === cat}
@@ -660,7 +660,7 @@
       <div class="filter-group">
         <span class="group-label">Access Role:</span>
         <div class="auth-filter-pills" role="tablist" aria-label="Auth Role Filters">
-          {#each authRoles as role}
+          {#each authRoles as role (role.id)}
             <button
               class="auth-pill-btn auth-{role.id}"
               class:active={selectedAuth === role.id}
@@ -785,7 +785,7 @@
                         </tr>
                       </thead>
                       <tbody>
-                        {#each ep.queryParams as param}
+                        {#each ep.queryParams as param (param.name)}
                           <tr>
                             <td><code>{param.name}</code></td>
                             <td><span class="type-tag">{param.type}</span></td>
@@ -897,11 +897,6 @@
     line-height: 1.45 !important;
     margin: 0 !important;
     color: var(--color-text-secondary, #475569) !important;
-  }
-
-  .overview-card .subtext {
-    margin-top: 6px !important;
-    font-size: 0.8rem !important;
   }
 
   .overview-card code {

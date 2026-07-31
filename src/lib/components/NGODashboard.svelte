@@ -24,7 +24,7 @@
   const ringMax = Math.max(12, pendingReviewsCount);
   const ringPct = Math.min(100, Math.round((pendingReviewsCount / ringMax) * 100));
   const RING_CIRCUMFERENCE = 251;
-  $: ringDashOffset = RING_CIRCUMFERENCE - (RING_CIRCUMFERENCE * ringPct) / 100;
+  const ringDashOffset = RING_CIRCUMFERENCE - (RING_CIRCUMFERENCE * ringPct) / 100;
 
   function relativeTime(iso?: string): string {
     if (!iso) return '';
@@ -223,7 +223,7 @@
             <p>{task.shortDescription}</p>
             <div class="task-mini-foot">
               <div class="mini-tags">
-                {#each (task.tags ?? []).slice(0, 2) as tag}
+                {#each (task.tags ?? []).slice(0, 2) as tag (tag)}
                   {@const s = getTagStyle(tag)}
                   <span class="tag" style:background={s.bg} style:color={s.color}>#{tag}</span>
                 {/each}

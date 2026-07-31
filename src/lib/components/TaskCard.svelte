@@ -74,7 +74,7 @@
 
   <div class="tc-foot">
     <div class="tc-tags">
-      {#each tags as tag}
+      {#each tags as tag (tag)}
         {@const s = getTagStyle(tag)}
         <span class="tag" style:background={s.bg} style:color={s.color}>#{tag}</span>
       {/each}

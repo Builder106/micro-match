@@ -34,7 +34,7 @@
   const otherMissions = recommendations.slice(1, 3);
 
   const RING_CIRCUMFERENCE = 251;
-  $: ringDashOffset = RING_CIRCUMFERENCE - (RING_CIRCUMFERENCE * progress) / 100;
+  const ringDashOffset = RING_CIRCUMFERENCE - (RING_CIRCUMFERENCE * progress) / 100;
 
   function relativeTime(iso?: string): string {
     if (!iso) return '';
@@ -204,7 +204,7 @@
         <p>{todayMission.shortDescription}</p>
         <div class="mission-card-bottom">
           <div class="mission-tags">
-            {#each (todayMission.tags ?? []).slice(0, 3) as tag}
+            {#each (todayMission.tags ?? []).slice(0, 3) as tag (tag)}
               {@const s = getTagStyle(tag)}
               <span class="tag" style:background={s.bg} style:color={s.color}>#{tag}</span>
             {/each}
@@ -254,7 +254,7 @@
             <h4>{task.title}</h4>
             <p>{task.shortDescription}</p>
             <div class="mini-tags">
-              {#each (task.tags ?? []).slice(0, 2) as tag}
+              {#each (task.tags ?? []).slice(0, 2) as tag (tag)}
                 {@const s = getTagStyle(tag)}
                 <span class="tag" style:background={s.bg} style:color={s.color}>#{tag}</span>
               {/each}
@@ -272,7 +272,7 @@
     </div>
     {#if data.signedIn && recentClaims.length > 0}
       <div class="activity brand-card">
-        {#each recentClaims as claim, i}
+        {#each recentClaims as claim, i (claim.id || i)}
           <div class="activity-row" class:has-divider={i > 0}>
             <div class="activity-icon" data-status={claim.status}>
               <Icon icon={statusIcon(claim.status)} width="20" height="20" />
@@ -300,7 +300,7 @@
     </div>
     <div class="vault-grid">
       {#if badges.length > 0}
-        {#each badges.slice(0, 4) as badge}
+        {#each badges.slice(0, 4) as badge (badge.label)}
           <div class="badge-card">
             <div class="badge-icon" style="background: linear-gradient(135deg, {badge.color || '#FDE68A'}, var(--color-primary)); box-shadow: 0 8px 24px {badge.color || 'rgba(245,158,11,0.4)'};">
               <Icon icon="hugeicons:trophy-01" width="32" height="32" />
@@ -309,7 +309,7 @@
           </div>
         {/each}
       {:else}
-        {#each lockedBadges as badge}
+        {#each lockedBadges as badge (badge.label)}
           <div class="badge-card locked">
             <div class="badge-icon" style:background={badge.gradient}>
               <Icon icon={badge.icon} width="32" height="32" />

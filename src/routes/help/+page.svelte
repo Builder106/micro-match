@@ -130,7 +130,7 @@
     </div>
 
     <div class="category-pills" role="tablist" aria-label="Help Categories">
-      {#each categories as cat}
+      {#each categories as cat (cat)}
         <button
           class="pill-btn"
           class:active={selectedCategory === cat}

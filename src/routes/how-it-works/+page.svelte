@@ -142,7 +142,7 @@
 
       <!-- 5-Step Interactive Navigation Ribbon -->
       <div class="process-ribbon">
-        {#each steps as s, i}
+        {#each steps as s, i (s.num)}
           <button
             type="button"
             class="ribbon-step"
@@ -171,7 +171,7 @@
             <p class="ins-summary">{steps[activeStep].summary}</p>
 
             <ul class="ins-bullets">
-              {#each steps[activeStep].bullets as bullet}
+              {#each steps[activeStep].bullets as bullet (bullet)}
                 <li>
                   <Icon icon="lucide:check-circle-2" width="18" height="18" class="ins-icon" />
                   <span>{bullet}</span>
@@ -218,7 +218,7 @@
                   <h3>{steps[activeStep].demoTitle}</h3>
 
                   <div class="im-tags">
-                    {#each steps[activeStep].demoTags as t}
+                    {#each steps[activeStep].demoTags as t (t.label)}
                       <span style="background:{t.bg}; color:{t.color}">{t.label}</span>
                     {/each}
                   </div>
@@ -276,7 +276,7 @@
       </div>
 
       <div class="faq-list">
-        {#each faqs as faq, i}
+        {#each faqs as faq, i (faq.q)}
           <div class="faq-item" class:open={openFaq === i}>
             <button type="button" class="faq-question" on:click={() => (openFaq = openFaq === i ? -1 : i)}>
               <span>{faq.q}</span>

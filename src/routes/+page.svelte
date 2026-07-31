@@ -3,7 +3,7 @@
   import PublicShell from '$lib/components/PublicShell.svelte';
   import { page } from '$app/state';
   import { onMount } from 'svelte';
-  import { fly, fade, scale } from 'svelte/transition';
+  import { fly } from 'svelte/transition';
   export let data;
 
   let visible = false;
@@ -210,7 +210,7 @@
         <p>A simple, effective way to make a difference.</p>
       </div>
       <div class="steps">
-        {#each steps as step, i}
+        {#each steps as step, i (step.title)}
           <div class="step">
             <div class="step-icon" style="background:{step.bg};color:{step.color}">
               <Icon icon={step.icon} width="32" height="32" />
@@ -236,7 +236,7 @@
 
       {#if data.tasks && data.tasks.length > 0}
         <div class="task-grid">
-          {#each data.tasks as task}
+          {#each data.tasks as task (task.id)}
             <article class="task-card">
               <div class="tc-top">
                 <div class="tc-avatar-wrap">
@@ -255,7 +255,7 @@
               </div>
               <div class="tc-foot">
                 <div class="tc-tags">
-                  {#each task.tags as tag}
+                  {#each task.tags as tag (tag)}
                     {@const s = getTagStyle(tag)}
                     <span style="background:{s.bg};color:{s.color}">#{tag}</span>
                   {/each}
@@ -319,7 +319,7 @@
         <div class="badges-section">
           <h4>Recent Awards</h4>
           <div class="badges-grid">
-            {#each demoBadges as badge, i}
+            {#each demoBadges as badge, i (badge.title)}
               <div class="badge-card" data-badge-index={i} bind:this={badgeCardEls[i]}>
                 <div class="badge-sparkle">
                   {#if badgeSeen[i]}
@@ -402,15 +402,6 @@
   .hero-visual:hover .hero-glow {
     transform: scale(1.15);
     opacity: 0.95;
-  }
-
-  .mock-card-slot {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    pointer-events: none;
   }
 
   .mock-card {
@@ -625,7 +616,7 @@
   
   /* Verified NGO Badge */
   .mc-ngo { color: #1E293B99; font-size: 13px; font-weight: 600; margin: 0; display: flex; align-items: center; gap: 4px; }
-  .mc-verified { color: #0284C7; flex-shrink: 0; }
+  :global(.mc-verified) { color: #0284C7; flex-shrink: 0; }
 
   /* Bottom Row with Tag Stagger and Claim Button */
   .mc-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; gap: 8px; }

@@ -131,7 +131,7 @@
   </header>
 
   <nav class="admin-tabs">
-    {#each [['pending', 'Pending', counts.pending], ['approved', 'Approved', counts.approved], ['rejected', 'Rejected', counts.rejected], ['all', 'All', allRows.length]] as [tab, label, count]}
+    {#each [['pending', 'Pending', counts.pending], ['approved', 'Approved', counts.approved], ['rejected', 'Rejected', counts.rejected], ['all', 'All', allRows.length]] as [tab, label, count] (tab)}
       <button class="tab" class:active={activeTab === tab} on:click={() => (activeTab = tab as any)}>
         {label}
         <span class="tab-count">{count}</span>

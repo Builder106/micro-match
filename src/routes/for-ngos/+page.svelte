@@ -129,7 +129,7 @@
       </div>
 
       <div class="pillars-grid">
-        {#each ngoPillars as p}
+        {#each ngoPillars as p (p.title)}
           <div class="pillar-card">
             <div class="pillar-icon" style="background: {p.bg}; color: {p.color};">
               <Icon icon={p.icon} width="28" height="28" />
@@ -158,7 +158,7 @@
           <div class="comp-cell new">MicroMatch Platform</div>
         </div>
 
-        {#each comparison as row}
+        {#each comparison as row (row.feature)}
           <div class="comp-row">
             <div class="comp-cell feature"><strong>{row.feature}</strong></div>
             <div class="comp-cell old">

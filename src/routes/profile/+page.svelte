@@ -2,7 +2,7 @@
   import Icon from '@iconify/svelte';
   import { onMount } from 'svelte';
   import { account, uploadAvatar, getAvatarUrl } from '$lib/appwrite.client';
-  import { refreshSessionCookie, assignTeamForCurrentRole } from '$lib/appwrite.client';
+  import { refreshSessionCookie } from '$lib/appwrite.client';
   import VerificationCard from '$lib/components/VerificationCard.svelte';
 
   export let data: { userRole: 'anonymous' | 'user' | 'ngo' | 'volunteer'; user: { id: string; email?: string } | null };
@@ -442,7 +442,7 @@
       <h2>What's next</h2>
     </div>
     <div class="next-grid">
-      {#each currentSteps as step}
+      {#each currentSteps as step (step.num)}
         <a href={step.href} class="next-card">
           <div class="next-icon" style="background: {step.bg}; color: {step.color};">
             <Icon icon={step.icon} width="28" height="28" />
@@ -458,7 +458,6 @@
 <!-- ───── Downgrade confirmation modal ───── -->
 {#if showDowngradeModal}
   <!-- svelte-ignore a11y_click_events_have_key_events -->
-  <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
   <div
     class="dg-modal"
     role="dialog"

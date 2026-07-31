@@ -22,6 +22,7 @@
     { href: '/cookies', label: 'Cookies' },
   ];
 
+  /* eslint-disable-next-line svelte/no-immutable-reactive-statements */
   $: pathname = page.url.pathname;
 </script>
 
@@ -44,7 +45,7 @@
 
     {#if showRelated}
       <nav class="related" aria-label="Related pages">
-        {#each siblings.filter((s) => s.href !== pathname) as s}
+        {#each siblings.filter((s) => s.href !== pathname) as s (s.href)}
           <a href={s.href}>{s.label}</a>
         {/each}
       </nav>

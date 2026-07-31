@@ -124,7 +124,7 @@
         </div>
 
         <div class="cause-card-grid">
-          {#each data.stats.causeBreakdown as cause}
+          {#each data.stats.causeBreakdown as cause (cause.name)}
             <div class="cause-item">
               <div class="cause-header">
                 <span class="cause-badge" style="background: {cause.bg}; color: {cause.color}">

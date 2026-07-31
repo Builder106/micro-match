@@ -94,7 +94,7 @@
           <div class="form-group">
             <label for="topic">Topic / Category</label>
             <div class="topic-pills" role="radiogroup" aria-label="Topic Selection">
-              {#each topicOptions as option}
+              {#each topicOptions as option (option)}
                 <button
                   type="button"
                   class="topic-pill"

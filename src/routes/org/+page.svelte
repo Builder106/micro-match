@@ -178,7 +178,7 @@
             max="480"
           />
           <div class="org-presets">
-            {#each timePresets as m}
+            {#each timePresets as m (m)}
               <button type="button" class="org-preset" class:active={Number(estimatedMinutes) === m} on:click={() => (estimatedMinutes = m)}>{m}m</button>
             {/each}
           </div>
