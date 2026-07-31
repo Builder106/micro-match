@@ -589,6 +589,7 @@
   lede="Complete REST API reference for public task discovery, volunteer claims, NGO verifications, badges, teams, and authentication."
   updated="July 31, 2026"
   wide={true}
+  showRelated={false}
 >
   <div class="api-header-hero">
     <div class="header-title-badge">

@@ -6,6 +6,7 @@
   export let lede: string | undefined = undefined;
   export let updated: string | undefined = undefined;
   export let wide: boolean = false;
+  export let showRelated: boolean = true;
 
   const siblings = [
     { href: '/how-it-works', label: 'How It Works' },
@@ -41,11 +42,13 @@
       </div>
     </article>
 
-    <nav class="related" aria-label="Related pages">
-      {#each siblings.filter((s) => s.href !== pathname) as s}
-        <a href={s.href}>{s.label}</a>
-      {/each}
-    </nav>
+    {#if showRelated}
+      <nav class="related" aria-label="Related pages">
+        {#each siblings.filter((s) => s.href !== pathname) as s}
+          <a href={s.href}>{s.label}</a>
+        {/each}
+      </nav>
+    {/if}
   </div>
 </PublicShell>
 
