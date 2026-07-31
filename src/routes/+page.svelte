@@ -386,7 +386,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    perspective: 1000px;
     cursor: pointer;
   }
   @media (max-width: 1023px) { .hero-visual { height: 440px; } }
@@ -425,13 +424,13 @@
     gap: 6px;
     overflow: hidden;
     pointer-events: auto;
-    will-change: transform, translate, opacity, filter;
+    -webkit-font-smoothing: antialiased;
+    backface-visibility: hidden;
     transition: 
       translate 0.45s cubic-bezier(0.16, 1, 0.3, 1),
       transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
       box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1),
       opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-      filter 0.45s cubic-bezier(0.16, 1, 0.3, 1),
       border-color 0.3s ease;
   }
 
@@ -459,7 +458,7 @@
     transform: rotate(5deg);
     animation: 
       deal-in-1 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both,
-      float-1 6s ease-in-out infinite 1s;
+      float-1 4.2s ease-in-out infinite 1s;
   }
 
   .mock-card-2 {
@@ -473,7 +472,7 @@
     transform: rotate(-7deg) scale(0.96);
     animation: 
       deal-in-2 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both,
-      float-2 6.5s ease-in-out infinite 1.15s;
+      float-2 4.6s ease-in-out infinite 1.15s;
   }
 
   .mock-card-3 {
@@ -487,7 +486,7 @@
     transform: rotate(11deg) scale(0.92);
     animation: 
       deal-in-3 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both,
-      float-3 7s ease-in-out infinite 1.3s;
+      float-3 4.4s ease-in-out infinite 1.3s;
   }
 
   .mock-card-4 {
@@ -501,7 +500,7 @@
     transform: rotate(-13deg) scale(0.88);
     animation: 
       deal-in-4 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.65s both,
-      float-4 7.5s ease-in-out infinite 1.45s;
+      float-4 4.8s ease-in-out infinite 1.45s;
   }
 
   /* --- Pre-Slanted Entrance Keyframes --- */
@@ -551,20 +550,20 @@
 
   /* --- Idle Floating Keyframes --- */
   @keyframes float-1 {
-    0%, 100% { transform: rotate(5deg) translateY(0); }
-    50% { transform: rotate(3deg) translateY(-8px); }
+    0%, 100% { transform: rotate(5deg) translate(0, 0); }
+    50% { transform: rotate(1.5deg) translate(-6px, -18px); }
   }
   @keyframes float-2 {
-    0%, 100% { transform: rotate(-7deg) scale(0.96) translateY(0); }
-    50% { transform: rotate(-5deg) scale(0.97) translateY(7px); }
+    0%, 100% { transform: rotate(-7deg) scale(0.96) translate(0, 0); }
+    50% { transform: rotate(-2.5deg) scale(0.97) translate(8px, 16px); }
   }
   @keyframes float-3 {
-    0%, 100% { transform: rotate(11deg) scale(0.92) translateY(0); }
-    50% { transform: rotate(9deg) scale(0.94) translateY(-6px); }
+    0%, 100% { transform: rotate(11deg) scale(0.92) translate(0, 0); }
+    50% { transform: rotate(5.5deg) scale(0.94) translate(6px, -15px); }
   }
   @keyframes float-4 {
-    0%, 100% { transform: rotate(-13deg) scale(0.88) translateY(0); }
-    50% { transform: rotate(-11deg) scale(0.9) translateY(8px); }
+    0%, 100% { transform: rotate(-13deg) scale(0.88) translate(0, 0); }
+    50% { transform: rotate(-7.5deg) scale(0.9) translate(-8px, 18px); }
   }
 
   /* --- Concept 2: Deck Unfold / Fan Out on Container Hover --- */
@@ -603,9 +602,8 @@
 
   /* Smooth Sibling Recede when any card is directly hovered */
   .hero-visual:has(.mock-card:hover) .mock-card:not(:hover) {
-    opacity: 0.7 !important;
+    opacity: 0.65 !important;
     transform: scale(0.97) !important;
-    filter: blur(0.4px);
   }
 
   /* --- Direct Card Hover Pop --- */
@@ -615,7 +613,6 @@
     transform: rotate(0deg) scale(1.06) !important;
     box-shadow: 0 32px 70px rgba(255, 107, 107, 0.25), 0 0 0 2px rgba(255, 107, 107, 0.3) !important;
     border-color: rgba(255, 107, 107, 0.35) !important;
-    filter: none !important;
   }
 
   .mc-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
