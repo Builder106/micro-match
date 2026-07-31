@@ -455,7 +455,7 @@
     box-shadow: 0 24px 50px rgba(0,0,0,0.08);
     top: 50%;
     left: 50%;
-    translate: -44% -48%;
+    translate: -50% -50%;
     transform: rotate(5deg);
     animation: 
       deal-in-1 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both,
@@ -469,7 +469,7 @@
     opacity: 0.94;
     top: 50%;
     left: 50%;
-    translate: -72% -28%;
+    translate: -68% -36%;
     transform: rotate(-7deg) scale(0.96);
     animation: 
       deal-in-2 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both,
@@ -483,7 +483,7 @@
     opacity: 0.88;
     top: 50%;
     left: 50%;
-    translate: -20% -74%;
+    translate: -32% -64%;
     transform: rotate(11deg) scale(0.92);
     animation: 
       deal-in-3 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both,
@@ -497,7 +497,7 @@
     opacity: 0.82;
     top: 50%;
     left: 50%;
-    translate: -68% -80%;
+    translate: -64% -66%;
     transform: rotate(-13deg) scale(0.88);
     animation: 
       deal-in-4 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.65s both,
@@ -573,22 +573,22 @@
   }
 
   .hero-visual:hover .mock-card-1 {
-    translate: -12% -22%;
+    translate: -12% -18%;
     transform: rotate(3deg) scale(1.02);
     opacity: 0.95;
   }
   .hero-visual:hover .mock-card-2 {
-    translate: -88% -22%;
+    translate: -88% -18%;
     transform: rotate(-4deg) scale(1.02);
     opacity: 0.95;
   }
   .hero-visual:hover .mock-card-3 {
-    translate: -10% -86%;
+    translate: -12% -82%;
     transform: rotate(5deg) scale(1.02);
     opacity: 0.95;
   }
   .hero-visual:hover .mock-card-4 {
-    translate: -88% -86%;
+    translate: -88% -82%;
     transform: rotate(-5deg) scale(1.02);
     opacity: 0.95;
   }
