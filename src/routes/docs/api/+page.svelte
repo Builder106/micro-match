@@ -556,6 +556,14 @@
       if (copiedId === id) copiedId = null;
     }, 2000);
   }
+
+  function getAuthType(auth: string): 'public' | 'user' | 'ngo' | 'admin' {
+    const lower = auth.toLowerCase();
+    if (lower.includes('admin')) return 'admin';
+    if (lower.includes('ngo')) return 'ngo';
+    if (lower.includes('authenticated') || lower.includes('volunteer')) return 'user';
+    return 'public';
+  }
 </script>
 
 <StaticArticle
@@ -628,7 +636,35 @@
               <span class="path-text">{ep.path}</span>
             </div>
             <div class="meta-group">
-              <span class="auth-badge">{ep.auth}</span>
+              <span class="auth-badge auth-{getAuthType(ep.auth)}">
+                {#if getAuthType(ep.auth) === 'public'}
+                  <svg class="auth-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                  </svg>
+                {:else if getAuthType(ep.auth) === 'user'}
+                  <svg class="auth-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                {:else if getAuthType(ep.auth) === 'ngo'}
+                  <svg class="auth-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 21h18"></path>
+                    <path d="M6 21V7l6-4 6 4v14"></path>
+                    <path d="M9 10h.01"></path>
+                    <path d="M15 10h.01"></path>
+                    <path d="M9 14h.01"></path>
+                    <path d="M15 14h.01"></path>
+                  </svg>
+                {:else if getAuthType(ep.auth) === 'admin'}
+                  <svg class="auth-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>
+                {/if}
+                {ep.auth}
+              </span>
               <button
                 class="copy-btn"
                 onclick={() => copySnippet(ep.id, `curl -X ${ep.method} https://trymicromatch.com${ep.path}`)}
@@ -942,13 +978,44 @@
   }
 
   .auth-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     font-size: 0.775rem;
     font-weight: 600;
-    padding: 3px 10px;
+    padding: 4px 10px;
     border-radius: 20px;
-    background: #f1f5f9;
-    color: #475569;
-    border: 1px solid #e2e8f0;
+    transition: all 0.15s ease;
+  }
+
+  .auth-icon {
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+  }
+
+  .auth-public {
+    background: #ecfdf5;
+    color: #047857;
+    border: 1px solid #a7f3d0;
+  }
+
+  .auth-user {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+  }
+
+  .auth-ngo {
+    background: #fff1f2;
+    color: #be123c;
+    border: 1px solid #fecdd3;
+  }
+
+  .auth-admin {
+    background: #fffbeb;
+    color: #b45309;
+    border: 1px solid #fde68a;
   }
 
   .copy-btn {
