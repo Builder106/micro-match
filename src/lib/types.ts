@@ -42,7 +42,7 @@ export type BadgeDefinition = {
   orgId: string;
   label: string;
   color: string;       // hex
-  icon?: string;       // iconify name (e.g. "lucide:trophy")
+  icon?: string;       // iconify name (e.g. "hugeicons:trophy-01")
   criteria: 'task-completion' | 'task-specific' | 'time-based' | 'milestone' | 'custom';
   taskId?: string;     // when criteria === 'task-specific'
   description?: string;

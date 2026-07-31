@@ -36,7 +36,7 @@ function makeEvent(opts: { orgId?: string | null; body?: unknown; deleteId?: str
 const validBadge = {
   label: 'Translation Hero',
   color: '#FF6B6B',
-  icon: 'lucide:trophy',
+  icon: 'hugeicons:trophy-01',
   criteria: 'task-completion',
   description: 'Awarded for translation work'
 };

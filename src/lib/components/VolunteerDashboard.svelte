@@ -64,10 +64,10 @@
   }
 
   const lockedBadges = [
-    { label: 'First Mission', icon: 'lucide:trophy', gradient: 'linear-gradient(135deg, #FDE68A, #F59E0B)' },
-    { label: 'Speed Demon', icon: 'lucide:flame', gradient: 'linear-gradient(135deg, #FCA5A5, #E11D48)' },
-    { label: 'Global Citizen', icon: 'lucide:globe', gradient: 'linear-gradient(135deg, #93C5FD, #4F46E5)' },
-    { label: 'Perfect Week', icon: 'lucide:sparkles', gradient: 'linear-gradient(135deg, #6EE7B7, #059669)' },
+    { label: 'First Mission', icon: 'hugeicons:trophy-01', gradient: 'linear-gradient(135deg, #FDE68A, #F59E0B)' },
+    { label: 'Speed Demon', icon: 'hugeicons:fire', gradient: 'linear-gradient(135deg, #FCA5A5, #E11D48)' },
+    { label: 'Global Citizen', icon: 'hugeicons:globe-02', gradient: 'linear-gradient(135deg, #93C5FD, #4F46E5)' },
+    { label: 'Perfect Week', icon: 'hugeicons:sparkles', gradient: 'linear-gradient(135deg, #6EE7B7, #059669)' },
   ];
 
   onMount(async () => {
@@ -173,7 +173,7 @@
     </div>
     <div class="stat-divider"></div>
     <div class="stat">
-      <div class="stat-icon stat-icon-coral"><Icon icon="lucide:trophy" width="20" height="20" /></div>
+      <div class="stat-icon stat-icon-coral"><Icon icon="hugeicons:trophy-01" width="20" height="20" /></div>
       <div class="stat-body">
         <div class="stat-num">{badges.length}</div>
         <div class="stat-label">Badges earned</div>
@@ -286,7 +286,7 @@
       </div>
     {:else}
       <div class="empty-card empty-card-compact">
-        <Icon icon="lucide:trophy" width="44" height="44" style="color: var(--color-primary-light);" />
+        <Icon icon="hugeicons:trophy-01" width="44" height="44" style="color: var(--color-primary-light);" />
         <p>Complete your first task to start filling this feed.</p>
       </div>
     {/if}
@@ -303,7 +303,7 @@
         {#each badges.slice(0, 4) as badge}
           <div class="badge-card">
             <div class="badge-icon" style="background: linear-gradient(135deg, {badge.color || '#FDE68A'}, var(--color-primary)); box-shadow: 0 8px 24px {badge.color || 'rgba(245,158,11,0.4)'};">
-              <Icon icon="lucide:trophy" width="32" height="32" />
+              <Icon icon="hugeicons:trophy-01" width="32" height="32" />
             </div>
             <span class="badge-title">{badge.label}</span>
           </div>

@@ -37,7 +37,7 @@ vi.mock('node-appwrite', () => ({
 import { createBadgeDefinition, listBadgeDefinitions, deleteBadgeDefinition, getBadgeDefinition } from './badgeDefs';
 
 const row = {
-  $id: 'def-1', orgID: 'org-1', label: 'Helper', color: '#FF6B6B', icon: 'lucide:trophy',
+  $id: 'def-1', orgID: 'org-1', label: 'Helper', color: '#FF6B6B', icon: 'hugeicons:trophy-01',
   criteria: 'task-completion', taskID: undefined, description: 'desc', $createdAt: '2026-01-01T00:00:00.000Z'
 };
 

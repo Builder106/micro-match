@@ -335,7 +335,7 @@ async function ensureBadgeDefinition(orgId: string): Promise<void> {
     orgID: orgId,
     label: badgeLabel,
     color: '#F59E0B',
-    icon: 'lucide:trophy',
+    icon: 'hugeicons:trophy-01',
     criteria: 'task-completion',
     taskID: '',
   });

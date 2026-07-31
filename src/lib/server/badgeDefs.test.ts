@@ -88,12 +88,12 @@ describe('badgeDefs (in-memory mode)', () => {
       color: '#1',
       criteria: 'task-specific',
       taskId: 'task-99',
-      icon: 'lucide:trophy',
+      icon: 'hugeicons:trophy-01',
       description: 'Awarded for completing task 99'
     });
 
     expect(def.taskId).toBe('task-99');
-    expect(def.icon).toBe('lucide:trophy');
+    expect(def.icon).toBe('hugeicons:trophy-01');
     expect(def.description).toBe('Awarded for completing task 99');
   });
 });
