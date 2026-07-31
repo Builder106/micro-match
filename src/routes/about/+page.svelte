@@ -49,7 +49,7 @@
 
   <!-- Lifecycle Section -->
   <div class="lifecycle-section">
-    <div class="section-head">
+    <div class="lifecycle-head">
       <span class="subhead-pill">Platform Lifecycle</span>
       <h2>How Every Micro-Task Works</h2>
       <p>Every contribution follows a simple, transparent 4-step workflow from post to proof.</p>
@@ -57,35 +57,47 @@
 
     <div class="steps-grid">
       <div class="step-card">
-        <span class="step-num">01</span>
-        <div class="step-content">
-          <h4>NGO Posts Scoped Task</h4>
-          <p>NGOs outline a 15–60 minute need with clear instructions and optional learning primer links.</p>
+        <div class="step-card-top">
+          <div class="step-icon-badge coral-bg">
+            <Icon icon="heroicons:document-text-20-solid" width="18" height="18" />
+          </div>
+          <span class="step-num">01</span>
         </div>
+        <h4>NGO Posts Scoped Task</h4>
+        <p>NGOs outline a 15–60 minute need with clear instructions and optional learning primer links.</p>
       </div>
 
       <div class="step-card">
-        <span class="step-num">02</span>
-        <div class="step-content">
-          <h4>Volunteer Claims & Completes</h4>
-          <p>Volunteers pick tasks matching their skills and language, then submit proof of completion (PR, doc link, file).</p>
+        <div class="step-card-top">
+          <div class="step-icon-badge indigo-bg">
+            <Icon icon="heroicons:user-check-20-solid" width="18" height="18" />
+          </div>
+          <span class="step-num">02</span>
         </div>
+        <h4>Volunteer Claims & Completes</h4>
+        <p>Volunteers pick tasks matching their skills and language, then submit proof of completion (PR, doc link, file).</p>
       </div>
 
       <div class="step-card">
-        <span class="step-num">03</span>
-        <div class="step-content">
-          <h4>Review & Verification</h4>
-          <p>NGO admins review proof submissions, automatically granting XP and issuing achievement badges upon approval.</p>
+        <div class="step-card-top">
+          <div class="step-icon-badge rose-bg">
+            <Icon icon="heroicons:check-badge-20-solid" width="18" height="18" />
+          </div>
+          <span class="step-num">03</span>
         </div>
+        <h4>Review & Verification</h4>
+        <p>NGO admins review proof submissions, automatically granting XP and issuing achievement badges upon approval.</p>
       </div>
 
       <div class="step-card">
-        <span class="step-num">04</span>
-        <div class="step-content">
-          <h4>Open Civic Ledger</h4>
-          <p>Completed tasks update the volunteer's streak and contribute to transparent platform telemetry.</p>
+        <div class="step-card-top">
+          <div class="step-icon-badge teal-bg">
+            <Icon icon="heroicons:chart-bar-20-solid" width="18" height="18" />
+          </div>
+          <span class="step-num">04</span>
         </div>
+        <h4>Open Civic Ledger</h4>
+        <p>Completed tasks update the volunteer's streak and contribute to transparent platform telemetry.</p>
       </div>
     </div>
   </div>
@@ -213,83 +225,114 @@
 
   /* Lifecycle Section */
   .lifecycle-section {
-    background: var(--color-surface-variant, #f8fafc);
+    background: var(--color-surface-variant, #faf7f0);
     border: 1px solid var(--color-outline-variant, rgba(0, 0, 0, 0.08));
     border-radius: 20px;
-    padding: 32px 28px;
+    padding: 36px 32px;
     margin-bottom: 40px;
   }
 
-  .section-head {
+  .lifecycle-head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
     max-width: 580px;
-    margin: 0 auto 32px auto;
+    margin: 0 auto 36px auto;
   }
 
   .subhead-pill {
-    font-size: 0.775rem;
+    font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
     color: var(--color-primary, #ff6b6b);
-    background: rgba(255, 107, 107, 0.1);
-    padding: 4px 12px;
+    background: rgba(255, 107, 107, 0.12);
+    padding: 5px 14px;
     border-radius: 20px;
-    display: inline-block;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
   }
 
-  .section-head h2 {
-    font-size: 1.6rem;
-    font-weight: 700;
-    margin: 0 0 8px 0;
+  .lifecycle-head h2 {
+    font-size: 1.65rem;
+    font-weight: 800;
+    margin: 0 0 10px 0;
     color: var(--color-text, #0f172a);
     letter-spacing: -0.02em;
   }
 
-  .section-head p {
+  .lifecycle-head p {
     font-size: 0.95rem !important;
+    line-height: 1.5 !important;
     color: var(--color-text-secondary, #64748b) !important;
     margin: 0 !important;
   }
 
   .steps-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
   }
 
   .step-card {
     display: flex;
-    align-items: flex-start;
-    gap: 14px;
+    flex-direction: column;
     background: var(--color-surface, #ffffff);
     border: 1px solid var(--color-outline-variant, rgba(0, 0, 0, 0.08));
-    border-radius: 14px;
-    padding: 18px 16px;
+    border-radius: 16px;
+    padding: 22px 20px;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.02);
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
   }
+
+  .step-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 107, 107, 0.35);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+  }
+
+  .step-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .step-icon-badge {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .coral-bg { background: #fff1f1; color: #ff6b6b; }
+  .indigo-bg { background: #eff6ff; color: #3b82f6; }
+  .rose-bg { background: #fff1f2; color: #be123c; }
+  .teal-bg { background: #f0fdf4; color: #10b981; }
 
   .step-num {
     font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 800;
-    color: var(--color-primary, #ff6b6b);
-    background: #fff1f1;
-    padding: 4px 8px;
-    border-radius: 8px;
-    flex-shrink: 0;
+    color: var(--color-text-tertiary, #94a3b8);
+    background: var(--color-surface-variant, #f1f5f9);
+    padding: 3px 8px;
+    border-radius: 6px;
   }
 
-  .step-content h4 {
-    font-size: 0.95rem;
+  .step-card h4 {
+    font-size: 1rem;
     font-weight: 700;
-    margin: 0 0 4px 0;
+    margin: 0 0 6px 0;
     color: var(--color-text, #0f172a);
+    letter-spacing: -0.01em;
   }
 
-  .step-content p {
-    font-size: 0.85rem !important;
-    line-height: 1.45 !important;
+  .step-card p {
+    font-size: 0.875rem !important;
+    line-height: 1.5 !important;
     color: var(--color-text-secondary, #475569) !important;
     margin: 0 !important;
   }
