@@ -565,31 +565,31 @@
 
   /* --- Concept 2: Deck Unfold / Fan Out on Container Hover --- */
   .hero-visual:hover .mock-card {
-    animation-play-state: paused;
+    animation: none !important;
   }
 
   .hero-visual:hover .mock-card-1 {
     top: 48%;
     left: 44%;
-    transform: rotate(0deg) scale(1);
+    transform: rotate(0deg) scale(1) !important;
     opacity: 0.95;
   }
   .hero-visual:hover .mock-card-2 {
     top: 48%;
     left: 4%;
-    transform: rotate(0deg) scale(1);
+    transform: rotate(0deg) scale(1) !important;
     opacity: 0.95;
   }
   .hero-visual:hover .mock-card-3 {
     top: 4%;
     left: 44%;
-    transform: rotate(0deg) scale(1);
+    transform: rotate(0deg) scale(1) !important;
     opacity: 0.95;
   }
   .hero-visual:hover .mock-card-4 {
     top: 4%;
     left: 4%;
-    transform: rotate(0deg) scale(1);
+    transform: rotate(0deg) scale(1) !important;
     opacity: 0.95;
   }
 
