@@ -2,7 +2,7 @@
 // Programmatically provisions Appwrite TablesDB collections, attributes, indexes, and storage buckets
 // based on appwrite.config.json and environment variables.
 
-import { Client, Databases, Storage, Teams } from 'node-appwrite';
+import { Client, Databases, Storage, Teams, Compression } from 'node-appwrite';
 import config from '../appwrite.config.json' assert { type: 'json' };
 
 const endpoint = process.env.APPWRITE_ENDPOINT || config.endpoint || 'https://cloud.appwrite.io/v1';
@@ -52,7 +52,7 @@ async function setupAppwrite() {
         bucket.enabled || true,
         bucket.maximumFileSize,
         bucket.allowedFileExtensions,
-        bucket.compression,
+        (bucket.compression as Compression) || undefined,
         bucket.encryption,
         bucket.antivirus
       );

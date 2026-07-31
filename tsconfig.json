@@ -12,6 +12,7 @@
   },
   "include": [
     "src/**/*",
+    "scripts/**/*",
     "e2e/**/*",
     "svelte.config.js",
     "vite.config.ts",
