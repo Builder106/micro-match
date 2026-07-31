@@ -457,7 +457,7 @@
     left: 16%;
     transform: rotate(5deg);
     animation: 
-      deal-in-1 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both,
+      deal-in-1 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s backwards,
       float-1 4.2s ease-in-out infinite 1s;
   }
 
@@ -470,7 +470,7 @@
     left: 6%;
     transform: rotate(-7deg) scale(0.96);
     animation: 
-      deal-in-2 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both,
+      deal-in-2 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.35s backwards,
       float-2 4.6s ease-in-out infinite 1.15s;
   }
 
@@ -483,7 +483,7 @@
     left: 28%;
     transform: rotate(11deg) scale(0.92);
     animation: 
-      deal-in-3 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both,
+      deal-in-3 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s backwards,
       float-3 4.4s ease-in-out infinite 1.3s;
   }
 
@@ -496,7 +496,7 @@
     left: 8%;
     transform: rotate(-13deg) scale(0.88);
     animation: 
-      deal-in-4 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.65s both,
+      deal-in-4 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.65s backwards,
       float-4 4.8s ease-in-out infinite 1.45s;
   }
 
@@ -504,44 +504,44 @@
   @keyframes deal-in-1 {
     0% {
       opacity: 0;
-      transform: rotate(5deg) translate(60px, 20px) scale(0.92);
+      translate: 60px 20px;
     }
     100% {
       opacity: 1;
-      transform: rotate(5deg) translate(0, 0) scale(1);
+      translate: 0 0;
     }
   }
 
   @keyframes deal-in-2 {
     0% {
       opacity: 0;
-      transform: rotate(-7deg) scale(0.96) translate(-50px, 30px);
+      translate: -50px 30px;
     }
     100% {
       opacity: 0.94;
-      transform: rotate(-7deg) scale(0.96) translate(0, 0);
+      translate: 0 0;
     }
   }
 
   @keyframes deal-in-3 {
     0% {
       opacity: 0;
-      transform: rotate(11deg) scale(0.92) translate(40px, -40px);
+      translate: 40px -40px;
     }
     100% {
       opacity: 0.88;
-      transform: rotate(11deg) scale(0.92) translate(0, 0);
+      translate: 0 0;
     }
   }
 
   @keyframes deal-in-4 {
     0% {
       opacity: 0;
-      transform: rotate(-13deg) scale(0.88) translate(-40px, -40px);
+      translate: -40px -40px;
     }
     100% {
       opacity: 0.82;
-      transform: rotate(-13deg) scale(0.88) translate(0, 0);
+      translate: 0 0;
     }
   }
 
