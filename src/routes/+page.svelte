@@ -547,49 +547,49 @@
 
   /* --- Idle Floating Keyframes --- */
   @keyframes float-1 {
-    0%, 100% { transform: rotate(5deg) translate(0, 0); }
-    50% { transform: rotate(1.5deg) translate(-6px, -18px); }
+    0%, 100% { translate: 0 0; }
+    50% { translate: -6px -18px; }
   }
   @keyframes float-2 {
-    0%, 100% { transform: rotate(-7deg) scale(0.96) translate(0, 0); }
-    50% { transform: rotate(-2.5deg) scale(0.97) translate(8px, 16px); }
+    0%, 100% { translate: 0 0; }
+    50% { translate: 8px 16px; }
   }
   @keyframes float-3 {
-    0%, 100% { transform: rotate(11deg) scale(0.92) translate(0, 0); }
-    50% { transform: rotate(5.5deg) scale(0.94) translate(6px, -15px); }
+    0%, 100% { translate: 0 0; }
+    50% { translate: 6px -15px; }
   }
   @keyframes float-4 {
-    0%, 100% { transform: rotate(-13deg) scale(0.88) translate(0, 0); }
-    50% { transform: rotate(-7.5deg) scale(0.9) translate(-8px, 18px); }
+    0%, 100% { translate: 0 0; }
+    50% { translate: -8px 18px; }
   }
 
   /* --- Concept 2: Deck Unfold / Fan Out on Container Hover --- */
   .hero-visual:hover .mock-card {
-    animation: none !important;
+    animation-play-state: paused;
   }
 
   .hero-visual:hover .mock-card-1 {
     top: 48%;
     left: 44%;
-    transform: rotate(0deg) scale(1) !important;
+    transform: rotate(0deg) scale(1);
     opacity: 0.95;
   }
   .hero-visual:hover .mock-card-2 {
     top: 48%;
     left: 4%;
-    transform: rotate(0deg) scale(1) !important;
+    transform: rotate(0deg) scale(1);
     opacity: 0.95;
   }
   .hero-visual:hover .mock-card-3 {
     top: 4%;
     left: 44%;
-    transform: rotate(0deg) scale(1) !important;
+    transform: rotate(0deg) scale(1);
     opacity: 0.95;
   }
   .hero-visual:hover .mock-card-4 {
     top: 4%;
     left: 4%;
-    transform: rotate(0deg) scale(1) !important;
+    transform: rotate(0deg) scale(1);
     opacity: 0.95;
   }
 
