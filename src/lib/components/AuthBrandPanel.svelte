@@ -155,18 +155,37 @@
     color: #fff;
     text-decoration: none;
     width: fit-content;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
   .logo-lockup span {
     font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
     font-size: 1.25rem;
     font-weight: 700;
     letter-spacing: -0.02em;
+    transition: color 0.2s ease, text-shadow 0.25s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
   .logo-mark {
     width: 36px;
     height: 36px;
     display: block;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s ease;
   }
+
+  .logo-lockup:hover .logo-mark {
+    transform: scale(1.12) rotate(-8deg);
+    filter: drop-shadow(0 0 10px rgba(255, 107, 107, 0.65));
+  }
+
+  .logo-lockup:hover span {
+    color: #ffffff;
+    transform: translateX(2px);
+    text-shadow: 0 0 14px rgba(255, 255, 255, 0.45);
+  }
+
+  .logo-lockup:active .logo-mark {
+    transform: scale(0.95) rotate(0deg);
+  }
+
   .compact .logo-lockup { gap: 8px; }
   .compact .logo-lockup span { font-size: 1.05rem; }
   .compact .logo-mark { width: 28px; height: 28px; }
