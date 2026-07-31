@@ -3,7 +3,7 @@
 The concept-first marketing trailer: 53s, 1920×1080@30fps, composition id
 `MicroMatchTrailer`. It sells the quarter-hour idea and shows almost none of the
 site — that restraint is the point. The screen-by-screen walkthrough lives in
-`../ui-demo/`; this piece exists for judges, press, and the WesFest table.
+`../ui-demo/`; this piece exists for showcase demonstrations, press, and community events.
 Beat structure and the reasoning behind it are in `STORYBOARD.md`.
 
 ## Build
