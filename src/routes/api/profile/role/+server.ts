@@ -58,7 +58,7 @@ export const POST: RequestHandler = async (event) => {
     .setKey(env.APPWRITE_API_KEY!);
   const users = new Users(client);
 
-  let oldRole = '';
+  let oldRole: string;
   try {
     const me: any = await users.get(userId);
     oldRole = String(me?.prefs?.role ?? '');

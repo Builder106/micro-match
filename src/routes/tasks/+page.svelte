@@ -61,7 +61,7 @@
   });
 
   $: hasActiveFilters = q !== '' || selectedTags.length > 0 || maxMinutes !== null || sortBy !== 'recommended';
-  $: ngoCount = new Set(tasks.map(t => t.orgId).filter(Boolean)).size;
+  const ngoCount = new Set(tasks.map(t => t.orgId).filter(Boolean)).size;
 
   onMount(() => {
     import('@dotlottie/player-component').then(() => { lottieReady = true; }).catch(() => {});

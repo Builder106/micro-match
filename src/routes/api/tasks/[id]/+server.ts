@@ -32,7 +32,7 @@ export const PATCH: RequestHandler = async (event) => {
 
   try {
     const body = await request.json();
-    const { status, maxVolunteers, deadline, isVerified } = body;
+    const { status } = body;
 
     // Update task status if provided
     if (status) {

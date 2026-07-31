@@ -43,21 +43,24 @@ export const POST: RequestHandler = async (event) => {
     let result: { expiredCount?: number; archivedCount?: number };
 
     switch (action) {
-      case 'expire':
+      case 'expire': {
         const expiredCount = await expireTasks();
         result = { expiredCount };
         break;
-      case 'archive':
+      }
+      case 'archive': {
         const archivedCount = await autoArchiveTasks();
         result = { archivedCount };
         break;
-      case 'both':
+      }
+      case 'both': {
         const [expired, archived] = await Promise.all([
           expireTasks(),
           autoArchiveTasks()
         ]);
         result = { expiredCount: expired, archivedCount: archived };
         break;
+      }
       default:
         return json({ error: 'Invalid action. Use "expire", "archive", or "both"' }, { status: 400 });
     }

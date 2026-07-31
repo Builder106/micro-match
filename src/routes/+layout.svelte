@@ -72,7 +72,7 @@
           });
           
           if (response.ok) {
-            const data = await response.json();
+            await response.json();
             
             // If user doesn't have a role set, redirect to profile
             const prefs = user?.prefs ?? {};

@@ -12,8 +12,8 @@
       roleHint = m ? decodeURIComponent(m[1]) : '';
     } catch {}
   }
-  $: isNGO = page.data.userRole === 'ngo' || roleHint === 'ngo';
-  $: isAdmin = page.data.isAdmin === true;
+  const isNGO = page.data.userRole === 'ngo' || roleHint === 'ngo';
+  const isAdmin = page.data.isAdmin === true;
 
   function handleSignOut(e: Event) {
     e.preventDefault();

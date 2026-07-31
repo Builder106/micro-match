@@ -10,7 +10,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 };
 
 export const actions: Actions = {
-  default: async ({ request, locals, fetch }) => {
+  default: async ({ request, locals, fetch: _fetch }) => {
     try {
       const session = (locals as any)?.session as { user?: { id?: string; email?: string } } | undefined;
       if (!session?.user?.id) return fail(401, { message: 'Unauthorized' });

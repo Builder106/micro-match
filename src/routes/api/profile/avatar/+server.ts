@@ -42,9 +42,6 @@ export const POST: RequestHandler = async (event) => {
       .setKey(env.APPWRITE_API_KEY || '');
     const storage = new Storage(client);
 
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-
     const created: any = await storage.createFile(
       bucketId,
       ID.unique(),

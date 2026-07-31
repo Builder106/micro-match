@@ -7,9 +7,9 @@ export const GET: RequestHandler = async (event) => {
   const { locals, request, url } = event;
 
   // Rate limiting (basic per-IP)
-  const clientIP = request.headers.get('x-forwarded-for') ||
-                   request.headers.get('x-real-ip') ||
-                   'unknown';
+  const _clientIP = request.headers.get('x-forwarded-for') ||
+                    request.headers.get('x-real-ip') ||
+                    'unknown';
   // Note: In production, implement proper rate limiting with Redis/memory store
 
   // Authentication check

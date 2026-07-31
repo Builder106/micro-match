@@ -1,7 +1,7 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
   import { goto } from '$app/navigation';
-  import { page } from '$app/state';
+  import { page } from '$app/stores';
   import { getTagStyle } from '$lib/utils/tagColors';
   import type { Task } from '$lib/types';
 
@@ -12,10 +12,10 @@
     translatedTo: string | null;
   };
 
-  $: id = page.params.id;
+  $: id = $page.params.id;
   $: task = data.task;
   $: orgName = data.orgName ?? 'Community organization';
-  $: signedIn = page.data.userRole && page.data.userRole !== 'anonymous';
+  $: signedIn = $page.data.userRole && $page.data.userRole !== 'anonymous';
 
   const TRANSLATE_OPTIONS = [
     { code: '', label: 'Original' },

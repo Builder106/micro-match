@@ -29,7 +29,7 @@
   ];
 
   // Trend chart scaling.
-  $: maxTrendBadges = Math.max(1, ...analytics.engagementTrend.map((t) => t.badges));
+  const maxTrendBadges = Math.max(1, ...analytics.engagementTrend.map((t) => t.badges));
 
   let lottieReady = false;
   onMount(() => {
@@ -50,7 +50,7 @@
     return d.toLocaleDateString();
   }
 
-  $: hasData = analytics.totalBadgesAwarded > 0;
+  const hasData = analytics.totalBadgesAwarded > 0;
 </script>
 
 <svelte:head><title>Badge analytics · MicroMatch</title></svelte:head>

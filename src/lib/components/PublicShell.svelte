@@ -36,6 +36,7 @@
     if (typeof document !== 'undefined') document.body.style.overflow = '';
   });
 
+  /* eslint-disable-next-line svelte/no-immutable-reactive-statements */
   $: userRole = (page.data?.userRole as string | undefined) ?? 'anonymous';
   $: isSignedIn = userRole !== 'anonymous';
 </script>
