@@ -42,8 +42,8 @@
       auth: 'Public (Optional)',
       summary: 'Retrieve public active task listings for volunteers and directory views.',
       queryParams: [
-        { name: 'duration', type: 'number', required: false, description: 'Maximum task duration in minutes (e.g. 15, 30)' },
-        { name: 'lang', type: 'string', required: false, description: 'Target ISO language code for auto-translation (e.g. es, fr)' }
+        { name: 'duration', type: 'number', required: false, description: 'Max duration in mins (e.g. 15, 30)' },
+        { name: 'lang', type: 'string', required: false, description: 'Target ISO lang code (e.g. es, fr)' }
       ],
       responseStatus: '200 OK',
       responseBody: JSON.stringify(
@@ -174,7 +174,7 @@
       auth: 'Authenticated User',
       summary: 'Retrieve submitted task claims (volunteers see their own; NGOs see claims for their tasks).',
       queryParams: [
-        { name: 'status', type: 'string', required: false, description: 'Filter status: pending | approved | rejected' },
+        { name: 'status', type: 'string', required: false, description: 'Filter: pending | approved | rejected' },
         { name: 'limit', type: 'number', required: false, description: 'Page limit (default 50, max 100)' },
         { name: 'offset', type: 'number', required: false, description: 'Page offset (default 0)' }
       ],
@@ -562,6 +562,7 @@
   title="MicroMatch Developer API"
   lede="Complete REST API reference for public task discovery, volunteer claims, NGO verifications, badges, teams, and authentication."
   updated="July 31, 2026"
+  wide={true}
 >
   <div class="api-overview">
     <div class="overview-grid">
@@ -642,56 +643,62 @@
             </div>
           </div>
 
-          <p class="endpoint-summary">{ep.summary}</p>
+          <div class="card-grid">
+            <div class="card-left-col">
+              <p class="endpoint-summary">{ep.summary}</p>
 
-          {#if ep.queryParams && ep.queryParams.length > 0}
-            <div class="section-block">
-              <h4 class="section-title">Query Parameters</h4>
-              <div class="table-wrapper">
-                <table class="params-table">
-                  <thead>
-                    <tr>
-                      <th>Parameter</th>
-                      <th>Type</th>
-                      <th>Required</th>
-                      <th>Description</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {#each ep.queryParams as param}
-                      <tr>
-                        <td><code>{param.name}</code></td>
-                        <td><span class="type-tag">{param.type}</span></td>
-                        <td><span class="req-tag" class:is-req={param.required}>{param.required ? 'Yes' : 'Optional'}</span></td>
-                        <td>{param.description}</td>
-                      </tr>
-                    {/each}
-                  </tbody>
-                </table>
+              {#if ep.queryParams && ep.queryParams.length > 0}
+                <div class="section-block">
+                  <h4 class="section-title">Query Parameters</h4>
+                  <div class="table-wrapper">
+                    <table class="params-table">
+                      <thead>
+                        <tr>
+                          <th>Parameter</th>
+                          <th>Type</th>
+                          <th>Req</th>
+                          <th>Description</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {#each ep.queryParams as param}
+                          <tr>
+                            <td><code>{param.name}</code></td>
+                            <td><span class="type-tag">{param.type}</span></td>
+                            <td><span class="req-tag" class:is-req={param.required}>{param.required ? 'Yes' : 'Opt'}</span></td>
+                            <td>{param.description}</td>
+                          </tr>
+                        {/each}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              {/if}
+
+              {#if ep.notes}
+                <div class="note-box">
+                  <p><strong>Note:</strong> {ep.notes}</p>
+                </div>
+              {/if}
+            </div>
+
+            <div class="card-right-col">
+              {#if ep.requestBody}
+                <div class="section-block">
+                  <h4 class="section-title">Request Body</h4>
+                  <pre class="code-block"><code>{ep.requestBody}</code></pre>
+                </div>
+              {/if}
+
+              <div class="section-block">
+                <div class="response-header">
+                  <h4 class="section-title">Response</h4>
+                  <span class="status-badge">{ep.responseStatus}</span>
+                </div>
+                <pre class="code-block"><code>{ep.responseBody}</code></pre>
               </div>
             </div>
-          {/if}
-
-          {#if ep.requestBody}
-            <div class="section-block">
-              <h4 class="section-title">Request Body</h4>
-              <pre class="code-block"><code>{ep.requestBody}</code></pre>
-            </div>
-          {/if}
-
-          <div class="section-block">
-            <div class="response-header">
-              <h4 class="section-title">Response</h4>
-              <span class="status-badge">{ep.responseStatus}</span>
-            </div>
-            <pre class="code-block"><code>{ep.responseBody}</code></pre>
           </div>
-
-          {#if ep.notes}
-            <div class="note-box">
-              <p><strong>Note:</strong> {ep.notes}</p>
-            </div>
-          {/if}
         </div>
       {/each}
     {/if}
@@ -709,7 +716,7 @@
 
   .overview-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 16px;
   }
 
@@ -717,7 +724,7 @@
     background: var(--color-surface-variant, #f8fafc);
     border: 1px solid var(--color-outline-variant, rgba(0, 0, 0, 0.08));
     border-radius: 12px;
-    padding: 18px;
+    padding: 18px 22px;
   }
 
   .overview-card h3 {
@@ -757,6 +764,17 @@
     border-bottom: 1px solid var(--color-outline-variant, rgba(0, 0, 0, 0.08));
   }
 
+  @media (min-width: 960px) {
+    .controls-bar {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .search-box {
+      max-width: 440px;
+    }
+  }
+
   .search-box {
     position: relative;
     display: flex;
@@ -773,8 +791,8 @@
 
   .search-box input {
     width: 100%;
-    padding: 12px 38px 12px 40px;
-    font-size: 0.925rem;
+    padding: 11px 38px 11px 40px;
+    font-size: 0.9rem;
     border-radius: 10px;
     border: 1px solid var(--color-outline, #cbd5e1);
     background: var(--color-surface, #ffffff);
@@ -845,7 +863,7 @@
   .endpoints-list {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 28px;
   }
 
   .endpoint-card {
@@ -868,7 +886,9 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    margin-bottom: 12px;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--color-outline-variant, rgba(0, 0, 0, 0.06));
   }
 
   .title-group {
@@ -909,7 +929,7 @@
 
   .path-text {
     font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 1.05rem;
+    font-size: 1.1rem;
     font-weight: 700;
     color: var(--color-text, #0f172a);
     word-break: break-word;
@@ -947,15 +967,28 @@
     background: #e2e8f0;
   }
 
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  @media (min-width: 900px) {
+    .card-grid {
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+    }
+  }
+
   .endpoint-summary {
     font-size: 0.95rem !important;
-    line-height: 1.5 !important;
+    line-height: 1.55 !important;
     color: var(--color-text-secondary, #334155) !important;
     margin: 0 0 16px 0 !important;
   }
 
   .section-block {
-    margin-top: 16px;
+    margin-top: 14px;
   }
 
   .section-title {
@@ -999,14 +1032,14 @@
 
   .params-table th {
     background: var(--color-surface-variant, #f8fafc);
-    padding: 8px 12px;
+    padding: 8px 10px;
     font-weight: 700;
     color: #475569;
     border-bottom: 1px solid #e2e8f0;
   }
 
   .params-table td {
-    padding: 8px 12px;
+    padding: 8px 10px;
     border-bottom: 1px solid #f1f5f9;
     color: var(--color-text, #0f172a);
   }
@@ -1041,11 +1074,12 @@
     line-height: 1.5;
     overflow-x: auto;
     margin: 0;
+    max-height: 420px;
   }
 
   .note-box {
-    margin-top: 14px;
-    padding: 10px 14px;
+    margin-top: 16px;
+    padding: 12px 14px;
     background: #fffbeeb0;
     border: 1px solid #fef08a;
     border-radius: 8px;

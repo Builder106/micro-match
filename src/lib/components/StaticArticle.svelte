@@ -5,6 +5,7 @@
   export let title: string;
   export let lede: string | undefined = undefined;
   export let updated: string | undefined = undefined;
+  export let wide: boolean = false;
 
   const siblings = [
     { href: '/how-it-works', label: 'How It Works' },
@@ -28,7 +29,7 @@
 </svelte:head>
 
 <PublicShell activeTab={pathname === '/impact' ? 'impact' : undefined}>
-  <div class="static-container">
+  <div class="static-container" class:wide-container={wide}>
     <article class="static-article">
       <header class="article-head">
         <h1>{title}</h1>
@@ -56,6 +57,9 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-6);
+  }
+  .static-container.wide-container {
+    max-width: 1280px;
   }
 
   .static-article {
