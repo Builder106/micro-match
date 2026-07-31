@@ -451,10 +451,10 @@
   /* --- Stacked Idle Positions & Pre-Slanted Entrance --- */
   .mock-card-1 {
     z-index: 4;
-    width: min(300px, 78vw);
+    width: min(340px, 82vw);
     box-shadow: 0 24px 50px rgba(0,0,0,0.08);
-    top: 50%;
-    left: 50%;
+    top: 46%;
+    left: 42%;
     translate: -50% -50%;
     transform: rotate(5deg);
     animation: 
@@ -464,12 +464,12 @@
 
   .mock-card-2 {
     z-index: 3;
-    width: min(270px, 72vw);
+    width: min(310px, 76vw);
     box-shadow: 0 16px 36px rgba(0,0,0,0.06);
     opacity: 0.94;
-    top: 50%;
-    left: 50%;
-    translate: -68% -36%;
+    top: 46%;
+    left: 42%;
+    translate: -72% -30%;
     transform: rotate(-7deg) scale(0.96);
     animation: 
       deal-in-2 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both,
@@ -478,12 +478,12 @@
 
   .mock-card-3 {
     z-index: 2;
-    width: min(260px, 70vw);
+    width: min(300px, 74vw);
     box-shadow: 0 14px 32px rgba(0,0,0,0.05);
     opacity: 0.88;
-    top: 50%;
-    left: 50%;
-    translate: -32% -64%;
+    top: 46%;
+    left: 42%;
+    translate: -28% -70%;
     transform: rotate(11deg) scale(0.92);
     animation: 
       deal-in-3 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both,
@@ -492,12 +492,12 @@
 
   .mock-card-4 {
     z-index: 1;
-    width: min(250px, 68vw);
+    width: min(290px, 72vw);
     box-shadow: 0 10px 24px rgba(0,0,0,0.04);
     opacity: 0.82;
-    top: 50%;
-    left: 50%;
-    translate: -64% -66%;
+    top: 46%;
+    left: 42%;
+    translate: -68% -72%;
     transform: rotate(-13deg) scale(0.88);
     animation: 
       deal-in-4 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.65s both,
@@ -573,22 +573,22 @@
   }
 
   .hero-visual:hover .mock-card-1 {
-    translate: -12% -18%;
+    translate: -5% -10%;
     transform: rotate(3deg) scale(1.02);
     opacity: 0.95;
   }
   .hero-visual:hover .mock-card-2 {
-    translate: -88% -18%;
+    translate: -95% -10%;
     transform: rotate(-4deg) scale(1.02);
     opacity: 0.95;
   }
   .hero-visual:hover .mock-card-3 {
-    translate: -12% -82%;
+    translate: -5% -90%;
     transform: rotate(5deg) scale(1.02);
     opacity: 0.95;
   }
   .hero-visual:hover .mock-card-4 {
-    translate: -88% -82%;
+    translate: -95% -90%;
     transform: rotate(-5deg) scale(1.02);
     opacity: 0.95;
   }
