@@ -3,16 +3,16 @@ import type { Actions, PageServerLoad } from './$types';
 import { fail } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ locals }) => {
-  const userRole = (locals as any)?.userRole ?? 'anonymous';
-  const session = (locals as any)?.session as { user?: { id?: string; email?: string } } | undefined;
-  const user = session?.user?.id ? { id: session.user.id, email: session.user.email } : null;
+  const userRole = locals.userRole ?? 'anonymous';
+  const session = locals.session;
+  const user = session?.user?.id ? { id: session.user.id, email: session.user.email ?? undefined } : null;
   return { userRole, user };
 };
 
 export const actions: Actions = {
   default: async ({ request, locals, fetch: _fetch }) => {
     try {
-      const session = (locals as any)?.session as { user?: { id?: string; email?: string } } | undefined;
+      const session = locals.session;
       if (!session?.user?.id) return fail(401, { message: 'Unauthorized' });
 
       const form = await request.formData();
@@ -25,7 +25,7 @@ export const actions: Actions = {
       // We call a small helper endpoint to update prefs securely if needed later.
       // Use a JSON endpoint to update prefs through browser SDK session via /api/auth/session cookie refresh.
       // For now, we update prefs on the client after navigate; server action just acknowledges.
-      return { ok: true, role, displayName, bio, orgName } as any;
+      return { ok: true, role, displayName, bio, orgName };
     } catch (e) {
       if (env.NODE_ENV !== 'production') console.error('Profile update failed', e);
       return fail(400, { message: 'Failed to update profile' });

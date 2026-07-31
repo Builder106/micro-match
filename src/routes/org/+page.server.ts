@@ -5,8 +5,8 @@ import { getVerificationByUserId } from '$lib/server/verifications';
 import { error, redirect } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ locals }) => {
-  const userRole = (locals as any)?.userRole ?? 'anonymous';
-  const session = (locals as any)?.session as { user?: { id?: string } } | undefined;
+  const userRole = locals.userRole ?? 'anonymous';
+  const session = locals.session;
   const userId = session?.user?.id;
 
   if (userRole === 'anonymous') throw redirect(303, '/login?next=/org');
@@ -15,7 +15,7 @@ export const load: PageServerLoad = async ({ locals }) => {
   let verificationStatus: 'pending' | 'approved' | 'rejected' | null = null;
   if (userId) {
     const v = await getVerificationByUserId(userId);
-    verificationStatus = (v?.status ?? null) as any;
+    verificationStatus = (v?.status ?? null) as 'pending' | 'approved' | 'rejected' | null;
   }
   return { verificationStatus };
 };
@@ -27,8 +27,8 @@ export const actions: Actions = {
       return { success: false, error: 'Forbidden' };
     }
     const { request, locals } = event;
-    const session = (locals as any)?.session as { user?: { id?: string } } | undefined;
-    const orgId = session?.user?.id;
+    const session = locals.session;
+    const orgId = session?.user?.id ?? undefined;
 
     const form = await request.formData();
     const title = String(form.get('title') ?? '');

@@ -6,7 +6,7 @@ import { setTasksVerifiedForOrg } from '$lib/server/appwrite';
 import { sendVerificationApproved } from '$lib/server/email';
 
 export const POST: RequestHandler = async (event) => {
-  const session = (event.locals as any)?.session as { user?: { id?: string } } | undefined;
+  const session = event.locals.session;
   const adminId = session?.user?.id;
   if (!adminId || !(await isUserAdmin(adminId))) {
     return json({ error: 'Forbidden' }, { status: 403 });

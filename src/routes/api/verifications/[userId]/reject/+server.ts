@@ -6,7 +6,7 @@ import { setTasksVerifiedForOrg } from '$lib/server/appwrite';
 import { sendVerificationRejected } from '$lib/server/email';
 
 export const POST: RequestHandler = async (event) => {
-  const session = (event.locals as any)?.session as { user?: { id?: string } } | undefined;
+  const session = event.locals.session;
   const adminId = session?.user?.id;
   if (!adminId || !(await isUserAdmin(adminId))) {
     return json({ error: 'Forbidden' }, { status: 403 });
@@ -15,7 +15,8 @@ export const POST: RequestHandler = async (event) => {
   const targetUserId = event.params.userId;
   if (!targetUserId) return json({ error: 'Missing userId' }, { status: 400 });
 
-  let body: any;
+  interface RejectPayload { reason?: string }
+  let body: RejectPayload;
   try { body = await event.request.json(); } catch { return json({ error: 'Invalid JSON body' }, { status: 400 }); }
   const reason = String(body?.reason ?? '').trim();
   if (!reason) return json({ error: 'reason is required' }, { status: 400 });

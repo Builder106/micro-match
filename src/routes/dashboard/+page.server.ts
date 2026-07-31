@@ -15,9 +15,9 @@ function enrichClaims(claims: Claim[], tasks: Task[]): EnrichedClaim[] {
 }
 
 export const load: PageServerLoad = async ({ locals }) => {
-  const userRole = (locals as any)?.userRole ?? 'anonymous';
-  const session = (locals as any)?.session as { user?: { id?: string; email?: string } } | undefined;
-  const user = session?.user?.id ? { id: session.user.id, email: session.user.email } : null;
+  const userRole = locals.userRole ?? 'anonymous';
+  const session = locals.session;
+  const user = session?.user?.id ? { id: session.user.id, email: session.user.email ?? undefined } : null;
 
   if (userRole === 'ngo' && user) {
     const allTasks = await getTasks({ orgId: user.id, includeInactive: true });
@@ -53,7 +53,7 @@ export const load: PageServerLoad = async ({ locals }) => {
     };
   } else if (userRole === 'volunteer' && user) {
     const allTasks = await getTasks();
-    const allClaims = await (getClaims as any)({ userId: user.id });
+    const allClaims = await getClaims({ userId: user.id });
     const myClaims = enrichClaims(
       allClaims.filter((c: Claim) => c.userId === user.id),
       allTasks

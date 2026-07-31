@@ -4,7 +4,7 @@
   export let data: {
     signedIn: boolean;
     userRole: string;
-    userData: any;
+    userData: Record<string, unknown> | null;
   };
 </script>
 

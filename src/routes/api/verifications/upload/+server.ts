@@ -12,7 +12,7 @@ import { ADMIN_TEAM_ID } from '$lib/server/teams';
  */
 export const POST: RequestHandler = async (event) => {
   try {
-    const session = (event.locals as any)?.session as { user?: { id?: string } } | undefined;
+    const session = event.locals.session;
     let userId = session?.user?.id ?? null;
 
     if (!userId) {
@@ -28,8 +28,8 @@ export const POST: RequestHandler = async (event) => {
             .setProject(env.APPWRITE_PROJECT_ID || '')
             .setJWT(jwt);
           const account = new Account(c);
-          const me: any = await account.get();
-          userId = me?.$id ?? me?.id ?? null;
+          const me = await account.get();
+          userId = me?.$id ?? null;
         }
       } catch {}
     }
@@ -66,7 +66,7 @@ export const POST: RequestHandler = async (event) => {
       permissions.push(Permission.read(Role.team(ADMIN_TEAM_ID)));
     }
 
-    const created: any = await storage.createFile(bucketId, ID.unique(), file, permissions);
+    const created = await storage.createFile(bucketId, ID.unique(), file, permissions);
     return json({ fileId: created?.$id });
   } catch (err) {
     console.error('Verification doc upload error', err);

@@ -3,7 +3,7 @@ import { error, redirect } from '@sveltejs/kit';
 import { getTaskById } from '$lib/server/appwrite';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
-  const userRole = (locals as any)?.userRole ?? 'anonymous';
+  const userRole = locals.userRole ?? 'anonymous';
   if (userRole === 'anonymous') {
     throw redirect(303, `/login?next=/task/${params.id}/claim`);
   }

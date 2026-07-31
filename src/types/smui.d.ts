@@ -1,8 +1,8 @@
 declare module '@smui/top-app-bar' {
   import type { SvelteComponent } from 'svelte';
 
-  export type TopAppBarProps = Record<string, any>;
-  export type TopAppBarEvents = { [eventName: string]: CustomEvent<any> };
+  export type TopAppBarProps = Record<string, unknown>;
+  export type TopAppBarEvents = { [eventName: string]: CustomEvent<unknown> };
   export type TopAppBarSlots = {
     default?: {};
     navigation?: {};

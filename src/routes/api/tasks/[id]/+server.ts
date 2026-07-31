@@ -15,7 +15,7 @@ export const PATCH: RequestHandler = async (event) => {
     return json({ error: 'Forbidden' }, { status: 403 });
   }
 
-  const session = (event.locals as any)?.session as { user?: { id?: string } } | undefined;
+  const session = event.locals.session;
   const userId = session?.user?.id;
   if (!userId) {
     return json({ error: 'Unauthorized' }, { status: 401 });
@@ -64,7 +64,7 @@ export const DELETE: RequestHandler = async (event) => {
 		return json({ error: 'Forbidden' }, { status: 403 });
 	}
 
-	const session = (event.locals as any)?.session as { user?: { id?: string } } | undefined;
+	const session = event.locals.session;
 	const userId = session?.user?.id;
 	if (!userId) {
 		return json({ error: 'Unauthorized' }, { status: 401 });

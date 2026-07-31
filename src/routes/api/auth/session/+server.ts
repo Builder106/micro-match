@@ -16,7 +16,7 @@ export const POST: RequestHandler = async (event) => {
 			.setJWT(jwt);
 		const account = new Account(client);
 
-		let user: any;
+		let user: import('node-appwrite').Models.User<Record<string, unknown>> | undefined;
 		try {
 			user = await account.get();
 		} catch {
@@ -24,7 +24,7 @@ export const POST: RequestHandler = async (event) => {
 		}
 
 		const email: string = user?.email ?? '';
-		const userId: string = user?.$id ?? user?.id ?? '';
+		const userId: string = user?.$id ?? '';
 		if (!email || !userId) return json({ error: 'Invalid user' }, { status: 401 });
 
 		// Derive role from prefs or team if needed
@@ -49,10 +49,10 @@ export const POST: RequestHandler = async (event) => {
 					const { NGO_TEAM_ID, VOLUNTEER_TEAM_ID, isUserInTeam } = await import(
 						'$lib/server/teams'
 					);
-					if (await isUserInTeam(userId, (NGO_TEAM_ID as any))) {
+					if (NGO_TEAM_ID && (await isUserInTeam(userId, NGO_TEAM_ID))) {
 						role = 'ngo';
 						roleSource = 'team_membership';
-					} else if (await isUserInTeam(userId, (VOLUNTEER_TEAM_ID as any))) {
+					} else if (VOLUNTEER_TEAM_ID && (await isUserInTeam(userId, VOLUNTEER_TEAM_ID))) {
 						role = 'volunteer';
 						roleSource = 'team_membership';
 					}

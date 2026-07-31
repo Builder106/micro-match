@@ -20,7 +20,7 @@ import { setTasksVerifiedForOrg } from '$lib/server/appwrite';
  */
 
 async function getUserId(event: Parameters<RequestHandler>[0]): Promise<string | null> {
-  const sessionUserId = (event.locals as any)?.session?.user?.id as string | undefined;
+  const sessionUserId = event.locals.session?.user?.id;
   if (sessionUserId) return sessionUserId;
   try {
     const authHeader = event.request.headers.get('authorization') ?? '';
@@ -32,8 +32,8 @@ async function getUserId(event: Parameters<RequestHandler>[0]): Promise<string |
       .setProject(env.APPWRITE_PROJECT_ID || '')
       .setJWT(jwt);
     const account = new Account(client);
-    const me: any = await account.get();
-    return me?.$id ?? me?.id ?? null;
+    const me = await account.get();
+    return me?.$id ?? null;
   } catch {
     return null;
   }
@@ -43,7 +43,8 @@ export const POST: RequestHandler = async (event) => {
   const userId = await getUserId(event);
   if (!userId) return json({ error: 'Unauthorized' }, { status: 401 });
 
-  let body: any;
+  interface RolePayload { newRole?: string }
+  let body: RolePayload;
   try { body = await event.request.json(); } catch { return json({ error: 'Invalid JSON' }, { status: 400 }); }
   const newRole = String(body?.newRole ?? '').trim();
   if (newRole !== 'volunteer' && newRole !== 'ngo') {
@@ -60,7 +61,7 @@ export const POST: RequestHandler = async (event) => {
 
   let oldRole: string;
   try {
-    const me: any = await users.get(userId);
+    const me = await users.get(userId);
     oldRole = String(me?.prefs?.role ?? '');
   } catch {
     return json({ error: 'User not found' }, { status: 404 });
@@ -78,8 +79,8 @@ export const POST: RequestHandler = async (event) => {
 
   // 2. Update prefs.role (read-modify-write so we don't clobber other prefs).
   try {
-    const me: any = await users.get(userId);
-    const nextPrefs = { ...(me?.prefs ?? {}), role: newRole };
+    const me = await users.get(userId);
+    const nextPrefs: Record<string, unknown> = { ...(me?.prefs ?? {}), role: newRole };
     if (downgrading) nextPrefs.verificationStatus = '';
     await users.updatePrefs(userId, nextPrefs);
   } catch (err) {

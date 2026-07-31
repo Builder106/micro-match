@@ -19,11 +19,17 @@ export const POST: RequestHandler = async (event) => {
   const role = await getUserRole(event);
   if (role !== 'ngo') return json({ error: 'Forbidden' }, { status: 403 });
 
-  const session = (event.locals as any)?.session as { user?: { id?: string } } | undefined;
+  const session = event.locals.session;
   const userId = session?.user?.id;
   if (!userId) return json({ error: 'Not signed in' }, { status: 401 });
 
-  let body: any;
+  interface VerificationPostPayload {
+    orgName?: string;
+    country?: string;
+    taxId?: string;
+    docFileId?: string;
+  }
+  let body: VerificationPostPayload;
   try { body = await event.request.json(); } catch { return json({ error: 'Invalid JSON body' }, { status: 400 }); }
 
   const orgName = String(body.orgName ?? '').trim();
@@ -41,7 +47,7 @@ export const POST: RequestHandler = async (event) => {
 };
 
 export const GET: RequestHandler = async (event) => {
-  const session = (event.locals as any)?.session as { user?: { id?: string } } | undefined;
+  const session = event.locals.session;
   const userId = session?.user?.id;
   if (!userId || !(await isUserAdmin(userId))) {
     return json({ error: 'Forbidden' }, { status: 403 });

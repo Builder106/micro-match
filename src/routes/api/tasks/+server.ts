@@ -36,7 +36,7 @@ export const POST: RequestHandler = async (event) => {
   const role = await getUserRole(event);
   if (role !== 'ngo') return json({ error: 'Forbidden' }, { status: 403 });
   
-  const session = (event.locals as any)?.session as { user?: { id?: string } } | undefined;
+  const session = event.locals.session;
   const orgId = session?.user?.id;
   if (!orgId) {
     return json({ error: 'Unauthorized: No user session found' }, { status: 401 });

@@ -42,7 +42,7 @@ export const GET: RequestHandler = async (event) => {
     .setKey(env.APPWRITE_API_KEY!);
   const users = new Users(adminClient);
 
-  let user: any;
+  let user: import('node-appwrite').Models.User<Record<string, unknown>> | undefined;
   try {
     user = await users.get(userId);
   } catch (err) {
@@ -62,8 +62,8 @@ export const GET: RequestHandler = async (event) => {
   if (env.APPWRITE_API_KEY) {
     try {
       const { NGO_TEAM_ID, VOLUNTEER_TEAM_ID, isUserInTeam } = await import('$lib/server/teams');
-      if (await isUserInTeam(userId, NGO_TEAM_ID as any)) role = 'ngo';
-      else if (await isUserInTeam(userId, VOLUNTEER_TEAM_ID as any)) role = 'volunteer';
+      if (NGO_TEAM_ID && (await isUserInTeam(userId, NGO_TEAM_ID))) role = 'ngo';
+      else if (VOLUNTEER_TEAM_ID && (await isUserInTeam(userId, VOLUNTEER_TEAM_ID))) role = 'volunteer';
     } catch (err) {
       if (env.NODE_ENV !== 'production') console.log('Team check failed in OAuth callback:', err);
     }

@@ -58,7 +58,7 @@
       window.location.href = '/dashboard?celebrate=1';
     } catch (e) {
       console.error(e);
-      errorMsg = (e as any)?.message || 'Something went wrong. Please try again.';
+      errorMsg = e instanceof Error ? e.message : 'Something went wrong. Please try again.';
     } finally {
       submitting = false;
     }

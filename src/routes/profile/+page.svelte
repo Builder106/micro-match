@@ -105,7 +105,7 @@
       }
     } catch (err) {
       console.error(err);
-      const msg = (err as any)?.message ?? 'Upload failed. Please try again.';
+      const msg = err instanceof Error ? err.message : 'Upload failed. Please try again.';
       avatarError = String(msg);
     } finally {
       avatarUploading = false;
@@ -138,11 +138,11 @@
 
       if (typeof prefs.bio === 'string') bio = prefs.bio;
       if (typeof prefs.orgName === 'string') orgName = prefs.orgName;
-      if (typeof (prefs as any).avatarFileId === 'string') {
-        avatarFileId = (prefs as any).avatarFileId;
+      if (typeof prefs.avatarFileId === 'string') {
+        avatarFileId = prefs.avatarFileId;
         avatarUrl = avatarFileId ? getAvatarUrl(avatarFileId, 256) : '';
       }
-      const prefRole = typeof (prefs as any).role === 'string' ? (prefs as any).role : '';
+      const prefRole = typeof prefs.role === 'string' ? prefs.role : '';
 
       if (prefRole === 'ngo' || prefRole === 'volunteer') {
         role = prefRole;

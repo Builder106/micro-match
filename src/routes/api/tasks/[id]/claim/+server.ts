@@ -20,7 +20,7 @@ export const POST: RequestHandler = async (event) => {
       return json({ error: 'Content failed safety checks', reasons: moderation.reasons }, { status: 400 });
     }
   }
-  const sessionUserId = (event.locals as any)?.session?.user?.id as string | undefined;
+  const sessionUserId = event.locals.session?.user?.id;
   const claim = await createClaim({ taskId: id, proofUrl: body?.proofUrl, notes: body?.notes, userId: sessionUserId ?? undefined });
 
   // Badges are awarded on approval (not claim), in /api/claims/[id]/approve.

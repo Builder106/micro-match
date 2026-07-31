@@ -7,7 +7,7 @@ import { isUserAdmin } from '$lib/server/teams';
 // admins rather than any NGO — an NGO role only proves ownership of its
 // own tasks, not the right to expire/archive everyone else's.
 async function requireAdmin(event: Parameters<RequestHandler>[0]): Promise<boolean> {
-  const userId = (event.locals as any)?.session?.user?.id as string | undefined;
+  const userId = event.locals.session?.user?.id;
   return Boolean(userId) && (await isUserAdmin(userId));
 }
 

@@ -14,7 +14,7 @@ async function lookupOrgName(orgId: string | undefined): Promise<string | null> 
       .setProject(env.APPWRITE_PROJECT_ID)
       .setKey(env.APPWRITE_API_KEY);
     const users = new Users(client);
-    const u: any = await users.get(orgId);
+    const u = await users.get(orgId);
     const prefs = (u?.prefs ?? {}) as Record<string, unknown>;
     const orgName = typeof prefs.orgName === 'string' && prefs.orgName.trim() ? prefs.orgName.trim() : null;
     return orgName ?? u?.name ?? null;
@@ -28,7 +28,7 @@ export const load: PageServerLoad = async ({ params, url, locals }) => {
   const task = await getTaskById(id);
   if (!task) throw error(404, 'Task not found');
 
-  const session = (locals as any)?.session as { user?: { id?: string } } | undefined;
+  const session = locals.session;
   const currentUserId = session?.user?.id;
   const isOwner = !!currentUserId && currentUserId === task.orgId;
 

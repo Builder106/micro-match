@@ -10,7 +10,7 @@ import { getVerificationByUserId } from '$lib/server/verifications';
  *   using the server API key, so the storage URL is never exposed to clients.
  */
 export const GET: RequestHandler = async (event) => {
-  const session = (event.locals as any)?.session as { user?: { id?: string } } | undefined;
+  const session = event.locals.session;
   const adminId = session?.user?.id;
   if (!adminId || !(await isUserAdmin(adminId))) throw error(403, 'Forbidden');
 
@@ -30,7 +30,7 @@ export const GET: RequestHandler = async (event) => {
       .setProject(env.APPWRITE_PROJECT_ID!)
       .setKey(env.APPWRITE_API_KEY!);
     const storage = new Storage(client);
-    const buffer: any = await storage.getFileDownload(bucketId, v.docFileId);
+    const buffer = await storage.getFileDownload(bucketId, v.docFileId);
 
     // node-appwrite returns either a Buffer or a Uint8Array depending on version.
     const bytes: Uint8Array = buffer instanceof Uint8Array ? buffer : Buffer.from(buffer);
