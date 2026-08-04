@@ -1,7 +1,7 @@
 # Credits
 
 Music: "Inspired" — Kevin MacLeod (incompetech.com), licensed under CC BY 4.0
-(https://creativecommons.org/licenses/by/4.0/). This credit line must appear in
+(<https://creativecommons.org/licenses/by/4.0/>). This credit line must appear in
 the description of any publish of the trailer.
 
 `audio.mp3` is that track trimmed to 53s, loudness-normalized

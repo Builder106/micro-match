@@ -21,10 +21,12 @@ MicroMatch features an event-driven gamification engine that allows NGOs to defi
 ## 2. Architecture & Data Flow
 
 ### Data Model (`Appwrite` / In-Memory Fallback)
+
 * **`badgeDefinitions`**: Stores NGO-scoped templates (`orgID`, `label`, `color`, `icon`, `criteria`, `taskID`, `description`).
 * **`badges`**: Stores badges awarded to volunteers (`userId`, `taskId`, `label`, `color`, `awardedAt`).
 
 ### Automatic Award Pipeline
+
 1. NGO approves a volunteer claim via `POST /api/claims/review`.
 2. Upon approval, `onTaskApproved()` in `src/lib/server/badgeAwarder.ts` is triggered.
 3. The engine fetches badge definitions owned by the NGO that created the task ([badgeCriteria.ts](file:///Users/yinkavaughan/My%20Drive%20%28yvaughan@wesleyan.edu%29/CS/projects/swe/micro-match/src/lib/server/badgeCriteria.ts)).

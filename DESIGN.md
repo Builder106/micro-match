@@ -99,6 +99,7 @@ Tags adapt automatically based on category keywords (`getTagStyle`):
 ## 🔤 Typography
 
 MicroMatch utilizes a dual-font strategy:
+
 - **Headings & Brand Titles**: [Plus Jakarta Sans](https://fonts.google.com/specimen/Plus+Jakarta+Sans) (weights 500, 600, 700, 800) for geometric, modern clarity.
 - **Body & UI Controls**: [Inter](https://fonts.google.com/specimen/Inter) / [Roboto](https://fonts.google.com/specimen/Roboto) (weights 300, 400, 500, 600, 700) for legibility at small sizes.
 

@@ -28,7 +28,7 @@ exists.
 ## Beats
 
 | # | Frames | Beat | On screen | Audio |
-|---|--------|------|-----------|-------|
+| --- | -------- | ------ | ----------- | ------- |
 | 1 | 0–210 | The quarter hour | Clock face left, type right. "Fifteen minutes is…" then three reframes in sequence: "a coffee going cold." / "one bus stop." / "half a scroll." The arc ticks 30° with each line and stops at 90°. | Soft tick (low click) per line. Music fades in over 1s. |
 | 2 | 210–420 | The turn | "It's also enough to help someone." centered, "help someone" in the coral gradient. The completed quarter arc pulses above; a warm glow blooms behind. | Music carries the beat. |
 | 3 | 420–750 | The match | Two cards slide in and click together: left, the real seed task (Doctors Without Borders, "Translate a medical flyer into Spanish", 15 mins, ✓ Verified NGO); right, "You" with "Fifteen minutes before your next class" and skill chips. On contact a ring bursts and the wordmark assembles — "Micro" from the left card's side, "Match" from the right's. Caption: "A need, met in minutes you already have." | Whoosh on the slide, click on contact, chime on the wordmark. |

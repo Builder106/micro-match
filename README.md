@@ -125,7 +125,7 @@ sequenceDiagram
 ## 🚀 Tech stack
 
 | | |
-|---|---|
+| --- | --- |
 | **Framework** | [SvelteKit](https://kit.svelte.dev/) on [Vercel](https://vercel.com/) (`adapter-vercel`, `nodejs22.x` runtime) |
 | **Runtime + package manager** | [Bun](https://bun.sh/) |
 | **Backend** | [Appwrite Cloud](https://appwrite.io/) — Database (TablesDB), Auth, Storage, Teams |
@@ -181,7 +181,7 @@ The demo suite in `e2e/demo/` is deliberately *not* part of this. It shares Play
 Stored in Appwrite TablesDB (see [docs/appwrite-schema.md](docs/appwrite-schema.md) for full schema details):
 
 | Table | Holds |
-|---|---|
+| --- | --- |
 | `tasks` | Mission cards posted by NGOs (title, tags, time estimate, deadline, status, isVerified) |
 | `claims` | Volunteer submissions for tasks (proofUrl, notes, status: pending / approved / rejected) |
 | `badges` | Awarded badge instances (userId, taskId, label, color) |

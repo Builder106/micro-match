@@ -40,7 +40,7 @@ structure is a state machine traversal, which is MicroMatch's own shape.
 ## Beats
 
 | # | Time | Beat | On screen | Source | Text / audio |
-|---|------|------|-----------|--------|--------------|
+| --- | ------ | ------ | ----------- | -------- | -------------- |
 | 1 | 0:00–0:05 | Cold open: card anatomy | Cream void. The task card assembles piece by piece in product styling — icon, title, org line, `#spanish` `#health` chips — and the **`15 mins`** time chip lands last, with a click. These are literally the fields the Post-a-task page says volunteers see first. | Remotion-built card (styles lifted from product CSS) | Line 1: "Volunteering usually asks for your weekend." → Line 2: "This asks for fifteen minutes." SFX: click on chip-land. Music fades in. |
 | 2 | 0:05–0:11 | The feed | Card shrinks and flies into its real slot in the live feed. Real footage: search bar, **≤15 / ≤20 / ≤30 min** time filters and tag chips being clicked; the page's own headline "Find your next mission." carries the beat — no overlay text needed. | `chromium-03-feed-tour…mp4` (filter interaction, ~5s excerpt) + `mm_tasks.png` for the handoff frame | SFX: whoosh on the fly-in. |
 | 3 | 0:11–0:17 | Claim | Real footage: task detail page — "The mission" brief, cursor clicks **Claim this task**. Mini-card docks bottom-left, stamps chip: `Claimed`. | closed-loop mp4, ~0:22–0:32 | SFX: click. |
@@ -79,7 +79,7 @@ Everything else on screen is the product's own copy, unedited. No usage numbers 
   props in `Composition.tsx` (`glow`, `pushScale`, `pushOrigin`, `pushSettleFrames`,
   `pushCreep`).
 - Verify: extracted frames at 1 fps overall + 2–3 fps across every cut, silencedetect
-  + LUFS check, before calling it done.
+  - LUFS check, before calling it done.
 
 ## Open options (pick at approval)
 

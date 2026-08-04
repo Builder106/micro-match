@@ -6,9 +6,10 @@ This document details the Appwrite database tables, attributes, storage buckets,
 
 ## Architecture Overview
 
-MicroMatch uses **Appwrite Cloud TablesDB API** to manage persistent data. 
+MicroMatch uses **Appwrite Cloud TablesDB API** to manage persistent data.
 
 ### Database ID
+
 * `micromatch` (default database ID)
 
 ---
@@ -16,6 +17,7 @@ MicroMatch uses **Appwrite Cloud TablesDB API** to manage persistent data.
 ## Tables & Collections
 
 ### 1. `tasks`
+
 Stores micro-volunteering task listings posted by NGOs.
 
 | Attribute | Type | Size / Constraint | Description |
@@ -32,6 +34,7 @@ Stores micro-volunteering task listings posted by NGOs.
 | `isVerified` | Boolean | Default: `false` | Whether posting NGO is verified 501(c)(3) |
 
 #### Indexes
+
 * `status` (Key, ASC)
 * `deadline` (Key, ASC)
 * `orgID` (Key, ASC)
@@ -39,6 +42,7 @@ Stores micro-volunteering task listings posted by NGOs.
 ---
 
 ### 2. `claims`
+
 Tracks volunteer task claims and proof-of-work submissions.
 
 | Attribute | Type | Size / Constraint | Description |
@@ -52,6 +56,7 @@ Tracks volunteer task claims and proof-of-work submissions.
 | `reviewNotes` | String | 1024 | Optional feedback from NGO reviewer |
 
 #### Indexes
+
 * `taskId` (Key, ASC)
 * `volunteerId` (Key, ASC)
 * `status` (Key, ASC)
@@ -59,6 +64,7 @@ Tracks volunteer task claims and proof-of-work submissions.
 ---
 
 ### 3. `badges`
+
 Records badges earned by volunteers.
 
 | Attribute | Type | Size / Constraint | Description |
@@ -71,6 +77,7 @@ Records badges earned by volunteers.
 ---
 
 ### 4. `badgeDefinitions`
+
 Custom badge templates defined by NGOs.
 
 | Attribute | Type | Size / Constraint | Description |
@@ -87,6 +94,7 @@ Custom badge templates defined by NGOs.
 ## Storage Buckets
 
 ### `avatars`
+
 * **ID**: `avatars`
 * **File Security**: Disabled (public read)
 * **Allowed Extensions**: `jpg`, `png`, `svg`
