@@ -77,6 +77,7 @@ Creates a new micro-task listing.
   "deadline": "2026-08-15T00:00:00Z"
 }
 ```
+
 - **Response (201 Created)**: Returns the newly created task object.
 - **Error Responses**: `400 Bad Request` (missing title/description or content safety block), `401 Unauthorized`, `403 Forbidden` (non-NGO).
 
@@ -94,6 +95,7 @@ Updates an existing task's status or parameters.
   "deadline": "2026-09-01T00:00:00Z"
 }
 ```
+
 - **Response (200 OK)**: `{ "success": true }`
 - **Error Responses**: `400 Bad Request`, `401 Unauthorized`, `403 Forbidden` (not task owner), `404 Not Found`.
 
@@ -118,6 +120,7 @@ Claims an active task and submits proof-of-work.
   "notes": "Completed the proofreading and updated alt-text tags."
 }
 ```
+
 - **Response (201 Created)**: Returns the created claim object.
 - **Error Responses**: `400 Bad Request` (content safety block), `401 Unauthorized`, `404 Not Found`.
 
@@ -179,6 +182,7 @@ Rejects a submitted claim with review feedback.
   "reason": "Proof link is inaccessible."
 }
 ```
+
 - **Response (200 OK)**: `{ "status": "rejected" }`
 - **Error Responses**: `401 Unauthorized`, `403 Forbidden`, `404 Not Found`.
 
@@ -200,6 +204,7 @@ Submits an NGO verification application with EIN and documentation.
   "documentId": "doc_file_001"
 }
 ```
+
 - **Response (201 Created)**: Returns the pending verification record.
 
 ### `GET /api/verifications/me`
@@ -265,6 +270,7 @@ Rejects an NGO's verification application with feedback notes.
   "reason": "EIN document could not be validated with state registry."
 }
 ```
+
 - **Response (200 OK)**: `{ "success": true }`
 
 ---
@@ -303,6 +309,7 @@ Creates a new custom badge template.
   "requiredCount": 5
 }
 ```
+
 - **Response (201 Created)**: Returns the newly created badge definition.
 
 ### `DELETE /api/badges/manage`
@@ -317,6 +324,7 @@ Deletes a custom badge template.
   "id": "badge_def_001"
 }
 ```
+
 - **Response (200 OK)**: `{ "success": true }`
 
 ---
@@ -335,6 +343,7 @@ Switches the active user role (`volunteer` or `ngo`).
   "role": "ngo"
 }
 ```
+
 - **Response (200 OK)**: `{ "success": true, "role": "ngo" }`
 
 ### `POST /api/profile/update`
@@ -352,6 +361,7 @@ Updates user profile information (bio, skills, display name, organization name).
   "orgName": "Tech For Good"
 }
 ```
+
 - **Response (200 OK)**: `{ "success": true }`
 
 ### `POST /api/profile/avatar`
@@ -375,6 +385,7 @@ Assigns a task to team members.
   "memberIds": ["user_abc", "user_def"]
 }
 ```
+
 - **Response (200 OK)**: `{ "success": true }`
 
 ---

@@ -34,18 +34,18 @@ The dev server listens on `http://localhost:5173`.
 The app expects these resources in your Appwrite project (most can be created
 through the Console):
 
-| Resource             | Env var                              | Notes |
-|----------------------|--------------------------------------|-------|
-| Database             | `APPWRITE_DB_ID`                     | One database, the rest are tables inside it |
-| `tasks` table        | `APPWRITE_TASKS_TABLE_ID`            |       |
-| `claims` table       | `APPWRITE_CLAIMS_TABLE_ID`           |       |
-| `badges` table       | `APPWRITE_BADGES_TABLE_ID`           | Awarded-badge instances |
-| `badgeDefinitions`   | `APPWRITE_BADGE_DEFS_TABLE_ID`       | Org-owned templates    |
-| `ngoVerifications`   | `APPWRITE_VERIFICATIONS_TABLE_ID`    | NGO verification queue |
-| Storage bucket       | `APPWRITE_AVATARS_BUCKET_ID` and `APPWRITE_VERIFICATIONS_BUCKET_ID` | Can be the same bucket if `fileSecurity` is enabled |
-| `volunteers` team    | `APPWRITE_VOLUNTEER_TEAM_ID`         | Created on first profile save |
-| `ngos` team          | `APPWRITE_NGO_TEAM_ID`               | Same |
-| `admins` team        | `APPWRITE_ADMIN_TEAM_ID`             | Manually add yourself to access `/admin/verifications` |
+| Resource           | Env var                                                             | Notes                                                  |
+| ------------------ | ------------------------------------------------------------------- | ------------------------------------------------------ |
+| Database           | `APPWRITE_DB_ID`                                                    | One database, the rest are tables inside it            |
+| `tasks` table      | `APPWRITE_TASKS_TABLE_ID`                                           |                                                        |
+| `claims` table     | `APPWRITE_CLAIMS_TABLE_ID`                                          |                                                        |
+| `badges` table     | `APPWRITE_BADGES_TABLE_ID`                                          | Awarded-badge instances                                |
+| `badgeDefinitions` | `APPWRITE_BADGE_DEFS_TABLE_ID`                                      | Org-owned templates                                    |
+| `ngoVerifications` | `APPWRITE_VERIFICATIONS_TABLE_ID`                                   | NGO verification queue                                 |
+| Storage bucket     | `APPWRITE_AVATARS_BUCKET_ID` and `APPWRITE_VERIFICATIONS_BUCKET_ID` | Can be the same bucket if `fileSecurity` is enabled    |
+| `volunteers` team  | `APPWRITE_VOLUNTEER_TEAM_ID`                                        | Created on first profile save                          |
+| `ngos` team        | `APPWRITE_NGO_TEAM_ID`                                              | Same                                                   |
+| `admins` team      | `APPWRITE_ADMIN_TEAM_ID`                                            | Manually add yourself to access `/admin/verifications` |
 
 The schema for `ngoVerifications` and `badgeDefinitions` is documented in the
 relevant server modules ([src/lib/server/verifications.ts](src/lib/server/verifications.ts),
@@ -130,7 +130,7 @@ alphabetically, single worker). Then:
 
 ## Project layout
 
-```
+```text
 src/
 ├── app.css                       # global brand classes, scrollbar, dark-mode tokens
 ├── app.d.ts                      # SvelteKit ambient types
