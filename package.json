@@ -35,7 +35,7 @@
     "@smui/snackbar": "^9.0.1",
     "@smui/textfield": "^9.0.1",
     "@smui/top-app-bar": "^9.0.1",
-    "@sveltejs/kit": "^2.69.2",
+    "@sveltejs/kit": "^2.70.2",
     "@vercel/analytics": "^2.0.1",
     "appwrite": "^26.2.0",
     "canvas-confetti": "1.9.4",
