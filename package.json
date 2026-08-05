@@ -40,7 +40,7 @@
     "appwrite": "^26.2.0",
     "canvas-confetti": "1.9.4",
     "mode-watcher": "^1.1.0",
-    "node-appwrite": "^27.0.0",
+    "node-appwrite": "^27.1.0",
     "svelte": "^5.56.4",
     "vite": "^8.1.4"
   },
