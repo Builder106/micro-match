@@ -213,6 +213,12 @@
   .header-github span { display: none; }
   .menu-toggle { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; padding: 0; background: rgba(255,255,255,0.6); border: 1px solid rgba(30,41,59,0.1); border-radius: 9999px; color: #1E293B; cursor: pointer; transition: all .2s; }
   .menu-toggle:hover { background: rgba(255,255,255,0.9); border-color: rgba(30,41,59,0.2); }
+  @media (max-width: 639px) {
+    .header-github,
+    .header-actions .btn-sm {
+      display: none;
+    }
+  }
   @media (min-width: 768px) {
     .header-nav { display: flex; }
     .header-signin { display: block; }

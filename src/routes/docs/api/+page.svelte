@@ -1383,5 +1383,13 @@
       flex-direction: column;
       align-items: flex-start;
     }
+    .code-block {
+      font-size: 0.775rem;
+      padding: 10px 12px;
+      max-width: 100%;
+      box-sizing: border-box;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
   }
 </style>
