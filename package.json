@@ -30,7 +30,7 @@
     "@smui/chips": "^9.0.1",
     "@smui/dialog": "^9.0.1",
     "@smui/fab": "^9.0.1",
-    "@smui/icon-button": "^9.0.1",
+    "@smui/icon-button": "^9.0.2",
     "@smui/linear-progress": "^9.0.1",
     "@smui/list": "^9.0.1",
     "@smui/snackbar": "^9.0.1",
