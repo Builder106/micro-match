@@ -28,5 +28,13 @@ export default defineConfig({
         ...devices['Desktop Chrome']
       }
     }
-  ]
+  ],
+  webServer: process.env.PLAYWRIGHT_BASE_URL
+    ? undefined
+    : {
+        command: 'bun run dev',
+        url: BASE_URL,
+        reuseExistingServer: !process.env.CI,
+        timeout: 60_000
+      }
 });
