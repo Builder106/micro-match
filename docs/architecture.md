@@ -72,7 +72,9 @@ MicroMatch uses Appwrite TablesDB (`APPWRITE_DB_ID`):
 ```
 
 ### Role Mobility Teardown
+
 When an NGO downgrades to a Volunteer role (`POST /api/profile/role`):
+
 1. `withdrawVerification(userId)` deletes the pending/approved row in `ngoVerifications`.
 2. User preference `verificationStatus` is cleared (`""`).
 3. `isVerified` flag is reset to `false` across all tasks created by the account.

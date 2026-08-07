@@ -16,12 +16,14 @@ This handbook covers organization onboarding, verification, task creation, claim
 MicroMatch uses a soft-gate trust system to assign a **Verified NGO** chip to tasks.
 
 ### Verification Process
+
 1. Go to `/org` or `/profile` and open the **Verification Card**.
 2. Provide your **Organization Name**, **Country**, and **Tax / Charity Registration ID** (e.g., IRS EIN for US entities).
 3. *(Optional / International)* Upload an official registration document (PDF, PNG, or JPEG) if your organization is outside the US or not indexed in public registries.
 4. Submit your application. Status transitions to `Pending`.
 
 ### Automated Enrichment & Review
+
 - **US Organizations**: Submissions with a 9-digit EIN are automatically cross-checked against the **ProPublica Nonprofit Explorer API** (IRS Form 990 database) for admin verification.
 - **International Organizations**: ProPublica coverage is strictly US-only. For international NGOs, platform admins review the uploaded registration document.
 - **Approval & Backfilling**: When an admin approves an application, your organization's tasks receive the **Verified** chip automatically across the feed and task detail pages.
