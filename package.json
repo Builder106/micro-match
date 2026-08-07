@@ -34,7 +34,7 @@
     "@smui/linear-progress": "^9.0.2",
     "@smui/list": "^9.0.1",
     "@smui/snackbar": "^9.0.1",
-    "@smui/textfield": "^9.0.1",
+    "@smui/textfield": "^9.0.2",
     "@smui/top-app-bar": "^9.0.2",
     "@sveltejs/kit": "^2.70.2",
     "@vercel/analytics": "^2.0.1",
