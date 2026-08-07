@@ -17,9 +17,14 @@ function makeEvent(opts: { userRole?: string; userId?: string } = {}) {
 describe('/dashboard load', () => {
   beforeEach(() => Object.values(mocks).forEach((m) => m.mockReset()));
 
-  it('returns signedIn:false for anonymous visitors', async () => {
-    const result: any = await load(makeEvent());
-    expect(result).toEqual({ signedIn: false, userRole: 'anonymous', user: null, userData: null });
+  it('redirects anonymous visitors to login', async () => {
+    try {
+      await load(makeEvent());
+      throw new Error('expected load() to redirect');
+    } catch (err: any) {
+      expect(err.status).toBe(303);
+      expect(err.location).toBe('/login?next=/dashboard');
+    }
   });
 
   it('builds NGO stats scoped to the org\'s own tasks and claims', async () => {
