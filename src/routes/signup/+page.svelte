@@ -3,14 +3,14 @@
   import { signInWithGoogle, signUpEmail } from '$lib/appwrite.client';
   import { goto } from '$app/navigation';
   import AuthBrandPanel from '$lib/components/AuthBrandPanel.svelte';
-  let email = '';
-  let password = '';
-  let firstName = '';
-  let lastName = '';
-  let role: 'volunteer' | 'ngo' = 'volunteer';
-  let step: 1 | 2 = 1;
-  let error: string | null = null;
-  let submitting = false;
+  let email = $state('');
+  let password = $state('');
+  let firstName = $state('');
+  let lastName = $state('');
+  let role = $state<'volunteer' | 'ngo'>('volunteer');
+  let step = $state<1 | 2>(1);
+  let error = $state<string | null>(null);
+  let submitting = $state(false);
   async function handleSignup(e: Event) {
     e.preventDefault();
     error = null;
@@ -40,7 +40,7 @@
     <div class="auth-card">
       <div class="auth-head">
         {#if step === 2}
-          <button class="back-btn" on:click={() => (step = 1)}>
+          <button class="back-btn" type="button" onclick={() => (step = 1)}>
             <Icon icon="mdi:arrow-left" width="16" height="16" />
             Back
           </button>
@@ -51,7 +51,7 @@
 
       {#if step === 1}
         <div class="roles">
-          <button class="role-card volunteer" type="button" on:click={() => { role = 'volunteer'; step = 2; }}>
+          <button class="role-card volunteer" type="button" onclick={() => { role = 'volunteer'; step = 2; }}>
             <span class="role-icon">
               <Icon icon="mdi:account-group-outline" width="28" height="28" />
             </span>
@@ -60,7 +60,7 @@
               <span>Complete micro-tasks, build streaks, and unlock civic badges.</span>
             </span>
           </button>
-          <button class="role-card ngo" type="button" on:click={() => { role = 'ngo'; step = 2; }}>
+          <button class="role-card ngo" type="button" onclick={() => { role = 'ngo'; step = 2; }}>
             <span class="role-icon">
               <Icon icon="mdi:office-building-outline" width="28" height="28" />
             </span>
@@ -75,7 +75,7 @@
           <a href="/login">Sign in</a>
         </p>
       {:else}
-        <form on:submit|preventDefault={() => signInWithGoogle()}>
+        <form onsubmit={(e) => { e.preventDefault(); signInWithGoogle(); }}>
           <button type="submit" class="google-btn">
             <Icon icon="logos:google-icon" />
             Sign up with Google
@@ -88,7 +88,7 @@
           <span></span>
         </div>
 
-        <form class="auth-form" on:submit={handleSignup}>
+        <form class="auth-form" onsubmit={handleSignup}>
           {#if error}
             <p class="error"><Icon icon="lucide:alert-circle" width="14" height="14" /> {error}</p>
           {/if}

@@ -1,4 +1,5 @@
 import type { PageServerLoad } from './$types';
+import { redirect } from '@sveltejs/kit';
 import { getTasks, getClaims } from '$lib/server/appwrite';
 import type { Task, Claim } from '$lib/types';
 
@@ -18,6 +19,10 @@ export const load: PageServerLoad = async ({ locals }) => {
   const userRole = locals.userRole ?? 'anonymous';
   const session = locals.session;
   const user = session?.user?.id ? { id: session.user.id, email: session.user.email ?? undefined } : null;
+
+  if (userRole === 'anonymous' || !user) {
+    throw redirect(303, '/login?next=/dashboard');
+  }
 
   if (userRole === 'ngo' && user) {
     const allTasks = await getTasks({ orgId: user.id, includeInactive: true });

@@ -38,17 +38,21 @@ test.describe('public pages', () => {
   });
 
   test('signup → choose role → reveals email form', async ({ page }) => {
-    await page.goto('/signup');
+    // waitUntil: 'networkidle' ensures SvelteKit hydration + Iconify icon
+    // fetches finish before we click — otherwise onclick handlers aren't
+    // attached yet and the click hits inert SSR HTML.
+    await page.goto('/signup', { waitUntil: 'networkidle' });
     await page.getByRole('button', { name: /I'm a Volunteer/i }).click();
     await expect(page.getByRole('heading', { name: /Create your account/i })).toBeVisible();
-    await expect(page.getByPlaceholder(/Jane/i)).toBeVisible();
-    await expect(page.getByPlaceholder(/Doe/i)).toBeVisible();
+    await expect(page.getByRole('textbox', { name: 'First name' })).toBeVisible();
+    await expect(page.getByRole('textbox', { name: 'Last name' })).toBeVisible();
   });
 
   test('signup back-button returns to role picker', async ({ page }) => {
-    await page.goto('/signup');
+    await page.goto('/signup', { waitUntil: 'networkidle' });
     await page.getByRole('button', { name: /I'm a Volunteer/i }).click();
-    await page.getByRole('button', { name: /^Back$/ }).click();
+    await expect(page.getByRole('heading', { name: /Create your account/i })).toBeVisible();
+    await page.getByRole('button', { name: /Back/i }).click();
     await expect(page.getByRole('heading', { name: /Choose your path/i })).toBeVisible();
   });
 
@@ -63,6 +67,12 @@ test.describe('public pages', () => {
     // Either redirects to /login (303) or returns the login page
     expect(response?.status()).toBeLessThan(500);
     await expect(page).toHaveURL(/\/(login|admin)/);
+  });
+
+  test('protected /dashboard redirects to login when unauthenticated', async ({ page }) => {
+    const response = await page.goto('/dashboard');
+    expect(response?.status()).toBeLessThan(500);
+    await expect(page).toHaveURL(/\/login/);
   });
 
   test('feed → click "Find a Task" CTA navigates to feed', async ({ page }) => {
