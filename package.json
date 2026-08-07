@@ -13,6 +13,7 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
+    "test:audit": "playwright test --config=playwright.audit.config.ts",
     "test:demo": "DEMO=1 playwright test --config=playwright.demo.config.ts",
     "demo:gif": "bun run scripts/demos-to-gif.ts",
     "demo": "bun run seed && bun run test:demo && bun run demo:gif",

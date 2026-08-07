@@ -55,3 +55,17 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
       - run: bun run test
+
+  responsiveness:
+    name: Responsiveness Audit
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bunx playwright install --with-deps chromium
+      - run: bun run test:audit
+        env:
+          PUBLIC_APPWRITE_ENDPOINT: https://placeholder.example.com
+          PUBLIC_APPWRITE_PROJECT_ID: placeholder
+
