@@ -247,7 +247,7 @@
   .td-hero-blob { position: absolute; top: -50%; right: -10%; width: 320px; height: 320px; border-radius: 50%; background: rgba(255, 107, 107, 0.16); filter: blur(80px); pointer-events: none; }
 
   .td-hero-top { position: relative; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-  .td-avatar { width: 56px; height: 56px; border-radius: 18px; background: linear-gradient(135deg, #FFE5DC, #FFD1C2); color: var(--color-primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .td-avatar { width: 56px; height: 56px; border-radius: 18px; background: #FFE5DC; color: var(--color-primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .td-org { display: flex; flex-direction: column; flex: 1; min-width: 0; }
   .td-org small { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: color-mix(in srgb, var(--color-text) 50%, transparent); }
   .td-org strong { font-size: 16px; font-weight: 700; color: var(--color-text); }

@@ -504,7 +504,7 @@
   @media (max-width: 640px) { .profile-hero { grid-template-columns: 1fr; padding: 28px; gap: 20px; text-align: center; } }
   .profile-hero-blob { position: absolute; top: -50%; right: -10%; width: 360px; height: 360px; border-radius: 50%; background: rgba(255, 107, 107, 0.18); filter: blur(80px); pointer-events: none; }
   .avatar-stack { display: flex; flex-direction: column; align-items: center; gap: 10px; position: relative; z-index: 1; }
-  .avatar-ring { position: relative; width: 120px; height: 120px; border-radius: 50%; padding: 4px; background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light)); }
+  .avatar-ring { position: relative; width: 120px; height: 120px; border-radius: 50%; padding: 4px; background: var(--color-primary); }
   .avatar-face { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; background: var(--color-surface); display: flex; align-items: center; justify-content: center; font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: 44px; font-weight: 800; color: var(--color-primary); }
   .avatar-face img { width: 100%; height: 100%; object-fit: cover; }
   .avatar-edit { position: absolute; bottom: 0; right: 0; width: 36px; height: 36px; border-radius: 50%; background: var(--color-text); color: var(--color-surface); display: flex; align-items: center; justify-content: center; cursor: pointer; border: 3px solid var(--color-surface); transition: all .2s; }

@@ -141,7 +141,7 @@
    <svelte:fragment slot="title">
      <div style="display: flex; align-items: center; gap: var(--space-2);">
        <img src="/logo.png" alt="MicroMatch Logo" width="32" height="32" style="display: block;" />
-       <span style="font-weight: var(--font-bold); font-size: var(--text-xl); color: var(--color-text); background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">MicroMatch</span>
+        <span style="font-weight: var(--font-bold); font-size: var(--text-xl); color: var(--color-primary);">MicroMatch</span>
      </div>
    </svelte:fragment>
    <svelte:fragment slot="actions">
@@ -193,7 +193,7 @@
     <nav class="bottom-nav">
     <div style="display: flex; gap: var(--space-6); justify-content: space-around; padding: var(--space-4) 0;">
       <a href="/tasks" style="text-align:center;text-decoration:none;color:inherit">
-        <div class:card-elevated={$page.url.pathname === '/tasks'} class:animate-scale-in={$page.url.pathname === '/tasks'} style="display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 40px; border-radius: var(--radius-xl); background: linear-gradient(135deg, var(--color-primary), var(--color-primary-variant)); color: var(--color-on-primary); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);">
+        <div class:card-elevated={$page.url.pathname === '/tasks'} class:animate-scale-in={$page.url.pathname === '/tasks'} style="display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 40px; border-radius: var(--radius-xl); background: var(--color-primary); color: var(--color-on-primary); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);">
           <Icon icon="mdi:view-dashboard-outline" width="20" height="20"/>
         </div>
         <small style="display: block; color: var(--color-primary); margin-top: var(--space-2); font-weight: var(--font-medium); font-size: var(--text-xs);">Feed</small>

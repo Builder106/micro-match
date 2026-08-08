@@ -182,7 +182,7 @@
 
   /* Task summary */
   .cl-task { padding: 18px 22px; display: flex; align-items: flex-start; gap: 16px; }
-  .cl-task-icon { width: 48px; height: 48px; border-radius: 16px; background: linear-gradient(135deg, #FFE5DC, #FFD1C2); color: var(--color-primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .cl-task-icon { width: 48px; height: 48px; border-radius: 16px; background: #FFE5DC; color: var(--color-primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .cl-task-meta { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
   .cl-task-meta small { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: color-mix(in srgb, var(--color-text) 50%, transparent); }
   .cl-task-meta h2 { font-size: 17px; font-weight: 700; margin: 0; line-height: 1.3; }

@@ -335,7 +335,7 @@
   }
   .task-mini:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05); }
   .task-mini-top { display: flex; justify-content: space-between; align-items: center; }
-  .task-mini-avatar { width: 36px; height: 36px; border-radius: 12px; background: linear-gradient(135deg, #DBEAFE, #BFDBFE); color: #2563EB; display: flex; align-items: center; justify-content: center; }
+  .task-mini-avatar { width: 36px; height: 36px; border-radius: 12px; background: #DBEAFE; color: #2563EB; display: flex; align-items: center; justify-content: center; }
   .mini-time { font-size: 11px; font-weight: 700; color: color-mix(in srgb, var(--color-text) 50%, transparent); display: inline-flex; align-items: center; gap: 4px; }
   .task-mini h4 { font-size: 15px; font-weight: 700; margin: 0; line-height: 1.3; }
   .task-mini p { font-size: 12px; color: color-mix(in srgb, var(--color-text) 60%, transparent); margin: 0; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }

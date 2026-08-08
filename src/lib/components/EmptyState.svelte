@@ -8,7 +8,7 @@
 </script>
 
 <section class="card" style="padding: var(--space-12); text-align: center; margin: 0 var(--space-4);">
-  <div style="width: 80px; height: 80px; margin: 0 auto var(--space-6); border-radius: var(--radius-full); background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); display: flex; align-items: center; justify-content: center; opacity: 0.8;">
+  <div style="width: 80px; height: 80px; margin: 0 auto var(--space-6); border-radius: var(--radius-full); background: var(--color-primary); display: flex; align-items: center; justify-content: center; opacity: 0.8;">
     <Icon icon="mdi:magnify" width="32" height="32" style="color: white;"/>
   </div>
   <h3 style="margin: 0 0 var(--space-3) 0; font-size: var(--text-xl); font-weight: 500; color: var(--color-text);">{title}</h3>

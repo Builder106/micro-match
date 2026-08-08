@@ -216,7 +216,7 @@
       <div class="bm-badges">
         {#each data.badges as badge (badge.id)}
           <article class="bm-badge">
-            <div class="bm-badge-icon" style="background: linear-gradient(135deg, {badge.color}, var(--color-primary)); box-shadow: 0 8px 20px {badge.color}40;">
+            <div class="bm-badge-icon" style="background: {badge.color || 'var(--color-primary)'}; box-shadow: 0 4px 14px {badge.color || 'rgba(0,0,0,0.1)'}40;">
               <Icon icon={badge.icon || 'lucide:trophy'} width="28" height="28" />
             </div>
             <div class="bm-badge-meta">
@@ -258,7 +258,7 @@
       </header>
 
       <div class="bm-preview">
-        <div class="bm-preview-icon" style="background: linear-gradient(135deg, {newBadge.customColor}, var(--color-primary)); box-shadow: 0 12px 30px {newBadge.customColor}40;">
+        <div class="bm-preview-icon" style="background: {newBadge.customColor || 'var(--color-primary)'}; box-shadow: 0 4px 14px {newBadge.customColor}40;">
           <Icon icon={newBadge.customIcon} width="36" height="36" />
         </div>
         <strong>{newBadge.customLabel || 'Badge name'}</strong>
@@ -447,7 +447,7 @@
   .bm-modal-head h2 { font-size: 20px; font-weight: 700; margin: 0; }
 
   .bm-preview {
-    background: linear-gradient(135deg, color-mix(in srgb, var(--color-primary) 6%, var(--color-surface-variant)), var(--color-surface-variant));
+    background: var(--color-surface-variant);
     border-radius: 20px;
     padding: 24px 16px;
     text-align: center;

@@ -133,17 +133,17 @@
 html, body {
   height: 100%;
   margin: 0;
-  background: linear-gradient(135deg, var(--color-background) 0%, var(--color-accent-blue-50) 100%);
+  background: var(--color-background);
   color: var(--color-text);
 }
 
 :root.dark html, :root.dark body {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  background: #0f172a;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not(.light) html, :root:not(.light) body {
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    background: #0f172a;
   }
 }
 
@@ -235,14 +235,14 @@ html, body {
 }
 
 .chip[aria-pressed="true"] {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-variant));
+  background: var(--color-primary);
   color: var(--color-on-primary);
   box-shadow: var(--elev-2);
 }
 
 /* Enhanced button styles */
 .btn-primary {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-variant));
+  background: var(--color-primary);
   color: var(--color-on-primary);
   border: none;
   border-radius: var(--radius-md);
@@ -257,7 +257,7 @@ html, body {
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, var(--color-primary-variant), var(--color-primary-light));
+  background: var(--color-primary-variant);
   box-shadow: var(--elev-2);
   transform: translateY(-1px);
 }
@@ -514,17 +514,17 @@ input:focus, textarea:focus, select:focus {
   100% { background-position: -200% 0; }
 }
 
-/* Enhanced gradient backgrounds */
+/* Solid backgrounds */
 .gradient-primary {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-variant));
+  background: var(--color-primary);
 }
 
 .gradient-secondary {
-  background: linear-gradient(135deg, var(--color-secondary), var(--color-secondary-variant));
+  background: var(--color-secondary);
 }
 
 .gradient-surface {
-  background: linear-gradient(135deg, var(--color-surface), var(--color-surface-variant));
+  background: var(--color-surface);
 }
 
 /* Glass morphism effect */
@@ -563,10 +563,7 @@ input:focus, textarea:focus, select:focus {
 /* ── Brand classes (mirror landing page voice on inner screens) ─────────── */
 
 .coral-gradient {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--color-primary);
 }
 
 .btn-coral {

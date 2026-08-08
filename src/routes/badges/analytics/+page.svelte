@@ -260,7 +260,7 @@
   .ba-trend-bar { height: 140px; background: color-mix(in srgb, var(--color-text) 5%, transparent); border-radius: 12px; display: flex; align-items: flex-end; overflow: hidden; }
   .ba-trend-fill {
     width: 100%;
-    background: linear-gradient(to top, var(--color-primary), var(--color-primary-light));
+    background: var(--color-primary);
     border-radius: 12px 12px 0 0;
     min-height: 4px;
     transition: height .8s cubic-bezier(0.4, 0, 0.2, 1);
@@ -275,7 +275,7 @@
   .ba-award { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 14px; transition: background .15s; }
   .ba-award.has-divider { border-top: 1px solid var(--card-border); border-radius: 0; }
   .ba-award:hover { background: color-mix(in srgb, var(--color-text) 3%, transparent); }
-  .ba-award-icon { width: 36px; height: 36px; border-radius: 12px; background: linear-gradient(135deg, #FDE68A, #F59E0B); color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ba-award-icon { width: 36px; height: 36px; border-radius: 12px; background: #FDE68A; color: #D97706; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .ba-award-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
   .ba-award-text strong { font-size: 14px; font-weight: 700; color: var(--color-text); }
   .ba-award-text small { font-size: 12px; color: color-mix(in srgb, var(--color-text) 60%, transparent); font-weight: 500; }

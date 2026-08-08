@@ -64,10 +64,10 @@
   }
 
   const lockedBadges = [
-    { label: 'First Mission', icon: 'hugeicons:trophy-01', gradient: 'linear-gradient(135deg, #FDE68A, #F59E0B)' },
-    { label: 'Speed Demon', icon: 'hugeicons:fire', gradient: 'linear-gradient(135deg, #FCA5A5, #E11D48)' },
-    { label: 'Global Citizen', icon: 'hugeicons:globe-02', gradient: 'linear-gradient(135deg, #93C5FD, #4F46E5)' },
-    { label: 'Perfect Week', icon: 'hugeicons:sparkles', gradient: 'linear-gradient(135deg, #6EE7B7, #059669)' },
+    { label: 'First Mission', icon: 'hugeicons:trophy-01', bg: '#FDE68A' },
+    { label: 'Speed Demon', icon: 'hugeicons:fire', bg: '#FCA5A5' },
+    { label: 'Global Citizen', icon: 'hugeicons:globe-02', bg: '#93C5FD' },
+    { label: 'Perfect Week', icon: 'hugeicons:sparkles', bg: '#6EE7B7' },
   ];
 
   onMount(async () => {
@@ -302,7 +302,7 @@
       {#if badges.length > 0}
         {#each badges.slice(0, 4) as badge (badge.label)}
           <div class="badge-card">
-            <div class="badge-icon" style="background: linear-gradient(135deg, {badge.color || '#FDE68A'}, var(--color-primary)); box-shadow: 0 8px 24px {badge.color || 'rgba(245,158,11,0.4)'};">
+            <div class="badge-icon" style="background: {badge.color || '#FDE68A'}; box-shadow: 0 4px 14px {badge.color || 'rgba(245,158,11,0.2)'};">
               <Icon icon="hugeicons:trophy-01" width="32" height="32" />
             </div>
             <span class="badge-title">{badge.label}</span>
@@ -311,7 +311,7 @@
       {:else}
         {#each lockedBadges as badge (badge.label)}
           <div class="badge-card locked">
-            <div class="badge-icon" style:background={badge.gradient}>
+            <div class="badge-icon" style:background={badge.bg}>
               <Icon icon={badge.icon} width="32" height="32" />
               <div class="badge-lock"><Icon icon="lucide:lock" width="14" height="14" /></div>
             </div>
@@ -376,7 +376,7 @@
   }
   .mission-card:hover { transform: translateY(-3px); box-shadow: 0 20px 48px rgba(15, 23, 42, 0.06); }
   .mission-card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-  .mission-avatar { width: 44px; height: 44px; border-radius: 16px; background: linear-gradient(135deg, #FFE5DC, #FFD1C2); color: var(--color-primary); display: flex; align-items: center; justify-content: center; }
+  .mission-avatar { width: 44px; height: 44px; border-radius: 16px; background: #FFE5DC; color: var(--color-primary); display: flex; align-items: center; justify-content: center; }
   .mission-time { padding: 5px 12px; border-radius: 9999px; font-size: 12px; font-weight: 700; background: rgba(255, 107, 107, 0.1); color: var(--color-primary); display: inline-flex; align-items: center; gap: 5px; }
   .mission-card h3 { font-size: 18px; font-weight: 700; line-height: 1.3; margin: 0 0 6px; }
   .mission-card p { color: color-mix(in srgb, var(--color-text) 65%, transparent); font-size: 14px; line-height: 1.5; margin: 0 0 16px; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
@@ -399,7 +399,7 @@
   }
   .mini-mission:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05); }
   .mini-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-  .mini-avatar { width: 36px; height: 36px; border-radius: 12px; background: linear-gradient(135deg, #FFE5DC, #FFD1C2); color: var(--color-primary); display: flex; align-items: center; justify-content: center; }
+  .mini-avatar { width: 36px; height: 36px; border-radius: 12px; background: #FFE5DC; color: var(--color-primary); display: flex; align-items: center; justify-content: center; }
   .mini-time { font-size: 11px; font-weight: 700; color: color-mix(in srgb, var(--color-text) 50%, transparent); display: inline-flex; align-items: center; gap: 4px; }
   .mini-mission h4 { font-size: 15px; font-weight: 700; margin: 0 0 4px; line-height: 1.3; }
   .mini-mission p { font-size: 12px; color: color-mix(in srgb, var(--color-text) 60%, transparent); margin: 0 0 10px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }

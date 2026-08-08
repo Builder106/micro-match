@@ -113,12 +113,9 @@
     overflow: hidden;
     margin-top: var(--space-6);
     padding: 14px 14px;
-    background:
-      linear-gradient(135deg,
-        color-mix(in srgb, var(--color-primary) 12%, var(--color-surface)) 0%,
-        color-mix(in srgb, var(--color-primary-light) 18%, var(--color-surface)) 100%);
+    background: color-mix(in srgb, var(--color-primary) 10%, var(--color-surface));
     border-radius: 16px;
-    border: 1px solid color-mix(in srgb, var(--color-primary) 25%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
   }
   .quick-tip-container::before {
     content: '';
@@ -188,10 +185,7 @@
     text-decoration: none; 
     font-weight: var(--font-bold); 
     font-size: 17px; 
-    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-variant)); 
-    -webkit-background-clip: text; 
-    -webkit-text-fill-color: transparent; 
-    background-clip: text;
+    color: var(--color-primary);
   }
 
   .nav-link {
@@ -210,7 +204,7 @@
     box-shadow: var(--elev-2);
   }
   .nav-link.active {
-    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-variant));
+    background: var(--color-primary);
     color: white;
     box-shadow: var(--elev-1);
   }
