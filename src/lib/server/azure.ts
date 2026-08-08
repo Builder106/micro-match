@@ -1,4 +1,5 @@
-// Minimal Azure Translator helper with in-memory cache and safe fallbacks.
+// LibreTranslate helper with in-memory cache and safe fallbacks.
+// Replaces Azure Translator — uses self-hosted LibreTranslate on Oracle VM via Cloudflare Tunnel.
 
 import { env } from '$env/dynamic/private';
 
@@ -14,30 +15,32 @@ export async function translateText({ text, to }: TranslateParams): Promise<stri
   const cached = cache.get(key);
   if (cached) return cached;
 
-  const endpoint = env.AZURE_TRANSLATOR_ENDPOINT;
-  const apiKey = env.AZURE_TRANSLATOR_KEY;
-  const region = env.AZURE_TRANSLATOR_REGION;
+  const endpoint = env.LIBRETRANSLATE_ENDPOINT; // e.g., https://charge-positions-spice-creature.trycloudflare.com
 
-  if (!endpoint || !apiKey || !region) {
+  if (!endpoint) {
     // Fallback: return original text when not configured
     cache.set(key, text);
     return text;
   }
 
   try {
-    const res = await fetch(`${endpoint}/translate?api-version=3.0&to=${encodeURIComponent(to)}`, {
+    // LibreTranslate API format
+    const res = await fetch(`${endpoint}/translate`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Ocp-Apim-Subscription-Key': apiKey,
-        'Ocp-Apim-Subscription-Region': region
       },
-      body: JSON.stringify([{ Text: text }])
+      body: JSON.stringify({
+        q: text,
+        source: 'auto', // auto-detect source language
+        target: to,
+        format: 'text'
+      })
     });
 
     if (!res.ok) throw new Error(`Translate failed: ${res.status}`);
     const data = await res.json();
-    const translated = data?.[0]?.translations?.[0]?.text ?? text;
+    const translated = data?.translatedText ?? text;
     cache.set(key, translated);
     return translated;
   } catch {
@@ -46,4 +49,3 @@ export async function translateText({ text, to }: TranslateParams): Promise<stri
     return text;
   }
 }
-
