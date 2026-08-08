@@ -8,6 +8,7 @@
     { id: 'data-handling', label: 'Data & AI', num: '03' },
     { id: 'cookies', label: 'Cookies', num: '04' },
     { id: 'user-rights', label: 'Your Rights', num: '05' },
+    { id: 'contact-info', label: 'Contact', num: '06' },
   ];
 </script>
 
@@ -166,7 +167,7 @@
         <span class="section-badge-num">05</span>
         <Icon icon="lucide:user-check" width="16" height="16" />
       </div>
-      <h2>5. Your Rights and Contact Information</h2>
+      <h2>5. Your Rights</h2>
     </div>
     <p>
       You have full control over your data on MicroMatch:
@@ -185,5 +186,19 @@
         <span><strong>Policy Updates:</strong> Any policy updates will be posted directly to this page with an updated timestamp.</span>
       </li>
     </ul>
+  </section>
+
+  <!-- Section 6: Contact Information -->
+  <section id="contact-info" class="legal-card">
+    <div class="legal-card-header">
+      <div class="section-badge-pill">
+        <span class="section-badge-num">06</span>
+        <Icon icon="lucide:mail" width="16" height="16" />
+      </div>
+      <h2>6. Contact Information</h2>
+    </div>
+    <p>
+      If you have questions, data requests, or privacy inquiries regarding this Privacy Policy, please email <a href="mailto:privacy@micromatch.app">privacy@micromatch.app</a>.
+    </p>
   </section>
 </StaticArticle>

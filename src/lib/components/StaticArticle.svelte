@@ -110,7 +110,7 @@
       <!-- Section Ribbon Navigation (if sections provided) -->
       {#if sections.length > 0}
         <nav class="sections-ribbon" aria-label="Section navigation">
-          {#each sections as sec, i (sec.id)}
+          {#each sections as sec (sec.id)}
             <button
               type="button"
               class="ribbon-btn"
@@ -122,9 +122,6 @@
               {/if}
               <span class="ribbon-label">{sec.label}</span>
             </button>
-            {#if i < sections.length - 1}
-              <span class="ribbon-divider" aria-hidden="true"></span>
-            {/if}
           {/each}
         </nav>
       {/if}
@@ -265,31 +262,34 @@
 
   /* Section Ribbon Navigation */
   .sections-ribbon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 4px 6px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px 10px;
     background: #ffffff;
     border: 1px solid #e2e8f0;
-    border-radius: 9999px;
-    padding: 8px 16px;
+    border-radius: 20px;
+    padding: 12px 14px;
     box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
     margin: 0 auto;
-    max-width: 100%;
+    max-width: 660px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .ribbon-btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
-    background: transparent;
-    border: 1px solid transparent;
+    background: #fdfcf8;
+    border: 1px solid #e2e8f0;
     cursor: pointer;
-    padding: 6px 14px;
+    padding: 8px 12px;
     border-radius: 9999px;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     font-family: 'Plus Jakarta Sans', sans-serif;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .ribbon-btn:hover {
@@ -313,6 +313,7 @@
     padding: 2px 7px;
     border-radius: 9999px;
     transition: all 0.2s ease;
+    flex-shrink: 0;
   }
 
   .ribbon-btn:hover .ribbon-num,
@@ -327,6 +328,8 @@
     color: #475569;
     transition: color 0.2s ease;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .ribbon-btn:hover .ribbon-label,
@@ -334,12 +337,10 @@
     color: #ff6b6b;
   }
 
-  .ribbon-divider {
-    width: 1px;
-    height: 16px;
-    background: #e2e8f0;
-    margin: 0 2px;
-    flex-shrink: 0;
+  @media (max-width: 580px) {
+    .sections-ribbon {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 
   /* Main Card Article */
