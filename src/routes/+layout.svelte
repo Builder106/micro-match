@@ -29,7 +29,7 @@
   $: isPublicPath = publicPaths.some((p) => pathname === p || pathname.startsWith(p + '/'));
   $: userRole = (($page.data as any)?.userRole as string | undefined) ?? 'anonymous';
   $: isSignedIn = userRole !== 'anonymous';
-  $: showAppChrome = !isLanding && !isAuthPath && !isPublicPath && isSignedIn;
+  $: showAppChrome = !isLanding && !isAuthPath && (!isPublicPath || (pathname === '/tasks' && isSignedIn)) && isSignedIn;
 
 
  

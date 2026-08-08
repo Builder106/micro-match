@@ -66,15 +66,17 @@
   onMount(() => {
     import('@dotlottie/player-component').then(() => { lottieReady = true; }).catch(() => {});
   });
+  $: userRole = (page.data?.userRole as string | undefined) ?? 'anonymous';
+  $: isSignedIn = userRole !== 'anonymous';
 </script>
 
-<PublicShell activeTab="tasks">
-  <div class="feed-page">
+{#if isSignedIn}
+  <div class="feed-page feed-page-app">
     <!-- ───── Header ───── -->
     <header class="feed-head">
       <h1>Find your next <span class="coral-gradient">mission</span>.</h1>
       <p>
-        {tasks.length} task{tasks.length === 1 ? '' : 's'} open{ngoCount > 0 ? ` across ${ngoCount} NGO${ngoCount === 1 ? '' : 's'}` : ''} | pick something that matches your skills and dive in.
+        {tasks.length} task{tasks.length === 1 ? '' : 's'} open{ngoCount > 0 ? ` across ${ngoCount} NGO${ngoCount === 1 ? '' : 's'}` : ''} <span class="pipe-sep">|</span> pick something that matches your skills and dive in.
       </p>
     </header>
 
@@ -190,10 +192,135 @@
   {#if page.data.userRole === 'ngo'}
     <FabCompose />
   {/if}
-</PublicShell>
+{:else}
+  <PublicShell activeTab="tasks">
+    <div class="feed-page">
+      <!-- ───── Header ───── -->
+      <header class="feed-head">
+        <h1>Find your next <span class="coral-gradient">mission</span>.</h1>
+        <p>
+          {tasks.length} task{tasks.length === 1 ? '' : 's'} open{ngoCount > 0 ? ` across ${ngoCount} NGO${ngoCount === 1 ? '' : 's'}` : ''} <span class="pipe-sep">|</span> pick something that matches your skills and dive in.
+        </p>
+      </header>
+
+      <!-- ───── Search ───── -->
+      <div class="search">
+        <Icon icon="lucide:search" width="20" height="20" class="search-icon" />
+        <input
+          type="search"
+          id="task-search-public"
+          name="task-search"
+          bind:value={q}
+          placeholder="Search tasks, tags, or skills…"
+          aria-label="Search tasks"
+        />
+        {#if q}
+          <button type="button" class="search-clear" on:click={() => q = ''} aria-label="Clear search">
+            <Icon icon="lucide:x" width="16" height="16" />
+          </button>
+        {/if}
+      </div>
+
+      <!-- ───── Filters ───── -->
+      <div class="filters">
+        <div class="filter-row">
+          <span class="filter-label">Time</span>
+          {#each timeOptions as m (m)}
+            <button
+              type="button"
+              class="filter-chip"
+              class:active={maxMinutes === m}
+              on:click={() => (maxMinutes = maxMinutes === m ? null : m)}
+            >
+              <Icon icon="lucide:clock" width="13" height="13" /> ≤ {m} min
+            </button>
+          {/each}
+        </div>
+
+        <div class="filter-row">
+          <span class="filter-label">Tags</span>
+          {#each quickTags as tag (tag)}
+            <button
+              type="button"
+              class="filter-chip filter-chip-tag"
+              class:active={selectedTags.includes(tag)}
+              on:click={() => toggleTag(tag)}
+            >
+              #{tag}
+            </button>
+          {/each}
+        </div>
+
+        <div class="filter-row filter-controls">
+          <label class="sort" for="task-sort-public">
+            <span class="sort-label">Sort</span>
+            <select id="task-sort-public" name="task-sort" bind:value={sortBy}>
+              <option value="recommended">Recommended</option>
+              <option value="shortest">Shortest first</option>
+              <option value="az">A–Z</option>
+            </select>
+            <Icon icon="lucide:chevron-down" width="14" height="14" class="sort-caret" />
+          </label>
+          {#if hasActiveFilters}
+            <button type="button" class="filter-clear" on:click={clearFilters}>
+              <Icon icon="lucide:x" width="14" height="14" /> Clear filters
+            </button>
+          {/if}
+        </div>
+      </div>
+
+      <!-- ───── Results ───── -->
+      {#if sorted.length === 0}
+        <div class="feed-empty">
+          <div class="empty-mascot">
+            {#if lottieReady}
+              <dotlottie-player src="/animations/empty_state_mascot.lottie" autoplay loop="true"></dotlottie-player>
+            {:else}
+              <Icon icon="lucide:search-x" width="80" height="80" />
+            {/if}
+          </div>
+          {#if hasActiveFilters}
+            <h2>Nothing matches those filters.</h2>
+            <p>Try widening your search or clearing the filters to see everything.</p>
+            <button type="button" class="btn-dark-pill" on:click={clearFilters}>
+              <Icon icon="lucide:rotate-ccw" width="14" height="14" />
+              Clear filters
+            </button>
+          {:else}
+            <h2>You're too fast!</h2>
+            <p>Our NGOs are busy preparing more bite-sized tasks. Check back soon — fresh missions land daily.</p>
+          {/if}
+        </div>
+      {:else}
+        <div class="feed-grid">
+          {#each sorted as t (t.id)}
+            <TaskCard
+              id={t.id}
+              title={t.title}
+              shortDescription={t.shortDescription}
+              tags={t.tags}
+              estimatedMinutes={t.estimatedMinutes}
+              language={t.language}
+              href={`/task/${t.id}`}
+              status={t.status}
+              deadline={t.deadline}
+              maxVolunteers={t.maxVolunteers}
+              isVerified={t.isVerified}
+            />
+          {/each}
+        </div>
+      {/if}
+    </div>
+
+    {#if page.data.userRole === 'ngo'}
+      <FabCompose />
+    {/if}
+  </PublicShell>
+{/if}
 
 <style>
-  .feed-page { display: flex; flex-direction: column; gap: 28px; max-width: 1200px; margin: 0 auto; padding: 48px 24px 80px; }
+  .feed-page { display: flex; flex-direction: column; gap: 24px; max-width: 1040px; margin: 0 auto; padding: 32px 20px 80px; }
+  .feed-page-app { padding: 8px 0 60px; }
 
   /* Header */
   .feed-head h1 { font-size: clamp(1.75rem, 3vw + 0.5rem, 2.75rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 12px; }
