@@ -80,4 +80,33 @@ test.describe('public pages', () => {
     await page.getByRole('link', { name: /Find a Task/i }).first().click();
     await expect(page).toHaveURL(/\/tasks/);
   });
+
+  test('theme toggle button switches theme between light and dark', async ({ page }) => {
+    await page.goto('/', { waitUntil: 'networkidle' });
+    const toggleBtn = page.getByRole('button', { name: /Toggle color theme/i });
+    await expect(toggleBtn).toBeVisible();
+
+    const isDarkBefore = await page.evaluate(() => document.documentElement.classList.contains('dark'));
+    await toggleBtn.click();
+    await page.waitForTimeout(300);
+    const isDarkAfter = await page.evaluate(() => document.documentElement.classList.contains('dark'));
+    expect(isDarkAfter).not.toBe(isDarkBefore);
+  });
+
+  test('for-ngos page renders hero section and NGO card mockup', async ({ page }) => {
+    await page.goto('/for-ngos');
+    await expect(page.getByRole('heading', { level: 1, name: /Post tasks/i })).toBeVisible();
+    await expect(page.getByText(/IRS 501\(c\)\(3\) Verified NGO/i)).toBeVisible();
+  });
+
+  test('for-volunteers page renders hero section', async ({ page }) => {
+    await page.goto('/for-volunteers');
+    await expect(page.getByRole('heading', { level: 1, name: /Real impact/i })).toBeVisible();
+  });
+
+  test('how-it-works page renders process ribbon', async ({ page }) => {
+    await page.goto('/how-it-works');
+    await expect(page.getByRole('heading', { level: 1, name: /How Micro-Volunteering/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /1\. Browse/i })).toBeVisible();
+  });
 });
