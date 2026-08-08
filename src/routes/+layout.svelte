@@ -6,7 +6,7 @@
    import TopAppBar from '@smui/top-app-bar';
    import Button from '@smui/button';
    import Icon from '@iconify/svelte';
-   import { ModeWatcher, toggleMode } from 'mode-watcher';
+   import ThemeToggle from '$lib/components/ThemeToggle.svelte';
    import Sidebar from '$lib/components/Sidebar.svelte';
    import { onMount } from 'svelte';
    import { page } from '$app/stores';
@@ -145,26 +145,7 @@
      </div>
    </svelte:fragment>
    <svelte:fragment slot="actions">
-    <div 
-      on:click={toggleMode} 
-      on:keydown={(e) => e.key === 'Enter' && toggleMode()}
-      role="button" 
-      tabindex="0"
-      aria-label="Toggle theme" 
-      style="margin-right: var(--space-2); cursor: pointer; border-radius: var(--radius-sm); padding: var(--space-2);"
-    >
-      <Button
-        variant="unelevated"
-        style="
-          background-color: var(--color-surface-container);
-          color: var(--color-text-secondary);
-          --mdc-theme-primary: var(--color-surface-container);
-        "
-      >
-        <Icon icon="mdi:theme-light-dark" width="20" height="20" />
-        <span style="margin-left: var(--space-2);">Theme</span>
-      </Button>
-    </div>
+    <ThemeToggle compact={true} />
     {#if $page.data.userRole === 'ngo'}
       <Button variant="text" href="/org" aria-label="Post task" class="btn-primary" style="padding: var(--space-2) var(--space-4); font-size: var(--text-sm);">
         <Icon icon="mdi:plus-circle-outline" width="24" height="24"/>
@@ -175,7 +156,6 @@
  </TopAppBar>
 {/if}
  
- <ModeWatcher />
  <div class="page-shell">
    {#if showAppChrome}
       <Sidebar />

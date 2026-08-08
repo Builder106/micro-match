@@ -22,14 +22,17 @@
     if (saved === 'light' || saved === 'dark') {
       applyTheme(saved);
     } else {
-      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-      applyTheme(prefersDark ? 'dark' : 'light');
+      const isDarkActive = document.documentElement.classList.contains('dark') ||
+        (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      applyTheme(isDarkActive ? 'dark' : 'light');
     }
   });
 </script>
 
 <button
+  type="button"
   class="theme-toggle"
+  class:compact={compact}
   aria-label="Toggle color theme"
   on:click={toggleTheme}
   title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
@@ -49,7 +52,7 @@
     gap: var(--space-2);
     padding: var(--space-2) var(--space-3);
     border-radius: var(--radius-lg);
-    border: 1px solid var(--color-outline-variant);
+    border: 1px solid var(--card-border-strong);
     background: var(--color-surface);
     color: var(--color-text);
     cursor: pointer;
@@ -57,8 +60,17 @@
     text-decoration: none;
   }
 
+  .theme-toggle.compact {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    justify-content: center;
+    border-radius: 9999px;
+  }
+
   .theme-toggle:hover {
     box-shadow: var(--elev-1);
+    border-color: var(--color-primary);
     transform: translateY(-1px);
   }
 </style>

@@ -3,7 +3,7 @@
   import { page } from '$app/state';
   import { tick, onDestroy } from 'svelte';
   import { fly, fade } from 'svelte/transition';
-  import { toggleMode } from 'mode-watcher';
+  import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 
   export let activeTab: 'home' | 'how-it-works' | 'for-ngos' | 'for-volunteers' | 'tasks' | 'impact' | undefined = undefined;
 
@@ -59,14 +59,7 @@
         <a href="/for-volunteers" class:active={activeTab === 'for-volunteers'}>For Volunteers</a>
       </nav>
       <div class="header-actions">
-        <button
-          type="button"
-          class="theme-toggle"
-          aria-label="Toggle theme"
-          on:click={toggleMode}
-        >
-          <Icon icon="mdi:theme-light-dark" width="20" height="20" />
-        </button>
+        <ThemeToggle compact={true} />
         <button
           type="button"
           class="menu-toggle"
@@ -217,8 +210,8 @@
   .header-actions { display: flex; align-items: center; gap: 12px; }
   .header-signin { font-size: 14px; font-weight: 600; color: var(--color-text); text-decoration: none; display: none; }
   .header-signin:hover { color: var(--color-primary); }
-  .header-github, .theme-toggle { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 40px; height: 40px; padding: 0; background: var(--color-surface); border: 1px solid var(--card-border-strong); border-radius: 9999px; color: var(--color-text); font-size: 14px; font-weight: 600; text-decoration: none; transition: all .2s; cursor: pointer; }
-  .header-github:hover, .theme-toggle:hover { background: var(--color-text); color: var(--color-surface); border-color: var(--color-text); transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+  .header-github { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 40px; height: 40px; padding: 0; background: var(--color-surface); border: 1px solid var(--card-border-strong); border-radius: 9999px; color: var(--color-text); font-size: 14px; font-weight: 600; text-decoration: none; transition: all .2s; cursor: pointer; }
+  .header-github:hover { background: var(--color-text); color: var(--color-surface); border-color: var(--color-text); transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
   .header-github span { display: none; }
   .menu-toggle { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; padding: 0; background: var(--color-surface); border: 1px solid var(--card-border-strong); border-radius: 9999px; color: var(--color-text); cursor: pointer; transition: all .2s; }
   .menu-toggle:hover { background: var(--color-surface-variant); border-color: var(--card-border-strong); }
