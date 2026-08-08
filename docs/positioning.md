@@ -22,3 +22,10 @@ Two different shapes of product, even though they overlap on the word "volunteer
 Idealist's moat is two decades of supply density and SEO; MicroMatch has neither. The proof-review loop is real NGO friction — posting on Idealist costs an org an email address; posting on MicroMatch costs grading time.
 
 The bet: bite-sized + verified + badge-bearing is a different enough product that supply-side friction is worth it for the orgs who want async help and the volunteers who want a record.
+
+## F-1 Non-Commercial & Legal Positioning
+
+1. **Non-commercial portfolio project.** Maintained solely as an educational, individual portfolio demonstration under F-1 visa non-commercial guidelines. Generates zero revenue and has no corporate entity.
+2. **Sub-processor disclosures.** Infrastructure is explicitly disclosed: Vercel Inc. handles hosting, CDN, request logs, and edge traffic routing; Appwrite powers authentication, databases, storage buckets, and session cookies.
+3. **As-is liability & data boundaries.** Provided on an "AS IS" basis. User submission inputs are processed in memory and stored securely in Appwrite without being used to train third-party AI models.
+

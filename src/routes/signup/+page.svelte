@@ -119,6 +119,9 @@
               <Icon icon="lucide:arrow-right" width="16" height="16" />
             {/if}
           </button>
+          <p class="legal-notice">
+            By registering, you agree to our <a href="/terms">Terms of Service</a> and <a href="/privacy">Privacy Policy</a>.
+          </p>
         </form>
       {/if}
     </div>
@@ -323,6 +326,18 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
+  }
+  .legal-notice {
+    margin-top: 14px;
+    text-align: center;
+    font-size: 12px;
+    color: #64748b;
+    font-weight: 500;
+  }
+  .legal-notice a {
+    color: #0f172a;
+    text-decoration: underline;
+    font-weight: 600;
   }
   .foot {
     margin-top: 22px;
