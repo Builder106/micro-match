@@ -282,14 +282,14 @@
     background: var(--color-background);
     width: 100%;
   }
-  .ngo-hero-inner {
+  .ngo-hero-grid {
     display: grid;
     grid-template-columns: 1fr;
     gap: 48px;
     align-items: center;
   }
   @media (min-width: 960px) {
-    .ngo-hero-inner { grid-template-columns: 1.1fr 1fr; }
+    .ngo-hero-grid { grid-template-columns: 1.1fr 1fr; }
   }
 
   .ngo-pill {
