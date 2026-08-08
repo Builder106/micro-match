@@ -17,19 +17,17 @@ describe('translateText', () => {
     vi.unstubAllGlobals();
   });
 
-  it('returns the original text unchanged when Azure Translator env vars are unset', async () => {
+  it('returns the original text unchanged when LibreTranslate endpoint is unset', async () => {
     const result = await translateText({ text: 'Hello world', to: 'es' });
     expect(result).toBe('Hello world');
   });
 
-  it('calls the Azure endpoint and returns the translated text when configured', async () => {
-    envState.AZURE_TRANSLATOR_ENDPOINT = 'https://translator.example.com';
-    envState.AZURE_TRANSLATOR_KEY = 'fake-key';
-    envState.AZURE_TRANSLATOR_REGION = 'eastus';
+  it('calls the LibreTranslate endpoint and returns the translated text when configured', async () => {
+    envState.LIBRETRANSLATE_ENDPOINT = 'https://translate.example.com';
 
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => [{ translations: [{ text: 'Hola mundo' }] }]
+      json: async () => ({ translatedText: 'Hola mundo' })
     });
     vi.stubGlobal('fetch', fetchMock);
 
@@ -37,25 +35,28 @@ describe('translateText', () => {
 
     expect(result).toBe('Hola mundo');
     expect(fetchMock).toHaveBeenCalledWith(
-      expect.stringContaining('/translate?api-version=3.0&to=es'),
+      expect.stringContaining('/translate'),
       expect.objectContaining({
         method: 'POST',
         headers: expect.objectContaining({
-          'Ocp-Apim-Subscription-Key': 'fake-key',
-          'Ocp-Apim-Subscription-Region': 'eastus'
+          'Content-Type': 'application/json'
+        }),
+        body: JSON.stringify({
+          q: 'Hello world unique-1',
+          source: 'auto',
+          target: 'es',
+          format: 'text'
         })
       })
     );
   });
 
   it('caches translations by locale+text so a second call skips the network', async () => {
-    envState.AZURE_TRANSLATOR_ENDPOINT = 'https://translator.example.com';
-    envState.AZURE_TRANSLATOR_KEY = 'fake-key';
-    envState.AZURE_TRANSLATOR_REGION = 'eastus';
+    envState.LIBRETRANSLATE_ENDPOINT = 'https://translate.example.com';
 
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => [{ translations: [{ text: 'Bonjour unique-2' }] }]
+      json: async () => ({ translatedText: 'Bonjour unique-2' })
     });
     vi.stubGlobal('fetch', fetchMock);
 
@@ -68,9 +69,7 @@ describe('translateText', () => {
   });
 
   it('falls back to the original text when the API responds with a non-ok status', async () => {
-    envState.AZURE_TRANSLATOR_ENDPOINT = 'https://translator.example.com';
-    envState.AZURE_TRANSLATOR_KEY = 'fake-key';
-    envState.AZURE_TRANSLATOR_REGION = 'eastus';
+    envState.LIBRETRANSLATE_ENDPOINT = 'https://translate.example.com';
 
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, status: 500, json: async () => ({}) }));
 
@@ -79,9 +78,7 @@ describe('translateText', () => {
   });
 
   it('falls back to the original text when fetch throws', async () => {
-    envState.AZURE_TRANSLATOR_ENDPOINT = 'https://translator.example.com';
-    envState.AZURE_TRANSLATOR_KEY = 'fake-key';
-    envState.AZURE_TRANSLATOR_REGION = 'eastus';
+    envState.LIBRETRANSLATE_ENDPOINT = 'https://translate.example.com';
 
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network down')));
 
@@ -90,11 +87,9 @@ describe('translateText', () => {
   });
 
   it('falls back to the original text when the response shape is unexpected', async () => {
-    envState.AZURE_TRANSLATOR_ENDPOINT = 'https://translator.example.com';
-    envState.AZURE_TRANSLATOR_KEY = 'fake-key';
-    envState.AZURE_TRANSLATOR_REGION = 'eastus';
+    envState.LIBRETRANSLATE_ENDPOINT = 'https://translate.example.com';
 
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => [] }));
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ({}) }));
 
     const result = await translateText({ text: 'Weird shape unique-5', to: 'de' });
     expect(result).toBe('Weird shape unique-5');
