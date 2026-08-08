@@ -6,7 +6,21 @@
   import { onMount } from 'svelte';
   import { page } from '$app/state';
 
-  export let data: { tasks: Array<{ id: string; title: string; shortDescription: string; tags: string[]; estimatedMinutes?: number; language?: string; status?: string; deadline?: string; maxVolunteers?: number; isVerified?: boolean; orgId?: string }>};
+  interface Task {
+    id: string;
+    title: string;
+    shortDescription: string;
+    tags: string[];
+    estimatedMinutes?: number;
+    language?: string;
+    status?: string;
+    deadline?: string;
+    maxVolunteers?: number;
+    isVerified?: boolean;
+    orgId?: string;
+  }
+
+  let { data }: { data: { tasks: Task[] } } = $props();
 
   let q = "";
   let lottieReady = false;
@@ -32,7 +46,7 @@
   const quickTags = ['translation', 'design', 'data', 'excel', 'spanish'];
   const timeOptions = [15, 20, 30];
 
-  $: filtered = tasks.filter((t) => {
+  const filtered = $derived(tasks.filter((t) => {
     const qLower = q.toLowerCase();
     const matchesQuery =
       qLower === '' ||
@@ -48,9 +62,9 @@
       (typeof t.estimatedMinutes === 'number' && t.estimatedMinutes <= maxMinutes);
 
     return matchesQuery && matchesTags && matchesTime;
-  });
+  }));
 
-  $: sorted = [...filtered].sort((a, b) => {
+  const sorted = $derived([...filtered].sort((a, b) => {
     if (sortBy === 'shortest') {
       const am = typeof a.estimatedMinutes === 'number' ? a.estimatedMinutes : Number.MAX_SAFE_INTEGER;
       const bm = typeof b.estimatedMinutes === 'number' ? b.estimatedMinutes : Number.MAX_SAFE_INTEGER;
@@ -58,16 +72,16 @@
     }
     if (sortBy === 'az') return a.title.localeCompare(b.title);
     return 0;
-  });
+  }));
 
-  $: hasActiveFilters = q !== '' || selectedTags.length > 0 || maxMinutes !== null || sortBy !== 'recommended';
-  const ngoCount = new Set(tasks.map(t => t.orgId).filter(Boolean)).size;
+  const hasActiveFilters = $derived(q !== '' || selectedTags.length > 0 || maxMinutes !== null || sortBy !== 'recommended');
+  const ngoCount = $derived(new Set(tasks.map(t => t.orgId).filter(Boolean)).size);
 
   onMount(() => {
     import('@dotlottie/player-component').then(() => { lottieReady = true; }).catch(() => {});
   });
-  $: userRole = (page.data?.userRole as string | undefined) ?? 'anonymous';
-  $: isSignedIn = userRole !== 'anonymous';
+  let userRole = $derived(page.data?.userRole ?? 'anonymous');
+  let isSignedIn = $derived(userRole !== 'anonymous');
 </script>
 
 {#if isSignedIn}
