@@ -213,7 +213,10 @@
         <div class="comp-header">
           <div class="comp-cell feature">Feature</div>
           <div class="comp-cell old">Traditional Volunteering</div>
-          <div class="comp-cell new">MicroMatch Platform</div>
+          <div class="comp-cell new">
+            <img src="/logo.png" alt="MicroMatch" class="comp-header-logo" width="22" height="22" />
+            <span>MicroMatch</span>
+          </div>
         </div>
 
         {#each comparison as row (row.feature)}
@@ -591,6 +594,9 @@
   .comp-cell { display: flex; align-items: center; gap: 10px; }
   .comp-cell.old { color: #64748B; }
   .comp-cell.new { color: #0F172A; font-weight: 600; }
+  .comp-header .comp-cell.new { color: #FFFFFF; font-weight: 700; }
+  .comp-header .comp-cell.old { color: #94A3B8; }
+  .comp-header-logo { width: 22px; height: 22px; object-fit: contain; flex-shrink: 0; }
   :global(.icon-bad) { color: #DC2626; flex-shrink: 0; transition: transform 0.2s ease; }
   :global(.icon-good) { color: #059669; flex-shrink: 0; transition: transform 0.2s ease; }
   .comp-row:hover :global(.icon-good) { transform: scale(1.2); }
