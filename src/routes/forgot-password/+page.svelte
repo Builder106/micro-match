@@ -102,7 +102,8 @@
     height: 100vh;
     width: 100%;
     display: flex;
-    background: #faf9f6;
+    background: var(--color-background);
+    color: var(--color-text);
     overflow: hidden;
   }
   .left-panel {
@@ -127,23 +128,23 @@
     align-items: center;
     gap: 6px;
     align-self: flex-start;
-    color: rgba(15, 23, 42, 0.6);
+    color: var(--color-text-secondary);
     text-decoration: none;
     font-size: 13px;
     font-weight: 700;
     padding: 4px 0;
   }
-  .back-btn:hover { color: #FF6B6B; }
+  .back-btn:hover { color: var(--color-primary); }
   h1 {
     font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
     font-size: clamp(2rem, 3vw, 2.6rem);
     font-weight: 800;
-    color: #0f172a;
+    color: var(--color-text);
     margin: 0;
     line-height: 1.1;
     letter-spacing: -0.02em;
   }
-  p { margin: 0; color: rgba(15, 23, 42, 0.65); font-size: 16px; font-weight: 500; line-height: 1.5; }
+  p { margin: 0; color: var(--color-text-secondary); font-size: 16px; font-weight: 500; line-height: 1.5; }
 
   .success {
     display: flex;
@@ -162,31 +163,31 @@
 
   .auth-form { display: grid; gap: 12px; }
   label { display: grid; gap: 6px; }
-  label span { font-size: 13px; font-weight: 700; color: #0f172a; }
+  label span { font-size: 13px; font-weight: 700; color: var(--color-text); }
   .field-wrap { position: relative; }
-  .field-wrap :global(svg) { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: rgba(15, 23, 42, 0.4); pointer-events: none; }
+  .field-wrap :global(svg) { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--color-text-tertiary); pointer-events: none; }
   .with-icon { padding-left: 40px; }
   input {
     width: 100%;
     box-sizing: border-box;
     height: 48px;
-    border: 1px solid rgba(15, 23, 42, 0.12);
+    border: 1px solid var(--card-border-strong);
     border-radius: 12px;
     padding: 0 14px;
-    background: #fafafa;
-    color: #0f172a;
+    background: var(--color-surface);
+    color: var(--color-text);
     font-family: inherit;
     font-size: 14px;
     font-weight: 500;
     transition: all 150ms ease;
   }
-  input:focus { border-color: #FF6B6B; background: #fff; box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12); outline: none; }
+  input:focus { border-color: var(--color-primary); background: var(--color-surface); box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12); outline: none; }
   .auth-submit { margin-top: 8px; width: 100%; }
   .error { margin: 0; padding: 10px 12px; background: color-mix(in srgb, #dc2626 10%, transparent); color: #dc2626; font-size: 13px; font-weight: 600; border-radius: 10px; display: inline-flex; align-items: center; gap: 6px; }
 
-  .foot { margin-top: 22px; text-align: center; font-size: 14px; color: rgba(15, 23, 42, 0.6); }
-  .foot a { color: #0f172a; text-decoration: underline; text-decoration-color: rgba(15, 23, 42, 0.25); text-decoration-thickness: 2px; text-underline-offset: 4px; font-weight: 700; margin-left: 4px; }
-  .foot a:hover { color: #FF6B6B; text-decoration-color: #FF6B6B; }
+  .foot { margin-top: 22px; text-align: center; font-size: 14px; color: var(--color-text-secondary); }
+  .foot a { color: var(--color-text); text-decoration: underline; text-decoration-color: var(--card-border-strong); text-decoration-thickness: 2px; text-underline-offset: 4px; font-weight: 700; margin-left: 4px; }
+  .foot a:hover { color: var(--color-primary); text-decoration-color: var(--color-primary); }
 
   @media (min-width: 1024px) {
     .left-panel { display: block; }

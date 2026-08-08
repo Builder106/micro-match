@@ -133,7 +133,8 @@
     height: 100vh;
     width: 100%;
     display: flex;
-    background: #faf9f6;
+    background: var(--color-background);
+    color: var(--color-text);
     overflow: hidden;
   }
   .left-panel {
@@ -165,7 +166,7 @@
   .back-btn {
     border: 0;
     background: transparent;
-    color: #64748b;
+    color: var(--color-text-secondary);
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -177,14 +178,14 @@
   h1 {
     font-size: clamp(2.35rem, 3.5vw, 3.4rem);
     font-weight: 800;
-    color: #0f172a;
+    color: var(--color-text);
     margin: 0 0 8px;
     line-height: 1.1;
     letter-spacing: -0.02em;
   }
   p {
     margin: 0;
-    color: #475569;
+    color: var(--color-text-secondary);
     font-size: 1.08rem;
     font-weight: 500;
   }
@@ -193,9 +194,10 @@
     gap: 16px;
   }
   .role-card {
-    border: 2px solid rgba(15, 23, 42, 0.08);
+    border: 2px solid var(--card-border-strong);
     border-radius: 20px;
-    background: #fff;
+    background: var(--color-surface);
+    color: var(--color-text);
     text-align: left;
     padding: 18px;
     display: flex;
@@ -206,12 +208,12 @@
     transition: all 150ms ease;
   }
   .role-card:hover {
-    border-color: rgba(255, 107, 107, 0.3);
+    border-color: var(--color-primary);
     transform: translateY(-2px);
     box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
   }
-  .role-card.volunteer .role-icon { background: #FFEDD5; color: #EA580C; }
-  .role-card.ngo .role-icon { background: #DBEAFE; color: #2563EB; }
+  .role-card.volunteer .role-icon { background: rgba(234, 88, 12, 0.15); color: #EA580C; }
+  .role-card.ngo .role-icon { background: rgba(37, 99, 235, 0.15); color: #2563EB; }
   .role-icon {
     width: 52px;
     height: 52px;
@@ -227,11 +229,11 @@
   .role-copy strong {
     font-size: 1.15rem;
     line-height: 1.2;
-    color: #0f172a;
+    color: var(--color-text);
     font-weight: 700;
   }
   .role-copy span {
-    color: rgba(15, 23, 42, 0.65);
+    color: var(--color-text-secondary);
     line-height: 1.5;
     font-size: 14px;
     font-weight: 500;
@@ -240,8 +242,8 @@
     width: 100%;
     height: 48px;
     border-radius: 14px;
-    border: 1px solid rgba(15, 23, 42, 0.12);
-    background: #fff;
+    border: 1px solid var(--card-border-strong);
+    background: var(--color-surface);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -249,13 +251,13 @@
     font-family: inherit;
     font-size: 14px;
     font-weight: 700;
-    color: #0f172a;
+    color: var(--color-text);
     cursor: pointer;
     transition: all 150ms ease;
   }
   .google-btn:hover {
-    border-color: rgba(15, 23, 42, 0.25);
-    background: #f8fafc;
+    border-color: var(--color-primary);
+    background: var(--color-surface-variant);
     box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
   }
   .divider {
@@ -267,14 +269,14 @@
   }
   .divider span {
     height: 1px;
-    background: rgba(15, 23, 42, 0.1);
+    background: var(--card-border-strong);
   }
   .divider small {
     font-weight: 700;
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.12em;
-    color: rgba(15, 23, 42, 0.5);
+    color: var(--color-text-tertiary);
   }
   .auth-form {
     display: grid;
@@ -292,25 +294,25 @@
   label span {
     font-size: 13px;
     font-weight: 700;
-    color: #0f172a;
+    color: var(--color-text);
   }
   input {
     width: 100%;
     box-sizing: border-box;
     height: 48px;
-    border: 1px solid rgba(15, 23, 42, 0.12);
+    border: 1px solid var(--card-border-strong);
     border-radius: 12px;
     padding: 0 14px;
-    background: #fafafa;
-    color: #0f172a;
+    background: var(--color-surface);
+    color: var(--color-text);
     font-family: inherit;
     font-size: 14px;
     font-weight: 500;
     transition: all 150ms ease;
   }
   input:focus {
-    border-color: #FF6B6B;
-    background: #fff;
+    border-color: var(--color-primary);
+    background: var(--color-surface);
     box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12);
     outline: none;
   }
@@ -331,11 +333,11 @@
     margin-top: 14px;
     text-align: center;
     font-size: 12px;
-    color: #64748b;
+    color: var(--color-text-tertiary);
     font-weight: 500;
   }
   .legal-notice a {
-    color: #0f172a;
+    color: var(--color-text);
     text-decoration: underline;
     font-weight: 600;
   }
@@ -343,11 +345,12 @@
     margin-top: 22px;
     text-align: center;
     font-size: 0.95rem;
+    color: var(--color-text-secondary);
   }
   .foot a {
-    color: #1e293b;
+    color: var(--color-text);
     text-decoration: underline;
-    text-decoration-color: #cbd5e1;
+    text-decoration-color: var(--card-border-strong);
     text-decoration-thickness: 2px;
     text-underline-offset: 5px;
     font-weight: 800;
