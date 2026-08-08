@@ -158,7 +158,6 @@
   <section class="bm-hero brand-card">
     <div class="bm-hero-blob"></div>
     <div class="bm-hero-text">
-      <span class="bm-eyebrow">Recognition</span>
       <h1>Reward what <span class="coral-gradient">matters</span>.</h1>
       <p>Design custom badges to celebrate the moments that move your mission. Pick from a template, or build from scratch.</p>
       <div class="bm-hero-actions">
@@ -224,7 +223,7 @@
               <h4>{badge.label}</h4>
               <small>
                 {#if badge.criteria === 'task-completion'}Awarded for any task{:else if badge.criteria === 'task-specific'}Awarded for a specific task{:else if badge.criteria === 'time-based'}Time-based{:else if badge.criteria === 'milestone'}Milestone{:else}Custom rule{/if}
-                {#if badge.createdAt} · created {relativeDate(badge.createdAt)}{/if}
+                {#if badge.createdAt} <span class="pipe-sep">|</span> created {relativeDate(badge.createdAt)}{/if}
               </small>
             </div>
             <div class="bm-badge-actions">
@@ -339,7 +338,6 @@
   .bm-hero { position: relative; overflow: hidden; padding: 40px 36px; }
   .bm-hero-blob { position: absolute; top: -50%; right: -10%; width: 360px; height: 360px; border-radius: 50%; background: rgba(255, 107, 107, 0.18); filter: blur(80px); pointer-events: none; }
   .bm-hero-text { position: relative; z-index: 1; max-width: 560px; }
-  .bm-eyebrow { display: inline-block; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-primary); padding: 4px 12px; background: rgba(255, 107, 107, 0.1); border-radius: 9999px; margin-bottom: 12px; }
   .bm-hero-text h1 { font-size: clamp(1.75rem, 3vw + 0.5rem, 2.75rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 12px; }
   .bm-hero-text p { color: color-mix(in srgb, var(--color-text) 70%, transparent); font-size: 16px; font-weight: 500; line-height: 1.6; margin: 0 0 24px; max-width: 480px; }
   .bm-hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }

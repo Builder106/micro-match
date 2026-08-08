@@ -121,7 +121,6 @@
 <div class="admin-page">
   <header class="admin-head">
     <div>
-      <span class="admin-eyebrow">Admin</span>
       <h1>Verification queue</h1>
       <p>Review NGO submissions. Approving stamps existing tasks with the Verified chip and emails the org.</p>
     </div>
@@ -152,9 +151,9 @@
               <h3>{v.orgName}</h3>
               <p class="admin-meta">
                 <span>{COUNTRY_FLAGS[v.country] ?? '🌍'} {v.country}</span>
-                <span>·</span>
+                <span class="pipe-sep">|</span>
                 <span>{v.country === 'US' ? 'EIN' : 'ID'} {v.taxId}</span>
-                <span>·</span>
+                <span class="pipe-sep">|</span>
                 <span>{relativeTime(v.submittedAt)}</span>
               </p>
             </div>
@@ -171,7 +170,7 @@
             <div class="propublica" class:bad={v.propublica.found === false || (v.propublica.found && v.propublica.status === 'revoked')}>
               <Icon icon={v.propublica.found && v.propublica.status === 'active' ? 'lucide:shield-check' : 'lucide:shield-alert'} width="14" height="14" />
               {#if v.propublica.found}
-                <span>ProPublica: <strong>{v.propublica.orgName}</strong> · {v.propublica.status === 'active' ? 'active 501(c)(3)' : v.propublica.status}</span>
+                <span>ProPublica: <strong>{v.propublica.orgName}</strong> <span class="pipe-sep">|</span> {v.propublica.status === 'active' ? 'active 501(c)(3)' : v.propublica.status}</span>
               {:else}
                 <span>ProPublica: not found ({v.propublica.error ?? 'no record'})</span>
               {/if}
@@ -224,7 +223,6 @@
 <style>
   .admin-page { display: flex; flex-direction: column; gap: 24px; max-width: 960px; margin: 0 auto; }
   .admin-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
-  .admin-eyebrow { display: inline-block; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-primary); padding: 3px 10px; background: rgba(255, 107, 107, 0.1); border-radius: 9999px; margin-bottom: 8px; }
   .admin-head h1 { font-size: clamp(1.5rem, 2.5vw + 0.25rem, 2.25rem); font-weight: 800; letter-spacing: -0.02em; margin: 0 0 6px; }
   .admin-head p { color: color-mix(in srgb, var(--color-text) 65%, transparent); font-size: 14px; line-height: 1.5; margin: 0; max-width: 560px; }
   .admin-pending { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: #FEF3C7; color: #92400E; border-radius: 9999px; font-size: 12px; font-weight: 700; flex-shrink: 0; }

@@ -148,7 +148,6 @@
   <div class="vc-blob"></div>
   <header class="vc-head">
     <div>
-      <span class="vc-eyebrow">Trust</span>
       <h2>Verification</h2>
     </div>
     {#if !loading && verification}
@@ -230,7 +229,7 @@
     </div>
   {:else if verification.status === 'pending'}
     <!-- ───── Pending ───── -->
-    <p class="vc-body">Submitted {relativeDate(verification.submittedAt)} · usually 1–2 business days. We'll email you when it's done.</p>
+    <p class="vc-body">Submitted {relativeDate(verification.submittedAt)} <span class="pipe-sep">|</span> usually 1–2 business days. We'll email you when it's done.</p>
     <ul class="vc-meta">
       <li><span>Org</span> <strong>{verification.orgName}</strong></li>
       <li><span>{taxIdLabel}</span> <strong>{verification.taxId}</strong></li>
@@ -266,7 +265,6 @@
   .vc-blob { position: absolute; top: -50%; right: -10%; width: 280px; height: 280px; border-radius: 50%; background: rgba(255, 107, 107, 0.12); filter: blur(80px); pointer-events: none; }
 
   .vc-head { position: relative; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
-  .vc-eyebrow { display: inline-block; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-primary); padding: 3px 10px; background: rgba(255, 107, 107, 0.1); border-radius: 9999px; margin-bottom: 6px; }
   .vc-head h2 { font-size: 20px; font-weight: 700; margin: 0; }
 
   .vc-status { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 9999px; font-size: 12px; font-weight: 700; }

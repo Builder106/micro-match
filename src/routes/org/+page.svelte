@@ -86,7 +86,6 @@
   <section class="org-hero brand-card">
     <div class="org-hero-blob"></div>
     <div class="org-hero-text">
-      <span class="org-eyebrow">New mission</span>
       <h1>Post a <span class="coral-gradient">task</span>.</h1>
       <p>Describe a bite-sized contribution and volunteers will pick it up. Aim for 15–30 minutes per task — it's the sweet spot for response rate.</p>
     </div>
@@ -253,7 +252,6 @@
   .org-hero { position: relative; overflow: hidden; padding: 32px 36px; }
   .org-hero-blob { position: absolute; top: -50%; right: -10%; width: 320px; height: 320px; border-radius: 50%; background: rgba(255, 107, 107, 0.18); filter: blur(80px); pointer-events: none; }
   .org-hero-text { position: relative; z-index: 1; max-width: 600px; }
-  .org-eyebrow { display: inline-block; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-primary); padding: 4px 12px; background: rgba(255, 107, 107, 0.1); border-radius: 9999px; margin-bottom: 12px; }
   .org-hero-text h1 { font-size: clamp(1.75rem, 3vw + 0.5rem, 2.5rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 10px; }
   .org-hero-text p { color: color-mix(in srgb, var(--color-text) 70%, transparent); font-size: 15px; line-height: 1.6; margin: 0; }
 

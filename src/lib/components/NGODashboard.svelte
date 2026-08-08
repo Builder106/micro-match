@@ -81,11 +81,10 @@
     <div class="ngo-hero-blob ngo-hero-blob-blue"></div>
 
     <div class="ngo-hero-text">
-      <span class="ngo-eyebrow">NGO Console</span>
       <h1>Welcome back, <span class="coral-gradient">{orgName || 'team'}</span>.</h1>
       <p>
         {#if pendingReviewsCount > 0}
-          {pendingReviewsCount} submission{pendingReviewsCount === 1 ? '' : 's'} waiting on you · {totalTasks} task{totalTasks === 1 ? '' : 's'} live
+          {pendingReviewsCount} submission{pendingReviewsCount === 1 ? '' : 's'} waiting on you <span class="pipe-sep">|</span> {totalTasks} task{totalTasks === 1 ? '' : 's'} live
         {:else}
           Mission control's all clear. Post your next task or review your impact.
         {/if}
@@ -102,7 +101,9 @@
     <div class="ngo-hero-ring">
       <svg viewBox="0 0 100 100" class="progress-ring">
         <circle cx="50" cy="50" r="40" class="ring-bg" />
-        <circle cx="50" cy="50" r="40" class="ring-fg" style:stroke-dashoffset={ringDashOffset} />
+        {#if pendingReviewsCount > 0}
+          <circle cx="50" cy="50" r="40" class="ring-fg" style:stroke-dashoffset={ringDashOffset} />
+        {/if}
       </svg>
       <div class="ring-label">
         <span class="ring-pct">{pendingReviewsCount}</span>
@@ -263,7 +264,6 @@
   .ngo-hero-blob-coral { top: -50%; right: -10%; width: 360px; height: 360px; background: rgba(255, 107, 107, 0.25); }
   .ngo-hero-blob-blue { bottom: -50%; left: 30%; width: 320px; height: 320px; background: rgba(147, 197, 253, 0.35); }
   .ngo-hero-text { position: relative; z-index: 1; max-width: 540px; }
-  .ngo-eyebrow { display: inline-block; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; color: var(--color-primary); margin-bottom: 12px; padding: 4px 12px; background: rgba(255, 107, 107, 0.1); border-radius: 9999px; }
   .ngo-hero-text h1 { font-size: clamp(1.75rem, 3vw + 0.5rem, 2.75rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 12px; }
   .ngo-hero-text p { color: color-mix(in srgb, var(--color-text) 70%, transparent); font-size: 16px; font-weight: 500; line-height: 1.6; margin: 0 0 24px; max-width: 480px; }
   .ngo-hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
@@ -273,8 +273,15 @@
   .ring-pct { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: 36px; font-weight: 800; letter-spacing: -0.02em; color: var(--color-text); line-height: 1; }
   .ring-sub { font-size: 10px; font-weight: 700; color: color-mix(in srgb, var(--color-text) 50%, transparent); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 6px; max-width: 110px; text-align: center; line-height: 1.3; }
 
-  /* Section count badge */
-  .section-count { font-size: 12px; font-weight: 800; color: var(--color-primary); background: rgba(255, 107, 107, 0.1); padding: 4px 10px; border-radius: 9999px; }
+  .pipe-sep {
+    display: inline-block;
+    margin: 0 6px;
+    opacity: 0.4;
+    font-weight: 300;
+  }
+
+  /* Section count metadata */
+  .section-count { font-size: 13px; font-weight: 600; color: color-mix(in srgb, var(--color-text) 55%, transparent); }
 
   /* Reviews list */
   .reviews-list { display: flex; flex-direction: column; gap: 16px; }

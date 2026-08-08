@@ -77,7 +77,6 @@
   <section class="cl-hero brand-card">
     <div class="cl-hero-blob"></div>
     <div class="cl-hero-text">
-      <span class="cl-eyebrow">Submission</span>
       <h1>Send your work for <span class="coral-gradient">review</span>.</h1>
       <p>Drop in a link to what you produced and add any context that'll help the org review it quickly.</p>
     </div>
@@ -178,7 +177,6 @@
   .cl-hero { position: relative; overflow: hidden; padding: 28px 32px; }
   .cl-hero-blob { position: absolute; top: -50%; right: -10%; width: 280px; height: 280px; border-radius: 50%; background: rgba(5, 150, 105, 0.18); filter: blur(80px); pointer-events: none; }
   .cl-hero-text { position: relative; z-index: 1; max-width: 540px; }
-  .cl-eyebrow { display: inline-block; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-primary); padding: 4px 12px; background: rgba(255, 107, 107, 0.1); border-radius: 9999px; margin-bottom: 10px; }
   .cl-hero-text h1 { font-size: clamp(1.5rem, 2.5vw + 0.5rem, 2.25rem); font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; margin: 0 0 8px; }
   .cl-hero-text p { color: color-mix(in srgb, var(--color-text) 70%, transparent); font-size: 15px; line-height: 1.6; margin: 0; }
 

@@ -119,7 +119,7 @@
         {#if approvedClaimsCount === 0}
           <p>Let's land your first task. It only takes a few minutes.</p>
         {:else}
-          <p>Level {level} volunteer · {approvedClaimsCount} task{approvedClaimsCount === 1 ? '' : 's'} done · {totalHours.toFixed(1)} hour{totalHours === 1 ? '' : 's'} given.</p>
+          <p>Level {level} volunteer <span class="pipe-sep">|</span> {approvedClaimsCount} task{approvedClaimsCount === 1 ? '' : 's'} done <span class="pipe-sep">|</span> {totalHours.toFixed(1)} hour{totalHours === 1 ? '' : 's'} given.</p>
         {/if}
       {:else}
         <h1>Welcome to <span class="coral-gradient">Impact HQ</span>.</h1>
@@ -279,7 +279,7 @@
             </div>
             <div class="activity-text">
               <strong>{claim.task?.title || 'Task'}</strong>
-              <small>{statusLabel(claim.status)}{claim.createdAt ? ` · ${relativeTime(claim.createdAt)}` : ''}</small>
+              <small>{statusLabel(claim.status)}{claim.createdAt ? ` | ${relativeTime(claim.createdAt)}` : ''}</small>
             </div>
           </div>
         {/each}

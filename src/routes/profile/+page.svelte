@@ -289,7 +289,7 @@
         </label>
         <input id="avatar-input" type="file" accept="image/*" on:change={handleAvatarChange} />
       </div>
-      <small class="avatar-hint">PNG or JPG up to 2MB · cropped to square</small>
+      <small class="avatar-hint">PNG or JPG up to 2MB <span class="pipe-sep">|</span> cropped to square</small>
       {#if avatarError}
         <small class="avatar-error">{avatarError}</small>
       {/if}

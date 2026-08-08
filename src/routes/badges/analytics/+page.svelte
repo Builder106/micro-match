@@ -60,7 +60,6 @@
   <section class="ba-hero brand-card">
     <div class="ba-hero-blob"></div>
     <div class="ba-hero-text">
-      <span class="ba-eyebrow">Insight</span>
       <h1>The story your <span class="coral-gradient">badges</span> tell.</h1>
       <p>See how volunteers are engaging with your work — which badges land, who's earning them, and how engagement is trending.</p>
       <div class="ba-hero-actions">
@@ -215,7 +214,6 @@
   .ba-hero { position: relative; overflow: hidden; padding: 40px 36px; }
   .ba-hero-blob { position: absolute; top: -50%; right: -10%; width: 360px; height: 360px; border-radius: 50%; background: rgba(124, 58, 237, 0.15); filter: blur(80px); pointer-events: none; }
   .ba-hero-text { position: relative; z-index: 1; max-width: 560px; }
-  .ba-eyebrow { display: inline-block; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-primary); padding: 4px 12px; background: rgba(255, 107, 107, 0.1); border-radius: 9999px; margin-bottom: 12px; }
   .ba-hero-text h1 { font-size: clamp(1.75rem, 3vw + 0.5rem, 2.75rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 12px; }
   .ba-hero-text p { color: color-mix(in srgb, var(--color-text) 70%, transparent); font-size: 16px; font-weight: 500; line-height: 1.6; margin: 0 0 24px; max-width: 480px; }
   .ba-hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
