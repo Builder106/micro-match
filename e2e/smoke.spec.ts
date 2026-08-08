@@ -109,4 +109,16 @@ test.describe('public pages', () => {
     await expect(page.getByRole('heading', { level: 1, name: /How Micro-Volunteering/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /1\. Browse/i })).toBeVisible();
   });
+
+  test('terms of service page renders legal sections', async ({ page }) => {
+    await page.goto('/terms');
+    await expect(page.getByRole('heading', { level: 1, name: /Terms of Service/i })).toBeVisible();
+    await expect(page.getByText(/Educational & Non-Commercial Notice/i).first()).toBeVisible();
+  });
+
+  test('privacy policy page renders sub-processors and data policy', async ({ page }) => {
+    await page.goto('/privacy');
+    await expect(page.getByRole('heading', { level: 1, name: /Privacy Policy/i })).toBeVisible();
+    await expect(page.getByText(/Zero AI Model Training Guarantee/i)).toBeVisible();
+  });
 });

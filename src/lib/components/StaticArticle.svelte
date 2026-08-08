@@ -167,7 +167,7 @@
 <style>
   /* Page Base Wrapper */
   .static-page-wrapper {
-    background: #fdfcf8;
+    background: var(--color-background);
     width: 100%;
     min-height: 100vh;
     padding-bottom: 96px;
@@ -200,8 +200,8 @@
     align-items: center;
     gap: 6px;
     padding: 6px 14px;
-    background: #fff5f0;
-    color: #ff6b6b;
+    background: rgba(255, 107, 107, 0.12);
+    color: var(--color-primary);
     border-radius: 9999px;
     font-size: 13px;
     font-weight: 700;
@@ -213,21 +213,18 @@
     font-size: clamp(2.25rem, 4vw, 3.25rem);
     font-weight: 800;
     line-height: 1.15;
-    color: #0f172a;
+    color: var(--color-text);
     margin: 0 0 16px;
     letter-spacing: -0.02em;
   }
 
   .coral-gradient {
-    background: linear-gradient(135deg, #ff6b6b, #ff9e5e);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--color-primary);
   }
 
   .hero-lede {
     font-size: 18px;
-    color: #475569;
+    color: var(--color-text-secondary);
     line-height: 1.6;
     margin: 0 0 20px;
     max-width: 62ch;
@@ -246,18 +243,18 @@
     align-items: center;
     gap: 6px;
     padding: 4px 12px;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
+    background: var(--color-surface);
+    border: 1px solid var(--card-border-strong);
     border-radius: 9999px;
     font-size: 12px;
     font-weight: 600;
-    color: #64748b;
+    color: var(--color-text-secondary);
   }
 
   .meta-tag-accent {
-    background: #fff5f0;
-    border-color: #ffd1c2;
-    color: #ff6b6b;
+    background: rgba(255, 107, 107, 0.12);
+    border-color: rgba(255, 107, 107, 0.25);
+    color: var(--color-primary);
   }
 
   /* Section Ribbon Navigation */
@@ -265,8 +262,8 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 8px 10px;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
+    background: var(--color-surface);
+    border: 1px solid var(--card-border-strong);
     border-radius: 20px;
     padding: 12px 14px;
     box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
@@ -281,8 +278,8 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    background: #fdfcf8;
-    border: 1px solid #e2e8f0;
+    background: var(--color-surface-variant);
+    border: 1px solid var(--card-border);
     cursor: pointer;
     padding: 8px 12px;
     border-radius: 9999px;
@@ -293,14 +290,14 @@
   }
 
   .ribbon-btn:hover {
-    background: #fff5f0;
-    border-color: #ffd1c2;
+    background: rgba(255, 107, 107, 0.12);
+    border-color: var(--color-primary);
     transform: translateY(-1px);
   }
 
   .ribbon-btn.active {
-    background: #fff5f0;
-    border-color: #ff6b6b;
+    background: rgba(255, 107, 107, 0.15);
+    border-color: var(--color-primary);
     box-shadow: 0 2px 8px rgba(255, 107, 107, 0.15);
   }
 
@@ -308,8 +305,8 @@
     font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 11px;
     font-weight: 800;
-    color: #64748b;
-    background: #f1f5f9;
+    color: var(--color-text-secondary);
+    background: var(--color-surface);
     padding: 2px 7px;
     border-radius: 9999px;
     transition: all 0.2s ease;
@@ -318,14 +315,14 @@
 
   .ribbon-btn:hover .ribbon-num,
   .ribbon-btn.active .ribbon-num {
-    background: #ff6b6b;
+    background: var(--color-primary);
     color: #ffffff;
   }
 
   .ribbon-label {
     font-size: 13px;
     font-weight: 700;
-    color: #475569;
+    color: var(--color-text-secondary);
     transition: color 0.2s ease;
     white-space: nowrap;
     overflow: hidden;
@@ -334,7 +331,7 @@
 
   .ribbon-btn:hover .ribbon-label,
   .ribbon-btn.active .ribbon-label {
-    color: #ff6b6b;
+    color: var(--color-primary);
   }
 
   @media (max-width: 580px) {
@@ -358,8 +355,8 @@
 
   /* Legal Card styling inside static-body */
   .static-body :global(.legal-card) {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
+    background: var(--color-surface);
+    border: 1px solid var(--card-border-strong);
     border-radius: 24px;
     padding: clamp(24px, 4vw, 36px);
     box-shadow: 0 4px 20px rgba(15, 23, 42, 0.03);
@@ -367,13 +364,13 @@
   }
 
   .static-body :global(.legal-card:hover) {
-    border-color: #cbd5e1;
+    border-color: var(--color-primary);
     box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
   }
 
   .static-body :global(.notice-card) {
-    background: #fff5f0;
-    border-color: #ffd1c2;
+    background: var(--color-surface-variant);
+    border-color: var(--card-border-strong);
   }
 
   .static-body :global(.legal-card-header) {
@@ -388,15 +385,15 @@
     align-items: center;
     gap: 6px;
     padding: 6px 12px;
-    background: #fff5f0;
-    color: #ff6b6b;
+    background: rgba(255, 107, 107, 0.12);
+    color: var(--color-primary);
     border-radius: 9999px;
     font-size: 12px;
     font-weight: 800;
   }
 
   .static-body :global(.notice-card .section-badge-pill) {
-    background: #ff6b6b;
+    background: var(--color-primary);
     color: #ffffff;
   }
 
@@ -408,13 +405,13 @@
     font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 20px;
     font-weight: 800;
-    color: #0f172a;
+    color: var(--color-text);
     margin: 0;
     letter-spacing: -0.01em;
   }
 
   .static-body :global(.legal-card p) {
-    color: #475569;
+    color: var(--color-text-secondary);
     font-size: 15px;
     line-height: 1.7;
     margin: 0 0 16px 0;
@@ -425,12 +422,12 @@
   }
 
   .static-body :global(.legal-card strong) {
-    color: #0f172a;
+    color: var(--color-text);
     font-weight: 700;
   }
 
   .static-body :global(.legal-card a) {
-    color: #ff6b6b;
+    color: var(--color-primary);
     font-weight: 600;
     text-decoration: underline;
     text-underline-offset: 2px;
@@ -441,8 +438,8 @@
   }
 
   .static-body :global(code) {
-    background: #f1f5f9;
-    color: #0f172a;
+    background: var(--color-surface-variant);
+    color: var(--color-text);
     padding: 2px 8px;
     border-radius: 6px;
     font-size: 13px;
@@ -464,8 +461,8 @@
   }
 
   .static-body :global(.vendor-card) {
-    background: #fdfcf8;
-    border: 1px solid #e2e8f0;
+    background: var(--color-surface);
+    border: 1px solid var(--card-border-strong);
     border-radius: 18px;
     padding: 20px;
     display: flex;
@@ -477,7 +474,7 @@
 
   .static-body :global(.vendor-card:hover) {
     transform: translateY(-2px);
-    border-color: #ff6b6b;
+    border-color: var(--color-primary);
     box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
   }
 
@@ -494,26 +491,27 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #0f172a;
-    color: #ffffff;
+    background: var(--color-surface-variant);
+    color: var(--color-text);
   }
 
   .static-body :global(.vendor-icon.appwrite-icon) {
     background: #f02e65;
+    color: #ffffff;
   }
 
   .static-body :global(.vendor-card h3) {
     font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 16px;
     font-weight: 700;
-    color: #0f172a;
+    color: var(--color-text);
     margin: 0;
   }
 
   .static-body :global(.vendor-role) {
     font-size: 12px;
     font-weight: 600;
-    color: #64748b;
+    color: var(--color-text-secondary);
   }
 
   .static-body :global(.vendor-card p) {
@@ -528,14 +526,14 @@
     gap: 4px;
     font-size: 13px;
     font-weight: 700;
-    color: #ff6b6b;
+    color: var(--color-primary);
     text-decoration: none !important;
   }
 
   /* Guarantee / Highlight Box */
   .static-body :global(.guarantee-box) {
-    background: #fff5f0;
-    border: 1px solid #ffd1c2;
+    background: var(--color-surface-variant);
+    border: 1px solid var(--card-border-strong);
     border-radius: 16px;
     padding: 20px;
     margin-top: 16px;
@@ -552,7 +550,7 @@
     font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 15px;
     font-weight: 700;
-    color: #0f172a;
+    color: var(--color-text);
     margin: 0;
   }
 
@@ -574,8 +572,8 @@
     flex-direction: column;
     gap: 4px;
     padding: 12px 16px;
-    background: #fdfcf8;
-    border: 1px solid #e2e8f0;
+    background: var(--color-surface);
+    border: 1px solid var(--card-border-strong);
     border-radius: 12px;
   }
 
@@ -596,19 +594,19 @@
     gap: 10px;
     font-size: 14px;
     line-height: 1.55;
-    color: #475569;
+    color: var(--color-text-secondary);
   }
 
   .static-body :global(.check-icon) {
-    color: #ff6b6b;
+    color: var(--color-primary);
     margin-top: 2px;
     flex-shrink: 0;
   }
 
   /* CTA Banner */
   .cta-banner {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
+    background: var(--color-surface);
+    border: 1px solid var(--card-border-strong);
     border-radius: 28px;
     padding: 40px 32px;
     text-align: center;
@@ -619,13 +617,13 @@
     font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 22px;
     font-weight: 800;
-    color: #0f172a;
+    color: var(--color-text);
     margin: 0 0 8px;
   }
 
   .cta-content p {
     font-size: 15px;
-    color: #64748b;
+    color: var(--color-text-secondary);
     margin: 0 0 24px;
   }
 
@@ -641,7 +639,7 @@
     align-items: center;
     gap: 6px;
     padding: 12px 24px;
-    background: #ff6b6b;
+    background: var(--color-primary);
     color: #ffffff;
     border-radius: 9999px;
     font-size: 14px;
@@ -662,9 +660,9 @@
     align-items: center;
     gap: 6px;
     padding: 12px 24px;
-    background: #ffffff;
-    color: #0f172a;
-    border: 1px solid #cbd5e1;
+    background: var(--color-surface);
+    color: var(--color-text);
+    border: 1px solid var(--card-border-strong);
     border-radius: 9999px;
     font-size: 14px;
     font-weight: 700;
@@ -673,7 +671,7 @@
   }
 
   .btn-outline-dark:hover {
-    border-color: #94a3b8;
+    border-color: var(--color-primary);
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
   }
@@ -690,16 +688,16 @@
   .related-label {
     font-size: 13px;
     font-weight: 700;
-    color: #64748b;
+    color: var(--color-text-secondary);
   }
   .related a {
-    color: #64748b;
+    color: var(--color-text-secondary);
     text-decoration: none;
     font-size: 13px;
     font-weight: 600;
     transition: color 0.2s ease;
   }
   .related a:hover {
-    color: #ff6b6b;
+    color: var(--color-primary);
   }
 </style>
