@@ -20,6 +20,7 @@
   updated="August 7, 2026"
   readTime="3 min read"
   {sections}
+  showRelated={false}
   ctaTitle="Have questions about our Terms of Service?"
   ctaText="Reach out to our maintainer directly for legal inquiries or platform term clarifications."
   ctaPrimaryHref="mailto:legal@micromatch.app"

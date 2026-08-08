@@ -20,6 +20,7 @@
   updated="August 7, 2026"
   readTime="4 min read"
   {sections}
+  showRelated={false}
   ctaTitle="Questions about our Privacy Policy?"
   ctaText="Our team is dedicated to transparency. Contact us directly for any data deletion, export, or privacy inquiries."
   ctaPrimaryHref="mailto:privacy@micromatch.app"
