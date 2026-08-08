@@ -39,7 +39,7 @@ Retrieves public task listings.
 - **Authentication**: Optional (Public)
 - **Query Parameters**:
   - `duration` *(optional)*: Maximum task duration in minutes (e.g. `15`, `20`, `30`).
-  - `lang` *(optional)*: Target ISO language code for auto-translation (e.g. `es`, `fr`).
+  - `lang` *(optional)*: Target ISO language code for auto-translation via self-hosted LibreTranslate (e.g. `es`, `fr`).
 - **Response (200 OK)**:
 
 ```json

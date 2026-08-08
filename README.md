@@ -31,7 +31,7 @@
 - **NGO verification** — soft-gate trust system. NGOs submit a tax/charity ID, admins review with [ProPublica](https://projects.propublica.org/nonprofits/api/) lookup enrichment, approval back-fills the **Verified** chip on every existing task.
 - **Custom badge definitions** — NGOs define their own awards (label, color, icon, criteria); the engine auto-awards on claim approval.
 - **Role mobility** — users can flip between Volunteer and NGO; downgrading from NGO triggers a clean transactional teardown of verification + tasks.
-- **Auto-translate** — task title + description translate to the viewer's language via Microsoft Azure Translator.
+- **Auto-translate** — task title + description translate to the viewer's language via self-hosted [LibreTranslate](https://libretranslate.com/) (free, open-source, runs on Oracle ARM VM).
 - **Email notifications** — verification approve/reject sends Mailgun-backed transactional emails to the NGO.
 
 ## 🎬 In motion
@@ -131,7 +131,7 @@ sequenceDiagram
 | **Backend** | [Appwrite Cloud](https://appwrite.io/) — Database (TablesDB), Auth, Storage, Teams |
 | **Email** | [Mailgun](https://www.mailgun.com/) (HTTP API, no SDK dep) |
 | **NGO verification** | [ProPublica Nonprofit Explorer API](https://projects.propublica.org/nonprofits/api/) for US 501(c)(3) lookups |
-| **i18n** | [Azure Translator](https://azure.microsoft.com/en-us/services/cognitive-services/translator/) |
+| **i18n** | Self-hosted [LibreTranslate](https://libretranslate.com/) (free, open-source, ARM64 on Oracle VM) |
 | **UI** | Plus Jakarta Sans + Inter, custom CSS (warm cream palette + coral accents), [Iconify](https://iconify.design/), [Lottie](https://lottiefiles.com/) |
 | **Testing** | [Vitest](https://vitest.dev/) (unit + API + components) and [Playwright](https://playwright.dev/) (e2e) |
 
