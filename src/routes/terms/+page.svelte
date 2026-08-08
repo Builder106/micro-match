@@ -3,12 +3,12 @@
   import Icon from '@iconify/svelte';
 
   const sections = [
-    { id: 'notice', label: '1. Project Notice', num: '01' },
-    { id: 'disclaimer', label: '2. Disclaimer', num: '02' },
-    { id: 'liability', label: '3. Liability', num: '03' },
-    { id: 'acceptable-use', label: '4. Account Use', num: '04' },
-    { id: 'submissions', label: '5. Submissions', num: '05' },
-    { id: 'contact-info', label: '6. Contact', num: '06' },
+    { id: 'notice', label: 'Project Notice', num: '01' },
+    { id: 'disclaimer', label: 'Disclaimer', num: '02' },
+    { id: 'liability', label: 'Liability', num: '03' },
+    { id: 'acceptable-use', label: 'Account Use', num: '04' },
+    { id: 'submissions', label: 'Submissions', num: '05' },
+    { id: 'contact-info', label: 'Contact', num: '06' },
   ];
 </script>
 

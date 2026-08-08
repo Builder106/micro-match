@@ -123,7 +123,7 @@
               <span class="ribbon-label">{sec.label}</span>
             </button>
             {#if i < sections.length - 1}
-              <span class="ribbon-dot">•</span>
+              <span class="ribbon-divider" aria-hidden="true"></span>
             {/if}
           {/each}
         </nav>
@@ -269,12 +269,12 @@
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 8px 12px;
+    gap: 4px 6px;
     background: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 9999px;
-    padding: 10px 20px;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.03);
+    padding: 8px 16px;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
     margin: 0 auto;
     max-width: 100%;
   }
@@ -282,9 +282,9 @@
   .ribbon-btn {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     background: transparent;
-    border: none;
+    border: 1px solid transparent;
     cursor: pointer;
     padding: 6px 14px;
     border-radius: 9999px;
@@ -294,31 +294,31 @@
 
   .ribbon-btn:hover {
     background: #fff5f0;
-    color: #ff6b6b;
+    border-color: #ffd1c2;
     transform: translateY(-1px);
   }
 
-  .ribbon-btn:hover .ribbon-num {
-    background: #ff6b6b;
-    color: #ffffff;
-  }
-
-  .ribbon-btn:hover .ribbon-label {
-    color: #ff6b6b;
+  .ribbon-btn.active {
+    background: #fff5f0;
+    border-color: #ff6b6b;
+    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.15);
   }
 
   .ribbon-num {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: #f1f5f9;
-    color: #64748b;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 11px;
     font-weight: 800;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    color: #64748b;
+    background: #f1f5f9;
+    padding: 2px 7px;
+    border-radius: 9999px;
     transition: all 0.2s ease;
+  }
+
+  .ribbon-btn:hover .ribbon-num,
+  .ribbon-btn.active .ribbon-num {
+    background: #ff6b6b;
+    color: #ffffff;
   }
 
   .ribbon-label {
@@ -326,11 +326,20 @@
     font-weight: 700;
     color: #475569;
     transition: color 0.2s ease;
+    white-space: nowrap;
   }
 
-  .ribbon-dot {
-    color: #cbd5e1;
-    font-size: 12px;
+  .ribbon-btn:hover .ribbon-label,
+  .ribbon-btn.active .ribbon-label {
+    color: #ff6b6b;
+  }
+
+  .ribbon-divider {
+    width: 1px;
+    height: 16px;
+    background: #e2e8f0;
+    margin: 0 2px;
+    flex-shrink: 0;
   }
 
   /* Main Card Article */
