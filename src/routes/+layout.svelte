@@ -185,7 +185,7 @@
       <slot />
     </div>
   {:else}
-    <div class="container" style="padding: var(--space-6) var(--space-4); flex: 1 1 auto; max-width: 1200px;">
+    <div class="container" style="padding: var(--space-5) var(--space-4); flex: 1 1 auto; max-width: 1060px;">
       <slot />
     </div>
   {/if}

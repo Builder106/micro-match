@@ -94,9 +94,9 @@
 
 <style>
   .nav-container {
-    display:flex; 
-    flex-direction:column; 
-    gap: var(--space-3); 
+    display: flex; 
+    flex-direction: column; 
+    gap: 4px; 
     width: 100%;
   }
 
@@ -111,13 +111,13 @@
   .quick-tip-container {
     position: relative;
     overflow: hidden;
-    margin-top: var(--space-12);
-    padding: var(--space-5);
+    margin-top: var(--space-6);
+    padding: 14px 14px;
     background:
       linear-gradient(135deg,
         color-mix(in srgb, var(--color-primary) 12%, var(--color-surface)) 0%,
         color-mix(in srgb, var(--color-primary-light) 18%, var(--color-surface)) 100%);
-    border-radius: 20px;
+    border-radius: 16px;
     border: 1px solid color-mix(in srgb, var(--color-primary) 25%, transparent);
   }
   .quick-tip-container::before {
@@ -138,14 +138,14 @@
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    margin-bottom: var(--space-2);
+    margin-bottom: 6px;
   }
   .quick-tip-header :global(svg) { color: var(--color-primary); }
 
   .quick-tip-title {
     font-weight: 800;
     color: var(--color-primary);
-    font-size: 12px;
+    font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.08em;
   }
@@ -154,19 +154,19 @@
     position: relative;
     margin: 0;
     color: color-mix(in srgb, var(--color-text) 75%, transparent);
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 500;
-    line-height: 1.5;
+    line-height: 1.4;
   }
 
   .micromatch-header-container {
     display: flex;
     align-items: center;
-    gap: var(--space-3);
+    gap: 10px;
     /* Match .nav-link's horizontal inset so the logo lines up with the nav icons below it. */
-    padding: var(--space-4) var(--space-4);
+    padding: 8px 12px;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    border-radius: var(--radius-lg);
+    border-radius: 12px;
   }
 
   .micromatch-header-container:hover {
@@ -176,9 +176,8 @@
   }
 
   .micromatch-logo-container {
-    /* Sized to the 24px logo so its left edge aligns with the 22px nav icons. */
     width: 24px;
-    height: 40px;
+    height: 36px;
     border-radius: var(--radius-lg);
     display: flex;
     align-items: center;
@@ -188,7 +187,7 @@
   .micromatch-header-link {
     text-decoration: none; 
     font-weight: var(--font-bold); 
-    font-size: var(--text-lg); 
+    font-size: 17px; 
     background: linear-gradient(135deg, var(--color-primary), var(--color-primary-variant)); 
     -webkit-background-clip: text; 
     -webkit-text-fill-color: transparent; 
@@ -198,11 +197,12 @@
   .nav-link {
     display: flex;
     align-items: center;
-    gap: var(--space-3);
+    gap: 10px;
     text-decoration: none;
     color: var(--color-text-tertiary);
-    padding: var(--space-4) var(--space-4);
-    border-radius: var(--radius-lg);
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 12px;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .nav-link:hover {
