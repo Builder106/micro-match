@@ -13,6 +13,10 @@ from a pull request.
 - **[Mailgun](https://www.mailgun.com)** account — only needed if you're working
   on the verification approval/rejection flow. Without an API key the email
   pipeline silently no-ops in development; everything else still works.
+- **[LibreTranslate](https://libretranslate.com/)** instance (optional) — for
+  auto-translate feature. Set `LIBRETRANSLATE_ENDPOINT` in `.env` to your
+  instance URL (e.g., the Cloudflare Quick Tunnel from the Oracle VM). Without
+  it, translation gracefully returns original text.
 - **macOS / Linux / WSL** — the dev path is tested on macOS; Windows-native
   may work but isn't tested.
 
@@ -23,7 +27,7 @@ git clone https://github.com/Builder106/micro-match.git
 cd MicroMatch
 bun install
 cp .env.example .env
-# Fill in the Appwrite + Mailgun keys (see the comments in .env.example)
+# Fill in the Appwrite + Mailgun + LibreTranslate keys (see the comments in .env.example)
 bun run dev
 ```
 
