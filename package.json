@@ -26,7 +26,7 @@
     "@dotlottie/player-component": "^2.7.12",
     "@iconify/svelte": "^5.2.2",
     "@smui/button": "^9.0.2",
-    "@smui/card": "^9.0.1",
+    "@smui/card": "^9.0.2",
     "@smui/chips": "^9.0.3",
     "@smui/dialog": "^9.0.2",
     "@smui/fab": "^9.0.2",
