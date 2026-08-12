@@ -28,4 +28,3 @@ The bet: bite-sized + verified + badge-bearing is a different enough product tha
 1. **Non-commercial portfolio project.** Maintained solely as an educational, individual portfolio demonstration under F-1 visa non-commercial guidelines. Generates zero revenue and has no corporate entity.
 2. **Sub-processor disclosures.** Infrastructure is explicitly disclosed: Vercel Inc. handles hosting, CDN, request logs, and edge traffic routing; Appwrite powers authentication, databases, storage buckets, and session cookies.
 3. **As-is liability & data boundaries.** Provided on an "AS IS" basis. User submission inputs are processed in memory and stored securely in Appwrite without being used to train third-party AI models.
-
