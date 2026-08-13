@@ -35,13 +35,13 @@ The trailer reads the same frames from `trailer/public/`. Render again with
 | Variable | Meaning |
 | --- | --- |
 | `DEVICE_TEX` | Screen texture PNG. Required. |
-| `DEVICE_OUT` | Directory for the frame sequence. Defaults to `../../public`. |
-| `DEVICE_PREFIX` | Frame filename prefix. Required unless `STILL=1`. |
-| `STILL=1` | One frame to `test_still.png` instead of the sequence. |
+| `DEVICE_OUT` | Directory for the frame sequence. Defaults to`../../public`. |
+| `DEVICE_PREFIX` | Frame filename prefix. Required unless`STILL=1`. |
+| `STILL=1` | One frame to`test_still.png` instead of the sequence. |
 
 ## Frames are not committed
 
-`mm_laptop_*.png` is gitignored in both `ui-demo/` and `trailer/`. The output
+`mm_laptop_*.png`is gitignored in both`ui-demo/`and`trailer/`. The output
 is deterministic and runs to 119 MB, so we keep the script and re-render. A
 clean checkout needs a render before the Remotion projects will build.
 

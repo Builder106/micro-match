@@ -56,20 +56,30 @@ things on screen are clock arcs.
 ## Motion rules
 
 - The cream `Background` renders at full opacity for the whole video; scenes fade
+
   inner wrappers only, never their `AbsoluteFill` (gray-flash rule).
+
 - Every hold carries low-amplitude motion: scale drift on beats 1/2/5/6, the
+
   post-contact drift on beat 3, the conveyor itself on beat 4. `freezedetect`
   should come back empty without excusing anything as "deliberate".
+
 - SFX frames derive from cue constants the scenes export (`LINE_FRAMES`,
+
   `MATCH_CONTACT_AT`, `STREAM_CLAIM_AT`, `COIN_FRAMES`, `URL_PILL_AT`), so
   retiming a scene retimes its sounds.
 
 ## Open options
 
 1. Voiceover: built text-only on purpose — music + SFX carry it. The ElevenLabs
+
    pipeline in HackHelper/content-pipeline can add narration later (~110 words,
    normalize from its quiet -26 LUFS output to about -16).
+
 2. Music: "Inspired" shipped; audition `scratch/draft-heartwarming.mp4` before
+
    publishing anywhere.
+
 3. A 9:16 cut would want a phone device shot (`phone.py` against the laptop rig's
+
    conventions) — tracked separately, out of scope here.

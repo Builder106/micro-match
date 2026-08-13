@@ -13,7 +13,7 @@ Welcome to the **MicroMatch Design System**. This document defines the design ar
 1. **Warm Cream & Coral Palette**: Approaching volunteering with optimism, warmth, and energy. We replace cold corporate blues with warm creams (`#FDFCF8`), coral primaries (`#FF6B6B`), and peach accents (`#FDBA74`).
 2. **Clarity & Speed**: Volunteers engage in micro-moments. Interface elements must be high-contrast, scannable, and friction-free with immediate task filters (`≤15m`, `≤20m`, `≤30m`).
 3. **Verified Trust & Recognition**: Verified badges, progress rings, and org-owned achievement tokens celebrate volunteer contributions.
-4. **Adaptive Dark Mode**: Seamless support for light and dark color schemes (`.light` and `.dark` root classes), maintaining warm card borders and readable text hierarchy across environments.
+4. **Adaptive Dark Mode**: Seamless support for light and dark color schemes (`.light`and`.dark` root classes), maintaining warm card borders and readable text hierarchy across environments.
 
 ---
 
@@ -23,76 +23,76 @@ Color tokens are structured into primary brand colors, surface tones, typography
 
 ### Primary & Brand Colors
 
-| Token Name | Hex / CSS Value | Description |
-| --- | --- | --- |
-| `--color-primary` | `#FF6B6B` | Brand warm coral, primary buttons, hero text gradients |
-| `--color-primary-variant` | `#E85555` | Deeper coral for button hover states |
-| `--color-primary-light` | `#FF9E5E` | Light coral for gradients and scrollbar hover states |
-| `--color-on-primary` | `#FFFFFF` | Text/icon color on primary backgrounds |
-| `--color-secondary` | `#FDBA74` | Warm peach accent |
-| `--color-secondary-variant` | `#FB923C` | Deep peach accent variant |
-| `--color-secondary-light` | `#FED7AA` | Soft peach surface highlight |
+| Token Name                  | Hex / CSS Value | Description                                            |
+| ---                         | ---             | ---                                                    |
+| `--color-primary`           | `#FF6B6B`       | Brand warm coral, primary buttons, hero text gradients |
+| `--color-primary-variant`   | `#E85555`       | Deeper coral for button hover states                   |
+| `--color-primary-light`     | `#FF9E5E`       | Light coral for gradients and scrollbar hover states   |
+| `--color-on-primary`        | `#FFFFFF`       | Text/icon color on primary backgrounds                 |
+| `--color-secondary`         | `#FDBA74`       | Warm peach accent                                      |
+| `--color-secondary-variant` | `#FB923C`       | Deep peach accent variant                              |
+| `--color-secondary-light`   | `#FED7AA`       | Soft peach surface highlight                           |
 
 ### Accent Ramp (Coral / Warm Red)
 
-| Token Name | Hex | Usage |
-| --- | --- | --- |
-| `--color-accent-blue-50` | `#FFF5F0` | Canvas gradient stop, chip hover background |
-| `--color-accent-blue-100` | `#FFE5DC` | Chip background tint |
-| `--color-accent-blue-200` | `#FFD1C2` | Border highlight, scrollbar thumb |
-| `--color-accent-blue-500` | `#FF6B6B` | Primary accent base |
-| `--color-accent-blue-600` | `#E85555` | Darker accent state |
-| `--color-accent-blue-700` | `#CF4444` | High-contrast accent |
+| Token Name                | Hex       | Usage                                       |
+| ---                       | ---       | ---                                         |
+| `--color-accent-blue-50`  | `#FFF5F0` | Canvas gradient stop, chip hover background |
+| `--color-accent-blue-100` | `#FFE5DC` | Chip background tint                        |
+| `--color-accent-blue-200` | `#FFD1C2` | Border highlight, scrollbar thumb           |
+| `--color-accent-blue-500` | `#FF6B6B` | Primary accent base                         |
+| `--color-accent-blue-600` | `#E85555` | Darker accent state                         |
+| `--color-accent-blue-700` | `#CF4444` | High-contrast accent                        |
 
 ### Surface & Background Tokens
 
 #### Light Mode
 
-| Token Name | Hex | Description |
-| --- | --- | --- |
-| `--color-background` | `#FDFCF8` | Primary page canvas |
-| `--color-surface` | `#FFFFFF` | Base card and container background |
-| `--color-surface-variant` | `#FAF7F0` | Muted surface (chips, secondary cards) |
-| `--color-surface-container` | `#F5F0E8` | Elevated container surface |
-| `--color-outline` | `#CBD5E1` | Standard divider and border color |
-| `--color-outline-variant` | `#E2E8F0` | Subtle container outline |
-| `--card-border` | `rgba(15, 23, 42, 0.06)` | Light mode card border |
+| Token Name                  | Hex                      | Description                            |
+| ---                         | ---                      | ---                                    |
+| `--color-background`        | `#FDFCF8`                | Primary page canvas                    |
+| `--color-surface`           | `#FFFFFF`                | Base card and container background     |
+| `--color-surface-variant`   | `#FAF7F0`                | Muted surface (chips, secondary cards) |
+| `--color-surface-container` | `#F5F0E8`                | Elevated container surface             |
+| `--color-outline`           | `#CBD5E1`                | Standard divider and border color      |
+| `--color-outline-variant`   | `#E2E8F0`                | Subtle container outline               |
+| `--card-border`             | `rgba(15, 23, 42, 0.06)` | Light mode card border                 |
 
 #### Dark Mode
 
-| Token Name | Hex | Description |
-| --- | --- | --- |
-| `--color-background` | `#0F172A` | Slate dark canvas |
-| `--color-surface` | `#1E293B` | Base dark card background |
-| `--color-surface-variant` | `#334155` | Dark muted surface |
-| `--color-surface-container` | `#475569` | Elevated dark container surface |
-| `--color-outline` | `#475569` | Dark divider and border color |
-| `--color-outline-variant` | `#334155` | Dark subtle container outline |
-| `--card-border` | `rgba(241, 245, 249, 0.10)` | Dark mode card border |
+| Token Name                  | Hex                         | Description                     |
+| ---                         | ---                         | ---                             |
+| `--color-background`        | `#0F172A`                   | Slate dark canvas               |
+| `--color-surface`           | `#1E293B`                   | Base dark card background       |
+| `--color-surface-variant`   | `#334155`                   | Dark muted surface              |
+| `--color-surface-container` | `#475569`                   | Elevated dark container surface |
+| `--color-outline`           | `#475569`                   | Dark divider and border color   |
+| `--color-outline-variant`   | `#334155`                   | Dark subtle container outline   |
+| `--card-border`             | `rgba(241, 245, 249, 0.10)` | Dark mode card border           |
 
 ### Text & Feedback Colors
 
-| Token | Light Hex | Dark Hex | Role |
-| --- | --- | --- | --- |
-| `--color-text` | `#0F172A` | `#F1F5F9` | Primary headings and body text |
-| `--color-text-secondary` | `#475569` | `#CBD5E1` | Secondary labels and supporting prose |
-| `--color-text-tertiary` | `#64748B` | `#94A3B8` | Captions, metadata, and timestamps |
-| `--color-success` | `#059669` | `#059669` | Approved claims, verified chips, success state |
-| `--color-warning` | `#D97706` | `#D97706` | Pending verification, warning alerts |
-| `--color-error` | `#DC2626` | `#DC2626` | Rejected claims, errors, destructive alerts |
+| Token                    | Light Hex | Dark Hex  | Role                                           |
+| ---                      | ---       | ---       | ---                                            |
+| `--color-text`           | `#0F172A` | `#F1F5F9` | Primary headings and body text                 |
+| `--color-text-secondary` | `#475569` | `#CBD5E1` | Secondary labels and supporting prose          |
+| `--color-text-tertiary`  | `#64748B` | `#94A3B8` | Captions, metadata, and timestamps             |
+| `--color-success`        | `#059669` | `#059669` | Approved claims, verified chips, success state |
+| `--color-warning`        | `#D97706` | `#D97706` | Pending verification, warning alerts           |
+| `--color-error`          | `#DC2626` | `#DC2626` | Rejected claims, errors, destructive alerts    |
 
 ### Dynamic Tag Palette
 
 Tags adapt automatically based on category keywords (`getTagStyle`):
 
-| Category Key | Background | Text Color |
-| --- | --- | --- |
-| `spanish`, `french` | `#F3E8FF` | `#7C3AED` |
-| `health`, `environment`, `excel` | `#D1FAE5` | `#059669` |
-| `translation`, `history` | `#DBEAFE` | `#2563EB` |
-| `design`, `research` | `#FCE7F3` | `#DB2777` |
-| `data`, `education` | `#FEF3C7` | `#D97706` |
-| `default` | `#F1F5F9` | `#475569` |
+| Category Key                     | Background | Text Color |
+| ---                              | ---        | ---        |
+| `spanish`, `french`              | `#F3E8FF`  | `#7C3AED`  |
+| `health`, `environment`, `excel` | `#D1FAE5`  | `#059669`  |
+| `translation`, `history`         | `#DBEAFE`  | `#2563EB`  |
+| `design`, `research`             | `#FCE7F3`  | `#DB2777`  |
+| `data`, `education`              | `#FEF3C7`  | `#D97706`  |
+| `default`                        | `#F1F5F9`  | `#475569`  |
 
 ---
 
@@ -105,16 +105,16 @@ MicroMatch utilizes a dual-font strategy:
 
 ### Type Scale
 
-| CSS Token | Size | Weight | Typical Usage |
-| --- | --- | --- | --- |
-| `--text-xs` | `12px` | `500` / `700` | Micro-labels, tag pills, timestamps |
-| `--text-sm` | `14px` | `400` / `500` | Secondary buttons, body small, filter options |
-| `--text-base` | `16px` | `400` | Standard body prose, form inputs |
-| `--text-lg` | `18px` | `500` / `600` | Subheadings, card titles, section links |
-| `--text-xl` | `20px` | `600` | Section headers (`h3`) |
-| `--text-2xl` | `24px` | `600` | Page subheaders (`h2`) |
-| `--text-3xl` | `30px` | `700` | Primary page headers (`h1`) |
-| `--text-4xl` | `36px` | `800` | Hero banners and landing titles |
+| CSS Token     | Size   | Weight      | Typical Usage                                 |
+| ---           | ---    | ---         | ---                                           |
+| `--text-xs`   | `12px` | `500`/`700` | Micro-labels, tag pills, timestamps           |
+| `--text-sm`   | `14px` | `400`/`500` | Secondary buttons, body small, filter options |
+| `--text-base` | `16px` | `400`       | Standard body prose, form inputs              |
+| `--text-lg`   | `18px` | `500`/`600` | Subheadings, card titles, section links       |
+| `--text-xl`   | `20px` | `600`       | Section headers (`h3`)                        |
+| `--text-2xl`  | `24px` | `600`       | Page subheaders (`h2`)                        |
+| `--text-3xl`  | `30px` | `700`       | Primary page headers (`h1`)                   |
+| `--text-4xl`  | `36px` | `800`       | Hero banners and landing titles               |
 
 ### Line Heights & Weights
 
@@ -129,18 +129,18 @@ MicroMatch implements an 8px spatial grid for layout consistency.
 
 ### Spatial Scale
 
-| Token | Size | Typical Use |
-| --- | --- | --- |
-| `--space-1` | `4px` | Micro gaps between icons and labels |
-| `--space-2` | `8px` | Small element padding, chip gap |
-| `--space-3` | `12px` | Input internal padding, card gaps |
-| `--space-4` | `16px` | Standard container margin / padding |
-| `--space-5` | `20px` | Section margins, dashboard card padding |
-| `--space-6` | `24px` | Large container padding |
-| `--space-8` | `32px` | Grid column spacing |
-| `--space-10` | `40px` | Hero section gaps |
-| `--space-12` | `48px` | Major section vertical padding |
-| `--space-16` | `64px` | Page section separation |
+| Token        | Size   | Typical Use                             |
+| ---          | ---    | ---                                     |
+| `--space-1`  | `4px`  | Micro gaps between icons and labels     |
+| `--space-2`  | `8px`  | Small element padding, chip gap         |
+| `--space-3`  | `12px` | Input internal padding, card gaps       |
+| `--space-4`  | `16px` | Standard container margin / padding     |
+| `--space-5`  | `20px` | Section margins, dashboard card padding |
+| `--space-6`  | `24px` | Large container padding                 |
+| `--space-8`  | `32px` | Grid column spacing                     |
+| `--space-10` | `40px` | Hero section gaps                       |
+| `--space-12` | `48px` | Major section vertical padding          |
+| `--space-16` | `64px` | Page section separation                 |
 
 ### Border Radii
 
@@ -237,18 +237,18 @@ MicroMatch uses **[@iconify/svelte](https://iconify.design)** as its unified, cr
 
 #### Official Icon Sets & Standard Roles
 
-| Icon Family Prefix | Usage & Context | Recommended Icon Identifiers |
-| --- | --- | --- |
-| `heroicons:*` | Core UI navigation, status badges, buttons, cards | `heroicons:sparkles-20-solid`, `heroicons:code-bracket-20-solid`, `heroicons:building-office-20-solid` |
-| `lucide:*` | Technical indicators, status checks, workflow steps | `lucide:user-check`, `lucide:bar-chart-2`, `lucide:help-circle`, `lucide:cpu` |
-| `mdi:*` | Secondary navigation & form utility icons | `mdi:arrow-right`, `mdi:account-group-outline`, `mdi:office-building-outline` |
-| `logos:*` | OAuth identity providers & tech stack badges | `logos:google-icon`, `logos:svelte-icon` |
+| Icon Family Prefix | Usage & Context                                     | Recommended Icon Identifiers                                                                           |
+| ---                | ---                                                 | ---                                                                                                    |
+| `heroicons:*`      | Core UI navigation, status badges, buttons, cards   | `heroicons:sparkles-20-solid`, `heroicons:code-bracket-20-solid`, `heroicons:building-office-20-solid` |
+| `lucide:*`         | Technical indicators, status checks, workflow steps | `lucide:user-check`, `lucide:bar-chart-2`, `lucide:help-circle`, `lucide:cpu`                          |
+| `mdi:*`            | Secondary navigation & form utility icons           | `mdi:arrow-right`, `mdi:account-group-outline`, `mdi:office-building-outline`                          |
+| `logos:*`          | OAuth identity providers & tech stack badges        | `logos:google-icon`, `logos:svelte-icon`                                                               |
 
 #### Icon Size & Container Tokens
 
 - **Inline Chips / Badges**: `14px` (`<Icon width="14" height="14" />`)
 - **Buttons, Navigation & Tiles**: `18px` (`<Icon width="18" height="18" />`)
-- **Card Headers & Feature Icons**: `22px` - `24px` (`<Icon width="24" height="24" />`)
+- **Card Headers & Feature Icons**: `22px`-`24px` (`<Icon width="24" height="24" />`)
 - **Icon Container Badges**: `.icon-wrap`, `.step-icon-badge`, `.tile-icon-badge` with themed glow tints (`.coral-glow`, `.indigo-glow`, `.rose-glow`, `.teal-glow`).
 
 ---
@@ -257,9 +257,9 @@ MicroMatch uses **[@iconify/svelte](https://iconify.design)** as its unified, cr
 
 Animations maintain a responsive feel using cubic-bezier easing `cubic-bezier(0.4, 0, 0.2, 1)`.
 
-- `.animate-slide-up`: 400ms translate from `+20px` to `0px` with fade-in.
-- `.animate-fade-in`: 300ms opacity transition (`0` to `1`).
-- `.animate-scale-in`: 300ms scale transition (`0.9` to `1.0`).
+- `.animate-slide-up`: 400ms translate from `+20px`to`0px` with fade-in.
+- `.animate-fade-in`: 300ms opacity transition (`0`to`1`).
+- `.animate-scale-in`: 300ms scale transition (`0.9`to`1.0`).
 - `.skeleton`: 1.5s infinite shimmer sweep over surface variant background.
 - `.spin`: 1s linear infinite rotation for loading spinners.
 
@@ -269,7 +269,7 @@ Animations maintain a responsive feel using cubic-bezier easing `cubic-bezier(0.
 
 1. **Touch Targets**: Minimum `44px x 44px` interactive area on touch targets.
 2. **Focus Visibility**: Custom focus ring `outline: 2px solid var(--color-primary); outline-offset: 2px;`.
-3. **Safe Areas**: Top and bottom padding respond to mobile environment insets (`env(safe-area-inset-top)` and `env(safe-area-inset-bottom)`).
+3. **Safe Areas**: Top and bottom padding respond to mobile environment insets (`env(safe-area-inset-top)`and`env(safe-area-inset-bottom)`).
 4. **Color Contrast**: All text tokens exceed WCAG AA 4.5:1 contrast requirements against their respective surface tokens.
 
 ---

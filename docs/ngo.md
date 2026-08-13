@@ -17,7 +17,7 @@ MicroMatch uses a soft-gate trust system to assign a **Verified NGO** chip to ta
 
 ### Verification Process
 
-1. Go to `/org` or `/profile` and open the **Verification Card**.
+1. Go to `/org`or`/profile` and open the **Verification Card**.
 2. Provide your **Organization Name**, **Country**, and **Tax / Charity Registration ID** (e.g., IRS EIN for US entities).
 3. *(Optional / International)* Upload an official registration document (PDF, PNG, or JPEG) if your organization is outside the US or not indexed in public registries.
 4. Submit your application. Status transitions to `Pending`.
@@ -33,7 +33,7 @@ MicroMatch uses a soft-gate trust system to assign a **Verified NGO** chip to ta
 
 ## 3. Role Mobility & Teardown
 
-- Users can switch between **Volunteer** and **NGO** roles.
+- Users can switch between **Volunteer**and**NGO** roles.
 - If an NGO downgrades to a Volunteer role, MicroMatch executes a clean transactional teardown:
   - Pending/approved verification records are withdrawn.
   - The `isVerified` badge is automatically cleared from all tasks created by the account.
@@ -54,6 +54,7 @@ MicroMatch uses a soft-gate trust system to assign a **Verified NGO** chip to ta
 
 1. Go to your posted task page or review dashboard to see pending claims.
 2. Review the proof URL/file and notes submitted by the volunteer.
-3. Click **Approve** or **Reject**:
-   - Approving a claim updates volunteer XP and automatically awards any custom or milestone badges configured for the task.
-   - Rejection provides constructive feedback to the volunteer.
+3. Click **Approve**or**Reject**:
+
+- Approving a claim updates volunteer XP and automatically awards any custom or milestone badges configured for the task.
+- Rejection provides constructive feedback to the volunteer.

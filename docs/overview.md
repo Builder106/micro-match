@@ -20,7 +20,7 @@ MicroMatch is a micro‑volunteering platform that pairs NGOs with bite‑sized 
 
 ## Core pages
 
-- `/` or `/tasks`: Task feed
+- `/`or`/tasks`: Task feed
 - `/task/[id]`: Task details (+ translation via `?lang=`)
 - `/task/[id]/claim`: Submit proof and notes
 - `/org`: Post a task (NGO only)

@@ -6,7 +6,7 @@ How MicroMatch differs from established volunteer platforms, and where the bet l
 
 Two different shapes of product, even though they overlap on the word "volunteering."
 
-**Idealist** is a *directory* — a searchable index of nonprofit jobs, internships, grad programs, and volunteer opportunities. The unit is an *opportunity listing* you read, then leave the platform to email an org and coordinate offline. Most volunteer listings are hours-to-weeks commitments, often geographically anchored. There's no submission, no review, no record of what you did.
+**Idealist** is a *directory*— a searchable index of nonprofit jobs, internships, grad programs, and volunteer opportunities. The unit is an*opportunity listing* you read, then leave the platform to email an org and coordinate offline. Most volunteer listings are hours-to-weeks commitments, often geographically anchored. There's no submission, no review, no record of what you did.
 
 **MicroMatch** is a *marketplace where the work actually happens on-platform*. The unit is a 5–30 minute *task* with a deadline, a max-volunteers cap, a proof-of-work submission, an approval step, and a badge that gets minted on approval.
 

@@ -28,7 +28,7 @@
 - **Bite-sized task feed** — filter by `≤15 / ≤20 / ≤30 min`, hashtag, or sort by shortest first.
 - **Volunteer side** — claim tasks, submit proof (link or upload), track status, earn badges, level up.
 - **NGO side** — post tasks with deadline + max-volunteers caps, review submissions, manage org-owned badge definitions.
-- **NGO verification** — soft-gate trust system. NGOs submit a tax/charity ID, admins review with [ProPublica](https://projects.propublica.org/nonprofits/api/) lookup enrichment, approval back-fills the **Verified** chip on every existing task.
+- **NGO verification**— soft-gate trust system. NGOs submit a tax/charity ID, admins review with [ProPublica](https://projects.propublica.org/nonprofits/api/) lookup enrichment, approval back-fills the**Verified** chip on every existing task.
 - **Custom badge definitions** — NGOs define their own awards (label, color, icon, criteria); the engine auto-awards on claim approval.
 - **Role mobility** — users can flip between Volunteer and NGO; downgrading from NGO triggers a clean transactional teardown of verification + tasks.
 - **Auto-translate** — task title + description translate to the viewer's language via self-hosted [LibreTranslate](https://libretranslate.com/) (free, open-source, runs on Oracle ARM VM).
@@ -84,7 +84,7 @@ Badges are org-owned definitions rather than a hardcoded list: an NGO picks a te
 
 </details>
 
-> Run `bun run demo` to regenerate: it reseeds, records fresh MP4s, and converts them to GIFs. The reseed is not optional. Demo tasks auto-archive after 30 days of no activity, and the closed-loop recording needs its claim and badge state reset or the badge never appears. See [CONTRIBUTING.md](CONTRIBUTING.md#recording-the-demos) for the one-time setup, `e2e/demo/` for the specs, and `playwright.demo.config.ts` for the recording configuration.
+> Run `bun run demo`to regenerate: it reseeds, records fresh MP4s, and converts them to GIFs. The reseed is not optional. Demo tasks auto-archive after 30 days of no activity, and the closed-loop recording needs its claim and badge state reset or the badge never appears. See [CONTRIBUTING.md](CONTRIBUTING.md#recording-the-demos) for the one-time setup,`e2e/demo/`for the specs, and`playwright.demo.config.ts` for the recording configuration.
 
 ## 🔄 How it works
 
@@ -144,13 +144,15 @@ git clone https://github.com/Builder106/micro-match.git
 cd MicroMatch
 bun install
 cp .env.example .env
+
 # Fill in Appwrite + Mailgun + ProPublica keys
+
 bun run dev
 ```
 
 The app runs at [http://localhost:5173](http://localhost:5173). Full setup (Appwrite resources, environment variables, project layout, conventions) lives in [CONTRIBUTING.md](CONTRIBUTING.md).
 
-### Common scripts
+## Common scripts
 
 ```sh
 bun run dev             # dev server with HMR
@@ -172,7 +174,7 @@ Three layers of coverage:
 - **Components** (vitest, jsdom) — `BadgeChip`, `EmptyState`, `ProgressBar`, `VerificationCard` (all four state branches via mocked fetch).
 - **End-to-end** (Playwright, chromium) — public-facing flows: landing, feed, login/signup multi-step, forgot-password, protected route redirect.
 
-`bun run test:coverage` writes an HTML report to `coverage/`.
+`bun run test:coverage`writes an HTML report to`coverage/`.
 
 The demo suite in `e2e/demo/` is deliberately *not* part of this. It shares Playwright but exists to record the GIFs above, so it's slow by design (`slowMo`, dwell beats), needs seeded fixtures, and never runs in CI.
 

@@ -12,4 +12,4 @@ in-house — license-free, shared with `ui-demo/`.
 
 The laptop PNG sequence (`mm_laptop_*.png`, gitignored) is a Blender render of
 our own model with the live landing page on screen; regenerate it with
-`tools/device-render/laptop.py` or copy it from `ui-demo/public/`.
+`tools/device-render/laptop.py`or copy it from`ui-demo/public/`.

@@ -66,19 +66,21 @@ MicroMatch uses Appwrite TablesDB (`APPWRITE_DB_ID`):
                        ┌────────────────────────┴────────────────────────┐
                        ▼                                                 ▼
              [Admin Approves]                                    [Admin Rejects]
+
   - Status: approved                                   - Status: rejected
   - User Prefs: verificationStatus='approved'          - User Prefs: verificationStatus='rejected'
   - Backfill: isVerified=true on tasks                 - Backfill: isVerified=false on tasks
   - Email: Mailgun approval notice                     - Email: Mailgun rejection reason
+
 ```
 
 ### Role Mobility Teardown
 
 When an NGO downgrades to a Volunteer role (`POST /api/profile/role`):
 
-1. `withdrawVerification(userId)` deletes the pending/approved row in `ngoVerifications`.
+1. `withdrawVerification(userId)`deletes the pending/approved row in`ngoVerifications`.
 2. User preference `verificationStatus` is cleared (`""`).
-3. `isVerified` flag is reset to `false` across all tasks created by the account.
+3. `isVerified`flag is reset to`false` across all tasks created by the account.
 
 ---
 
@@ -87,12 +89,15 @@ When an NGO downgrades to a Volunteer role (`POST /api/profile/role`):
 To support scaling as the user base and international footprint grow:
 
 1. **Multi-Country Verification Strategy (`VerificationAdapter`)**:
-   - Refactor `propublica.ts` into a strategy registry matching national APIs (`USProPublicaAdapter`, `UKCharityCommissionAdapter`, `EveryOrgGlobalAdapter`).
-   - Integrate OCR / AI document pre-parsing for international non-US document uploads.
 
-2. **Edge Caching & Performance**:
-   - Cache `/api/tasks` and public task detail pages at the CDN edge with `s-maxage=300, stale-while-revalidate=600`.
-   - Utilize composite indexing on Appwrite Tables (`[isVerified, createdAt]`, `[language, isVerified]`).
+- Refactor `propublica.ts` into a strategy registry matching national APIs (`USProPublicaAdapter`, `UKCharityCommissionAdapter`, `EveryOrgGlobalAdapter`).
+- Integrate OCR / AI document pre-parsing for international non-US document uploads.
 
-3. **Asynchronous Background Processing**:
-   - Move badge evaluation and Mailgun transactional emails to background Appwrite Functions or event queues, decoupling side effects from synchronous HTTP response paths.
+1. **Edge Caching & Performance**:
+
+- Cache `/api/tasks`and public task detail pages at the CDN edge with`s-maxage=300, stale-while-revalidate=600`.
+- Utilize composite indexing on Appwrite Tables (`[isVerified, createdAt]`, `[language, isVerified]`).
+
+1. **Asynchronous Background Processing**:
+
+- Move badge evaluation and Mailgun transactional emails to background Appwrite Functions or event queues, decoupling side effects from synchronous HTTP response paths.

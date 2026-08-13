@@ -13,7 +13,7 @@ This document details the complete REST API endpoints provided by the MicroMatch
 
 ### Authentication
 
-Most endpoints under `/api/` require an authenticated session. Authentication is passed via HTTP session cookies or session tokens. Public read-only endpoints (such as `GET /api/tasks`) require no authentication.
+Most endpoints under `/api/`require an authenticated session. Authentication is passed via HTTP session cookies or session tokens. Public read-only endpoints (such as`GET /api/tasks`) require no authentication.
 
 ### Content Safety & Moderation
 
@@ -38,8 +38,8 @@ Retrieves public task listings.
 
 - **Authentication**: Optional (Public)
 - **Query Parameters**:
-  - `duration` *(optional)*: Maximum task duration in minutes (e.g. `15`, `20`, `30`).
-  - `lang` *(optional)*: Target ISO language code for auto-translation via self-hosted LibreTranslate (e.g. `es`, `fr`).
+  - `duration`*(optional)*: Maximum task duration in minutes (e.g.`15`, `20`, `30`).
+  - `lang`*(optional)*: Target ISO language code for auto-translation via self-hosted LibreTranslate (e.g.`es`, `fr`).
 - **Response (200 OK)**:
 
 ```json
@@ -79,7 +79,7 @@ Creates a new micro-task listing.
 ```
 
 - **Response (201 Created)**: Returns the newly created task object.
-- **Error Responses**: `400 Bad Request` (missing title/description or content safety block), `401 Unauthorized`, `403 Forbidden` (non-NGO).
+- **Error Responses**: `400 Bad Request`(missing title/description or content safety block),`401 Unauthorized`, `403 Forbidden` (non-NGO).
 
 ### `PATCH /api/tasks/[id]`
 
@@ -97,7 +97,7 @@ Updates an existing task's status or parameters.
 ```
 
 - **Response (200 OK)**: `{ "success": true }`
-- **Error Responses**: `400 Bad Request`, `401 Unauthorized`, `403 Forbidden` (not task owner), `404 Not Found`.
+- **Error Responses**: `400 Bad Request`, `401 Unauthorized`, `403 Forbidden`(not task owner),`404 Not Found`.
 
 ### `DELETE /api/tasks/[id]`
 
@@ -105,7 +105,7 @@ Deletes a task listing.
 
 - **Authentication**: Required (NGO task owner)
 - **Response (200 OK)**: `{ "success": true }`
-- **Error Responses**: `401 Unauthorized`, `403 Forbidden` (not task owner), `404 Not Found`.
+- **Error Responses**: `401 Unauthorized`, `403 Forbidden`(not task owner),`404 Not Found`.
 
 ### `POST /api/tasks/[id]/claim`
 
@@ -122,7 +122,7 @@ Claims an active task and submits proof-of-work.
 ```
 
 - **Response (201 Created)**: Returns the created claim object.
-- **Error Responses**: `400 Bad Request` (content safety block), `401 Unauthorized`, `404 Not Found`.
+- **Error Responses**: `400 Bad Request`(content safety block),`401 Unauthorized`, `404 Not Found`.
 
 ---
 
@@ -134,9 +134,9 @@ Retrieves claims associated with the authenticated user.
 
 - **Authentication**: Required
 - **Query Parameters**:
-  - `status` *(optional)*: Filter by claim status (`pending` | `approved` | `rejected`).
-  - `limit` *(optional)*: Pagination limit (default `50`, max `100`).
-  - `offset` *(optional)*: Pagination offset (default `0`).
+  - `status` *(optional)*: Filter by claim status (`pending`|`approved`|`rejected`).
+  - `limit`*(optional)*: Pagination limit (default`50`, max `100`).
+  - `offset`*(optional)*: Pagination offset (default`0`).
 - **Response (200 OK)**:
 
 ```json
@@ -234,7 +234,7 @@ Cancels the pending verification application.
 Uploads a verification document file (PDF, PNG, JPEG).
 
 - **Authentication**: Required (`ngo` role)
-- **Request Format**: `multipart/form-data` with key `file`
+- **Request Format**: `multipart/form-data`with key`file`
 - **Response (200 OK)**:
 
 ```json
@@ -290,14 +290,14 @@ Fetches earned badges for the authenticated volunteer or target user.
 
 Lists custom badge templates created by the NGO.
 
-- **Authentication**: Required (`ngo` or `admin` role)
+- **Authentication**: Required (`ngo`or`admin` role)
 - **Response (200 OK)**: Array of badge template definitions.
 
 ### `POST /api/badges/manage`
 
 Creates a new custom badge template.
 
-- **Authentication**: Required (`ngo` or `admin` role)
+- **Authentication**: Required (`ngo`or`admin` role)
 - **Request Body**:
 
 ```json
@@ -316,7 +316,7 @@ Creates a new custom badge template.
 
 Deletes a custom badge template.
 
-- **Authentication**: Required (`ngo` or `admin` role)
+- **Authentication**: Required (`ngo`or`admin` role)
 - **Request Body**:
 
 ```json
@@ -333,7 +333,7 @@ Deletes a custom badge template.
 
 ### `POST /api/profile/role`
 
-Switches the active user role (`volunteer` or `ngo`).
+Switches the active user role (`volunteer`or`ngo`).
 
 - **Authentication**: Required
 - **Request Body**:
@@ -369,8 +369,8 @@ Updates user profile information (bio, skills, display name, organization name).
 Uploads a user profile avatar image.
 
 - **Authentication**: Required
-- **Request Format**: `multipart/form-data` with key `avatar`
-- **Response (200 OK)**: `{ "avatarUrl": "https://storage.trymicromatch.com/avatars/user_123.jpg" }`
+- **Request Format**: `multipart/form-data`with key`avatar`
+- **Response (200 OK)**: `{ "avatarUrl": "<https://storage.trymicromatch.com/avatars/user_123.jpg"> }`
 
 ### `POST /api/teams/assign`
 

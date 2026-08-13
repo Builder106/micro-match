@@ -26,7 +26,7 @@ npm run render
 ```
 
 The render lands at `out/micromatch-trailer.mp4` (gitignored, like ui-demo's).
-`npm run render` deletes the copied `public/mm_laptop_*.png` frames once the
+`npm run render`deletes the copied`public/mm_laptop_*.png` frames once the
 render finishes — re-copy them from `ui-demo/public/` before rendering again.
 
 Check `df -h /` before rendering — this machine runs low on disk, and a render
@@ -38,10 +38,14 @@ means `node_modules` got wiped by a cleanup, not that the code broke.
 Exit codes are not the test; frames are. After every render:
 
 - Extract frames with the claude-video-vision MCP at 2–3 fps across the cuts
+
   (nominal cuts: frames 210 / 420 / 750 / 1050 / 1290).
+
 - `ffmpeg -i out/micromatch-trailer.mp4 -vf freezedetect -af silencedetect -f null -`
+
   at the default log level — `-v error` silences both filters and reports a
   false all-clear.
+
 - Loudness sits around -22 LUFS mean (`-af ebur128 -f null -`, also info-level).
 
 ## Music
