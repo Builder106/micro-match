@@ -111,7 +111,7 @@
   {/if}
 
   <!-- ───── Form ───── -->
-  <form class="org-form brand-card" on:submit|preventDefault={handleSubmit}>
+  <form class="org-form brand-card" onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
     <header class="org-form-head">
       <h2>Mission details</h2>
       <p>Required fields are marked. Volunteers see the title, short description, time estimate, and tags first.</p>
@@ -178,7 +178,7 @@
           />
           <div class="org-presets">
             {#each timePresets as m (m)}
-              <button type="button" class="org-preset" class:active={Number(estimatedMinutes) === m} on:click={() => (estimatedMinutes = m)}>{m}m</button>
+              <button type="button" class="org-preset" class:active={Number(estimatedMinutes) === m} onclick={() => (estimatedMinutes = m)}>{m}m</button>
             {/each}
           </div>
         </label>

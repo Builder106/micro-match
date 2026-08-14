@@ -131,7 +131,7 @@
 
   <nav class="admin-tabs">
     {#each [['pending', 'Pending', counts.pending], ['approved', 'Approved', counts.approved], ['rejected', 'Rejected', counts.rejected], ['all', 'All', allRows.length]] as [tab, label, count] (tab)}
-      <button class="tab" class:active={activeTab === tab} on:click={() => (activeTab = tab as 'pending' | 'approved' | 'rejected' | 'all')}>
+      <button class="tab" class:active={activeTab === tab} onclick={() => (activeTab = tab as 'pending' | 'approved' | 'rejected' | 'all')}>
         {label}
         <span class="tab-count">{count}</span>
       </button>
@@ -191,8 +191,8 @@
 
           {#if v.status === 'pending'}
             <div class="admin-actions">
-              <button class="btn-reject" on:click={() => openReject(v.userId)} disabled={working}>Reject…</button>
-              <button class="btn-approve" on:click={() => approve(v.userId)} disabled={working}>Approve</button>
+              <button class="btn-reject" onclick={() => openReject(v.userId)} disabled={working}>Reject…</button>
+              <button class="btn-approve" onclick={() => approve(v.userId)} disabled={working}>Approve</button>
             </div>
           {/if}
         </article>
@@ -209,8 +209,8 @@
       <p>This becomes the user-facing message in their REJECTED state. Be specific so they know how to fix it.</p>
       <textarea bind:value={rejectReason} rows="4" placeholder="Document doesn't show tax-exempt status. Please upload your IRS Form 990 or determination letter." maxlength="1000"></textarea>
       <div class="modal-actions">
-        <button on:click={() => (rejectingUserId = null)} disabled={working}>Cancel</button>
-        <button class="btn-reject" on:click={confirmReject} disabled={working || !rejectReason.trim()}>Send rejection</button>
+        <button onclick={() => (rejectingUserId = null)} disabled={working}>Cancel</button>
+        <button class="btn-reject" onclick={confirmReject} disabled={working || !rejectReason.trim()}>Send rejection</button>
       </div>
     </div>
   </div>

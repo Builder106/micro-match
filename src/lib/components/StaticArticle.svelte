@@ -115,7 +115,7 @@
               type="button"
               class="ribbon-btn"
               class:active={activeSection === sec.id}
-              on:click={() => scrollToSection(sec.id)}
+              onclick={() => scrollToSection(sec.id)}
             >
               {#if sec.num}
                 <span class="ribbon-num">{sec.num}</span>

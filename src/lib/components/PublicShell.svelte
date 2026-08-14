@@ -42,7 +42,7 @@
   $: isSignedIn = userRole !== 'anonymous';
 </script>
 
-<svelte:window on:keydown={handleWindowKeydown} />
+<svelte:window onkeydown={handleWindowKeydown} />
 
 <div class="landing">
   <!-- ───── Header ───── -->
@@ -67,7 +67,7 @@
           aria-expanded={mobileMenuOpen}
           aria-controls="mobile-menu"
           bind:this={menuToggleEl}
-          on:click={toggleMenu}
+          onclick={toggleMenu}
         >
           <Icon icon={mobileMenuOpen ? 'lucide:x' : 'lucide:menu'} width="22" height="22" />
         </button>
@@ -96,7 +96,7 @@
     <div
       class="mobile-menu-backdrop"
       role="presentation"
-      on:click={closeMenu}
+      onclick={closeMenu}
       transition:fade={{ duration: 150 }}
     ></div>
     <nav
@@ -105,24 +105,24 @@
       aria-label="Mobile"
       transition:fly={{ y: -12, duration: 200 }}
     >
-      <a href="/how-it-works" bind:this={firstMenuLinkEl} on:click={closeMenu}>How it Works</a>
-      <a href="/tasks" on:click={closeMenu}>Browse Tasks</a>
-      <a href="/for-ngos" on:click={closeMenu}>For NGOs</a>
-      <a href="/for-volunteers" on:click={closeMenu}>For Volunteers</a>
+      <a href="/how-it-works" bind:this={firstMenuLinkEl} onclick={closeMenu}>How it Works</a>
+      <a href="/tasks" onclick={closeMenu}>Browse Tasks</a>
+      <a href="/for-ngos" onclick={closeMenu}>For NGOs</a>
+      <a href="/for-volunteers" onclick={closeMenu}>For Volunteers</a>
       <div class="mobile-menu-divider"></div>
       {#if isSignedIn}
-        <a href="/tasks" on:click={closeMenu}>Browse tasks</a>
-        <a href="/dashboard" class="mobile-menu-cta" on:click={closeMenu}>Go to dashboard</a>
+        <a href="/tasks" onclick={closeMenu}>Browse tasks</a>
+        <a href="/dashboard" class="mobile-menu-cta" onclick={closeMenu}>Go to dashboard</a>
       {:else}
-        <a href="/login" on:click={closeMenu}>Sign In</a>
-        <a href="/signup" class="mobile-menu-cta" on:click={closeMenu}>Join Now</a>
+        <a href="/login" onclick={closeMenu}>Sign In</a>
+        <a href="/signup" class="mobile-menu-cta" onclick={closeMenu}>Join Now</a>
       {/if}
       <a
         href="https://github.com/Builder106/micro-match"
         class="mobile-menu-github"
         target="_blank"
         rel="noopener noreferrer"
-        on:click={closeMenu}
+        onclick={closeMenu}
       >
         <Icon icon="mdi:github" width="18" height="18" /> View on GitHub
       </a>

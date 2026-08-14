@@ -165,7 +165,7 @@
     <p class="vc-body">Loading…</p>
   {:else if editing}
     <!-- ───── Submission form ───── -->
-    <form class="vc-form" on:submit|preventDefault={submitForm}>
+    <form class="vc-form" onsubmit={(e) => { e.preventDefault(); submitForm(); }}>
       <label class="vc-field">
         <span>Organization name</span>
         <input type="text" bind:value={orgName} placeholder="Doctors Without Borders" autocomplete="organization" required />
@@ -199,7 +199,7 @@
             <Icon icon="lucide:upload" width="16" height="16" />
             Upload PDF / image (max 10 MB)
           {/if}
-          <input type="file" accept=".pdf,image/png,image/jpeg,image/webp" on:change={handleFileChange} />
+          <input type="file" accept=".pdf,image/png,image/jpeg,image/webp" onchange={handleFileChange} />
         </label>
         <small class="vc-hint">e.g. IRS determination letter, charity commission certificate, incorporation document.</small>
       </div>
@@ -215,14 +215,14 @@
           {/if}
           {verification ? 'Resubmit for review' : 'Submit for review'}
         </button>
-        <button type="button" class="vc-cancel" on:click={() => (editing = false)} disabled={submitting}>Cancel</button>
+        <button type="button" class="vc-cancel" onclick={() => (editing = false)} disabled={submitting}>Cancel</button>
       </div>
     </form>
   {:else if !verification}
     <!-- ───── Not submitted ───── -->
     <p class="vc-body">Volunteers see your tasks with an <strong>Unverified</strong> chip until your org is verified. Submit your registration number to remove it.</p>
     <div class="vc-actions">
-      <button class="btn-coral" on:click={openForm}>
+      <button class="btn-coral" onclick={openForm}>
         Verify your org
         <Icon icon="lucide:arrow-right" width="14" height="14" />
       </button>
@@ -237,8 +237,8 @@
       {#if verification.docFileId}<li><span>Document</span> <strong><Icon icon="lucide:paperclip" width="12" height="12" /> on file</strong></li>{/if}
     </ul>
     <div class="vc-actions">
-      <button class="btn-outline-dark btn-sm" on:click={openForm}>Update</button>
-      <button class="vc-withdraw" on:click={withdraw} disabled={submitting}>Withdraw</button>
+      <button class="btn-outline-dark btn-sm" onclick={openForm}>Update</button>
+      <button class="vc-withdraw" onclick={withdraw} disabled={submitting}>Withdraw</button>
     </div>
   {:else if verification.status === 'approved'}
     <!-- ───── Approved ───── -->
@@ -252,7 +252,7 @@
     {/if}
     <p class="vc-meta-line">Reviewed {relativeDate(verification.reviewedAt)}.</p>
     <div class="vc-actions">
-      <button class="btn-coral" on:click={openForm}>
+      <button class="btn-coral" onclick={openForm}>
         Resubmit
         <Icon icon="lucide:arrow-right" width="14" height="14" />
       </button>

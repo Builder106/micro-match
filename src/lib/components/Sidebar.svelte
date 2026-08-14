@@ -67,7 +67,7 @@
         <Icon icon="mdi:account-circle-outline" width="22" height="22"/>
         <span class="font-medium">Profile</span>
       </a>
-      <a href="/logout" class="nav-link" on:click|preventDefault={handleSignOut}>
+      <a href="/logout" class="nav-link" onclick={handleSignOut}>
         <Icon icon="mdi:logout" width="22" height="22"/>
         <span class="font-medium">Sign out</span>
       </a>

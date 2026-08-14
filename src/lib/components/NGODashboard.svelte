@@ -140,10 +140,10 @@
                 </a>
               {/if}
               <div class="review-buttons">
-                <button class="btn-reject" on:click={() => handleClaimAction(claim.id, 'reject')}>
+                <button class="btn-reject" onclick={() => handleClaimAction(claim.id, 'reject')}>
                   <Icon icon="lucide:x" width="14" height="14" /> Reject
                 </button>
-                <button class="btn-approve" on:click={() => handleClaimAction(claim.id, 'approve')}>
+                <button class="btn-approve" onclick={() => handleClaimAction(claim.id, 'approve')}>
                   <Icon icon="lucide:check" width="14" height="14" /> Approve
                 </button>
               </div>

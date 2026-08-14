@@ -34,7 +34,7 @@
   class="theme-toggle"
   class:compact={compact}
   aria-label="Toggle color theme"
-  on:click={toggleTheme}
+  onclick={toggleTheme}
   title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
 >
   {#if compact}

@@ -106,7 +106,7 @@
         aria-label="Search tasks"
       />
       {#if q}
-        <button type="button" class="search-clear" on:click={() => q = ''} aria-label="Clear search">
+        <button type="button" class="search-clear" onclick={() => q = ''} aria-label="Clear search">
           <Icon icon="lucide:x" width="16" height="16" />
         </button>
       {/if}
@@ -121,7 +121,7 @@
             type="button"
             class="filter-chip"
             class:active={maxMinutes === m}
-            on:click={() => (maxMinutes = maxMinutes === m ? null : m)}
+            onclick={() => (maxMinutes = maxMinutes === m ? null : m)}
           >
             <Icon icon="lucide:clock" width="13" height="13" /> ≤ {m} min
           </button>
@@ -135,7 +135,7 @@
             type="button"
             class="filter-chip filter-chip-tag"
             class:active={selectedTags.includes(tag)}
-            on:click={() => toggleTag(tag)}
+            onclick={() => toggleTag(tag)}
           >
             #{tag}
           </button>
@@ -153,7 +153,7 @@
           <Icon icon="lucide:chevron-down" width="14" height="14" class="sort-caret" />
         </label>
         {#if hasActiveFilters}
-          <button type="button" class="filter-clear" on:click={clearFilters}>
+          <button type="button" class="filter-clear" onclick={clearFilters}>
             <Icon icon="lucide:x" width="14" height="14" /> Clear filters
           </button>
         {/if}
@@ -173,7 +173,7 @@
         {#if hasActiveFilters}
           <h2>Nothing matches those filters.</h2>
           <p>Try widening your search or clearing the filters to see everything.</p>
-          <button type="button" class="btn-dark-pill" on:click={clearFilters}>
+          <button type="button" class="btn-dark-pill" onclick={clearFilters}>
             <Icon icon="lucide:rotate-ccw" width="14" height="14" />
             Clear filters
           </button>
@@ -229,7 +229,7 @@
           aria-label="Search tasks"
         />
         {#if q}
-          <button type="button" class="search-clear" on:click={() => q = ''} aria-label="Clear search">
+          <button type="button" class="search-clear" onclick={() => q = ''} aria-label="Clear search">
             <Icon icon="lucide:x" width="16" height="16" />
           </button>
         {/if}
@@ -244,7 +244,7 @@
               type="button"
               class="filter-chip"
               class:active={maxMinutes === m}
-              on:click={() => (maxMinutes = maxMinutes === m ? null : m)}
+              onclick={() => (maxMinutes = maxMinutes === m ? null : m)}
             >
               <Icon icon="lucide:clock" width="13" height="13" /> ≤ {m} min
             </button>
@@ -258,7 +258,7 @@
               type="button"
               class="filter-chip filter-chip-tag"
               class:active={selectedTags.includes(tag)}
-              on:click={() => toggleTag(tag)}
+              onclick={() => toggleTag(tag)}
             >
               #{tag}
             </button>
@@ -276,7 +276,7 @@
             <Icon icon="lucide:chevron-down" width="14" height="14" class="sort-caret" />
           </label>
           {#if hasActiveFilters}
-            <button type="button" class="filter-clear" on:click={clearFilters}>
+            <button type="button" class="filter-clear" onclick={clearFilters}>
               <Icon icon="lucide:x" width="14" height="14" /> Clear filters
             </button>
           {/if}
@@ -296,7 +296,7 @@
           {#if hasActiveFilters}
             <h2>Nothing matches those filters.</h2>
             <p>Try widening your search or clearing the filters to see everything.</p>
-            <button type="button" class="btn-dark-pill" on:click={clearFilters}>
+            <button type="button" class="btn-dark-pill" onclick={clearFilters}>
               <Icon icon="lucide:rotate-ccw" width="14" height="14" />
               Clear filters
             </button>
