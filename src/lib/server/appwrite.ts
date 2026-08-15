@@ -61,9 +61,7 @@ async function withAppwrite<T>(fn: (ctx: {
   });
 }
 
-interface DbTaskRow {
-  $id: string;
-  $createdAt?: string;
+type DbTaskRow = import('node-appwrite').Models.Row & {
   orgID?: string;
   title: string;
   shortDescription: string;
@@ -76,11 +74,9 @@ interface DbTaskRow {
   deadline?: string | null;
   isVerified?: boolean;
   lastActivityAt?: string;
-}
+};
 
-interface DbClaimRow {
-  $id: string;
-  $createdAt?: string;
+type DbClaimRow = import('node-appwrite').Models.Row & {
   taskID: string;
   userID?: string | null;
   notes?: string | null;
@@ -88,17 +84,15 @@ interface DbClaimRow {
   status: 'pending' | 'approved' | 'rejected';
   reviewedBy?: string | null;
   reviewedAt?: string | null;
-}
+};
 
-interface DbBadgeRow {
-  $id: string;
-  $createdAt?: string;
+type DbBadgeRow = import('node-appwrite').Models.Row & {
   userID: string;
   taskID?: string | null;
   label: string;
   color?: string | null;
   awardedAt?: string;
-}
+};
 
 // PROD: Add pagination support with cursor-based pagination
 // PROD: Implement proper filtering and sorting capabilities
@@ -129,8 +123,8 @@ export async function getTasks(filters?: { orgId?: string; includeInactive?: boo
       // Removed isVerified filter - unverified tasks should still show
     }
     
-    const res = await tables.listRows(dbId, tasksTable, queries);
-    const rows = res.rows as unknown as DbTaskRow[];
+    const res = await tables.listRows<DbTaskRow>(dbId, tasksTable, queries);
+    const rows = res.rows;
     let tasks: Task[] = rows.map((d) => ({
       id: d.$id,
       orgId: d.orgID, // Map database orgID to code orgId
@@ -163,7 +157,7 @@ export async function getTaskById(id: string): Promise<Task | undefined> {
   if (!useAppwrite) return inMemory.tasks.get(id);
   return withAppwrite(async ({ tables, dbId, tasksTable }) => {
     try {
-      const d = (await tables.getRow(dbId, tasksTable, id)) as unknown as DbTaskRow;
+      const d = await tables.getRow<DbTaskRow>(dbId, tasksTable, id);
       return {
         id: d.$id,
         orgId: d.orgID, // Map database orgID to code orgId
@@ -259,25 +253,21 @@ export async function createTask(input: Omit<Task, 'id' | 'createdAt'>): Promise
   }
   return withAppwrite(async ({ tables, dbId, tasksTable, ID }) => {
     const now = new Date().toISOString();
-    const payload: Record<string, unknown> = {
+    const payload: Omit<DbTaskRow, keyof import('node-appwrite').Models.Row> = {
       title: input.title,
       shortDescription: input.shortDescription,
       description: input.description ?? '',
       language: input.language ?? 'English',
       estimatedMinutes: input.estimatedMinutes ?? null,
       tags: Array.isArray(input.tags) ? input.tags : [],
-      createdAt: now,
       status: input.status || 'active',
       maxVolunteers: input.maxVolunteers ?? null,
       deadline: input.deadline ?? null,
       isVerified: input.isVerified ?? true,
-      lastActivityAt: input.lastActivityAt ?? now
+      lastActivityAt: input.lastActivityAt ?? now,
+      ...(input.orgId ? { orgID: input.orgId } : {})
     };
-    // Only add orgID if it exists (note: database uses orgID not orgId)
-    if (input.orgId) {
-      payload.orgID = input.orgId;
-    }
-    const d = (await tables.createRow(dbId, tasksTable, ID.unique(), payload)) as unknown as DbTaskRow;
+    const d = await tables.createRow<DbTaskRow>(dbId, tasksTable, ID.unique(), payload);
     return {
       id: d.$id,
       orgId: d.orgID, // Map database orgID to code orgId
@@ -309,18 +299,16 @@ export async function createClaim(input: Omit<Claim, 'id' | 'status' | 'createdA
   }
   return withAppwrite(async ({ tables, dbId, claimsTable, ID }) => {
     const now = new Date().toISOString();
-    const payload: Record<string, unknown> = {
+    const payload: Omit<DbClaimRow, keyof import('node-appwrite').Models.Row> = {
       taskID: input.taskId, // Map taskId to database taskID
       status: input.status ?? 'pending',
-      reviewedAt: now // Database requires this field, use current time as default
+      reviewedAt: now, // Database requires this field, use current time as default
+      ...(input.userId ? { userID: input.userId } : {}),
+      ...(input.notes ? { notes: input.notes } : {}),
+      ...(input.proofUrl ? { proofURL: input.proofUrl } : {})
     };
     
-    // Only add optional fields if they have values
-    if (input.userId) payload.userID = input.userId; // Map userId to database userID
-    if (input.notes) payload.notes = input.notes;
-    if (input.proofUrl) payload.proofURL = input.proofUrl; // Map proofUrl to database proofURL
-    
-    const d = (await tables.createRow(dbId, claimsTable, ID.unique(), payload)) as unknown as DbClaimRow;
+    const d = await tables.createRow<DbClaimRow>(dbId, claimsTable, ID.unique(), payload);
     return {
       id: d.$id,
       taskId: d.taskID, // Map database taskID to code taskId
@@ -351,8 +339,8 @@ export async function getClaims(filters?: { userId?: string }): Promise<Claim[]>
     if (filters?.userId) {
       queries.push(Query.equal('userID', filters.userId));
     }
-    const res = await tables.listRows(dbId, claimsTable, queries);
-    const rows = res.rows as unknown as DbClaimRow[];
+    const res = await tables.listRows<DbClaimRow>(dbId, claimsTable, queries);
+    const rows = res.rows;
     return rows.map((d) => ({
       id: d.$id,
       taskId: d.taskID, // Map database taskID to code taskId
@@ -373,7 +361,7 @@ export async function getClaimById(id: string): Promise<Claim | undefined> {
   if (!useAppwrite) return inMemory.claims.get(id);
   return withAppwrite(async ({ tables, dbId, claimsTable }) => {
     try {
-      const d = (await tables.getRow(dbId, claimsTable, id)) as unknown as DbClaimRow;
+      const d = await tables.getRow<DbClaimRow>(dbId, claimsTable, id);
       return {
         id: d.$id,
         taskId: d.taskID, // Map database taskID to code taskId
@@ -413,11 +401,11 @@ export async function updateClaimStatus(
   }
   return withAppwrite(async ({ tables, dbId, claimsTable }) => {
     try {
-      const d = (await tables.updateRow(dbId, claimsTable, id, {
+      const d = await tables.updateRow<DbClaimRow>(dbId, claimsTable, id, {
         status,
         reviewedBy: reviewedBy ?? null,
         reviewedAt: new Date().toISOString()
-      })) as unknown as DbClaimRow;
+      });
       return {
         id: d.$id,
         taskId: d.taskID, // Map database taskID to code taskId
@@ -444,8 +432,8 @@ export async function listBadgesByUser(userId: string): Promise<Badge[]> {
   }
   return withAppwrite(async ({ tables, dbId, badgesTable, Query }) => {
     try {
-      const res = await tables.listRows(dbId, badgesTable, [Query.equal('userID', userId), Query.limit(100)]);
-      const rows = res.rows as unknown as DbBadgeRow[];
+      const res = await tables.listRows<DbBadgeRow>(dbId, badgesTable, [Query.equal('userID', userId), Query.limit(100)]);
+      const rows = res.rows;
       return rows.map((d) => ({
         id: d.$id,
         userId: d.userID, // Map database userID to code userId
@@ -471,11 +459,11 @@ export async function getBadges(): Promise<Badge[]> {
   }
   return withAppwrite(async ({ tables, dbId, badgesTable, Query }) => {
     try {
-      const res = await tables.listRows(dbId, badgesTable, [
+      const res = await tables.listRows<DbBadgeRow>(dbId, badgesTable, [
         Query.limit(1000), // Limit for performance
         Query.orderDesc('$createdAt')
       ]);
-      const rows = res.rows as unknown as DbBadgeRow[];
+      const rows = res.rows;
       return rows.map((d) => ({
         id: d.$id,
         userId: d.userID, // Map database userID to code userId
@@ -503,17 +491,15 @@ export async function awardBadge(input: Omit<Badge, 'id' | 'awardedAt'> & { awar
   }
   return withAppwrite(async ({ tables, dbId, badgesTable, ID }) => {
     const now = new Date().toISOString();
-    const payload: Record<string, unknown> = {
+    const payload: Omit<DbBadgeRow, keyof import('node-appwrite').Models.Row> = {
       userID: input.userId, // Map userId to database userID
       label: input.label,
-      awardedAt: input.awardedAt ?? now
+      awardedAt: input.awardedAt ?? now,
+      ...(input.taskId ? { taskID: input.taskId } : {}),
+      ...(input.color ? { color: input.color } : {})
     };
     
-    // Only add optional fields if they have values
-    if (input.taskId) payload.taskID = input.taskId; // Map taskId to database taskID
-    if (input.color) payload.color = input.color;
-    
-    const d = (await tables.createRow(dbId, badgesTable, ID.unique(), payload)) as unknown as DbBadgeRow;
+    const d = await tables.createRow<DbBadgeRow>(dbId, badgesTable, ID.unique(), payload);
     return {
       id: d.$id,
       userId: d.userID, // Map database userID to code userId
@@ -572,7 +558,7 @@ export async function getBadgeAnalytics(): Promise<{
   return withAppwrite(async ({ tables, dbId, badgesTable, Query }) => {
     try {
       // Get all badges for analytics (limit to reasonable amount for performance)
-      const res = await tables.listRows(dbId, badgesTable, [
+      const res = await tables.listRows<DbBadgeRow>(dbId, badgesTable, [
         Query.limit(2000), // Increased limit for better analytics
         Query.orderDesc('$createdAt')
       ]);
@@ -588,7 +574,7 @@ export async function getBadgeAnalytics(): Promise<{
         };
       }
 
-      const rows = res.rows as unknown as DbBadgeRow[];
+      const rows = res.rows;
       const badges = rows.map((d) => ({
         id: d.$id,
         userId: d.userID,
@@ -698,10 +684,10 @@ export async function updateTaskStatus(id: string, status: Task['status']): Prom
   }
   return withAppwrite(async ({ tables, dbId, tasksTable }) => {
     try {
-      const d = (await tables.updateRow(dbId, tasksTable, id, {
+      const d = await tables.updateRow<DbTaskRow>(dbId, tasksTable, id, {
         status: status || 'active',
         lastActivityAt: new Date().toISOString()
-      })) as unknown as DbTaskRow;
+      });
       return {
         id: d.$id,
         orgId: d.orgID,

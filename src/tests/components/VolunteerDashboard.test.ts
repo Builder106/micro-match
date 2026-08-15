@@ -20,7 +20,7 @@ const baseData = {
   }
 };
 
-function stubBadgesFetch(badges: unknown[] = []) {
+function stubBadgesFetch(badges: Partial<import('$lib/types').Badge>[] = []) {
   return vi.fn(async (url: string) => {
     if (String(url).includes('/api/badges')) {
       return new Response(JSON.stringify(badges), { status: 200 });

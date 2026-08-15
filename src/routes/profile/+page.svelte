@@ -132,9 +132,9 @@
 
     await refreshSessionCookie();
     try {
-      const me = await account.get();
+      const me = await account.get<import('$lib/types').UserPreferences>();
       displayName = me.name ?? '';
-      const prefs = (me?.prefs ?? {}) as Record<string, unknown>;
+      const prefs = me?.prefs ?? {};
 
       if (typeof prefs.bio === 'string') bio = prefs.bio;
       if (typeof prefs.orgName === 'string') orgName = prefs.orgName;

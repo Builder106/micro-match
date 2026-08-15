@@ -63,3 +63,38 @@ export type NgoVerification = {
   reviewedAt?: string;
 };
 
+export type UserRole = 'anonymous' | 'user' | 'ngo' | 'volunteer';
+
+export interface UserPreferences {
+  role?: UserRole | string;
+  orgName?: string;
+  country?: string;
+  taxId?: string;
+  avatarUrl?: string;
+  avatarFileId?: string;
+  bio?: string;
+  skills?: string[];
+  verificationStatus?: string;
+  [key: string]: unknown;
+}
+
+export interface VolunteerUserData {
+  myClaims?: Array<Claim & { task?: { id: string; title: string; estimatedMinutes?: number } }>;
+  approvedClaimsCount?: number;
+  totalHours?: number;
+  recommendations?: Task[];
+  [key: string]: unknown;
+}
+
+export interface NgoUserData {
+  myTasks?: Task[];
+  pendingReviews?: Array<Claim & { task?: { id: string; title: string; estimatedMinutes?: number } }>;
+  totalTasks?: number;
+  pendingReviewsCount?: number;
+  approvedClaimsCount?: number;
+  totalHours?: number;
+  myClaims?: Array<Claim & { task?: { id: string; title: string; estimatedMinutes?: number } }>;
+  [key: string]: unknown;
+}
+
+export type DashboardUserData = VolunteerUserData | NgoUserData;

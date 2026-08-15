@@ -33,9 +33,7 @@ async function withAppwrite<T>(fn: (ctx: {
   });
 }
 
-interface DbBadgeDefRow {
-  $id: string;
-  $createdAt?: string;
+type DbBadgeDefRow = import('node-appwrite').Models.Row & {
   orgID: string;
   label: string;
   color: string;
@@ -43,10 +41,9 @@ interface DbBadgeDefRow {
   criteria: BadgeDefinition['criteria'];
   taskID?: string | null;
   description?: string | null;
-}
+};
 
-function fromRow(d: unknown): BadgeDefinition {
-  const row = d as DbBadgeDefRow;
+function fromRow(row: DbBadgeDefRow): BadgeDefinition {
   return {
     id: row.$id,
     orgId: row.orgID,
@@ -64,7 +61,7 @@ export async function listBadgeDefinitions(orgId: string): Promise<BadgeDefiniti
   if (!useAppwrite) return Array.from(inMemory.values()).filter((b) => b.orgId === orgId);
   return withAppwrite(async ({ tables, dbId, table, Query }) => {
     try {
-      const res = await tables.listRows(dbId, table, [
+      const res = await tables.listRows<DbBadgeDefRow>(dbId, table, [
         Query.equal('orgID', orgId),
         Query.orderDesc('$createdAt'),
         Query.limit(200)
@@ -92,7 +89,7 @@ export async function createBadgeDefinition(input: {
     return created;
   }
   return withAppwrite(async ({ tables, dbId, table, ID }) => {
-    const payload: Record<string, unknown> = {
+    const payload: Omit<DbBadgeDefRow, keyof import('node-appwrite').Models.Row> = {
       orgID: input.orgId,
       label: input.label,
       color: input.color,
@@ -101,7 +98,7 @@ export async function createBadgeDefinition(input: {
       taskID: input.taskId ?? '',
       description: input.description ?? ''
     };
-    const created = await tables.createRow(dbId, table, ID.unique(), payload);
+    const created = await tables.createRow<DbBadgeDefRow>(dbId, table, ID.unique(), payload);
     return fromRow(created);
   });
 }
@@ -116,7 +113,7 @@ export async function deleteBadgeDefinition(id: string, orgId: string): Promise<
   return withAppwrite(async ({ tables, dbId, table }) => {
     try {
       // Confirm ownership before delete to prevent cross-org tampering.
-      const row = (await tables.getRow(dbId, table, id)) as unknown as DbBadgeDefRow;
+      const row = await tables.getRow<DbBadgeDefRow>(dbId, table, id);
       if (row?.orgID !== orgId) return false;
       await tables.deleteRow(dbId, table, id);
       return true;
@@ -130,7 +127,7 @@ export async function getBadgeDefinition(id: string): Promise<BadgeDefinition | 
   if (!useAppwrite) return inMemory.get(id);
   return withAppwrite(async ({ tables, dbId, table }) => {
     try {
-      const row = (await tables.getRow(dbId, table, id)) as unknown as DbBadgeDefRow;
+      const row = await tables.getRow<DbBadgeDefRow>(dbId, table, id);
       return fromRow(row);
     } catch {
       return undefined;

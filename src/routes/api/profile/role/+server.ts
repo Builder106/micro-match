@@ -79,8 +79,8 @@ export const POST: RequestHandler = async (event) => {
 
   // 2. Update prefs.role (read-modify-write so we don't clobber other prefs).
   try {
-    const me = await users.get(userId);
-    const nextPrefs: Record<string, unknown> = { ...(me?.prefs ?? {}), role: newRole };
+    const me = await users.get<import('$lib/types').UserPreferences>(userId);
+    const nextPrefs: import('$lib/types').UserPreferences = { ...(me?.prefs ?? {}), role: newRole };
     if (downgrading) nextPrefs.verificationStatus = '';
     await users.updatePrefs(userId, nextPrefs);
   } catch (err) {

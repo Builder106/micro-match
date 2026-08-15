@@ -17,8 +17,17 @@ export const POST: RequestHandler = async (event) => {
   const orgId = getOrgId(event);
   if (!orgId) return json({ error: 'Not signed in' }, { status: 401 });
 
-  let body: Record<string, unknown> | null = null;
-  try { body = (await event.request.json()) as Record<string, unknown>; } catch { return json({ error: 'Invalid JSON' }, { status: 400 }); }
+  interface ManageBadgeBody {
+    label?: string;
+    color?: string;
+    icon?: string;
+    criteria?: import('$lib/types').BadgeDefinition['criteria'];
+    taskId?: string;
+    description?: string;
+  }
+
+  let body: ManageBadgeBody | null = null;
+  try { body = (await event.request.json()) as ManageBadgeBody; } catch { return json({ error: 'Invalid JSON' }, { status: 400 }); }
 
   const label = String(body?.label ?? '').trim();
   const color = String(body?.color ?? '#FF6B6B').trim();

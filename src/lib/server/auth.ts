@@ -1,10 +1,8 @@
 import { env } from '$env/dynamic/private';
 import type { RequestEvent } from '@sveltejs/kit';
 
-// PROD: Add proper session management with Redis or database
-// PROD: Add JWT token refresh mechanism
-// PROD: Add session invalidation and logout tracking
-export type UserRole = 'anonymous' | 'user' | 'ngo' | 'volunteer';
+import type { UserRole, UserPreferences } from '$lib/types';
+export type { UserRole };
 
 // PROD: Add proper JWT validation and signature verification
 // PROD: Add JWT token expiration handling
@@ -18,7 +16,7 @@ function parseBearer(event: RequestEvent): string | null {
 // PROD: Add proper error handling and logging
 // PROD: Add user session caching
 // PROD: Add user profile caching with TTL
-async function getUserFromJWT(jwt: string): Promise<any | null> {
+async function getUserFromJWT(jwt: string): Promise<import('node-appwrite').Models.User<UserPreferences> | null> {
   try {
     const { Client, Account } = await import('node-appwrite');
     const client = new Client()
@@ -26,7 +24,7 @@ async function getUserFromJWT(jwt: string): Promise<any | null> {
       .setProject(env.APPWRITE_PROJECT_ID!)
       .setJWT(jwt);
     const account = new Account(client);
-    return await account.get();
+    return await account.get<UserPreferences>();
   } catch {
     return null;
   }
@@ -35,8 +33,8 @@ async function getUserFromJWT(jwt: string): Promise<any | null> {
 // PROD: Add role-based access control (RBAC) system
 // PROD: Add permission-based authorization
 // PROD: Add role hierarchy and inheritance
-function roleFromUser(user: { prefs?: Record<string, unknown> } | null | undefined): UserRole {
-  const prefs = (user?.prefs ?? {}) as Record<string, unknown>;
+function roleFromUser(user: { prefs?: UserPreferences } | null | undefined): UserRole {
+  const prefs = user?.prefs ?? {};
   const role = typeof prefs.role === 'string' ? prefs.role : '';
   if (role === 'ngo') return 'ngo';
   if (role === 'volunteer') return 'volunteer';
@@ -67,7 +65,7 @@ export async function getUserRole(event: RequestEvent): Promise<UserRole> {
       // Check team memberships first if configured
       try {
         const { NGO_TEAM_ID, VOLUNTEER_TEAM_ID, isUserInTeam } = await import('./teams');
-        const userId: string | undefined = user.$id ?? user.id;
+        const userId: string | undefined = user.$id;
         if (userId) {
           if (NGO_TEAM_ID && (await isUserInTeam(userId, NGO_TEAM_ID))) return 'ngo';
           if (VOLUNTEER_TEAM_ID && (await isUserInTeam(userId, VOLUNTEER_TEAM_ID))) return 'volunteer';

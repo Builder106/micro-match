@@ -16,9 +16,9 @@ export const POST: RequestHandler = async (event) => {
 			.setJWT(jwt);
 		const account = new Account(client);
 
-		let user: import('node-appwrite').Models.User<Record<string, unknown>> | undefined;
+		let user: import('node-appwrite').Models.User<import('$lib/types').UserPreferences> | undefined;
 		try {
-			user = await account.get();
+			user = await account.get<import('$lib/types').UserPreferences>();
 		} catch {
 			return json({ error: 'Invalid jwt' }, { status: 401 });
 		}
@@ -32,7 +32,7 @@ export const POST: RequestHandler = async (event) => {
 		let roleSource = 'default';
 		
 		try {
-			const prefs = (user?.prefs ?? {}) as Record<string, unknown>;
+			const prefs = user?.prefs ?? {};
 			const r = typeof prefs.role === 'string' ? prefs.role : '';
 			
 			if (r === 'ngo') {

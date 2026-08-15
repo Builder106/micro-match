@@ -33,9 +33,7 @@ async function withAppwrite<T>(fn: (ctx: {
   });
 }
 
-interface DbVerificationRow {
-  $id: string;
-  $createdAt?: string;
+type DbVerificationRow = import('node-appwrite').Models.Row & {
   userID: string;
   orgName: string;
   country: string;
@@ -46,10 +44,9 @@ interface DbVerificationRow {
   submittedAt?: string;
   reviewedBy?: string | null;
   reviewedAt?: string | null;
-}
+};
 
-function fromRow(d: unknown): NgoVerification {
-  const row = d as DbVerificationRow;
+function fromRow(row: DbVerificationRow): NgoVerification {
   return {
     id: row.$id,
     userId: row.userID,
@@ -65,26 +62,26 @@ function fromRow(d: unknown): NgoVerification {
   };
 }
 
-function toRow(v: Partial<NgoVerification>): Record<string, unknown> {
-  const row: Record<string, unknown> = {};
-  if (v.userId !== undefined) row.userID = v.userId;
-  if (v.orgName !== undefined) row.orgName = v.orgName;
-  if (v.country !== undefined) row.country = v.country;
-  if (v.taxId !== undefined) row.taxId = v.taxId;
-  if (v.docFileId !== undefined) row.docFileId = v.docFileId;
-  if (v.status !== undefined) row.status = v.status;
-  if (v.reason !== undefined) row.reason = v.reason;
-  if (v.submittedAt !== undefined) row.submittedAt = v.submittedAt;
-  if (v.reviewedBy !== undefined) row.reviewedBy = v.reviewedBy;
-  if (v.reviewedAt !== undefined) row.reviewedAt = v.reviewedAt;
-  return row;
+function toRow(v: Partial<NgoVerification>): Omit<DbVerificationRow, keyof import('node-appwrite').Models.Row> {
+  return {
+    userID: v.userId ?? '',
+    orgName: v.orgName ?? '',
+    country: v.country ?? '',
+    taxId: v.taxId ?? '',
+    docFileId: v.docFileId ?? null,
+    status: v.status ?? 'pending',
+    reason: v.reason ?? null,
+    submittedAt: v.submittedAt ?? '',
+    reviewedBy: v.reviewedBy ?? null,
+    reviewedAt: v.reviewedAt ?? null
+  };
 }
 
 export async function getVerificationByUserId(userId: string): Promise<NgoVerification | undefined> {
   if (!useAppwrite) return Array.from(inMemory.values()).find((v) => v.userId === userId);
   return withAppwrite(async ({ tables, dbId, table, Query }) => {
     try {
-      const res = await tables.listRows(dbId, table, [Query.equal('userID', userId), Query.limit(1)]);
+      const res = await tables.listRows<DbVerificationRow>(dbId, table, [Query.equal('userID', userId), Query.limit(1)]);
       const row = res.rows[0];
       return row ? fromRow(row) : undefined;
     } catch {
@@ -103,7 +100,7 @@ export async function listVerifications(filter?: { status?: NgoVerification['sta
     const queries = [Query.limit(200), Query.orderDesc('submittedAt')];
     if (filter?.status) queries.push(Query.equal('status', filter.status));
     try {
-      const res = await tables.listRows(dbId, table, queries);
+      const res = await tables.listRows<DbVerificationRow>(dbId, table, queries);
       return res.rows.map(fromRow);
     } catch {
       return [];
@@ -141,7 +138,7 @@ export async function upsertVerification(input: {
 
   return withAppwrite(async ({ tables, dbId, table, ID, Query }) => {
     // Find existing row for this user
-    const existing = await tables.listRows(dbId, table, [Query.equal('userID', input.userId), Query.limit(1)]);
+    const existing = await tables.listRows<DbVerificationRow>(dbId, table, [Query.equal('userID', input.userId), Query.limit(1)]);
     const payload = toRow({
       userId: input.userId,
       orgName: input.orgName,
@@ -157,10 +154,10 @@ export async function upsertVerification(input: {
 
     if (existing.rows[0]) {
       const id = existing.rows[0].$id;
-      const updated = await tables.updateRow(dbId, table, id, payload);
+      const updated = await tables.updateRow<DbVerificationRow>(dbId, table, id, payload);
       return fromRow(updated);
     }
-    const created = await tables.createRow(dbId, table, ID.unique(), payload);
+    const created = await tables.createRow<DbVerificationRow>(dbId, table, ID.unique(), payload);
     return fromRow(created);
   });
 }
@@ -188,10 +185,10 @@ export async function setVerificationStatus(
   }
 
   return withAppwrite(async ({ tables, dbId, table, Query }) => {
-    const existing = await tables.listRows(dbId, table, [Query.equal('userID', userId), Query.limit(1)]);
+    const existing = await tables.listRows<DbVerificationRow>(dbId, table, [Query.equal('userID', userId), Query.limit(1)]);
     const row = existing.rows[0];
     if (!row) return undefined;
-    const updated = await tables.updateRow(dbId, table, row.$id, {
+    const updated = await tables.updateRow<DbVerificationRow>(dbId, table, row.$id, {
       status,
       reason: status === 'rejected' ? (reason ?? '') : '',
       reviewedBy: reviewerId,
@@ -210,7 +207,7 @@ export async function withdrawVerification(userId: string): Promise<boolean> {
   }
   return withAppwrite(async ({ tables, dbId, table, Query }) => {
     try {
-      const existing = await tables.listRows(dbId, table, [Query.equal('userID', userId), Query.limit(1)]);
+      const existing = await tables.listRows<DbVerificationRow>(dbId, table, [Query.equal('userID', userId), Query.limit(1)]);
       const row = existing.rows[0];
       if (!row) return false;
       await tables.deleteRow(dbId, table, row.$id);

@@ -42,9 +42,9 @@ export const GET: RequestHandler = async (event) => {
     .setKey(env.APPWRITE_API_KEY!);
   const users = new Users(adminClient);
 
-  let user: import('node-appwrite').Models.User<Record<string, unknown>> | undefined;
+  let user: import('node-appwrite').Models.User<import('$lib/types').UserPreferences> | undefined;
   try {
-    user = await users.get(userId);
+    user = await users.get<import('$lib/types').UserPreferences>(userId);
   } catch (err) {
     if (env.NODE_ENV !== 'production') console.error('users.get after OAuth failed:', err);
     throw redirect(303, '/login?error=oauth_user');
@@ -53,7 +53,7 @@ export const GET: RequestHandler = async (event) => {
   if (!email) throw redirect(303, '/login?error=oauth_email');
 
   // 3. Determine role: prefs.role first, then team membership.
-  const prefs = (user?.prefs ?? {}) as Record<string, unknown>;
+  const prefs = user?.prefs ?? {};
   const prefRole = typeof prefs.role === 'string' ? prefs.role : '';
   let role: 'user' | 'ngo' | 'volunteer' = 'user';
   if (prefRole === 'ngo') role = 'ngo';

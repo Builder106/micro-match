@@ -43,9 +43,16 @@ export const POST: RequestHandler = async (event) => {
   const userId = await getUserId(event);
   if (!userId) return json({ error: 'Unauthorized' }, { status: 401 });
 
-  let body: Record<string, unknown> | null = null;
+  interface UpdateProfileBody {
+    displayName?: string;
+    bio?: string;
+    orgName?: string;
+    avatarFileId?: string;
+  }
+
+  let body: UpdateProfileBody | null = null;
   try {
-    body = (await event.request.json()) as Record<string, unknown>;
+    body = (await event.request.json()) as UpdateProfileBody;
   } catch {
     return json({ error: 'Invalid JSON' }, { status: 400 });
   }
@@ -75,8 +82,8 @@ export const POST: RequestHandler = async (event) => {
   // (role, verificationStatus, etc).
   if (bio !== undefined || orgName !== undefined || avatarFileId !== undefined) {
     try {
-      const me = await users.get(userId);
-      const next: Record<string, unknown> = { ...(me?.prefs ?? {}) };
+      const me = await users.get<import('$lib/types').UserPreferences>(userId);
+      const next: import('$lib/types').UserPreferences = { ...(me?.prefs ?? {}) };
       if (bio !== undefined) next.bio = bio;
       if (orgName !== undefined) next.orgName = orgName;
       if (avatarFileId !== undefined) next.avatarFileId = avatarFileId;

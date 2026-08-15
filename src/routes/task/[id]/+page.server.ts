@@ -14,8 +14,8 @@ async function lookupOrgName(orgId: string | undefined): Promise<string | null> 
       .setProject(env.APPWRITE_PROJECT_ID)
       .setKey(env.APPWRITE_API_KEY);
     const users = new Users(client);
-    const u = await users.get(orgId);
-    const prefs = (u?.prefs ?? {}) as Record<string, unknown>;
+    const u = await users.get<import('$lib/types').UserPreferences>(orgId);
+    const prefs = u?.prefs ?? {};
     const orgName = typeof prefs.orgName === 'string' && prefs.orgName.trim() ? prefs.orgName.trim() : null;
     return orgName ?? u?.name ?? null;
   } catch {

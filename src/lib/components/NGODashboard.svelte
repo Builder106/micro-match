@@ -70,8 +70,8 @@
 
     if (data.signedIn) {
       try {
-        const me = await account.get();
-        const prefs = (me?.prefs ?? {}) as Record<string, unknown>;
+        const me = await account.get<import('$lib/types').UserPreferences>();
+        const prefs = me?.prefs ?? {};
         if (typeof prefs.orgName === 'string' && prefs.orgName.trim()) {
           orgName = prefs.orgName.trim();
         } else if (me?.name) {

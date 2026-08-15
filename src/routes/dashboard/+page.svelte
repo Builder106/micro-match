@@ -1,10 +1,12 @@
 <script lang="ts">
   import VolunteerDashboard from "$lib/components/VolunteerDashboard.svelte";
   import NGODashboard from "$lib/components/NGODashboard.svelte";
+  import type { DashboardUserData } from "$lib/types";
+
   export let data: {
     signedIn: boolean;
     userRole: string;
-    userData: Record<string, unknown> | null;
+    userData: DashboardUserData | null;
   };
 </script>
 
