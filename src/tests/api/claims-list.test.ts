@@ -13,7 +13,7 @@ function makeEvent(opts: { userId?: string | null; search?: string } = {}) {
     locals: opts.userId ? { session: { user: { id: opts.userId } } } : {},
     request: { headers: new Headers() },
     url: new URL(`http://test/api/claims${opts.search ?? ''}`)
-  } as any;
+  } as unknown as import("@sveltejs/kit").RequestEvent;
 }
 
 describe('GET /api/claims', () => {

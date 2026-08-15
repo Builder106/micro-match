@@ -62,11 +62,22 @@ export async function moderateText(text: string, categories: ModerationCategory[
       return { blocked: false, reasons: [] };
     }
 
-    const data: any = await res.json();
+    interface SafetyCategory {
+      category?: string;
+      severity?: number;
+    }
+    interface SafetyResponse {
+      categoriesAnalysis?: SafetyCategory[];
+      categories?: SafetyCategory[];
+    }
+    const data = (await res.json()) as SafetyResponse;
 
     // Normalize categories array (API response shape can vary by version)
     const items: Array<{ category: string; severity: number }> =
-      data?.categoriesAnalysis || data?.categories || [];
+      (data?.categoriesAnalysis || data?.categories || []).map((c) => ({
+        category: String(c.category ?? ''),
+        severity: Number(c.severity ?? 0)
+      }));
 
     const reasons = items
       .filter(Boolean)

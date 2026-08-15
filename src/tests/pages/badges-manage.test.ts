@@ -12,7 +12,7 @@ function makeEvent(opts: { userRole?: string; userId?: string } = {}) {
       userRole: opts.userRole ?? 'anonymous',
       session: opts.userId ? { user: { id: opts.userId, email: 'jane@example.com' } } : undefined
     }
-  } as any;
+  } as unknown as Parameters<typeof load>[0];
 }
 
 describe('/badges/manage load', () => {
@@ -30,7 +30,13 @@ describe('/badges/manage load', () => {
     mocks.getTasks.mockResolvedValue([{ id: 't1', orgId: 'org-1' }]);
     mocks.listBadgeDefinitions.mockResolvedValue([{ id: 'b1', orgId: 'org-1' }]);
 
-    const result: any = await load(makeEvent({ userRole: 'ngo', userId: 'org-1' }));
+    interface ManageResult {
+      userRole: string;
+      user: { id: string; email?: string } | null;
+      tasks: unknown[];
+      badges: unknown[];
+    }
+    const result = (await load(makeEvent({ userRole: 'ngo', userId: 'org-1' }))) as unknown as ManageResult;
 
     expect(mocks.getTasks).toHaveBeenCalledWith({ orgId: 'org-1', includeInactive: true });
     expect(mocks.listBadgeDefinitions).toHaveBeenCalledWith('org-1');

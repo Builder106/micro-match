@@ -33,17 +33,30 @@ async function withAppwrite<T>(fn: (ctx: {
   });
 }
 
-function fromRow(d: any): BadgeDefinition {
+interface DbBadgeDefRow {
+  $id: string;
+  $createdAt?: string;
+  orgID: string;
+  label: string;
+  color: string;
+  icon?: string | null;
+  criteria: BadgeDefinition['criteria'];
+  taskID?: string | null;
+  description?: string | null;
+}
+
+function fromRow(d: unknown): BadgeDefinition {
+  const row = d as DbBadgeDefRow;
   return {
-    id: d.$id,
-    orgId: d.orgID,
-    label: d.label,
-    color: d.color,
-    icon: d.icon ?? undefined,
-    criteria: d.criteria,
-    taskId: d.taskID ?? undefined,
-    description: d.description ?? undefined,
-    createdAt: d.$createdAt
+    id: row.$id,
+    orgId: row.orgID,
+    label: row.label,
+    color: row.color,
+    icon: row.icon ?? undefined,
+    criteria: row.criteria,
+    taskId: row.taskID ?? undefined,
+    description: row.description ?? undefined,
+    createdAt: row.$createdAt
   };
 }
 
@@ -103,7 +116,7 @@ export async function deleteBadgeDefinition(id: string, orgId: string): Promise<
   return withAppwrite(async ({ tables, dbId, table }) => {
     try {
       // Confirm ownership before delete to prevent cross-org tampering.
-      const row: any = await tables.getRow(dbId, table, id);
+      const row = (await tables.getRow(dbId, table, id)) as unknown as DbBadgeDefRow;
       if (row?.orgID !== orgId) return false;
       await tables.deleteRow(dbId, table, id);
       return true;
@@ -117,7 +130,7 @@ export async function getBadgeDefinition(id: string): Promise<BadgeDefinition | 
   if (!useAppwrite) return inMemory.get(id);
   return withAppwrite(async ({ tables, dbId, table }) => {
     try {
-      const row: any = await tables.getRow(dbId, table, id);
+      const row = (await tables.getRow(dbId, table, id)) as unknown as DbBadgeDefRow;
       return fromRow(row);
     } catch {
       return undefined;

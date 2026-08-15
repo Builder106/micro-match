@@ -8,7 +8,7 @@ export const POST: RequestHandler = async (event) => {
   const role = await getUserRole(event);
   if (role !== 'ngo') return json({ error: 'Forbidden' }, { status: 403 });
 
-  const reviewerId = (event.locals as any)?.session?.user?.id as string | undefined;
+  const reviewerId = event.locals.session?.user?.id ?? undefined;
   if (!reviewerId) return json({ error: 'Unauthorized' }, { status: 401 });
 
   const { params } = event;

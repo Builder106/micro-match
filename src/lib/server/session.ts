@@ -45,7 +45,7 @@ export function createSession(input: {
   ttlSeconds?: number;
 }): SessionRecord {
   purgeExpired();
-  const id = (globalThis.crypto as any)?.randomUUID?.() ?? randomUUID();
+  const id = typeof globalThis.crypto !== 'undefined' && 'randomUUID' in globalThis.crypto ? globalThis.crypto.randomUUID() : randomUUID();
   const ttl = Math.max(60, input.ttlSeconds ?? SESSION_TTL_SECONDS);
   const record: SessionRecord = {
     id,

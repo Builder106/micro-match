@@ -20,14 +20,14 @@ function makeEvent(opts: { userId?: string | null; taskId?: string; body?: unkno
     params: { id: opts.taskId ?? 'task-1' },
     locals: opts.userId ? { session: { user: { id: opts.userId } } } : {},
     request: { json: async () => opts.body ?? {} }
-  } as any;
+  } as unknown as import("@sveltejs/kit").RequestEvent;
 }
 
 describe('POST /api/tasks/[id]/claim', () => {
   beforeEach(() => {
     Object.values(mocks).forEach((m) => m.mockReset());
     mocks.moderateText.mockResolvedValue({ blocked: false, reasons: [] });
-    mocks.createClaim.mockImplementation(async (input: any) => ({ id: 'claim-1', status: 'pending', ...input }));
+    mocks.createClaim.mockImplementation(async (input: Record<string, unknown>) => ({ id: 'claim-1', status: 'pending', ...input }));
   });
 
   it('returns 401 for an anonymous caller', async () => {

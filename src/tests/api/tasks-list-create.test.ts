@@ -26,7 +26,7 @@ function makeEvent(opts: { orgId?: string | null; body?: unknown } = {}) {
         return opts.body;
       }
     }
-  } as any;
+  } as unknown as import("@sveltejs/kit").RequestEvent;
 }
 
 describe('GET /api/tasks', () => {
@@ -38,7 +38,7 @@ describe('GET /api/tasks', () => {
       tags: ['a'], estimatedMinutes: 10, language: 'en', status: 'active'
     }]);
 
-    const res = await GET({} as any);
+    const res = await GET({} as unknown as import("@sveltejs/kit").RequestEvent);
     const body = await res.json();
 
     expect(body).toEqual([{ id: 't1', title: 'T', shortDescription: 's', tags: ['a'], estimatedMinutes: 10, language: 'en' }]);
@@ -55,7 +55,7 @@ describe('POST /api/tasks', () => {
     Object.values(mocks).forEach((m) => m.mockReset());
     mocks.moderateText.mockResolvedValue({ blocked: false, reasons: [] });
     mocks.getVerificationByUserId.mockResolvedValue(undefined);
-    mocks.createTask.mockImplementation(async (input: any) => ({ id: 'new-task', ...input }));
+    mocks.createTask.mockImplementation(async (input: Record<string, unknown>) => ({ id: 'new-task', ...input }));
   });
 
   it('returns 403 for non-NGO roles', async () => {

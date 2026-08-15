@@ -20,14 +20,14 @@
   const ogTitle = 'MicroMatch — Make a big impact in a few minutes';
   const ogDescription = 'Pair with NGOs on 5–30 minute volunteer tasks. Claim what fits your skills, submit your work, and earn badges that build a verified track record.';
   const ogImageAlt = 'MicroMatch — Make a big impact in a few minutes.';
-  $: origin = (($page.data as any)?.origin as string | undefined) ?? $page.url.origin;
+  $: origin = $page.data.origin ?? $page.url.origin;
   $: ogUrl = origin + $page.url.pathname;
   $: ogImage = origin + '/social-preview.png';
   $: pathname = $page.url.pathname;
   $: isLanding = pathname === '/';
   $: isAuthPath = authPaths.includes(pathname);
   $: isPublicPath = publicPaths.some((p) => pathname === p || pathname.startsWith(p + '/'));
-  $: userRole = (($page.data as any)?.userRole as string | undefined) ?? 'anonymous';
+  $: userRole = $page.data.userRole ?? 'anonymous';
   $: isSignedIn = userRole !== 'anonymous';
   $: showAppChrome = !isLanding && !isAuthPath && (!isPublicPath || (pathname === '/tasks' && isSignedIn)) && isSignedIn;
 
@@ -87,7 +87,7 @@
               const match = cookie.match(/(?:^|;\s*)mm_role=([^;]+)/);
               const hinted = match ? decodeURIComponent(match[1]) : '';
               const valid = hinted === 'ngo' || hinted === 'volunteer' || hinted === 'user';
-              if (valid && hinted !== ((get(page).data as any).userRole || '')) {
+              if (valid && hinted !== (get(page).data.userRole || '')) {
                 // Avoid loops: mark a one-time reload flag
                 const reloaded = sessionStorage.getItem('mm_role_refreshed');
                 if (!reloaded) {

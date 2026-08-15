@@ -4,7 +4,7 @@ import { listBadgesByUser } from '$lib/server/appwrite';
 
 // MVP: derive userId from query for demo; later from auth/session
 export const GET: RequestHandler = async ({ url, locals }) => {
-  const sessionUserId = (locals as any)?.session?.user?.id as string | undefined;
+  const sessionUserId = locals.session?.user?.id ?? undefined;
   const userId = sessionUserId ?? url.searchParams.get('userId') ?? 'demo-user';
   const badges = await listBadgesByUser(userId);
   return json(badges);

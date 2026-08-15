@@ -25,15 +25,16 @@ function makeEvent(opts: { adminId?: string | null; targetUserId?: string } = {}
   return {
     locals: opts.adminId ? { session: { user: { id: opts.adminId } } } : {},
     params: { userId: opts.targetUserId ?? 'target-1' }
-  } as any;
+  } as unknown as import("@sveltejs/kit").RequestEvent;
 }
 
 async function expectHttpError(promise: unknown, status: number) {
   try {
     await promise;
     throw new Error('expected an error() to be thrown');
-  } catch (err: any) {
-    expect(err.status).toBe(status);
+  } catch (err: unknown) {
+    const e = err as { status?: number };
+    expect(e.status).toBe(status);
   }
 }
 

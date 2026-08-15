@@ -36,7 +36,7 @@ function makeEvent(opts: {
     request: {
       headers: new Headers(opts.authorization ? { authorization: opts.authorization } : {})
     }
-  } as any;
+  } as unknown as import('@sveltejs/kit').RequestEvent;
 }
 
 describe('getUserRole', () => {

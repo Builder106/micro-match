@@ -26,14 +26,25 @@
           loop="true"
           on:ready={(e: Event) => {
             try {
-              const el = e.currentTarget as any;
+              interface DotLottieElement extends HTMLElement {
+                setLooping?: (loop: boolean) => void;
+                play?: () => void;
+              }
+              const el = e.currentTarget as DotLottieElement | null;
               // setLooping is the documented imperative API; the `loop` attribute
               // is parsed as a string and "true" is what the player expects.
-              el.setLooping?.(true);
-              el.play?.();
+              el?.setLooping?.(true);
+              el?.play?.();
             } catch {}
           }}
-          on:complete={(e: Event) => { try { (e.currentTarget as any)?.play?.(); } catch {} }}
+          on:complete={(e: Event) => {
+            try {
+              interface DotLottieElement extends HTMLElement {
+                play?: () => void;
+              }
+              (e.currentTarget as DotLottieElement | null)?.play?.();
+            } catch {}
+          }}
         ></dotlottie-player>
       {/key}
     {/if}

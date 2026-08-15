@@ -11,7 +11,7 @@ function makeEvent(opts: { userRole?: string; userId?: string } = {}) {
       userRole: opts.userRole ?? 'anonymous',
       session: opts.userId ? { user: { id: opts.userId, email: 'jane@example.com' } } : undefined
     }
-  } as any;
+  } as unknown as Parameters<typeof load>[0];
 }
 
 describe('/badges/analytics load', () => {
@@ -25,7 +25,13 @@ describe('/badges/analytics load', () => {
     mocks.getTasks.mockResolvedValue([{ id: 't1' }]);
     mocks.getBadgeAnalytics.mockResolvedValue({ totalBadgesAwarded: 5 });
 
-    const result: any = await load(makeEvent({ userRole: 'ngo', userId: 'org-1' }));
+    interface AnalyticsResult {
+      userRole: string;
+      user: { id: string; email?: string } | null;
+      tasks: unknown[];
+      analytics: unknown;
+    }
+    const result = (await load(makeEvent({ userRole: 'ngo', userId: 'org-1' }))) as unknown as AnalyticsResult;
 
     expect(result.userRole).toBe('ngo');
     expect(result.user).toEqual({ id: 'org-1', email: 'jane@example.com' });

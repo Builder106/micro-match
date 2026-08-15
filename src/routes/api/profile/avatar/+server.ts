@@ -4,7 +4,7 @@ import { env } from '$env/dynamic/private';
 
 export const POST: RequestHandler = async (event) => {
   try {
-    const session = (event.locals as any)?.session as { user?: { id?: string } } | undefined;
+    const session = event.locals.session;
     let userId = session?.user?.id ?? null;
 
     // Fallback: derive userId from Appwrite JWT if provided
@@ -21,8 +21,8 @@ export const POST: RequestHandler = async (event) => {
             .setProject(env.APPWRITE_PROJECT_ID || '')
             .setJWT(jwt);
           const account = new Account(c);
-          const me: any = await account.get();
-          userId = me?.$id ?? me?.id ?? null;
+          const me = await account.get();
+          userId = me?.$id ?? null;
         }
       } catch {}
     }
@@ -42,7 +42,7 @@ export const POST: RequestHandler = async (event) => {
       .setKey(env.APPWRITE_API_KEY || '');
     const storage = new Storage(client);
 
-    const created: any = await storage.createFile(
+    const created = await storage.createFile(
       bucketId,
       ID.unique(),
       file,

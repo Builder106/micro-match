@@ -39,8 +39,9 @@ async function run() {
         const status = resp?.status() ?? 0;
         const finalUrl = page.url();
         console.log(`${vp.name} ${p.slug.padEnd(18)} ${status}  ${finalUrl}`);
-      } catch (err: any) {
-        console.log(`${vp.name} ${p.slug.padEnd(18)} ERR  ${err?.message ?? err}`);
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        console.log(`${vp.name} ${p.slug.padEnd(18)} ERR  ${msg}`);
       }
     }
     await context.close();

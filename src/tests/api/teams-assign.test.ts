@@ -23,7 +23,7 @@ function makeEvent(opts: { userId?: string | null; authorization?: string } = {}
   return {
     locals: opts.userId ? { session: { user: { id: opts.userId } } } : {},
     request: { headers: new Headers(opts.authorization ? { authorization: opts.authorization } : {}) }
-  } as any;
+  } as unknown as import("@sveltejs/kit").RequestEvent;
 }
 
 describe('POST /api/teams/assign', () => {

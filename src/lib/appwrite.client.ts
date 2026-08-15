@@ -1,10 +1,9 @@
 import { Client, Account, ID, OAuthProvider, Storage } from 'appwrite';
-import { PUBLIC_APPWRITE_ENDPOINT, PUBLIC_APPWRITE_PROJECT_ID } from '$env/static/public';
 import { env as PUBLIC_ENV } from '$env/dynamic/public';
 
 const client = new Client()
-  .setEndpoint(PUBLIC_APPWRITE_ENDPOINT)
-  .setProject(PUBLIC_APPWRITE_PROJECT_ID);
+  .setEndpoint(PUBLIC_ENV.PUBLIC_APPWRITE_ENDPOINT || '')
+  .setProject(PUBLIC_ENV.PUBLIC_APPWRITE_PROJECT_ID || '');
 
 export const account = new Account(client);
 export const storage = new Storage(client);

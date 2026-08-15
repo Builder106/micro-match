@@ -12,7 +12,10 @@ describe('/tasks load', () => {
     const tasks = [{ id: '1' }, { id: '2' }, { id: '3' }, { id: '4' }];
     mocks.getTasks.mockResolvedValue(tasks);
 
-    const result: any = await load({} as any);
+    interface FeedResult {
+      tasks: unknown[];
+    }
+    const result = (await load({} as unknown as Parameters<typeof load>[0])) as unknown as FeedResult;
 
     expect(result.tasks).toEqual(tasks);
   });

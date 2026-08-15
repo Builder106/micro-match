@@ -159,7 +159,8 @@ const demoTasks: DemoTask[] = [
 
 async function findUserByEmail(email: string): Promise<{ $id: string } | null> {
   const res = await users.list([Query.equal('email', email), Query.limit(1)]);
-  return (res.users[0] as any) ?? null;
+  const user = res.users[0];
+  return user ? { $id: user.$id } : null;
 }
 
 async function ensureDemoUser(): Promise<string> {
@@ -170,14 +171,14 @@ async function ensureDemoUser(): Promise<string> {
   }
   // Create with a long random password — no one signs in as this account;
   // we mutate via admin SDK only.
-  const password = (globalThis.crypto as any)?.randomUUID?.() ?? Math.random().toString(36).slice(2);
+  const password = typeof globalThis.crypto !== 'undefined' && 'randomUUID' in globalThis.crypto ? globalThis.crypto.randomUUID() : Math.random().toString(36).slice(2);
   const created = await users.create(ID.unique(), demoEmail, undefined, password, demoName);
-  console.log(`+ Created demo NGO user ${demoEmail} → ${(created as any).$id}`);
-  return (created as any).$id;
+  console.log(`+ Created demo NGO user ${demoEmail} → ${created.$id}`);
+  return created.$id;
 }
 
 async function ensureUserPrefs(userId: string): Promise<void> {
-  const me: any = await users.get(userId);
+  const me = await users.get(userId);
   const next = {
     ...(me?.prefs ?? {}),
     role: 'ngo',
@@ -200,24 +201,30 @@ async function ensureNgoTeamMembership(userId: string): Promise<void> {
   try {
     await teams.createMembership(ngoTeamId, ['ngo'], undefined, userId);
     console.log(`✓ Demo user is in '${ngoTeamId}' team`);
-  } catch (err: any) {
-    const status = err?.code ?? err?.response?.code;
+  } catch (err: unknown) {
+    const errObj = err as { code?: number; response?: { code?: number }; message?: string };
+    const status = errObj?.code ?? errObj?.response?.code;
     if (status === 409) {
       console.log(`✓ Demo user already in '${ngoTeamId}' team`);
     } else {
-      console.warn(`! Could not add demo user to '${ngoTeamId}' team:`, err?.message ?? err);
+      console.warn(`! Could not add demo user to '${ngoTeamId}' team:`, errObj?.message ?? err);
     }
   }
 }
 
 async function listExistingTasks(orgId: string): Promise<Map<string, string>> {
   // Note: tasks DB column is `orgID` (uppercase D), per src/lib/server/appwrite.ts.
-  const res: any = await tables.listRows(dbId, tasksTable, [
+  interface TaskRowItem {
+    $id: string;
+    title?: string;
+  }
+  const res = await tables.listRows(dbId, tasksTable, [
     Query.equal('orgID', orgId),
     Query.limit(100),
   ]);
+  const rows = (res.rows ?? []) as unknown as TaskRowItem[];
   return new Map<string, string>(
-    (res.rows ?? []).map((r: any) => [String(r.title ?? ''), String(r.$id)]),
+    rows.map((r) => [String(r.title ?? ''), String(r.$id)]),
   );
 }
 
@@ -294,22 +301,23 @@ async function ensureVolunteerUser(): Promise<string> {
       demoPassword!,
       volunteerName,
     );
-    userId = (created as any).$id;
+    userId = created.$id;
     console.log(`+ Created demo volunteer ${volunteerEmail} → ${userId}`);
   }
 
-  const me: any = await users.get(userId);
+  const me = await users.get(userId);
   await users.updatePrefs(userId, { ...(me?.prefs ?? {}), role: 'volunteer' });
 
   try {
     await teams.createMembership(volunteerTeamId, ['volunteer'], undefined, userId);
     console.log(`✓ Demo volunteer is in '${volunteerTeamId}' team`);
-  } catch (err: any) {
-    const status = err?.code ?? err?.response?.code;
+  } catch (err: unknown) {
+    const errObj = err as { code?: number; response?: { code?: number }; message?: string };
+    const status = errObj?.code ?? errObj?.response?.code;
     if (status === 409) {
       console.log(`✓ Demo volunteer already in '${volunteerTeamId}' team`);
     } else {
-      console.warn(`! Could not add demo volunteer to '${volunteerTeamId}':`, err?.message ?? err);
+      console.warn(`! Could not add demo volunteer to '${volunteerTeamId}':`, errObj?.message ?? err);
     }
   }
 
@@ -322,7 +330,7 @@ async function ensureVolunteerUser(): Promise<string> {
  * nothing and the loop demo has no payoff to film. Idempotent by (orgID, label).
  */
 async function ensureBadgeDefinition(orgId: string): Promise<void> {
-  const res: any = await tables.listRows(dbId, badgeDefsTable, [
+  const res = await tables.listRows(dbId, badgeDefsTable, [
     Query.equal('orgID', orgId),
     Query.equal('label', badgeLabel),
     Query.limit(1),
@@ -356,20 +364,24 @@ async function resetDemoLoopState(volunteerId: string): Promise<void> {
   let claims = 0;
   let badges = 0;
 
-  const claimRows: any = await tables.listRows(dbId, claimsTable, [
+  interface RowIdItem {
+    $id: string;
+  }
+
+  const claimRows = await tables.listRows(dbId, claimsTable, [
     Query.equal('userID', volunteerId),
     Query.limit(100),
   ]);
-  for (const row of claimRows.rows ?? []) {
+  for (const row of (claimRows.rows ?? []) as unknown as RowIdItem[]) {
     await tables.deleteRow(dbId, claimsTable, row.$id);
     claims++;
   }
 
-  const badgeRows: any = await tables.listRows(dbId, badgesTable, [
+  const badgeRows = await tables.listRows(dbId, badgesTable, [
     Query.equal('userID', volunteerId),
     Query.limit(100),
   ]);
-  for (const row of badgeRows.rows ?? []) {
+  for (const row of (badgeRows.rows ?? []) as unknown as RowIdItem[]) {
     await tables.deleteRow(dbId, badgesTable, row.$id);
     badges++;
   }

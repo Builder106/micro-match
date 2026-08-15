@@ -37,7 +37,7 @@ function makeEvent(opts: {
     },
     url: new URL(`http://test/api/verifications${opts.search ?? ''}`),
     params: {}
-  } as any;
+  } as unknown as import("@sveltejs/kit").RequestEvent;
 }
 
 describe('POST /api/verifications', () => {
@@ -71,7 +71,7 @@ describe('POST /api/verifications', () => {
       locals: { session: { user: { id: 'u1' } } },
       request: { json: async () => { throw new Error('parse error'); } },
       url: new URL('http://test/api/verifications')
-    } as any;
+    } as unknown as import("@sveltejs/kit").RequestEvent;
     const res = await POST(event);
     expect(res.status).toBe(400);
   });

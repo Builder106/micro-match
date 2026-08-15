@@ -5,16 +5,21 @@ vi.mock('$lib/server/teams', () => ({ isUserAdmin: mocks.isUserAdmin }));
 
 import { load } from '../../routes/admin/verifications/+page.server';
 
-function makeEvent(userId?: string | null) {
-  return { locals: userId ? { session: { user: { id: userId } } } : {} } as any;
+function makeEvent(userId?: string | null): Parameters<typeof load>[0] {
+  return { locals: userId ? { session: { user: { id: userId } } } : {} } as unknown as Parameters<typeof load>[0];
 }
 
-async function expectThrow(promise: unknown, matcher: (err: any) => void) {
+interface HttpError {
+  status?: number;
+  location?: string;
+  body?: { message?: string };
+}
+async function expectThrow(promise: unknown, matcher: (err: HttpError) => void) {
   try {
     await promise;
     throw new Error('expected load() to throw');
-  } catch (err) {
-    matcher(err);
+  } catch (err: unknown) {
+    matcher(err as HttpError);
   }
 }
 

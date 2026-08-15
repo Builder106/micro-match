@@ -20,15 +20,20 @@ function makeLoadEvent(opts: { userRole?: string; userId?: string } = {}) {
       userRole: opts.userRole ?? 'anonymous',
       session: opts.userId ? { user: { id: opts.userId } } : undefined
     }
-  } as any;
+  } as unknown as Parameters<typeof load>[0];
 }
 
-async function expectThrow(promise: unknown, matcher: (err: any) => void) {
+interface HttpError {
+  status?: number;
+  location?: string;
+  body?: { message?: string };
+}
+async function expectThrow(promise: unknown, matcher: (err: HttpError) => void) {
   try {
     await promise;
-    throw new Error('expected to throw');
-  } catch (err) {
-    matcher(err);
+    expect.unreachable('expected to throw');
+  } catch (err: unknown) {
+    matcher(err as HttpError);
   }
 }
 
@@ -67,24 +72,26 @@ function makeActionEvent(opts: { userId?: string; fields: Record<string, string>
   return {
     request: { formData: async () => form },
     locals: { session: opts.userId ? { user: { id: opts.userId } } : undefined }
-  } as any;
+  } as unknown as Parameters<typeof load>[0];
 }
+
+type ActionResult = { success?: boolean; error?: string; taskId?: string };
 
 describe('/org action (create task)', () => {
   beforeEach(() => {
     Object.values(mocks).forEach((m) => m.mockReset());
-    mocks.createTask.mockImplementation(async (input: any) => ({ id: 'new-task', ...input }));
+    mocks.createTask.mockImplementation(async (input: Record<string, unknown>) => ({ id: 'new-task', ...input }));
   });
 
   it('returns success:false for non-NGO roles', async () => {
     mocks.getUserRole.mockResolvedValue('volunteer');
-    const result: any = await actions.default(makeActionEvent({ fields: { title: 'T' } }));
+    const result = (await actions.default(makeActionEvent({ fields: { title: 'T' } }))) as ActionResult;
     expect(result).toEqual({ success: false, error: 'Forbidden' });
   });
 
   it('returns success:false when required fields are missing', async () => {
     mocks.getUserRole.mockResolvedValue('ngo');
-    const result: any = await actions.default(makeActionEvent({ userId: 'org-1', fields: { title: 'T' } }));
+    const result = (await actions.default(makeActionEvent({ userId: 'org-1', fields: { title: 'T' } }))) as ActionResult;
     expect(result.success).toBe(false);
     expect(mocks.createTask).not.toHaveBeenCalled();
   });
@@ -93,13 +100,13 @@ describe('/org action (create task)', () => {
     mocks.getUserRole.mockResolvedValue('ngo');
     mocks.getVerificationByUserId.mockResolvedValue({ status: 'approved' });
 
-    const result: any = await actions.default(makeActionEvent({
+    const result = (await actions.default(makeActionEvent({
       userId: 'org-1',
       fields: {
         title: 'Translate flyer', shortDescription: 'Short', description: 'Long',
         tags: 'i18n, spanish , health', minutes: '30'
       }
-    }));
+    }))) as ActionResult;
 
     expect(mocks.createTask).toHaveBeenCalledWith(expect.objectContaining({
       tags: ['i18n', 'spanish', 'health'],

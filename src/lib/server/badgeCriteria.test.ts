@@ -94,9 +94,9 @@ describe('evaluateBadgeCriteria', () => {
   it('ignores criteria types the engine cannot evaluate yet (time-based, milestone, custom)', async () => {
     mockGetTaskById.mockResolvedValue(baseTask);
     mockListBadgeDefinitions.mockResolvedValue([
-      def({ id: 'time', criteria: 'time-based' as any }),
-      def({ id: 'milestone', criteria: 'milestone' as any }),
-      def({ id: 'custom', criteria: 'custom' as any }),
+      def({ id: 'time', criteria: 'time-based' }),
+      def({ id: 'milestone', criteria: 'milestone' }),
+      def({ id: 'custom', criteria: 'custom' }),
       def({ id: 'completion', criteria: 'task-completion' })
     ]);
 

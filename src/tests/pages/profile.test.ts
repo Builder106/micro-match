@@ -10,7 +10,7 @@ function makeLoadEvent(opts: { userRole?: string; userId?: string } = {}) {
       userRole: opts.userRole ?? 'anonymous',
       session: opts.userId ? { user: { id: opts.userId, email: 'jane@example.com' } } : undefined
     }
-  } as any;
+  } as unknown as Parameters<typeof load>[0];
 }
 
 describe('/profile load', () => {
@@ -32,20 +32,20 @@ function makeActionEvent(opts: { userId?: string; fields?: Record<string, string
     request: { formData: async () => form },
     locals: { session: opts.userId ? { user: { id: opts.userId, email: 'jane@example.com' } } : undefined },
     fetch: vi.fn()
-  } as any;
+  } as unknown as Parameters<typeof load>[0];
 }
 
 describe('/profile action (update)', () => {
   it('fails with 401 when there is no session', async () => {
-    const result: any = await actions.default(makeActionEvent({}));
+    const result = (await actions.default(makeActionEvent({}))) as { status?: number; error?: string };
     expect(result.status).toBe(401);
   });
 
   it('acknowledges the update with the trimmed field values', async () => {
-    const result: any = await actions.default(makeActionEvent({
+    const result = (await actions.default(makeActionEvent({
       userId: 'user-1',
       fields: { displayName: '  Jane  ', role: 'ngo', bio: 'Hello', orgName: 'Acme' }
-    }));
+    }))) as { ok?: boolean; role?: string; displayName?: string; bio?: string; orgName?: string };
 
     expect(result).toEqual({ ok: true, role: 'ngo', displayName: 'Jane', bio: 'Hello', orgName: 'Acme' });
   });

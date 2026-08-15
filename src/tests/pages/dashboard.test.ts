@@ -11,7 +11,7 @@ function makeEvent(opts: { userRole?: string; userId?: string } = {}) {
       userRole: opts.userRole ?? 'anonymous',
       session: opts.userId ? { user: { id: opts.userId, email: 'jane@example.com' } } : undefined
     }
-  } as any;
+  } as unknown as Parameters<typeof load>[0];
 }
 
 describe('/dashboard load', () => {
@@ -21,11 +21,32 @@ describe('/dashboard load', () => {
     try {
       await load(makeEvent());
       throw new Error('expected load() to redirect');
-    } catch (err: any) {
-      expect(err.status).toBe(303);
-      expect(err.location).toBe('/login?next=/dashboard');
+    } catch (err: unknown) {
+      const e = err as { status?: number; location?: string; body?: { message?: string } };
+      expect(e.status).toBe(303);
+      expect(e.location).toBe('/login?next=/dashboard');
     }
   });
+
+  interface NgoUserData {
+    totalTasks: number;
+    pendingReviewsCount: number;
+    approvedClaimsCount: number;
+    totalHours: number;
+    myClaims: Array<{ id: string; taskId?: string; task?: { id?: string } }>;
+    [key: string]: unknown;
+  }
+  interface VolunteerUserData {
+    approvedClaimsCount: number;
+    totalHours: number;
+    recommendations: Array<{ id: string }>;
+    [key: string]: unknown;
+  }
+  interface DashboardResult<T> {
+    signedIn: boolean;
+    userData: T;
+    [key: string]: unknown;
+  }
 
   it('builds NGO stats scoped to the org\'s own tasks and claims', async () => {
     mocks.getTasks.mockResolvedValue([
@@ -38,14 +59,14 @@ describe('/dashboard load', () => {
       { id: 'c3', taskId: 't2', status: 'approved' } // belongs to a different org's task
     ]);
 
-    const result: any = await load(makeEvent({ userRole: 'ngo', userId: 'org-1' }));
+    const result = (await load(makeEvent({ userRole: 'ngo', userId: 'org-1' }))) as unknown as DashboardResult<NgoUserData>;
 
     expect(result.signedIn).toBe(true);
     expect(result.userData.totalTasks).toBe(1);
     expect(result.userData.pendingReviewsCount).toBe(1);
     expect(result.userData.approvedClaimsCount).toBe(1);
     expect(result.userData.totalHours).toBe(1); // 60 minutes / 60
-    expect(result.userData.myClaims.every((c: any) => c.task?.id === 't1' || c.taskId === 't1')).toBe(true);
+    expect(result.userData.myClaims.every((c) => c.task?.id === 't1' || c.taskId === 't1')).toBe(true);
   });
 
   it('builds volunteer stats with recommendations excluding already-claimed tasks', async () => {
@@ -58,12 +79,12 @@ describe('/dashboard load', () => {
       { id: 'c1', taskId: 't1', userId: 'user-1', status: 'approved' }
     ]);
 
-    const result: any = await load(makeEvent({ userRole: 'volunteer', userId: 'user-1' }));
+    const result = (await load(makeEvent({ userRole: 'volunteer', userId: 'user-1' }))) as unknown as DashboardResult<VolunteerUserData>;
 
     expect(result.signedIn).toBe(true);
     expect(result.userData.approvedClaimsCount).toBe(1);
     expect(result.userData.totalHours).toBe(0.2); // Math.round((10/60) * 10) / 10
-    const recTaskIds = result.userData.recommendations.map((t: any) => t.id);
+    const recTaskIds = result.userData.recommendations.map((t: { id: string }) => t.id);
     expect(recTaskIds).not.toContain('t1');
     // sorted by estimatedMinutes ascending
     expect(recTaskIds).toEqual(['t2', 't3']);
@@ -73,7 +94,7 @@ describe('/dashboard load', () => {
     mocks.getTasks.mockResolvedValue([{ id: 't1', orgId: 'org-1' }]);
     mocks.getClaims.mockResolvedValue([{ id: 'c1', taskId: 't1', status: 'approved' }]);
 
-    const result: any = await load(makeEvent({ userRole: 'ngo', userId: 'org-1' }));
+    const result = (await load(makeEvent({ userRole: 'ngo', userId: 'org-1' }))) as unknown as DashboardResult<NgoUserData>;
     expect(result.userData.totalHours).toBe(0.5);
   });
 });

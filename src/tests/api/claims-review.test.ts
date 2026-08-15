@@ -25,7 +25,7 @@ function makeEvent(opts: { reviewerId?: string | null; claimId?: string }) {
   return {
     locals: { session: opts.reviewerId ? { user: { id: opts.reviewerId } } : null },
     params: { id: opts.claimId ?? 'claim-1' }
-  } as any;
+  } as unknown as import("@sveltejs/kit").RequestEvent;
 }
 
 const claimOnOwnedTask = {

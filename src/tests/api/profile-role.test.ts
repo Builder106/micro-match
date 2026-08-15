@@ -12,7 +12,7 @@ const { envState, mocks, AppwriteCtors } = vi.hoisted(() => {
       setTasksVerifiedForOrg: vi.fn(),
       // Spy on what the endpoint persists to user prefs.
       usersGet: vi.fn().mockImplementation(async () => ({ prefs: { ...userPrefs } })),
-      usersUpdatePrefs: vi.fn().mockImplementation(async (_id: string, p: any) => {
+      usersUpdatePrefs: vi.fn().mockImplementation(async (_id: string, p: Record<string, unknown>) => {
         Object.keys(userPrefs).forEach((k) => delete userPrefs[k]);
         Object.assign(userPrefs, p);
       })
@@ -62,7 +62,7 @@ function makeEvent(opts: { userId?: string | null; jwt?: string; body?: unknown 
       },
       headers: { get: (k: string) => headers.get(k.toLowerCase()) ?? null }
     }
-  } as any;
+  } as unknown as import("@sveltejs/kit").RequestEvent;
 }
 
 describe('POST /api/profile/role', () => {
@@ -71,7 +71,7 @@ describe('POST /api/profile/role', () => {
     // Reset the simulated user prefs.
     Object.keys(AppwriteCtors.userPrefs).forEach((k) => delete AppwriteCtors.userPrefs[k]);
     mocks.usersGet.mockImplementation(async () => ({ prefs: { ...AppwriteCtors.userPrefs } }));
-    mocks.usersUpdatePrefs.mockImplementation(async (_id: string, p: any) => {
+    mocks.usersUpdatePrefs.mockImplementation(async (_id: string, p: Record<string, unknown>) => {
       Object.keys(AppwriteCtors.userPrefs).forEach((k) => delete AppwriteCtors.userPrefs[k]);
       Object.assign(AppwriteCtors.userPrefs, p);
     });

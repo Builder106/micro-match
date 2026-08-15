@@ -35,7 +35,7 @@ async function getUserFromJWT(jwt: string): Promise<any | null> {
 // PROD: Add role-based access control (RBAC) system
 // PROD: Add permission-based authorization
 // PROD: Add role hierarchy and inheritance
-function roleFromUser(user: any): UserRole {
+function roleFromUser(user: { prefs?: Record<string, unknown> } | null | undefined): UserRole {
   const prefs = (user?.prefs ?? {}) as Record<string, unknown>;
   const role = typeof prefs.role === 'string' ? prefs.role : '';
   if (role === 'ngo') return 'ngo';
@@ -55,7 +55,7 @@ function roleFromUser(user: any): UserRole {
 export async function getUserRole(event: RequestEvent): Promise<UserRole> {
   // Prefer locals set by our session
   try {
-    const localsRole = (event.locals as any)?.userRole as UserRole | undefined;
+    const localsRole = event.locals.userRole;
     if (localsRole && localsRole !== 'anonymous') return localsRole;
   } catch {}
 
@@ -69,8 +69,8 @@ export async function getUserRole(event: RequestEvent): Promise<UserRole> {
         const { NGO_TEAM_ID, VOLUNTEER_TEAM_ID, isUserInTeam } = await import('./teams');
         const userId: string | undefined = user.$id ?? user.id;
         if (userId) {
-          if (await isUserInTeam(userId, (NGO_TEAM_ID as any))) return 'ngo';
-          if (await isUserInTeam(userId, (VOLUNTEER_TEAM_ID as any))) return 'volunteer';
+          if (NGO_TEAM_ID && (await isUserInTeam(userId, NGO_TEAM_ID))) return 'ngo';
+          if (VOLUNTEER_TEAM_ID && (await isUserInTeam(userId, VOLUNTEER_TEAM_ID))) return 'volunteer';
         }
       } catch {}
       // Fallback to prefs.role

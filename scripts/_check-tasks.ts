@@ -9,9 +9,17 @@ async function main() {
   const t = new TablesDB(c);
   const dbId = process.env.APPWRITE_DB_ID ?? 'micromatch';
   const tasksTable = process.env.APPWRITE_TASKS_TABLE_ID ?? 'tasks';
-  const res: any = await t.listRows(dbId, tasksTable, [Query.limit(20)]);
-  console.log(`total=${res.total}, rows=${res.rows.length}`);
-  for (const r of res.rows.slice(0, 10)) {
+  interface TaskRowItem {
+    $id: string;
+    status?: string;
+    orgID?: string;
+    isVerified?: boolean;
+    title?: string;
+  }
+  const res = await t.listRows(dbId, tasksTable, [Query.limit(20)]);
+  const rows = (res.rows ?? []) as unknown as TaskRowItem[];
+  console.log(`total=${res.total}, rows=${rows.length}`);
+  for (const r of rows.slice(0, 10)) {
     console.log('-', r.$id, '| status=', r.status, '| orgID=', r.orgID, '| isVerified=', r.isVerified, '|', r.title);
   }
 }

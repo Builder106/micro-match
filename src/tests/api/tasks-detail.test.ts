@@ -20,7 +20,7 @@ vi.mock('$lib/server/auth', () => ({ getUserRole: mocks.getUserRole }));
 
 import { PATCH, DELETE } from '../../routes/api/tasks/[id]/+server';
 
-function makeEvent(opts: { userId?: string | null; taskId?: string; body?: unknown } = {}) {
+function makeEvent(opts: { userId?: string | null; taskId?: string; body?: unknown } = {}): Parameters<typeof PATCH>[0] {
   return {
     params: { id: opts.taskId ?? 'task-1' },
     locals: opts.userId ? { session: { user: { id: opts.userId } } } : {},
@@ -30,7 +30,7 @@ function makeEvent(opts: { userId?: string | null; taskId?: string; body?: unkno
         return opts.body;
       }
     }
-  } as any;
+  } as unknown as Parameters<typeof PATCH>[0];
 }
 
 describe('PATCH /api/tasks/[id]', () => {

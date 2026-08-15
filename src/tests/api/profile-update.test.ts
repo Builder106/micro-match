@@ -34,7 +34,7 @@ function makeEvent(opts: { userId?: string | null; authorization?: string; body?
         return opts.body;
       }
     }
-  } as any;
+  } as unknown as import("@sveltejs/kit").RequestEvent;
 }
 
 describe('POST /api/profile/update', () => {

@@ -30,7 +30,7 @@ function makeEvent(opts: { orgId?: string | null; body?: unknown; deleteId?: str
       }
     },
     url
-  } as any;
+  } as unknown as import("@sveltejs/kit").RequestEvent;
 }
 
 const validBadge = {
@@ -45,7 +45,7 @@ describe('POST /api/badges/manage', () => {
   beforeEach(() => {
     Object.values(mocks).forEach((m) => m.mockReset());
     mocks.getUserRole.mockResolvedValue('ngo');
-    mocks.createBadgeDefinition.mockImplementation(async (input: any) => ({
+    mocks.createBadgeDefinition.mockImplementation(async (input: Record<string, unknown>) => ({
       id: 'def-1',
       orgId: input.orgId,
       ...input,

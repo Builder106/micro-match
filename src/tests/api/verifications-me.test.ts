@@ -17,7 +17,7 @@ vi.mock('$lib/server/verifications', () => ({
 import { GET, DELETE } from '../../routes/api/verifications/me/+server';
 
 function makeEvent(userId?: string | null) {
-  return { locals: userId ? { session: { user: { id: userId } } } : {} } as any;
+  return { locals: userId ? { session: { user: { id: userId } } } : {} } as unknown as import("@sveltejs/kit").RequestEvent;
 }
 
 describe('GET /api/verifications/me', () => {

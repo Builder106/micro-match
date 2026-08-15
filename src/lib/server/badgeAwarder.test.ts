@@ -2,9 +2,9 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import type { Badge, BadgeDefinition } from '$lib/types';
 
 const { mockAwardBadge, mockListBadgesByUser, mockEvaluate, mockMilestone } = vi.hoisted(() => ({
-  mockAwardBadge: vi.fn<(input: any) => Promise<Badge>>(),
+  mockAwardBadge: vi.fn<(input: Omit<Badge, 'id' | 'awardedAt'>) => Promise<Badge>>(),
   mockListBadgesByUser: vi.fn<(userId: string) => Promise<Badge[]>>(),
-  mockEvaluate: vi.fn<(userId: string, action: any) => Promise<BadgeDefinition[]>>(),
+  mockEvaluate: vi.fn<(userId: string, action: { type: string; taskId: string; taskTimeMinutes?: number }) => Promise<BadgeDefinition[]>>(),
   mockMilestone: vi.fn<(userId: string) => Promise<BadgeDefinition[]>>()
 }));
 
@@ -47,7 +47,7 @@ describe('processBadgeAwards', () => {
     mockListBadgesByUser.mockResolvedValue([]);
     mockEvaluate.mockResolvedValue([]);
     mockMilestone.mockResolvedValue([]);
-    mockAwardBadge.mockImplementation(async (input: any) => ({
+    mockAwardBadge.mockImplementation(async (input) => ({
       id: `awarded-${input.label}`,
       userId: input.userId,
       label: input.label,

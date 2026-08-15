@@ -21,7 +21,7 @@ function makeEvent(cookies: Record<string, string>) {
     locals: {},
     cookies: { get: (name: string) => cookies[name] },
     request: new Request('http://test/')
-  } as any;
+  } as unknown as import("@sveltejs/kit").RequestEvent;
 }
 
 const resolve = vi.fn(async () => new Response('ok'));

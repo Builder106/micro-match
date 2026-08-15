@@ -33,19 +33,35 @@ async function withAppwrite<T>(fn: (ctx: {
   });
 }
 
-function fromRow(d: any): NgoVerification {
+interface DbVerificationRow {
+  $id: string;
+  $createdAt?: string;
+  userID: string;
+  orgName: string;
+  country: string;
+  taxId: string;
+  docFileId?: string | null;
+  status: 'pending' | 'approved' | 'rejected';
+  reason?: string | null;
+  submittedAt?: string;
+  reviewedBy?: string | null;
+  reviewedAt?: string | null;
+}
+
+function fromRow(d: unknown): NgoVerification {
+  const row = d as DbVerificationRow;
   return {
-    id: d.$id,
-    userId: d.userID,
-    orgName: d.orgName,
-    country: d.country,
-    taxId: d.taxId,
-    docFileId: d.docFileId ?? undefined,
-    status: d.status,
-    reason: d.reason ?? undefined,
-    submittedAt: d.submittedAt ?? d.$createdAt,
-    reviewedBy: d.reviewedBy ?? undefined,
-    reviewedAt: d.reviewedAt ?? undefined
+    id: row.$id,
+    userId: row.userID,
+    orgName: row.orgName,
+    country: row.country,
+    taxId: row.taxId,
+    docFileId: row.docFileId ?? undefined,
+    status: row.status,
+    reason: row.reason ?? undefined,
+    submittedAt: row.submittedAt ?? row.$createdAt ?? '',
+    reviewedBy: row.reviewedBy ?? undefined,
+    reviewedAt: row.reviewedAt ?? undefined
   };
 }
 
@@ -215,7 +231,7 @@ export async function getUserEmail(userId: string): Promise<string | null> {
       .setProject(env.APPWRITE_PROJECT_ID!)
       .setKey(env.APPWRITE_API_KEY!);
     const users = new Users(client);
-    const u: any = await users.get(userId);
+    const u = await users.get(userId);
     return u?.email ?? null;
   } catch {
     return null;
@@ -231,7 +247,7 @@ export async function setUserVerificationPref(userId: string, status: 'pending' 
       .setProject(env.APPWRITE_PROJECT_ID!)
       .setKey(env.APPWRITE_API_KEY!);
     const users = new Users(client);
-    const current: any = await users.get(userId);
+    const current = await users.get(userId);
     const prefs = { ...(current?.prefs ?? {}), verificationStatus: status ?? '' };
     await users.updatePrefs(userId, prefs);
   } catch (err) {

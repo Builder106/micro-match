@@ -1,26 +1,23 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
-const { envState, mocks } = vi.hoisted(() => ({
-  envState: {} as Record<string, string | undefined>,
+const { mocks } = vi.hoisted(() => ({
   mocks: {
-    createSession: vi.fn(),
     accountGet: vi.fn(),
+    createSession: vi.fn(),
     isUserInTeam: vi.fn()
   }
 }));
 
 vi.mock('$env/dynamic/private', () => ({
-  env: new Proxy(envState, { get: (_, key: string) => envState[key] })
+  env: { APPWRITE_ENDPOINT: 'https://fake.appwrite.io/v1', APPWRITE_PROJECT_ID: 'proj', APPWRITE_API_KEY: 'key' }
+}));
+vi.mock('node-appwrite', () => ({
+  Client: class { setEndpoint() { return this; } setProject() { return this; } setJWT() { return this; } },
+  Account: class { get = mocks.accountGet; }
 }));
 vi.mock('$lib/server/session', () => ({
   createSession: mocks.createSession,
   SESSION_TTL_SECONDS: 1209600
-}));
-vi.mock('node-appwrite', () => ({
-  Client: class {
-    setEndpoint() { return this; } setProject() { return this; } setJWT() { return this; }
-  },
-  Account: class { get = mocks.accountGet; }
 }));
 vi.mock('$lib/server/teams', () => ({
   NGO_TEAM_ID: 'ngo-team',
@@ -30,8 +27,12 @@ vi.mock('$lib/server/teams', () => ({
 
 import { POST } from '../../routes/api/auth/session/+server';
 
-function makeEvent(body: unknown, protocol = 'https:') {
-  const setCalls: Array<{ name: string; value: string; opts: any }> = [];
+type MockEvent = Parameters<typeof POST>[0] & {
+  setCalls: Array<{ name: string; value: string; opts: Record<string, unknown> }>;
+};
+
+function makeEvent(body: unknown, protocol = 'https:'): MockEvent {
+  const setCalls: Array<{ name: string; value: string; opts: Record<string, unknown> }> = [];
   return {
     request: {
       json: async () => {
@@ -39,17 +40,16 @@ function makeEvent(body: unknown, protocol = 'https:') {
         return body;
       }
     },
-    cookies: { set: (name: string, value: string, opts: any) => setCalls.push({ name, value, opts }) },
+    cookies: { set: (name: string, value: string, opts: Record<string, unknown>) => setCalls.push({ name, value, opts }) },
     url: new URL(`${protocol}//test/api/auth/session`),
     setCalls
-  } as any;
+  } as unknown as MockEvent;
 }
 
 describe('POST /api/auth/session', () => {
   beforeEach(() => {
-    for (const key of Object.keys(envState)) delete envState[key];
     Object.values(mocks).forEach((m) => m.mockReset());
-    mocks.createSession.mockImplementation((input: any) => ({ id: 'sess-1', ...input, expiresAt: Date.now() + 1000 }));
+    mocks.createSession.mockImplementation((input: Record<string, unknown>) => ({ id: 'sess-1', ...input, expiresAt: Date.now() + 1000 }));
   });
 
   it('returns 400 when the body has no jwt', async () => {
@@ -84,7 +84,7 @@ describe('POST /api/auth/session', () => {
     expect(res.status).toBe(200);
     expect(body).toEqual({ ok: true, role: 'user', email: 'jane@example.com', roleSource: 'default' });
     expect(mocks.createSession).toHaveBeenCalledWith({ userId: 'user-1', email: 'jane@example.com', role: 'user' });
-    expect(event.setCalls.map((c: any) => c.name)).toEqual(['mm_session', 'mm_role']);
+    expect(event.setCalls.map((c: { name: string }) => c.name)).toEqual(['mm_session', 'mm_role']);
   });
 
   it('derives role="ngo" from prefs when set', async () => {
@@ -96,7 +96,6 @@ describe('POST /api/auth/session', () => {
   });
 
   it('team membership overrides prefs when an API key is configured', async () => {
-    envState.APPWRITE_API_KEY = 'key';
     mocks.accountGet.mockResolvedValue({ $id: 'user-1', email: 'jane@example.com', prefs: { role: 'volunteer' } });
     mocks.isUserInTeam.mockImplementation(async (_id: string, teamId: string) => teamId === 'ngo-team');
 
@@ -108,7 +107,6 @@ describe('POST /api/auth/session', () => {
   });
 
   it('falls back to role=user if the team check throws', async () => {
-    envState.APPWRITE_API_KEY = 'key';
     mocks.accountGet.mockResolvedValue({ $id: 'user-1', email: 'jane@example.com', prefs: {} });
     mocks.isUserInTeam.mockRejectedValue(new Error('teams down'));
 

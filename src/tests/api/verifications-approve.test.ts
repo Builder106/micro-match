@@ -40,7 +40,7 @@ function makeEvent(opts: { adminId?: string | null; userId?: string; body?: unkn
       }
     },
     url: new URL('http://test/api/verifications/x/approve')
-  } as any;
+  } as unknown as import("@sveltejs/kit").RequestEvent;
 }
 
 const happyVerification = {

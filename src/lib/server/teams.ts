@@ -25,8 +25,13 @@ export async function removeUserFromTeam(userId: string, teamId?: string) {
   if (!teamId) return;
   try {
     const { teams, Query } = await getTeamsClient();
-    const list = await teams.listMemberships(teamId, [Query.equal('userId', userId), Query.limit(5)]);
-    const items: any[] = (list as any).memberships ?? (list as any).members ?? (list as any).data ?? [];
+    const list = await teams.listMemberships(teamId, [Query.equal('userId', userId), Query.limit(10)]);
+    interface MembershipItem {
+      $id?: string;
+      id?: string;
+    }
+    const listObj = list as { memberships?: MembershipItem[]; members?: MembershipItem[]; data?: MembershipItem[] };
+    const items: MembershipItem[] = listObj.memberships ?? listObj.members ?? listObj.data ?? [];
     for (const m of items) {
       const membershipId = m.$id ?? m.id;
       if (membershipId) {

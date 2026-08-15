@@ -21,7 +21,16 @@ export async function lookupNonprofitByEin(rawEin: string): Promise<ProPublicaRe
     if (res.status === 404) return { found: false, error: 'Not found in IRS records' };
     if (!res.ok) return { found: false, error: `ProPublica ${res.status}` };
 
-    const data = (await res.json()) as any;
+    interface ProPublicaOrg {
+      name?: string;
+      revocation_date?: string | null;
+      ntee_code?: string | null;
+      ruling_date?: string | null;
+    }
+    interface ProPublicaResponse {
+      organization?: ProPublicaOrg;
+    }
+    const data = (await res.json()) as ProPublicaResponse;
     const org = data?.organization;
     if (!org) return { found: false, error: 'Empty response' };
 
@@ -35,7 +44,7 @@ export async function lookupNonprofitByEin(rawEin: string): Promise<ProPublicaRe
       ntee: org.ntee_code || undefined,
       rulingDate: org.ruling_date || undefined
     };
-  } catch (err) {
-    return { found: false, error: (err as Error).message };
+  } catch (err: unknown) {
+    return { found: false, error: err instanceof Error ? err.message : String(err) };
   }
 }

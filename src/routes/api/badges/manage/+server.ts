@@ -6,7 +6,7 @@ import { createBadgeDefinition, deleteBadgeDefinition, listBadgeDefinitions } fr
 const VALID_CRITERIA = new Set(['task-completion', 'task-specific', 'time-based', 'milestone', 'custom']);
 
 function getOrgId(event: Parameters<RequestHandler>[0]): string | null {
-  const session = (event.locals as any)?.session as { user?: { id?: string } } | undefined;
+  const session = event.locals.session;
   return session?.user?.id ?? null;
 }
 
@@ -17,13 +17,13 @@ export const POST: RequestHandler = async (event) => {
   const orgId = getOrgId(event);
   if (!orgId) return json({ error: 'Not signed in' }, { status: 401 });
 
-  let body: any;
-  try { body = await event.request.json(); } catch { return json({ error: 'Invalid JSON' }, { status: 400 }); }
+  let body: Record<string, unknown> | null = null;
+  try { body = (await event.request.json()) as Record<string, unknown>; } catch { return json({ error: 'Invalid JSON' }, { status: 400 }); }
 
   const label = String(body?.label ?? '').trim();
   const color = String(body?.color ?? '#FF6B6B').trim();
   const icon = body?.icon ? String(body.icon).trim() : undefined;
-  const criteria = String(body?.criteria ?? 'task-completion');
+  const criteria = String(body?.criteria ?? 'task-completion') as import('$lib/types').BadgeDefinition['criteria'];
   const taskId = body?.taskId ? String(body.taskId).trim() : undefined;
   const description = body?.description ? String(body.description).trim().slice(0, 500) : undefined;
 
@@ -39,7 +39,7 @@ export const POST: RequestHandler = async (event) => {
       label,
       color,
       icon,
-      criteria: criteria as any,
+      criteria,
       taskId,
       description
     });

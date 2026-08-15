@@ -38,7 +38,7 @@ function makeEvent(opts: {
       headers: new Headers(opts.authorization ? { authorization: opts.authorization } : {}),
       formData: async () => form
     }
-  } as any;
+  } as unknown as import("@sveltejs/kit").RequestEvent;
 }
 
 describe('POST /api/verifications/upload', () => {

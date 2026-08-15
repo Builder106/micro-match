@@ -5,7 +5,7 @@ import { NGO_TEAM_ID, VOLUNTEER_TEAM_ID, addUserToTeam, removeUserFromTeam } fro
 import { env } from '$env/dynamic/private';
 
 async function getUserId(event: Parameters<RequestHandler>[0]): Promise<string | null> {
-  const sessionUserId = (event.locals as any)?.session?.user?.id as string | undefined;
+  const sessionUserId = event.locals.session?.user?.id ?? undefined;
   if (sessionUserId) return sessionUserId;
   try {
     const authHeader = event.request.headers.get('authorization') ?? '';
@@ -17,8 +17,8 @@ async function getUserId(event: Parameters<RequestHandler>[0]): Promise<string |
       .setProject(env.APPWRITE_PROJECT_ID || '')
       .setJWT(jwt);
     const account = new Account(client);
-    const me: any = await account.get();
-    return me?.$id ?? me?.id ?? null;
+    const me = await account.get();
+    return me?.$id ?? null;
   } catch {
     return null;
   }

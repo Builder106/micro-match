@@ -15,6 +15,8 @@ export default [
   // Browser + Node globals for all files
   {
     languageOptions: {
+      ecmaVersion: 'esnext',
+      sourceType: 'module',
       globals: {
         ...globals.browser,
         ...globals.node,
@@ -31,7 +33,8 @@ export default [
     files: ['**/*.svelte'],
     languageOptions: {
       parserOptions: {
-        parser: tseslint.parser
+        parser: tseslint.parser,
+        ecmaVersion: 'esnext'
       }
     }
   },

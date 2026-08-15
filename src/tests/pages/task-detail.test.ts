@@ -26,15 +26,16 @@ function makeEvent(opts: { userId?: string; taskId?: string; search?: string } =
     params: { id: opts.taskId ?? 'task-1' },
     url: new URL(`http://test/task/${opts.taskId ?? 'task-1'}${opts.search ?? ''}`),
     locals: opts.userId ? { session: { user: { id: opts.userId } } } : {}
-  } as any;
+  } as unknown as Parameters<typeof load>[0];
 }
 
 async function expectThrow(promise: unknown, status: number) {
   try {
     await promise;
     throw new Error('expected load() to throw');
-  } catch (err: any) {
-    expect(err.status).toBe(status);
+  } catch (err: unknown) {
+    const e = err as { status?: number };
+    expect(e.status).toBe(status);
   }
 }
 
@@ -51,19 +52,19 @@ describe('/task/[id] load', () => {
 
   it('marks isOwner true when the session user matches the task orgId', async () => {
     mocks.getTaskById.mockResolvedValue({ id: 'task-1', orgId: 'org-1', title: 'T', description: 'D' });
-    const result: any = await load(makeEvent({ userId: 'org-1' }));
+    const result = (await load(makeEvent({ userId: 'org-1' }))) as Exclude<Awaited<ReturnType<typeof load>>, void>;
     expect(result.isOwner).toBe(true);
   });
 
   it('marks isOwner false for a different user', async () => {
     mocks.getTaskById.mockResolvedValue({ id: 'task-1', orgId: 'org-1', title: 'T', description: 'D' });
-    const result: any = await load(makeEvent({ userId: 'user-2' }));
+    const result = (await load(makeEvent({ userId: 'user-2' }))) as Exclude<Awaited<ReturnType<typeof load>>, void>;
     expect(result.isOwner).toBe(false);
   });
 
   it('skips the org-name lookup when Appwrite is not configured', async () => {
     mocks.getTaskById.mockResolvedValue({ id: 'task-1', orgId: 'org-1', title: 'T', description: 'D' });
-    const result: any = await load(makeEvent());
+    const result = (await load(makeEvent())) as Exclude<Awaited<ReturnType<typeof load>>, void>;
     expect(result.orgName).toBeNull();
     expect(mocks.usersGet).not.toHaveBeenCalled();
   });
@@ -75,13 +76,13 @@ describe('/task/[id] load', () => {
     mocks.getTaskById.mockResolvedValue({ id: 'task-1', orgId: 'org-1', title: 'T', description: 'D' });
     mocks.usersGet.mockResolvedValue({ prefs: { orgName: 'Acme NGO' } });
 
-    const result: any = await load(makeEvent());
+    const result = (await load(makeEvent())) as Exclude<Awaited<ReturnType<typeof load>>, void>;
     expect(result.orgName).toBe('Acme NGO');
   });
 
   it('does not auto-translate when there is no ?lang= param', async () => {
     mocks.getTaskById.mockResolvedValue({ id: 'task-1', orgId: 'org-1', title: 'T', description: 'D' });
-    const result: any = await load(makeEvent());
+    const result = (await load(makeEvent())) as Exclude<Awaited<ReturnType<typeof load>>, void>;
     expect(result.translatedTo).toBeNull();
     expect(mocks.translateText).not.toHaveBeenCalled();
   });
@@ -90,7 +91,7 @@ describe('/task/[id] load', () => {
     mocks.getTaskById.mockResolvedValue({ id: 'task-1', orgId: 'org-1', title: 'Hello', description: 'World' });
     mocks.translateText.mockImplementation(async ({ text }: { text: string }) => `${text}-es`);
 
-    const result: any = await load(makeEvent({ search: '?lang=es' }));
+    const result = (await load(makeEvent({ search: '?lang=es' }))) as Exclude<Awaited<ReturnType<typeof load>>, void>;
 
     expect(result.task.title).toBe('Hello-es');
     expect(result.task.description).toBe('World-es');

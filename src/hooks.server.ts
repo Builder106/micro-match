@@ -9,7 +9,7 @@ if (typeof globalThis.atob === 'undefined') {
   globalThis.atob = (str: string) => Buffer.from(str, 'base64').toString('binary');
 }
 if (typeof globalThis.sessionStorage === 'undefined') {
-  globalThis.sessionStorage = new Map<any, any>() as any;
+  globalThis.sessionStorage = new Map<string, string>() as unknown as Storage;
 }
 
 export const handle: Handle = async ({ event, resolve }) => {
@@ -30,7 +30,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     const s = getSession(sessionId);
     if (s) {
       event.locals.userRole = s.role;
-      event.locals.session = { user: { id: s.userId, email: s.email } } as any;
+      event.locals.session = { user: { id: s.userId, email: s.email } };
     }
   }
   if (!event.locals.userRole) {

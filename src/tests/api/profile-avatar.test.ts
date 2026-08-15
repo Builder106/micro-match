@@ -39,7 +39,7 @@ function makeEvent(opts: { userId?: string | null; authorization?: string; file?
       headers: new Headers(opts.authorization ? { authorization: opts.authorization } : {}),
       formData: async () => form
     }
-  } as any;
+  } as unknown as import("@sveltejs/kit").RequestEvent;
 }
 
 describe('POST /api/profile/avatar', () => {

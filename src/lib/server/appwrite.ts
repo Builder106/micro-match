@@ -61,6 +61,45 @@ async function withAppwrite<T>(fn: (ctx: {
   });
 }
 
+interface DbTaskRow {
+  $id: string;
+  $createdAt?: string;
+  orgID?: string;
+  title: string;
+  shortDescription: string;
+  description?: string;
+  language?: string;
+  tags?: string[] | { values?: string[] };
+  estimatedMinutes?: number | null;
+  status?: 'active' | 'completed' | 'expired' | 'moderated';
+  maxVolunteers?: number | null;
+  deadline?: string | null;
+  isVerified?: boolean;
+  lastActivityAt?: string;
+}
+
+interface DbClaimRow {
+  $id: string;
+  $createdAt?: string;
+  taskID: string;
+  userID?: string | null;
+  notes?: string | null;
+  proofURL?: string | null;
+  status: 'pending' | 'approved' | 'rejected';
+  reviewedBy?: string | null;
+  reviewedAt?: string | null;
+}
+
+interface DbBadgeRow {
+  $id: string;
+  $createdAt?: string;
+  userID: string;
+  taskID?: string | null;
+  label: string;
+  color?: string | null;
+  awardedAt?: string;
+}
+
 // PROD: Add pagination support with cursor-based pagination
 // PROD: Implement proper filtering and sorting capabilities
 // PROD: Add caching layer for frequently accessed task lists
@@ -91,7 +130,8 @@ export async function getTasks(filters?: { orgId?: string; includeInactive?: boo
     }
     
     const res = await tables.listRows(dbId, tasksTable, queries);
-    let tasks: Task[] = res.rows.map((d: any) => ({
+    const rows = res.rows as unknown as DbTaskRow[];
+    let tasks: Task[] = rows.map((d) => ({
       id: d.$id,
       orgId: d.orgID, // Map database orgID to code orgId
       title: d.title,
@@ -99,11 +139,11 @@ export async function getTasks(filters?: { orgId?: string; includeInactive?: boo
       description: d.description,
       language: d.language,
       tags: Array.isArray(d.tags) ? d.tags : (d.tags?.values ?? []), // adjust if JSON
-      estimatedMinutes: d.estimatedMinutes,
+      estimatedMinutes: d.estimatedMinutes ?? undefined,
       createdAt: d.$createdAt,
       status: d.status || 'active',
-      maxVolunteers: d.maxVolunteers,
-      deadline: d.deadline,
+      maxVolunteers: d.maxVolunteers ?? undefined,
+      deadline: d.deadline ?? undefined,
       isVerified: d.isVerified ?? true,
       lastActivityAt: d.lastActivityAt
     }));
@@ -123,7 +163,7 @@ export async function getTaskById(id: string): Promise<Task | undefined> {
   if (!useAppwrite) return inMemory.tasks.get(id);
   return withAppwrite(async ({ tables, dbId, tasksTable }) => {
     try {
-      const d: any = await tables.getRow(dbId, tasksTable, id);
+      const d = (await tables.getRow(dbId, tasksTable, id)) as unknown as DbTaskRow;
       return {
         id: d.$id,
         orgId: d.orgID, // Map database orgID to code orgId
@@ -132,11 +172,11 @@ export async function getTaskById(id: string): Promise<Task | undefined> {
         description: d.description,
         language: d.language,
         tags: Array.isArray(d.tags) ? d.tags : (d.tags?.values ?? []),
-        estimatedMinutes: d.estimatedMinutes,
+        estimatedMinutes: d.estimatedMinutes ?? undefined,
         createdAt: d.$createdAt,
         status: d.status || 'active',
-        maxVolunteers: d.maxVolunteers,
-        deadline: d.deadline,
+        maxVolunteers: d.maxVolunteers ?? undefined,
+        deadline: d.deadline ?? undefined,
         isVerified: d.isVerified ?? true,
         lastActivityAt: d.lastActivityAt
       };
@@ -219,7 +259,7 @@ export async function createTask(input: Omit<Task, 'id' | 'createdAt'>): Promise
   }
   return withAppwrite(async ({ tables, dbId, tasksTable, ID }) => {
     const now = new Date().toISOString();
-    const payload: any = {
+    const payload: Record<string, unknown> = {
       title: input.title,
       shortDescription: input.shortDescription,
       description: input.description ?? '',
@@ -237,7 +277,7 @@ export async function createTask(input: Omit<Task, 'id' | 'createdAt'>): Promise
     if (input.orgId) {
       payload.orgID = input.orgId;
     }
-    const d: any = await tables.createRow(dbId, tasksTable, ID.unique(), payload);
+    const d = (await tables.createRow(dbId, tasksTable, ID.unique(), payload)) as unknown as DbTaskRow;
     return {
       id: d.$id,
       orgId: d.orgID, // Map database orgID to code orgId
@@ -246,11 +286,11 @@ export async function createTask(input: Omit<Task, 'id' | 'createdAt'>): Promise
       description: d.description,
       language: d.language,
       tags: Array.isArray(d.tags) ? d.tags : (d.tags?.values ?? []),
-      estimatedMinutes: d.estimatedMinutes,
+      estimatedMinutes: d.estimatedMinutes ?? undefined,
       createdAt: d.$createdAt,
       status: d.status || 'active',
-      maxVolunteers: d.maxVolunteers,
-      deadline: d.deadline,
+      maxVolunteers: d.maxVolunteers ?? undefined,
+      deadline: d.deadline ?? undefined,
       isVerified: d.isVerified ?? true,
       lastActivityAt: d.lastActivityAt
     };
@@ -269,7 +309,7 @@ export async function createClaim(input: Omit<Claim, 'id' | 'status' | 'createdA
   }
   return withAppwrite(async ({ tables, dbId, claimsTable, ID }) => {
     const now = new Date().toISOString();
-    const payload: any = {
+    const payload: Record<string, unknown> = {
       taskID: input.taskId, // Map taskId to database taskID
       status: input.status ?? 'pending',
       reviewedAt: now // Database requires this field, use current time as default
@@ -280,7 +320,7 @@ export async function createClaim(input: Omit<Claim, 'id' | 'status' | 'createdA
     if (input.notes) payload.notes = input.notes;
     if (input.proofUrl) payload.proofURL = input.proofUrl; // Map proofUrl to database proofURL
     
-    const d: any = await tables.createRow(dbId, claimsTable, ID.unique(), payload);
+    const d = (await tables.createRow(dbId, claimsTable, ID.unique(), payload)) as unknown as DbClaimRow;
     return {
       id: d.$id,
       taskId: d.taskID, // Map database taskID to code taskId
@@ -312,7 +352,8 @@ export async function getClaims(filters?: { userId?: string }): Promise<Claim[]>
       queries.push(Query.equal('userID', filters.userId));
     }
     const res = await tables.listRows(dbId, claimsTable, queries);
-    return res.rows.map((d: any) => ({
+    const rows = res.rows as unknown as DbClaimRow[];
+    return rows.map((d) => ({
       id: d.$id,
       taskId: d.taskID, // Map database taskID to code taskId
       userId: d.userID ?? undefined, // Map database userID to code userId
@@ -332,7 +373,7 @@ export async function getClaimById(id: string): Promise<Claim | undefined> {
   if (!useAppwrite) return inMemory.claims.get(id);
   return withAppwrite(async ({ tables, dbId, claimsTable }) => {
     try {
-      const d: any = await tables.getRow(dbId, claimsTable, id);
+      const d = (await tables.getRow(dbId, claimsTable, id)) as unknown as DbClaimRow;
       return {
         id: d.$id,
         taskId: d.taskID, // Map database taskID to code taskId
@@ -372,11 +413,11 @@ export async function updateClaimStatus(
   }
   return withAppwrite(async ({ tables, dbId, claimsTable }) => {
     try {
-      const d: any = await tables.updateRow(dbId, claimsTable, id, {
+      const d = (await tables.updateRow(dbId, claimsTable, id, {
         status,
         reviewedBy: reviewedBy ?? null,
         reviewedAt: new Date().toISOString()
-      });
+      })) as unknown as DbClaimRow;
       return {
         id: d.$id,
         taskId: d.taskID, // Map database taskID to code taskId
@@ -404,7 +445,8 @@ export async function listBadgesByUser(userId: string): Promise<Badge[]> {
   return withAppwrite(async ({ tables, dbId, badgesTable, Query }) => {
     try {
       const res = await tables.listRows(dbId, badgesTable, [Query.equal('userID', userId), Query.limit(100)]);
-      return res.rows.map((d: any) => ({
+      const rows = res.rows as unknown as DbBadgeRow[];
+      return rows.map((d) => ({
         id: d.$id,
         userId: d.userID, // Map database userID to code userId
         taskId: d.taskID ?? undefined, // Map database taskID to code taskId
@@ -412,7 +454,7 @@ export async function listBadgesByUser(userId: string): Promise<Badge[]> {
         color: d.color ?? undefined,
         awardedAt: d.awardedAt ?? d.$createdAt
       } as Badge));
-    } catch (err) {
+    } catch {
       // If userID attribute doesn't exist in schema, return empty array
       console.warn('Could not query badges by userID, schema may be missing userID attribute');
       return [];
@@ -433,7 +475,8 @@ export async function getBadges(): Promise<Badge[]> {
         Query.limit(1000), // Limit for performance
         Query.orderDesc('$createdAt')
       ]);
-      return res.rows.map((d: any) => ({
+      const rows = res.rows as unknown as DbBadgeRow[];
+      return rows.map((d) => ({
         id: d.$id,
         userId: d.userID, // Map database userID to code userId
         taskId: d.taskID ?? undefined, // Map database taskID to code taskId
@@ -441,7 +484,7 @@ export async function getBadges(): Promise<Badge[]> {
         color: d.color ?? undefined,
         awardedAt: d.awardedAt ?? d.$createdAt
       } as Badge));
-    } catch (err) {
+    } catch {
       console.warn('Could not query badges, schema may be missing required attributes');
       return [];
     }
@@ -460,7 +503,7 @@ export async function awardBadge(input: Omit<Badge, 'id' | 'awardedAt'> & { awar
   }
   return withAppwrite(async ({ tables, dbId, badgesTable, ID }) => {
     const now = new Date().toISOString();
-    const payload: any = {
+    const payload: Record<string, unknown> = {
       userID: input.userId, // Map userId to database userID
       label: input.label,
       awardedAt: input.awardedAt ?? now
@@ -470,7 +513,7 @@ export async function awardBadge(input: Omit<Badge, 'id' | 'awardedAt'> & { awar
     if (input.taskId) payload.taskID = input.taskId; // Map taskId to database taskID
     if (input.color) payload.color = input.color;
     
-    const d: any = await tables.createRow(dbId, badgesTable, ID.unique(), payload);
+    const d = (await tables.createRow(dbId, badgesTable, ID.unique(), payload)) as unknown as DbBadgeRow;
     return {
       id: d.$id,
       userId: d.userID, // Map database userID to code userId
@@ -545,7 +588,8 @@ export async function getBadgeAnalytics(): Promise<{
         };
       }
 
-      const badges = res.rows.map((d: any) => ({
+      const rows = res.rows as unknown as DbBadgeRow[];
+      const badges = rows.map((d) => ({
         id: d.$id,
         userId: d.userID,
         taskId: d.taskID ?? undefined,
@@ -589,7 +633,7 @@ export async function getBadgeAnalytics(): Promise<{
       const monthlyData: Record<string, { badges: number; volunteers: Set<string> }> = {};
 
       badges.forEach(badge => {
-        const badgeDate = new Date(badge.awardedAt);
+        const badgeDate = new Date(badge.awardedAt ?? Date.now());
         if (badgeDate >= twelveMonthsAgo) {
           const monthKey = badgeDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
           if (!monthlyData[monthKey]) {
@@ -614,7 +658,7 @@ export async function getBadgeAnalytics(): Promise<{
         volunteer: badge.userId || 'Unknown Volunteer', // TODO: Enhance with user names
         badge: badge.label || 'Unnamed Badge',
         task: badge.taskId || 'General Task',
-        date: new Date(badge.awardedAt).toISOString().split('T')[0]
+        date: new Date(badge.awardedAt ?? Date.now()).toISOString().split('T')[0]
       }));
 
       return {
@@ -654,10 +698,10 @@ export async function updateTaskStatus(id: string, status: Task['status']): Prom
   }
   return withAppwrite(async ({ tables, dbId, tasksTable }) => {
     try {
-      const d: any = await tables.updateRow(dbId, tasksTable, id, {
+      const d = (await tables.updateRow(dbId, tasksTable, id, {
         status: status || 'active',
         lastActivityAt: new Date().toISOString()
-      });
+      })) as unknown as DbTaskRow;
       return {
         id: d.$id,
         orgId: d.orgID,
@@ -666,11 +710,11 @@ export async function updateTaskStatus(id: string, status: Task['status']): Prom
         description: d.description,
         language: d.language,
         tags: Array.isArray(d.tags) ? d.tags : (d.tags?.values ?? []),
-        estimatedMinutes: d.estimatedMinutes,
+        estimatedMinutes: d.estimatedMinutes ?? undefined,
         createdAt: d.$createdAt,
         status: d.status || 'active',
-        maxVolunteers: d.maxVolunteers,
-        deadline: d.deadline,
+        maxVolunteers: d.maxVolunteers ?? undefined,
+        deadline: d.deadline ?? undefined,
         isVerified: d.isVerified ?? true,
         lastActivityAt: d.lastActivityAt
       };

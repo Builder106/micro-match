@@ -8,7 +8,13 @@
   export let data: {
     signedIn: boolean;
     user?: { id: string; email?: string } | null;
-    userData: any;
+    userData?: {
+      approvedClaimsCount?: number;
+      totalHours?: number;
+      myClaims?: Array<{ id: string; status: string; createdAt?: string; task?: { title?: string } }>;
+      recommendations?: Array<{ id: string; title: string; shortDescription: string; estimatedMinutes?: number; tags?: string[] }>;
+      [key: string]: unknown;
+    } | null;
   };
 
   let badges: Array<{ label: string; color?: string }> = [];
@@ -82,8 +88,12 @@
       try {
         const res = await fetch('/api/badges', { credentials: 'include' });
         if (res.ok) {
-          const payload = await res.json();
-          badges = payload.map((b: any) => ({ label: b.label, color: b.color }));
+          interface BadgePayloadItem {
+            label: string;
+            color?: string;
+          }
+          const payload = (await res.json()) as BadgePayloadItem[];
+          badges = payload.map((b) => ({ label: b.label, color: b.color }));
         }
       } catch {}
     }

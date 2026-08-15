@@ -25,7 +25,7 @@ function makeEvent(opts: { userId?: string | null; body?: unknown } = {}) {
         return opts.body;
       }
     }
-  } as any;
+  } as unknown as import("@sveltejs/kit").RequestEvent;
 }
 
 describe('GET/POST /api/tasks/maintenance', () => {

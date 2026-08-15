@@ -31,30 +31,32 @@ vi.mock('$lib/server/teams', () => ({
 
 import { GET } from '../../routes/api/auth/oauth/callback/+server';
 
-function makeEvent(search: string) {
+type MockEvent = Parameters<typeof GET>[0] & {
+  setCalls: Array<{ name: string; value: string }>;
+};
+
+function makeEvent(search: string): MockEvent {
   const setCalls: Array<{ name: string; value: string }> = [];
   return {
     url: new URL(`https://test/api/auth/oauth/callback${search}`),
     cookies: { set: (name: string, value: string) => setCalls.push({ name, value }) },
     setCalls
-  } as any;
+  } as unknown as MockEvent;
 }
 
 async function expectRedirect(promise: unknown, status: number, location: string) {
   try {
     await promise;
     throw new Error('expected a redirect to be thrown');
-  } catch (err: any) {
-    expect(err.status).toBe(status);
-    expect(err.location).toBe(location);
+  } catch (err: unknown) {
+    const e = err as { status?: number; location?: string };
+    expect(e.status).toBe(status);
+    expect(e.location).toBe(location);
   }
 }
 
 describe('GET /api/auth/oauth/callback', () => {
-  beforeEach(() => {
-    Object.values(mocks).forEach((m) => m.mockReset());
-    mocks.createSession.mockReturnValue({ id: 'sess-1' });
-  });
+  beforeEach(() => Object.values(mocks).forEach((m) => m.mockReset()));
 
   it('redirects to /login?error=oauth_token when userId/secret are missing', async () => {
     await expectRedirect(GET(makeEvent('')), 303, '/login?error=oauth_token');
@@ -86,7 +88,7 @@ describe('GET /api/auth/oauth/callback', () => {
     await expectRedirect(GET(event), 303, '/profile');
 
     expect(mocks.createSession).toHaveBeenCalledWith({ userId: 'u1', email: 'jane@example.com', role: 'user' });
-    expect(event.setCalls.map((c: any) => c.name)).toEqual(['mm_session', 'mm_role']);
+    expect(event.setCalls.map((c: { name: string }) => c.name)).toEqual(['mm_session', 'mm_role']);
   });
 
   it('redirects to /dashboard when prefs.role is already set', async () => {

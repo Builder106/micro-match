@@ -20,7 +20,7 @@ import { env } from '$env/dynamic/private';
  */
 
 async function getUserId(event: Parameters<RequestHandler>[0]): Promise<string | null> {
-  const sessionUserId = (event.locals as any)?.session?.user?.id as string | undefined;
+  const sessionUserId = event.locals.session?.user?.id ?? undefined;
   if (sessionUserId) return sessionUserId;
   try {
     const auth = event.request.headers.get('authorization') ?? '';
@@ -32,8 +32,8 @@ async function getUserId(event: Parameters<RequestHandler>[0]): Promise<string |
       .setProject(env.APPWRITE_PROJECT_ID || '')
       .setJWT(jwt);
     const acct = new Account(client);
-    const me: any = await acct.get();
-    return me?.$id ?? me?.id ?? null;
+    const me = await acct.get();
+    return me?.$id ?? null;
   } catch {
     return null;
   }
@@ -43,9 +43,9 @@ export const POST: RequestHandler = async (event) => {
   const userId = await getUserId(event);
   if (!userId) return json({ error: 'Unauthorized' }, { status: 401 });
 
-  let body: any;
+  let body: Record<string, unknown> | null = null;
   try {
-    body = await event.request.json();
+    body = (await event.request.json()) as Record<string, unknown>;
   } catch {
     return json({ error: 'Invalid JSON' }, { status: 400 });
   }
@@ -75,7 +75,7 @@ export const POST: RequestHandler = async (event) => {
   // (role, verificationStatus, etc).
   if (bio !== undefined || orgName !== undefined || avatarFileId !== undefined) {
     try {
-      const me: any = await users.get(userId);
+      const me = await users.get(userId);
       const next: Record<string, unknown> = { ...(me?.prefs ?? {}) };
       if (bio !== undefined) next.bio = bio;
       if (orgName !== undefined) next.orgName = orgName;

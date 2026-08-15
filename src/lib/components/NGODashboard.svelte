@@ -7,7 +7,15 @@
   export let data: {
     signedIn: boolean;
     user?: { id: string; email?: string } | null;
-    userData: any;
+    userData?: {
+      myTasks?: Array<{ id: string; title: string; shortDescription: string; estimatedMinutes?: number; tags?: string[]; status?: string }>;
+      pendingReviews?: Array<{ id: string; notes?: string; proofUrl?: string; createdAt?: string; task?: { title?: string } }>;
+      totalTasks?: number;
+      pendingReviewsCount?: number;
+      approvedClaimsCount?: number;
+      totalHours?: number;
+      [key: string]: unknown;
+    } | null;
   };
 
   let orgName = '';

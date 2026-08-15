@@ -6,18 +6,22 @@ vi.mock('$env/dynamic/private', () => ({ env: {} }));
 
 import { POST } from '../../routes/api/auth/logout/+server';
 
-function makeEvent(opts: { sessionCookie?: string; protocol?: string } = {}) {
+type MockEvent = Parameters<typeof POST>[0] & {
+  setCalls: Array<{ name: string; value: string; opts: Record<string, unknown> }>;
+};
+
+function makeEvent(opts: { sessionCookie?: string; protocol?: string } = {}): MockEvent {
   const cookies = new Map<string, string>();
   if (opts.sessionCookie) cookies.set('mm_session', opts.sessionCookie);
-  const setCalls: Array<{ name: string; value: string; opts: any }> = [];
+  const setCalls: Array<{ name: string; value: string; opts: Record<string, unknown> }> = [];
   return {
     cookies: {
       get: (name: string) => cookies.get(name),
-      set: (name: string, value: string, opts: any) => setCalls.push({ name, value, opts })
+      set: (name: string, value: string, opts: Record<string, unknown>) => setCalls.push({ name, value, opts })
     },
     url: new URL(`${opts.protocol ?? 'https:'}//test/api/auth/logout`),
     setCalls
-  } as any;
+  } as unknown as MockEvent;
 }
 
 describe('POST /api/auth/logout', () => {
@@ -39,9 +43,9 @@ describe('POST /api/auth/logout', () => {
     const event = makeEvent({ sessionCookie: 'sess-1' });
     await POST(event);
 
-    const names = event.setCalls.map((c: any) => c.name);
+    const names = event.setCalls.map((c: { name: string }) => c.name);
     expect(names).toEqual(['mm_session', 'mm_role']);
-    expect(event.setCalls.every((c: any) => c.value === '' && c.opts.maxAge === 0)).toBe(true);
+    expect(event.setCalls.every((c: { value: string; opts: Record<string, unknown> }) => c.value === '' && c.opts.maxAge === 0)).toBe(true);
   });
 
   it('returns { ok: true }', async () => {
