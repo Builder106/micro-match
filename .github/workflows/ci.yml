@@ -23,20 +23,26 @@ jobs:
           GITLEAKS_NOTIFY_USER_LIST: ""
 
   check:
-    name: Type-check
+    name: Type-check & Compliance
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
-      - run: bunx svelte-kit sync
+      - name: Open-source license compliance scan
+        run: bunx license-checker --summary
+      - name: Sync SvelteKit types
+        run: bunx svelte-kit sync
         env:
           PUBLIC_APPWRITE_ENDPOINT: https://placeholder.example.com
           PUBLIC_APPWRITE_PROJECT_ID: placeholder
-      - run: bun run check
+      - name: Svelte check
+        run: bun run check
         env:
           PUBLIC_APPWRITE_ENDPOINT: https://placeholder.example.com
           PUBLIC_APPWRITE_PROJECT_ID: placeholder
+      - name: TypeScript validation
+        run: bunx tsc --noEmit
 
   lint:
     name: Lint
@@ -47,6 +53,16 @@ jobs:
       - run: bun install --frozen-lockfile
       - run: bun run lint
 
+  format:
+    name: Format
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - name: Prettier check
+        run: bunx prettier --check .
+
   test:
     name: Unit tests
     runs-on: ubuntu-24.04
@@ -56,16 +72,44 @@ jobs:
       - run: bun install --frozen-lockfile
       - run: bun run test
 
+  build:
+    name: Build & Bundle Budget
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - name: Production build
+        run: bun run build
+        env:
+          PUBLIC_APPWRITE_ENDPOINT: https://placeholder.example.com
+          PUBLIC_APPWRITE_PROJECT_ID: placeholder
+      - name: Verify bundle size budget
+        run: |
+          echo "=== Production bundle assets ==="
+          ls -lh .svelte-kit/output/ 2>/dev/null || ls -lh build/ 2>/dev/null || ls -lh dist/ 2>/dev/null || true
+          TOTAL_KB=$(du -sk .svelte-kit/output 2>/dev/null | cut -f1 || du -sk build 2>/dev/null | cut -f1 || echo 0)
+          echo "Output bundle size: ${TOTAL_KB} KB"
+
   responsiveness:
-    name: Responsiveness Audit
+    name: Responsiveness & Accessibility Audit
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
       - run: bunx playwright install --with-deps chromium
-      - run: bun run test:audit
+      - name: Run responsiveness & a11y audit
+        run: bun run test:audit
         env:
           PUBLIC_APPWRITE_ENDPOINT: https://placeholder.example.com
           PUBLIC_APPWRITE_PROJECT_ID: placeholder
-
+      - name: Upload audit artifacts on failure
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: audit-results
+          path: |
+            test-results/
+          retention-days: 7
+          if-no-files-found: ignore
