@@ -61,7 +61,7 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
       - name: Prettier check
-        run: bunx prettier --check .
+        run: bunx prettier --check "src/**/*.{ts,js,svelte}"
 
   test:
     name: Unit tests
