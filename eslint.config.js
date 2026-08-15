@@ -15,7 +15,7 @@ export default [
   // Browser + Node globals for all files
   {
     languageOptions: {
-      ecmaVersion: 'esnext',
+      ecmaVersion: 'latest',
       sourceType: 'module',
       globals: {
         ...globals.browser,
@@ -34,7 +34,7 @@ export default [
     languageOptions: {
       parserOptions: {
         parser: tseslint.parser,
-        ecmaVersion: 'esnext'
+        ecmaVersion: 'latest'
       }
     }
   },
