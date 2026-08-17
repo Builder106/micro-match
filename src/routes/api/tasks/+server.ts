@@ -6,13 +6,7 @@ import { getVerificationByUserId } from '$lib/server/verifications';
 import type { Task } from '$lib/types';
 import { moderateText } from '$lib/server/contentsafety';
 
-// PROD: Add rate limiting middleware (e.g., express-rate-limit)
-// PROD: Add request validation middleware (e.g., Joi, Zod)
-// PROD: Add API versioning support
 export const GET: RequestHandler = async () => {
-  // PROD: Add caching headers for better performance
-  // PROD: Add pagination support with cursor-based pagination
-  // PROD: Add filtering and sorting capabilities
   const tasks = await getTasks();
   // public read-only projection for MVP
   const result = tasks.map((t) => ({
@@ -26,13 +20,7 @@ export const GET: RequestHandler = async () => {
   return json(result);
 };
 
-// PROD: Add input validation and sanitization
-// PROD: Add proper error handling with structured logging
-// PROD: Add audit logging for all task creations
 export const POST: RequestHandler = async (event) => {
-  // PROD: Add rate limiting per user/organization
-  // PROD: Add request size limits
-  // PROD: Add proper authentication and authorization middleware
   const role = await getUserRole(event);
   if (role !== 'ngo') return json({ error: 'Forbidden' }, { status: 403 });
   
@@ -48,9 +36,6 @@ export const POST: RequestHandler = async (event) => {
     return json({ error: 'title and shortDescription are required' }, { status: 400 });
   }
 
-  // PROD: Move content moderation to a background job for better performance
-  // PROD: Add content moderation queue and retry logic
-  // PROD: Add content moderation caching
   // Content Safety: check title, shortDescription, and description
   const textToCheck = [body.title, body.shortDescription, body.description ?? '']
     .filter(Boolean)

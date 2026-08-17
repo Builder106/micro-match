@@ -1,6 +1,3 @@
-// PROD: Replace with Redis or database-backed session store
-// PROD: Add session encryption and security
-// PROD: Add session replication for high availability
 // Simple in-memory session store (dev). Replace with Redis/DB in production.
 import { randomUUID } from 'node:crypto';
 export type SessionRecord = {
@@ -11,23 +8,14 @@ export type SessionRecord = {
   expiresAt: number; // epoch ms
 };
 
-// PROD: Use Redis or database for session storage
-// PROD: Add session cleanup and garbage collection
-// PROD: Add session analytics and monitoring
 const sessions = new Map<string, SessionRecord>();
 
-// PROD: Make session TTL configurable per environment
-// PROD: Add session refresh mechanism
-// PROD: Add session security policies
 export const SESSION_TTL_SECONDS = 60 * 60 * 24 * 14; // 14 days
 
 function now(): number {
   return Date.now();
 }
 
-// PROD: Move session cleanup to a background job
-// PROD: Add proper error handling for cleanup failures
-// PROD: Add cleanup metrics and monitoring
 function purgeExpired(): void {
   const nowMs = now();
   for (const [id, s] of sessions) {
@@ -35,9 +23,6 @@ function purgeExpired(): void {
   }
 }
 
-// PROD: Add session security validation
-// PROD: Add session fingerprinting for security
-// PROD: Add session audit logging
 export function createSession(input: {
   userId: string;
   email: string;
@@ -58,9 +43,6 @@ export function createSession(input: {
   return record;
 }
 
-// PROD: Add session validation and security checks
-// PROD: Add session activity tracking
-// PROD: Add session anomaly detection
 export function getSession(id: string): SessionRecord | null {
   const s = sessions.get(id);
   if (!s) return null;
@@ -71,9 +53,6 @@ export function getSession(id: string): SessionRecord | null {
   return s;
 }
 
-// PROD: Add session invalidation logging
-// PROD: Add session cleanup for related resources
-// PROD: Add session deletion confirmation
 export function deleteSession(id: string): void {
   sessions.delete(id);
 }

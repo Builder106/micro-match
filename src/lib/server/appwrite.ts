@@ -1,13 +1,7 @@
 // src/lib/server/appwrite.ts
-// PROD: Replace with proper database connection pooling and connection management
-// PROD: Add comprehensive error handling with structured logging (e.g., Winston, Pino)
-// PROD: Implement database migrations system for schema changes
-// PROD: Add database connection retry logic and circuit breakers
 import { env } from '$env/dynamic/private';
 import type { Task, Claim, Badge } from '$lib/types';
 
-// PROD: Use environment-specific configuration management (e.g., dotenv, config)
-// PROD: Add validation for required environment variables on startup
 const useAppwrite =
   !!env.APPWRITE_ENDPOINT &&
   !!env.APPWRITE_PROJECT_ID &&
@@ -17,9 +11,6 @@ const useAppwrite =
   !!env.APPWRITE_CLAIMS_TABLE_ID &&
   !!env.APPWRITE_BADGES_TABLE_ID;
 
-// PROD: Replace with Redis or distributed cache for better performance
-// PROD: Add cache invalidation strategies and TTL management
-// PROD: Implement cache warming for frequently accessed data
 const inMemory = {
   tasks: new Map<string, Task>(),
   claims: new Map<string, Claim>(),
@@ -32,9 +23,6 @@ const inMemory = {
 let inMemoryIdCounter = 0;
 const newMemId = () => `${Date.now()}-${++inMemoryIdCounter}`;
 
-// PROD: Add connection pooling and connection lifecycle management
-// PROD: Implement proper error handling with exponential backoff
-// PROD: Add metrics and monitoring for database operations
 async function withAppwrite<T>(fn: (ctx: {
   tables: import('node-appwrite').TablesDB,
   dbId: string,
@@ -94,10 +82,6 @@ type DbBadgeRow = import('node-appwrite').Models.Row & {
   awardedAt?: string;
 };
 
-// PROD: Add pagination support with cursor-based pagination
-// PROD: Implement proper filtering and sorting capabilities
-// PROD: Add caching layer for frequently accessed task lists
-// PROD: Implement rate limiting for API endpoints
 export async function getTasks(filters?: { orgId?: string; includeInactive?: boolean }): Promise<Task[]> {
   if (!useAppwrite) {
     let tasks = Array.from(inMemory.tasks.values());
@@ -151,8 +135,6 @@ export async function getTasks(filters?: { orgId?: string; includeInactive?: boo
   });
 }
 
-// PROD: Add proper error handling and logging
-// PROD: Implement caching for frequently accessed tasks
 export async function getTaskById(id: string): Promise<Task | undefined> {
   if (!useAppwrite) return inMemory.tasks.get(id);
   return withAppwrite(async ({ tables, dbId, tasksTable }) => {
@@ -180,9 +162,6 @@ export async function getTaskById(id: string): Promise<Task | undefined> {
   });
 }
 
-// PROD: Add database indexes for performance optimization
-// PROD: Implement proper error handling and logging
-// PROD: Add metrics for volunteer limit checks
 async function hasReachedVolunteerLimit(taskId: string): Promise<boolean> {
   if (!useAppwrite) return false; // In-memory fallback doesn't track this yet
   
@@ -200,9 +179,6 @@ async function hasReachedVolunteerLimit(taskId: string): Promise<boolean> {
   });
 }
 
-// PROD: Move this logic to a background job/cron for better performance
-// PROD: Add caching for filtered results
-// PROD: Implement proper error handling and retry logic
 async function filterTasksForFeed(tasks: Task[]): Promise<Task[]> {
   const now = new Date();
   const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
@@ -235,9 +211,6 @@ async function filterTasksForFeed(tasks: Task[]): Promise<Task[]> {
   return filteredTasks;
 }
 
-// PROD: Add input validation and sanitization
-// PROD: Implement proper error handling with user-friendly messages
-// PROD: Add audit logging for all database operations
 export async function createTask(input: Omit<Task, 'id' | 'createdAt'>): Promise<Task> {
   if (!useAppwrite) {
     const id = newMemId();
@@ -287,9 +260,6 @@ export async function createTask(input: Omit<Task, 'id' | 'createdAt'>): Promise
   });
 }
 
-// PROD: Add transaction support for claim creation
-// PROD: Implement duplicate claim prevention
-// PROD: Add notification system for claim submissions
 export async function createClaim(input: Omit<Claim, 'id' | 'status' | 'createdAt'> & { status?: Claim['status'] }): Promise<Claim> {
   if (!useAppwrite) {
     const id = newMemId();
@@ -323,9 +293,6 @@ export async function createClaim(input: Omit<Claim, 'id' | 'status' | 'createdA
   });
 }
 
-// PROD: Add pagination support for large datasets
-// PROD: Implement proper filtering and sorting
-// PROD: Add caching for frequently accessed user claims
 export async function getClaims(filters?: { userId?: string }): Promise<Claim[]> {
   if (!useAppwrite) {
     let claims = Array.from(inMemory.claims.values());
@@ -355,8 +322,6 @@ export async function getClaims(filters?: { userId?: string }): Promise<Claim[]>
   });
 }
 
-// PROD: Add proper error handling and logging
-// PROD: Implement caching for frequently accessed claims
 export async function getClaimById(id: string): Promise<Claim | undefined> {
   if (!useAppwrite) return inMemory.claims.get(id);
   return withAppwrite(async ({ tables, dbId, claimsTable }) => {
@@ -379,9 +344,6 @@ export async function getClaimById(id: string): Promise<Claim | undefined> {
   });
 }
 
-// PROD: Add transaction support for status updates
-// PROD: Implement notification system for status changes
-// PROD: Add audit logging for all status changes
 export async function updateClaimStatus(
   id: string,
   status: Claim['status'],
@@ -423,9 +385,6 @@ export async function updateClaimStatus(
   });
 }
 
-// PROD: Add pagination support for user badges
-// PROD: Implement caching for user badge collections
-// PROD: Add badge analytics and reporting
 export async function listBadgesByUser(userId: string): Promise<Badge[]> {
   if (!useAppwrite) {
     return Array.from(inMemory.badges.values()).filter((b) => b.userId === userId);
@@ -450,9 +409,6 @@ export async function listBadgesByUser(userId: string): Promise<Badge[]> {
   });
 }
 
-// PROD: Add pagination support for all badges
-// PROD: Implement filtering and sorting capabilities
-// PROD: Add caching for badge collections
 export async function getBadges(): Promise<Badge[]> {
   if (!useAppwrite) {
     return Array.from(inMemory.badges.values());
@@ -479,9 +435,6 @@ export async function getBadges(): Promise<Badge[]> {
   });
 }
 
-// PROD: Add duplicate badge prevention
-// PROD: Implement badge achievement notifications
-// PROD: Add badge analytics tracking
 export async function awardBadge(input: Omit<Badge, 'id' | 'awardedAt'> & { awardedAt?: string }): Promise<Badge> {
   if (!useAppwrite) {
     const id = newMemId();
@@ -532,9 +485,6 @@ export async function getPublicImpactStats(): Promise<{
   return { tasksCompleted, activeVolunteers, ngosOnboarded, badgesAwarded };
 }
 
-// PROD: Move analytics to a dedicated analytics service
-// PROD: Implement proper data aggregation and caching
-// PROD: Add real-time analytics dashboards
 export async function getBadgeAnalytics(): Promise<{
   totalBadgesAwarded: number;
   totalVolunteersEngaged: number;
@@ -671,9 +621,6 @@ export async function getBadgeAnalytics(): Promise<{
   });
 }
 
-// PROD: Add audit logging for all status changes
-// PROD: Implement notification system for status updates
-// PROD: Add validation for status transitions
 export async function updateTaskStatus(id: string, status: Task['status']): Promise<Task | undefined> {
   if (!useAppwrite) {
     const existing = inMemory.tasks.get(id);
@@ -710,8 +657,6 @@ export async function updateTaskStatus(id: string, status: Task['status']): Prom
   });
 }
 
-// PROD: Move this to a background job for better performance
-// PROD: Add proper error handling and retry logic
 export async function updateTaskLastActivity(id: string): Promise<void> {
   if (!useAppwrite) {
     const existing = inMemory.tasks.get(id);
@@ -731,9 +676,6 @@ export async function updateTaskLastActivity(id: string): Promise<void> {
   });
 }
 
-// PROD: Move this to a scheduled background job (cron)
-// PROD: Add batch processing for large datasets
-// PROD: Implement proper error handling and retry logic
 export async function expireTasks(): Promise<number> {
   const now = new Date().toISOString();
   let expiredCount = 0;
@@ -778,9 +720,6 @@ export async function expireTasks(): Promise<number> {
   });
 }
 
-// PROD: Move this to a scheduled background job (cron)
-// PROD: Add batch processing for large datasets
-// PROD: Implement proper error handling and retry logic
 export async function autoArchiveTasks(): Promise<number> {
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
   let archivedCount = 0;
@@ -863,9 +802,6 @@ export async function setTasksVerifiedForOrg(orgId: string, isVerified: boolean)
   });
 }
 
-// PROD: Add soft delete instead of hard delete
-// PROD: Implement proper audit logging
-// PROD: Add cascade delete for related records
 export async function deleteTask(id: string): Promise<void> {
   if (!useAppwrite) {
     inMemory.tasks.delete(id);

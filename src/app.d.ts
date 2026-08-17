@@ -25,5 +25,4 @@ declare namespace App {
     isAdmin?: boolean;
     session?: Session | null;
   }
-  // interface Platform {}
 }
