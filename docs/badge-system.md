@@ -54,10 +54,12 @@ MicroMatch features an event-driven gamification engine that allows NGOs to defi
 
 * *Gap*: `checkMilestoneCriteria()`currently returns`[]`.
 * *Action Needed*: Extend `BadgeDefinition`schema with`milestoneCount`and`maxMinutes` fields, and add query helpers for volunteer claim history.
+
 1. **Global System Badges vs. NGO Badges**:
 
 * *Gap*: Starter milestone badges are hardcoded fallbacks on the volunteer dashboard ([VolunteerDashboard.svelte](file:///Users/yinkavaughan/My%20Drive%20%28yvaughan@wesleyan.edu%29/CS/projects/swe/micro-match/src/lib/components/VolunteerDashboard.svelte)).
 * *Action Needed*: Seed platform-wide global system badge definitions in Appwrite so unlocked status syncs dynamically across all NGOs.
+
 1. **Deduplication Keying**:
 
 * *Gap*: Deduplication matches strictly on badge `label`.

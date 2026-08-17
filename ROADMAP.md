@@ -24,6 +24,7 @@ High-level roadmap and milestone goals for MicroMatch, ordered by launch priorit
 ## Out of Scope
 
 Per [CONTRIBUTING.md](CONTRIBUTING.md) and founder student visa constraints:
+
 - Paid commercial transactions, monetization, or fee-taking
 - Complex employment / contractor payroll features
 - Direct advertising networks or intrusive data tracking
