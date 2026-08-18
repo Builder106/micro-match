@@ -18,30 +18,32 @@
 
 <br />
 
-> A micro-volunteering marketplace pairing NGOs with volunteers for bite-sized,
-> skill-building tasks. Volunteers browse a feed of 5-30 minute missions, claim
-> what fits their skills, and earn badges for approved work. NGOs post tasks,
-> review submissions, and build a verified presence on the platform.
+> **A micro-volunteering platform connecting nonprofits with skilled volunteers.** Complete quick 5 to 30-minute missions, help verified charities, and earn skill badges.
 
-## ✨ Features
+## 💡 What is MicroMatch?
 
-- **Bite-sized task feed** — filter by `≤15 / ≤20 / ≤30 min`, hashtag, or sort by shortest first.
-- **Volunteer side** — claim tasks, submit proof (link or upload), track status, earn badges, level up.
-- **NGO side** — post tasks with deadline + max-volunteers caps, review submissions, manage org-owned badge definitions.
-- **NGO verification**— soft-gate trust system. NGOs submit a tax/charity ID, admins review with [ProPublica](https://projects.propublica.org/nonprofits/api/) lookup enrichment, approval back-fills the**Verified** chip on every existing task.
-- **Custom badge definitions** — NGOs define their own awards (label, color, icon, criteria); the engine auto-awards on claim approval.
-- **Role mobility** — users can flip between Volunteer and NGO; downgrading from NGO triggers a clean transactional teardown of verification + tasks.
-- **Auto-translate** — task title + description translate to the viewer's language via self-hosted [LibreTranslate](https://libretranslate.com/) (free, open-source, runs on Oracle ARM VM).
-- **Email notifications** — verification approve/reject sends Mailgun-backed transactional emails to the NGO.
+Nonprofits and community organizations often need quick help with specific tasks (translating a document, designing a flyer, reviewing data, or writing copy), but recruiting full-time volunteers is slow and difficult. MicroMatch breaks volunteering down into bite-sized missions that busy people can complete in under 30 minutes.
+
+Volunteers pick tasks that match their skills, submit their work, and earn verified digital badges for their portfolio. Nonprofits get tasks completed quickly by motivated contributors without endless administrative overhead.
+
+## ✨ Key Features
+
+- **Bite-sized task feed**: Filter by time (`≤15 / ≤20 / ≤30 min`), cause hashtags, or shortest duration first.
+- **Volunteer portal**: Claim tasks, submit proof of work via file or link, track review status, and collect skill badges.
+- **Nonprofit dashboard**: Post tasks with deadlines and volunteer caps, review submissions, and manage organization badge awards.
+- **Charity verification**: Simple trust verification where nonprofits submit their tax or charity ID, verified against public registries with a verified badge displayed on their tasks.
+- **Custom badge awards**: Organizations define custom award badges (label, color, icon, criteria) automatically awarded upon task approval.
+- **Multi-language translation**: Task titles and descriptions automatically translate into the viewer's preferred language.
+- **Email updates**: Automated email notifications keep volunteers and organizations informed of approvals and submissions.
 
 ## 🎬 In motion
 
-These are real Playwright recordings of the app — captured by the test suite at `e2e/demo/`, post-processed to GIF for embedding here. Nothing is mocked or sped up: every click is a real session against a real Appwrite backend.
+These are real recordings of the application in action, captured by the automated test suite and rendered as previews:
 
 <details>
-  <summary><strong>The closed loop</strong> — claim → submit proof → NGO approves → badge lands</summary>
+  <summary><strong>The complete volunteering workflow:</strong> claim task → submit work → charity approves → earn badge</summary>
 
-The whole product in one take. A volunteer claims a task and submits their work, the NGO reviews that submission and approves it, and the badge lands in the volunteer's vault. It all happens on-platform, without the handoff to email that a directory would leave you to. The sign-out in the middle is real: the volunteer and the org are two different accounts.
+A volunteer claims a task, submits their work, the nonprofit reviews and approves the submission, and the digital badge is awarded to the volunteer's profile.
 
 ![The closed loop](static/demos/04-closed-loop-claim-submit-approve-badge.gif)
 
