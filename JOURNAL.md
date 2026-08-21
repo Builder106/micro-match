@@ -4,6 +4,10 @@
 > things happen — retrospectives need this raw material to land.
 > Reverse-chronological; one paragraph max per entry.
 
+## 2026-08-21 — Rebuilt the MicroMatch videos in HyperFrames #milestone #decision
+
+Replaced the Remotion projects with a vertical Tier 2 social cut in `ui-demo/` and a 16:9 Tier 3 trailer in `trailer/`. The social cut uses a 30 fps preconformed version of the original closed-loop recording so HyperFrames can seek it deterministically. The trailer is a native rebuild of the quarter-hour concept using the product’s real task and badge copy, without the untracked Blender laptop frames. Both 30 fps renders completed successfully, passed lint, had no detected silence, and passed visual review.
+
 ## 2026-08-07 — Ingested F-1 visa legal framework, sub-processor disclosures, and signup consent #decision #legal
 
 Ingested policy framework for F-1 visa non-commercial portfolio compliance and third-party sub-processor disclosures. Updated `/privacy`and`/terms`with explicit disclosures for Vercel (hosting, request logs, edge network) and Appwrite (authentication, database, storage buckets, session cookies), non-commercial educational project disclaimers, "AS IS" limitation of liability, and data boundaries (user uploads stored on Appwrite, not used to train third-party AI models). Added signup form legal consent notice ("By registering, you agree to our Terms of Service and Privacy Policy") and documented legal positioning in`docs/positioning.md`.
