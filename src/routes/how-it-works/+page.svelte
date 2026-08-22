@@ -52,7 +52,7 @@
       bullets: [
         'Zero prior onboarding drag or mandatory long training courses',
         'Concise reference sheets and style guides provided in-context',
-        'Microsoft Azure Translator support for multi-lingual tasks'
+        'On-demand LibreTranslate support for multi-lingual tasks'
       ],
       demoTitle: 'Quick Reference Guide Embedded',
       demoNgo: 'Dosage terms: "dosificación" → "dosage"',

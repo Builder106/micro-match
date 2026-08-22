@@ -39,7 +39,6 @@ Retrieves public task listings.
 - **Authentication**: Optional (Public)
 - **Query Parameters**:
   - `duration`*(optional)*: Maximum task duration in minutes (e.g.`15`, `20`, `30`).
-  - `lang`*(optional)*: Target ISO language code for auto-translation via self-hosted LibreTranslate (e.g.`es`, `fr`).
 - **Response (200 OK)**:
 
 ```json
@@ -80,6 +79,11 @@ Creates a new micro-task listing.
 
 - **Response (201 Created)**: Returns the newly created task object.
 - **Error Responses**: `400 Bad Request`(missing title/description or content safety block),`401 Unauthorized`, `403 Forbidden` (non-NGO).
+
+Task detail pages support on-demand server-side translation with
+`/task/[id]?lang=<code>`. The supported target codes are `es`, `fr`, `de`,
+`pt`, `zh`, and `ar`. Translation covers the title and full description. The
+page keeps the original text when the translation service is unavailable.
 
 ### `PATCH /api/tasks/[id]`
 

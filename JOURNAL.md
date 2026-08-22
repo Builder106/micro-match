@@ -4,6 +4,10 @@
 > things happen — retrospectives need this raw material to land.
 > Reverse-chronological; one paragraph max per entry.
 
+## 2026-08-21 — LibreTranslate now has a production boundary #decision
+
+Replaced the legacy Azure-named translation helper with a server-only LibreTranslate client. Task detail pages still translate only the title and full description through `?lang=`, but requests now require the production API key, use a ten-second timeout, validate supported language codes, and cache successful results for fifteen minutes with a 500-entry limit. Provider failures return the original text without caching the failure. The deployment contract is `translate.micromatch.app` behind the Oracle VM's named Cloudflare Tunnel; `scripts/verify-libretranslate.ts` checks health, an authenticated translation, and rejection of a request without the key. The VM, DNS, and production secret rollout remain external deployment steps.
+
 ## 2026-08-21 — Rebuilt the MicroMatch videos in HyperFrames #milestone #decision
 
 Replaced the Remotion projects with a vertical Tier 2 social cut in `ui-demo/` and a 16:9 Tier 3 trailer in `trailer/`. The social cut uses a 30 fps preconformed version of the original closed-loop recording so HyperFrames can seek it deterministically. The trailer is a native rebuild of the quarter-hour concept using the product’s real task and badge copy, without the untracked Blender laptop frames. Both 30 fps renders completed successfully, passed lint, had no detected silence, and passed visual review.

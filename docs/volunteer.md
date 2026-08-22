@@ -12,7 +12,7 @@
 
 ## Translation
 
-- If a task isn’t in your language, add `?lang=<code>`to the URL (e.g.,`?lang=es`).
+- If a task isn’t in your language, add `?lang=<code>` to the URL (for example, `?lang=es`). Supported codes are `es`, `fr`, `de`, `pt`, `zh`, and `ar`.
 - An "Auto-translated" chip shows when translation is applied.
 
 ## Badges & level

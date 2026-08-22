@@ -13,7 +13,7 @@ vi.mock('$env/dynamic/private', () => ({
   env: new Proxy(envState, { get: (_, key: string) => envState[key] })
 }));
 vi.mock('$lib/server/appwrite', () => ({ getTaskById: mocks.getTaskById }));
-vi.mock('$lib/server/azure', () => ({ translateText: mocks.translateText }));
+vi.mock('$lib/server/libretranslate', () => ({ translateText: mocks.translateText }));
 vi.mock('node-appwrite', () => ({
   Client: class { setEndpoint() { return this; } setProject() { return this; } setKey() { return this; } },
   Users: class { get = mocks.usersGet; }
@@ -97,5 +97,16 @@ describe('/task/[id] load', () => {
     expect(result.task.description).toBe('World-es');
     expect(result.task.language).toBe('Auto-translated');
     expect(result.translatedTo).toBe('es');
+  });
+
+  it('ignores unsupported translation codes', async () => {
+    mocks.getTaskById.mockResolvedValue({ id: 'task-1', orgId: 'org-1', title: 'Hello', description: 'World' });
+
+    const result = (await load(makeEvent({ search: '?lang=zh-Hans' }))) as Exclude<Awaited<ReturnType<typeof load>>, void>;
+
+    expect(result.task.title).toBe('Hello');
+    expect(result.task.description).toBe('World');
+    expect(result.translatedTo).toBeNull();
+    expect(mocks.translateText).not.toHaveBeenCalled();
   });
 });

@@ -28,7 +28,8 @@ MicroMatch is a micro‑volunteering platform that pairs NGOs with bite‑sized 
 
 ## How translation works
 
-- Add `?lang=es` (for example) to task URLs to translate title and description server‑side.
+- Add `?lang=es` (for example) to task URLs to translate the title and description server-side.
+- Supported target codes are `es`, `fr`, `de`, `pt`, `zh`, and `ar`.
 - A chip “Auto‑translated” appears when translation is applied.
 
 ## Safety & moderation

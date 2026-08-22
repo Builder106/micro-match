@@ -50,17 +50,17 @@ export const POST: RequestHandler = async (event) => {
     avatarFileId?: string;
   }
 
-  let body: UpdateProfileBody | null = null;
+  let body: UpdateProfileBody;
   try {
     body = (await event.request.json()) as UpdateProfileBody;
   } catch {
     return json({ error: 'Invalid JSON' }, { status: 400 });
   }
 
-  const displayName = typeof body?.displayName === 'string' ? body.displayName.trim() : undefined;
-  const bio = typeof body?.bio === 'string' ? body.bio : undefined;
-  const orgName = typeof body?.orgName === 'string' ? body.orgName : undefined;
-  const avatarFileId = typeof body?.avatarFileId === 'string' ? body.avatarFileId : undefined;
+  const displayName = typeof body.displayName === 'string' ? body.displayName.trim() : undefined;
+  const bio = typeof body.bio === 'string' ? body.bio : undefined;
+  const orgName = typeof body.orgName === 'string' ? body.orgName : undefined;
+  const avatarFileId = typeof body.avatarFileId === 'string' ? body.avatarFileId : undefined;
 
   const { Client, Users } = await import('node-appwrite');
   const client = new Client()

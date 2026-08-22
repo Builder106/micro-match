@@ -32,7 +32,7 @@ You will receive an automated email notification via Mailgun explaining the revi
 
 ### How do translations work
 
-Appending `?lang=<code>`(e.g.,`?lang=es`) to a task page URL fetches server-side cached translations for the title and description. Tasks with active translations display an "Auto-translated" badge.
+Appending `?lang=<code>` (for example, `?lang=es`) to a task page URL requests a server-side translation of the title and description. Supported codes are `es`, `fr`, `de`, `pt`, `zh`, and `ar`. Tasks with an active translation display an "Auto-translated" badge. If the translation service is unavailable, the page shows the original text.
 
 ### Why was my task or claim note blocked
 

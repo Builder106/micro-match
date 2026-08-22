@@ -22,13 +22,13 @@
 
   let { data }: { data: { tasks: Task[] } } = $props();
 
-  let q = "";
-  let lottieReady = false;
-  const tasks = data.tasks;
+  let q = $state("");
+  let lottieReady = $state(false);
+  const tasks = $derived(data.tasks);
 
-  let selectedTags: string[] = [];
-  let maxMinutes: number | null = null;
-  let sortBy: 'recommended' | 'shortest' | 'az' = 'recommended';
+  let selectedTags = $state<string[]>([]);
+  let maxMinutes = $state<number | null>(null);
+  let sortBy = $state<'recommended' | 'shortest' | 'az'>('recommended');
 
   const toggleTag = (tag: string) => {
     selectedTags = selectedTags.includes(tag)

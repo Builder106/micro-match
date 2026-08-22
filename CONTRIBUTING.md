@@ -17,11 +17,11 @@ from a pull request.
   on the verification approval/rejection flow. Without an API key the email
   pipeline silently no-ops in development; everything else still works.
 
-- **[LibreTranslate](https://libretranslate.com/)** instance (optional) — for
+- **[LibreTranslate](https://libretranslate.com/)** instance (optional) for
 
-  auto-translate feature. Set `LIBRETRANSLATE_ENDPOINT`in`.env` to your
-  instance URL (e.g., the Cloudflare Quick Tunnel from the Oracle VM). Without
-  it, translation gracefully returns original text.
+  the auto-translate feature. Set `LIBRETRANSLATE_ENDPOINT` and
+  `LIBRETRANSLATE_API_KEY` in `.env`. Without these values, translation returns
+  the original text.
 
 - **macOS / Linux / WSL** — the dev path is tested on macOS; Windows-native
 
@@ -35,7 +35,7 @@ cd MicroMatch
 bun install
 cp .env.example .env
 
-# Fill in the Appwrite + Mailgun + LibreTranslate keys (see the comments in .env.example)
+# Fill in the Appwrite + Mailgun + LibreTranslate values (see .env.example)
 
 bun run dev
 ```
@@ -78,6 +78,7 @@ bun run lint            # eslint
 bun run format          # prettier write
 bun run build           # production build
 bun run seed            # (re)seed the demo NGO + tasks
+bun run verify:libretranslate # live LibreTranslate health and auth check
 bun run demo            # seed, record the demo suite, convert to GIFs
 ```
 

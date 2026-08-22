@@ -33,7 +33,7 @@ Volunteers pick tasks that match their skills, submit their work, and earn verif
 - **Nonprofit dashboard**: Post tasks with deadlines and volunteer caps, review submissions, and manage organization badge awards.
 - **Charity verification**: Simple trust verification where nonprofits submit their tax or charity ID, verified against public registries with a verified badge displayed on their tasks.
 - **Custom badge awards**: Organizations define custom award badges (label, color, icon, criteria) automatically awarded upon task approval.
-- **Multi-language translation**: Task titles and descriptions automatically translate into the viewer's preferred language.
+- **On-demand translation**: Task titles and descriptions can be translated from the task detail page.
 - **Email updates**: Automated email notifications keep volunteers and organizations informed of approvals and submissions.
 
 ## 🎬 In motion
@@ -133,7 +133,7 @@ sequenceDiagram
 | **Backend** | [Appwrite Cloud](https://appwrite.io/) — Database (TablesDB), Auth, Storage, Teams |
 | **Email** | [Mailgun](https://www.mailgun.com/) (HTTP API, no SDK dep) |
 | **NGO verification** | [ProPublica Nonprofit Explorer API](https://projects.propublica.org/nonprofits/api/) for US 501(c)(3) lookups |
-| **i18n** | Self-hosted [LibreTranslate](https://libretranslate.com/) (free, open-source, ARM64 on Oracle VM) |
+| **Translation** | Self-hosted [LibreTranslate](https://libretranslate.com/) on an ARM64 Oracle VM behind `translate.micromatch.app` |
 | **UI** | Plus Jakarta Sans + Inter, custom CSS (warm cream palette + coral accents), [Iconify](https://iconify.design/), [Lottie](https://lottiefiles.com/) |
 | **Testing** | [Vitest](https://vitest.dev/) (unit + API + components) and [Playwright](https://playwright.dev/) (e2e) |
 
@@ -147,7 +147,7 @@ cd MicroMatch
 bun install
 cp .env.example .env
 
-# Fill in Appwrite + Mailgun + ProPublica keys
+# Fill in Appwrite + Mailgun + ProPublica + LibreTranslate keys
 
 bun run dev
 ```
@@ -163,6 +163,7 @@ bun run check           # svelte-check + tsc
 bun run test            # vitest (459 tests across server / API / components)
 bun run test:e2e        # Playwright (run `bunx playwright install chromium` once)
 bun run seed            # (re)seed the demo NGO + tasks — run before any demo recording
+bun run verify:libretranslate # live health and API-key smoke check
 bun run demo            # seed, record the demo suite, convert to GIFs
 bun run render-media    # regenerate the README banners + social preview from /static/*.html
 ```

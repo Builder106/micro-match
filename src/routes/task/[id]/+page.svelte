@@ -2,6 +2,7 @@
   import Icon from "@iconify/svelte";
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
+  import { TRANSLATION_OPTIONS } from '$lib/translation';
   import { getTagStyle } from '$lib/utils/tagColors';
   import type { Task } from '$lib/types';
 
@@ -17,15 +18,6 @@
   $: orgName = data.orgName ?? 'Community organization';
   $: signedIn = $page.data.userRole && $page.data.userRole !== 'anonymous';
 
-  const TRANSLATE_OPTIONS = [
-    { code: '', label: 'Original' },
-    { code: 'es', label: 'Spanish' },
-    { code: 'fr', label: 'French' },
-    { code: 'de', label: 'German' },
-    { code: 'pt', label: 'Portuguese' },
-    { code: 'zh-Hans', label: 'Chinese' },
-    { code: 'ar', label: 'Arabic' }
-  ];
   let langSelection = data.translatedTo ?? '';
   function applyTranslation() {
     const path = `/task/${id}` + (langSelection ? `?lang=${encodeURIComponent(langSelection)}` : '');
@@ -147,7 +139,7 @@
       <label class="td-translate">
         <Icon icon="lucide:languages" width="14" height="14" />
         <select bind:value={langSelection} on:change={applyTranslation} aria-label="Translate description">
-          {#each TRANSLATE_OPTIONS as opt (opt.code)}
+          {#each TRANSLATION_OPTIONS as opt (opt.code)}
             <option value={opt.code}>{opt.label}</option>
           {/each}
         </select>

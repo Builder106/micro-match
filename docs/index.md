@@ -8,4 +8,6 @@
 - **[REST API Reference](./api.md)**: Comprehensive interactive and endpoint specification (`/docs/api`).
 - **[Product Positioning](./positioning.md)**: Positioning relative to directory platforms.
 - **[Frequently Asked Questions](./faq.md)**: Technical and operational FAQ.
+- **[LibreTranslate operations](./libretranslate-operations.md)**: Service,
+  tunnel, secret, and verification runbook for task translation.
 - **[Design System](../DESIGN.md)**: Color tokens, typography, and UI specs.

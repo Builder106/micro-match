@@ -19,6 +19,7 @@
     "demo:gif": "bun run scripts/demos-to-gif.ts",
     "demo": "bun run seed && bun run test:demo && bun run demo:gif",
     "seed": "bun run scripts/seed.ts",
+    "verify:libretranslate": "bun run scripts/verify-libretranslate.ts",
     "render-media": "bun run scripts/render-media.ts",
     "lint": "eslint .",
     "format": "prettier -w ."

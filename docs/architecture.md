@@ -37,7 +37,7 @@ The backend logic resides in `$lib/server/` with isolated domain modules:
 - **[`badgeAwarder.ts`](file:///Users/yinkavaughan/My%20Drive%20%28yvaughan@wesleyan.edu%29/CS/projects/swe/micro-match/src/lib/server/badgeAwarder.ts)**: Event-driven badge evaluator that mints badges on claim approval.
 - **[`contentsafety.ts`](file:///Users/yinkavaughan/My%20Drive%20%28yvaughan@wesleyan.edu%29/CS/projects/swe/micro-match/src/lib/server/contentsafety.ts)**: Azure AI Content Safety moderation scanner.
 - **[`email.ts`](file:///Users/yinkavaughan/My%20Drive%20%28yvaughan@wesleyan.edu%29/CS/projects/swe/micro-match/src/lib/server/email.ts)**: Mailgun transactional email engine.
-- **[`azure.ts`](file:///Users/yinkavaughan/My%20Drive%20%28yvaughan@wesleyan.edu%29/CS/projects/swe/micro-match/src/lib/server/azure.ts)**: LibreTranslate client with in-memory cache and graceful fallback (self-hosted on Oracle ARM VM via Cloudflare Quick Tunnel).
+- **[`libretranslate.ts`](file:///Users/yinkavaughan/My%20Drive%20%28yvaughan@wesleyan.edu%29/CS/projects/swe/micro-match/src/lib/server/libretranslate.ts)**: Server-only LibreTranslate client with a bounded in-memory cache, timeout, API-key authentication, and graceful fallback. The service runs on the Oracle ARM VM behind the named `translate.micromatch.app` Cloudflare Tunnel.
 
 ---
 
