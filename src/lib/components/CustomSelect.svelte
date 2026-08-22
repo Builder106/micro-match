@@ -6,6 +6,7 @@
   export let options: Array<{ value: string; label: string }> = [];
   export let ariaLabel = 'Select an option';
   export let disabled = false;
+  export let onChange: (() => void) | undefined = undefined;
 
   let open = false;
   let trigger: HTMLButtonElement;
@@ -16,6 +17,7 @@
   function select(optionValue: string) {
     value = optionValue;
     open = false;
+    onChange?.();
     trigger?.focus();
   }
 

@@ -6,6 +6,7 @@
   import { getTaskDetailCopy, TRANSLATION_OPTIONS } from '$lib/translation';
   import { getTagStyle } from '$lib/utils/tagColors';
   import type { Task } from '$lib/types';
+  import CustomSelect from '$lib/components/CustomSelect.svelte';
 
   export let data: {
     task: Task;
@@ -182,11 +183,13 @@
       <h2>{copy.theMission}</h2>
       <label class="td-translate">
         <Icon icon="lucide:languages" width="14" height="14" />
-        <select bind:value={langSelection} on:change={applyTranslation} disabled={isTranslating} aria-label="Translate description">
-          {#each TRANSLATION_OPTIONS as opt (opt.code)}
-            <option value={opt.code}>{opt.label}</option>
-          {/each}
-        </select>
+        <CustomSelect
+          bind:value={langSelection}
+          onChange={applyTranslation}
+          disabled={isTranslating}
+          ariaLabel="Translate description"
+          options={TRANSLATION_OPTIONS.map((opt) => ({ value: opt.code, label: opt.label }))}
+        />
       </label>
     </header>
     {#if isTranslating}
@@ -351,18 +354,10 @@
     transition: background .15s;
   }
   .td-translate:hover { background: color-mix(in srgb, var(--color-text) 8%, transparent); }
-  .td-translate select {
-    border: none;
-    background: transparent;
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--color-text);
-    cursor: pointer;
-    outline: none;
-    padding: 2px 4px;
-  }
-  .td-translate select:disabled { cursor: wait; opacity: .65; }
+  .td-translate :global(.custom-select) { width: auto; min-width: 118px; }
+  .td-translate :global(.custom-select-trigger) { min-height: 30px; padding: 0 2px; border: 0; background: transparent; font-size: 13px; font-weight: 700; }
+  .td-translate :global(.custom-select-trigger:hover), .td-translate :global(.custom-select.open .custom-select-trigger) { border: 0; background: transparent; }
+  .td-translate :global(.custom-select-menu) { width: 190px; right: 0; left: auto; }
 
   .td-translated-note { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; background: #FEF3C7; color: #92400E; border-radius: 10px; font-size: 12px; font-weight: 600; margin-bottom: 16px; }
   .td-translating { display: inline-flex; align-items: center; gap: 6px; color: color-mix(in srgb, var(--color-text) 65%, transparent); font-size: 12px; font-weight: 700; margin-bottom: 16px; }
