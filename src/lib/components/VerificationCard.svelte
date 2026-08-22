@@ -289,7 +289,7 @@
   .vc-field { display: flex; flex-direction: column; gap: 6px; }
   .vc-field > span { font-size: 13px; font-weight: 700; color: var(--color-text); }
   .vc-field > span small { font-weight: 500; color: color-mix(in srgb, var(--color-text) 50%, transparent); margin-left: 4px; }
-  .vc-field input, .vc-field select {
+  .vc-field input {
     padding: 12px 14px;
     border: 1px solid var(--card-border-strong);
     border-radius: 12px;
@@ -300,7 +300,7 @@
     font-weight: 500;
     transition: all .2s;
   }
-  .vc-field input:focus, .vc-field select:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12); }
+  .vc-field input:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12); }
 
   .vc-upload {
     display: inline-flex;

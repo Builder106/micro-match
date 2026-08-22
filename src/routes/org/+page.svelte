@@ -286,7 +286,7 @@
   .org-label { font-size: 13px; font-weight: 700; color: var(--color-text); display: inline-flex; align-items: center; gap: 6px; }
   .org-label em { font-style: normal; font-size: 11px; font-weight: 600; padding: 2px 6px; background: color-mix(in srgb, var(--color-primary) 12%, transparent); color: var(--color-primary); border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.04em; }
 
-  .org-field input, .org-field select, .org-field textarea {
+  .org-field input, .org-field textarea {
     padding: 12px 14px;
     border: 1px solid var(--card-border-strong);
     border-radius: 12px;
@@ -297,7 +297,7 @@
     font-weight: 500;
     transition: all .2s;
   }
-  .org-field input:focus, .org-field select:focus, .org-field textarea:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12); }
+  .org-field input:focus, .org-field textarea:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12); }
   .org-field textarea { resize: vertical; min-height: 120px; line-height: 1.55; }
   .org-counter { position: absolute; right: 4px; bottom: -18px; font-size: 11px; font-weight: 600; color: color-mix(in srgb, var(--color-text) 50%, transparent); }
   .org-hint { font-size: 12px; color: color-mix(in srgb, var(--color-text) 55%, transparent); }

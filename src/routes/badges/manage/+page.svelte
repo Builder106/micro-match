@@ -459,7 +459,7 @@
   .bm-field { display: flex; flex-direction: column; gap: 6px; }
   .bm-field > span { font-size: 13px; font-weight: 700; color: var(--color-text); }
   .bm-field > span small { font-weight: 500; color: color-mix(in srgb, var(--color-text) 50%, transparent); margin-left: 4px; }
-  .bm-field input:not([type]), .bm-field select, .bm-field textarea {
+  .bm-field input:not([type]), .bm-field textarea {
     padding: 12px 14px;
     border: 1px solid var(--card-border-strong);
     border-radius: 12px;
@@ -470,7 +470,7 @@
     font-weight: 500;
     transition: all .2s;
   }
-  .bm-field input:focus, .bm-field select:focus, .bm-field textarea:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12); }
+  .bm-field input:focus, .bm-field textarea:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12); }
   .bm-field textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
 
   .bm-color-row { display: flex; align-items: center; gap: 12px; }
