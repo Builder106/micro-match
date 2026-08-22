@@ -136,35 +136,44 @@
       {/if}
     </div>
 
-    <h1>{task.title}</h1>
-    <p class="td-short">{task.shortDescription}</p>
+    {#if isTranslating}
+      <div class="td-hero-skeleton" aria-hidden="true">
+        <span class="td-skeleton-title"></span>
+        <span class="td-skeleton-short"></span>
+        <span class="td-skeleton-short td-skeleton-short-last"></span>
+        <div class="td-skeleton-chips"><span></span><span></span><span></span><span></span></div>
+      </div>
+    {:else}
+      <h1>{task.title}</h1>
+      <p class="td-short">{task.shortDescription}</p>
 
-    <div class="td-meta">
-      {#if typeof task.estimatedMinutes === 'number'}
-        <span class="td-chip td-chip-time">
-          <Icon icon="lucide:clock" width="14" height="14" /> {task.estimatedMinutes} {copy.minutes}
-        </span>
-      {/if}
-      {#if task.language}
-        <span class="td-chip td-chip-lang">
-          <Icon icon="lucide:globe" width="14" height="14" /> {translatedTask && data.translatedTo ? copy.autoTranslated : task.language}
-        </span>
-      {/if}
-      {#if task.maxVolunteers}
-        <span class="td-chip td-chip-cap">
-          <Icon icon="lucide:users" width="14" height="14" /> {copy.max} {task.maxVolunteers}
-        </span>
-      {/if}
-      {#if deadline}
-        <span class="td-chip" class:tone-soon={deadline.tone === 'soon'} class:tone-late={deadline.tone === 'late'} class:tone-normal={deadline.tone === 'normal'}>
-          <Icon icon="lucide:calendar-clock" width="14" height="14" /> {deadline.text}
-        </span>
-      {/if}
-      {#each task.tags as tag (tag)}
-        {@const s = getTagStyle(tag)}
-        <span class="td-chip" style="background: {s.bg}; color: {s.color};">#{tag}</span>
-      {/each}
-    </div>
+      <div class="td-meta">
+        {#if typeof task.estimatedMinutes === 'number'}
+          <span class="td-chip td-chip-time">
+            <Icon icon="lucide:clock" width="14" height="14" /> {task.estimatedMinutes} {copy.minutes}
+          </span>
+        {/if}
+        {#if task.language}
+          <span class="td-chip td-chip-lang">
+            <Icon icon="lucide:globe" width="14" height="14" /> {translatedTask && data.translatedTo ? copy.autoTranslated : task.language}
+          </span>
+        {/if}
+        {#if task.maxVolunteers}
+          <span class="td-chip td-chip-cap">
+            <Icon icon="lucide:users" width="14" height="14" /> {copy.max} {task.maxVolunteers}
+          </span>
+        {/if}
+        {#if deadline}
+          <span class="td-chip" class:tone-soon={deadline.tone === 'soon'} class:tone-late={deadline.tone === 'late'} class:tone-normal={deadline.tone === 'normal'}>
+            <Icon icon="lucide:calendar-clock" width="14" height="14" /> {deadline.text}
+          </span>
+        {/if}
+        {#each task.tags as tag (tag)}
+          {@const s = getTagStyle(tag)}
+          <span class="td-chip" style="background: {s.bg}; color: {s.color};">#{tag}</span>
+        {/each}
+      </div>
+    {/if}
   </section>
 
   <!-- ───── Description ───── -->
@@ -294,6 +303,16 @@
 
   .td-hero h1 { position: relative; font-size: clamp(1.5rem, 2.5vw + 0.5rem, 2.25rem); font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; margin: 0; }
   .td-short { position: relative; font-size: 17px; font-weight: 500; line-height: 1.6; color: color-mix(in srgb, var(--color-text) 75%, transparent); margin: 0; max-width: 640px; }
+  .td-hero-skeleton { position: relative; display: grid; gap: 14px; max-width: 640px; }
+  .td-hero-skeleton > span, .td-skeleton-chips span { border-radius: 999px; background: linear-gradient(90deg, color-mix(in srgb, var(--color-text) 8%, transparent), color-mix(in srgb, var(--color-text) 15%, transparent), color-mix(in srgb, var(--color-text) 8%, transparent)); background-size: 200% 100%; animation: td-shimmer 1.2s ease-in-out infinite; }
+  .td-skeleton-title { width: 84%; height: 42px; }
+  .td-skeleton-short { width: 96%; height: 20px; }
+  .td-skeleton-short-last { width: 62%; }
+  .td-skeleton-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2px; }
+  .td-skeleton-chips span { width: 94px; height: 30px; }
+  .td-skeleton-chips span:nth-child(2) { width: 132px; }
+  .td-skeleton-chips span:nth-child(3) { width: 76px; }
+  .td-skeleton-chips span:nth-child(4) { width: 102px; }
 
   .td-meta { position: relative; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
   .td-chip {
