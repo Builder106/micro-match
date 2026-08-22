@@ -7,7 +7,7 @@
     "dev": "vite dev",
     "build": "vite build",
     "preview": "vite preview",
-    "check": "svelte-check --tsconfig ./tsconfig.json --output human",
+    "check": "svelte-check --fail-on-warnings --tsconfig ./tsconfig.json --output human",
     "test": "vitest run",
     "test:unit": "vitest run",
     "test:watch": "vitest",
@@ -21,7 +21,7 @@
     "seed": "bun run scripts/seed.ts",
     "verify:libretranslate": "bun run scripts/verify-libretranslate.ts",
     "render-media": "bun run scripts/render-media.ts",
-    "lint": "eslint .",
+    "lint": "eslint . --max-warnings 0",
     "format": "prettier -w ."
   },
   "dependencies": {

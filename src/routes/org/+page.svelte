@@ -1,5 +1,6 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
+  import CustomSelect from '$lib/components/CustomSelect.svelte';
   import { goto } from '$app/navigation';
 
   export let data: { verificationStatus: 'pending' | 'approved' | 'rejected' | null };
@@ -161,11 +162,7 @@
       <div class="org-row">
         <label class="org-field">
           <span class="org-label">Language</span>
-          <select bind:value={language}>
-            {#each languages as lang (lang)}
-              <option value={lang}>{lang}</option>
-            {/each}
-          </select>
+          <CustomSelect bind:value={language} ariaLabel="Language" options={languages.map((lang) => ({ value: lang, label: lang }))} />
         </label>
 
         <label class="org-field">

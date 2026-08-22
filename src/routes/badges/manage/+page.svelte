@@ -1,5 +1,6 @@
 <script lang="ts">
   import Icon from '@iconify/svelte';
+  import CustomSelect from '$lib/components/CustomSelect.svelte';
   import { onMount } from 'svelte';
   import { invalidateAll } from '$app/navigation';
   import type { BadgeDefinition } from '$lib/types';
@@ -281,22 +282,14 @@
 
         <label class="bm-field">
           <span>Award when</span>
-          <select bind:value={newBadge.criteria}>
-            <option value="task-completion">Any of your tasks is completed</option>
-            <option value="task-specific">A specific task is completed</option>
-          </select>
+          <CustomSelect bind:value={newBadge.criteria} ariaLabel="Award when" options={[{ value: 'task-completion', label: 'Any of your tasks is completed' }, { value: 'task-specific', label: 'A specific task is completed' }]} />
           <small class="bm-hint">More criteria types (time-based, milestones) coming soon.</small>
         </label>
 
         {#if newBadge.criteria === 'task-specific'}
           <label class="bm-field">
             <span>Which task</span>
-            <select bind:value={newBadge.taskId}>
-              <option value="">Pick a task…</option>
-              {#each data.tasks as task (task.id)}
-                <option value={task.id}>{task.title}</option>
-              {/each}
-            </select>
+            <CustomSelect bind:value={newBadge.taskId} ariaLabel="Which task" options={[{ value: '', label: 'Pick a task…' }, ...data.tasks.map((task) => ({ value: task.id, label: task.title }))]} />
           </label>
         {/if}
 

@@ -1,5 +1,6 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
+  import CustomSelect from '$lib/components/CustomSelect.svelte';
   import { onMount } from 'svelte';
   import { account } from '$lib/appwrite.client';
   import type { NgoVerification } from '$lib/types';
@@ -174,11 +175,7 @@
       <div class="vc-row">
         <label class="vc-field">
           <span>Country</span>
-          <select bind:value={country}>
-            {#each COUNTRIES as c (c.code)}
-              <option value={c.code}>{c.flag} {c.name}</option>
-            {/each}
-          </select>
+          <CustomSelect bind:value={country} ariaLabel="Country" options={COUNTRIES.map((c) => ({ value: c.code, label: `${c.flag} ${c.name}` }))} />
         </label>
         <label class="vc-field">
           <span>{taxIdLabel}</span>
