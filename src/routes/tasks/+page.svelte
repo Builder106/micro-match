@@ -2,6 +2,7 @@
   import TaskCard from "$lib/components/TaskCard.svelte";
   import FabCompose from "$lib/components/FabCompose.svelte";
   import PublicShell from "$lib/components/PublicShell.svelte";
+  import CustomSelect from "$lib/components/CustomSelect.svelte";
   import Icon from "@iconify/svelte";
   import { onMount } from 'svelte';
   import { page } from '$app/state';
@@ -21,6 +22,12 @@
   }
 
   let { data }: { data: { tasks: Task[] } } = $props();
+
+  const sortOptions = [
+    { value: 'recommended', label: 'Recommended' },
+    { value: 'shortest', label: 'Shortest first' },
+    { value: 'az', label: 'A–Z' }
+  ];
 
   let q = $state("");
   let lottieReady = $state(false);
@@ -143,15 +150,10 @@
       </div>
 
       <div class="filter-row filter-controls">
-        <label class="sort" for="task-sort">
+        <div class="sort">
           <span class="sort-label">Sort</span>
-          <select id="task-sort" name="task-sort" bind:value={sortBy}>
-            <option value="recommended">Recommended</option>
-            <option value="shortest">Shortest first</option>
-            <option value="az">A–Z</option>
-          </select>
-          <Icon icon="lucide:chevron-down" width="14" height="14" class="sort-caret" />
-        </label>
+          <CustomSelect bind:value={sortBy} ariaLabel="Sort tasks" options={sortOptions} />
+        </div>
         {#if hasActiveFilters}
           <button type="button" class="filter-clear" onclick={clearFilters}>
             <Icon icon="lucide:x" width="14" height="14" /> Clear filters
@@ -266,15 +268,10 @@
         </div>
 
         <div class="filter-row filter-controls">
-          <label class="sort" for="task-sort-public">
+          <div class="sort">
             <span class="sort-label">Sort</span>
-            <select id="task-sort-public" name="task-sort" bind:value={sortBy}>
-              <option value="recommended">Recommended</option>
-              <option value="shortest">Shortest first</option>
-              <option value="az">A–Z</option>
-            </select>
-            <Icon icon="lucide:chevron-down" width="14" height="14" class="sort-caret" />
-          </label>
+            <CustomSelect bind:value={sortBy} ariaLabel="Sort tasks" options={sortOptions} />
+          </div>
           {#if hasActiveFilters}
             <button type="button" class="filter-clear" onclick={clearFilters}>
               <Icon icon="lucide:x" width="14" height="14" /> Clear filters
@@ -426,26 +423,10 @@
   }
   .sort:focus-within { border-color: var(--color-primary); }
   .sort-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: color-mix(in srgb, var(--color-text) 50%, transparent); }
-  .sort select {
-    appearance: none;
-    background: transparent;
-    border: none;
-    outline: none;
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--color-text);
-    padding: 8px 0;
-    cursor: pointer;
-  }
-  .sort :global(.sort-caret) {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: color-mix(in srgb, var(--color-text) 55%, transparent);
-    pointer-events: none;
-  }
+  .sort :global(.custom-select) { width: auto; min-width: 156px; }
+  .sort :global(.custom-select-trigger) { min-height: 38px; padding: 0 4px; border: 0; background: transparent; font-size: 13px; font-weight: 700; }
+  .sort :global(.custom-select-trigger:hover), .sort :global(.custom-select.open .custom-select-trigger) { border: 0; background: transparent; }
+  .sort :global(.custom-select-menu) { width: 190px; right: 0; left: auto; }
   .filter-clear {
     display: inline-flex;
     align-items: center;
