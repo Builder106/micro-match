@@ -2,7 +2,7 @@
   import Icon from "@iconify/svelte";
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import { TRANSLATION_OPTIONS } from '$lib/translation';
+  import { getTaskDetailCopy, TRANSLATION_OPTIONS } from '$lib/translation';
   import { getTagStyle } from '$lib/utils/tagColors';
   import type { Task } from '$lib/types';
 
@@ -17,6 +17,7 @@
   $: task = data.task;
   $: orgName = data.orgName ?? 'Community organization';
   $: signedIn = $page.data.userRole && $page.data.userRole !== 'anonymous';
+  $: copy = getTaskDetailCopy(data.translatedTo);
 
   let langSelection = data.translatedTo ?? '';
   function applyTranslation() {
@@ -72,7 +73,7 @@
 <div class="td-page">
   <a href="/tasks" class="td-back">
     <Icon icon="lucide:arrow-left" width="14" height="14" />
-    Back to feed
+    {copy.backToFeed}
   </a>
 
   <!-- ───── Hero ───── -->
@@ -82,15 +83,15 @@
     <div class="td-hero-top">
       <div class="td-avatar"><Icon icon="lucide:heart-handshake" width="28" height="28" /></div>
       <div class="td-org">
-        <small>Posted by</small>
+        <small>{copy.postedBy}</small>
         <strong>{orgName}</strong>
         {#if task.isVerified}
           <span class="td-verified" title="Verification confirmed">
-            <Icon icon="lucide:badge-check" width="14" height="14" /> Verified
+            <Icon icon="lucide:badge-check" width="14" height="14" /> {copy.verified}
           </span>
         {:else}
           <span class="td-unverified" title="Org has not been verified">
-            <Icon icon="lucide:shield-alert" width="14" height="14" /> Unverified
+            <Icon icon="lucide:shield-alert" width="14" height="14" /> {copy.unverified}
           </span>
         {/if}
       </div>
@@ -107,17 +108,17 @@
     <div class="td-meta">
       {#if typeof task.estimatedMinutes === 'number'}
         <span class="td-chip td-chip-time">
-          <Icon icon="lucide:clock" width="14" height="14" /> {task.estimatedMinutes} min
+          <Icon icon="lucide:clock" width="14" height="14" /> {task.estimatedMinutes} {copy.minutes}
         </span>
       {/if}
       {#if task.language}
         <span class="td-chip td-chip-lang">
-          <Icon icon="lucide:globe" width="14" height="14" /> {task.language}
+          <Icon icon="lucide:globe" width="14" height="14" /> {data.translatedTo ? copy.autoTranslated : task.language}
         </span>
       {/if}
       {#if task.maxVolunteers}
         <span class="td-chip td-chip-cap">
-          <Icon icon="lucide:users" width="14" height="14" /> Max {task.maxVolunteers}
+          <Icon icon="lucide:users" width="14" height="14" /> {copy.max} {task.maxVolunteers}
         </span>
       {/if}
       {#if deadline}
@@ -135,7 +136,7 @@
   <!-- ───── Description ───── -->
   <section class="td-card brand-card">
     <header class="td-card-head">
-      <h2>The mission</h2>
+      <h2>{copy.theMission}</h2>
       <label class="td-translate">
         <Icon icon="lucide:languages" width="14" height="14" />
         <select bind:value={langSelection} on:change={applyTranslation} aria-label="Translate description">
@@ -148,7 +149,7 @@
     {#if data.translatedTo}
       <div class="td-translated-note">
         <Icon icon="lucide:info" width="13" height="13" />
-        Auto-translated. Verify nuance against the original before submitting.
+        {copy.translationNotice}
       </div>
     {/if}
     {#if task.description}
@@ -158,7 +159,7 @@
         {/each}
       </div>
     {:else}
-      <p class="td-prose td-prose-empty">No detailed description was provided.</p>
+      <p class="td-prose td-prose-empty">{copy.noDescription}</p>
     {/if}
   </section>
 
@@ -197,19 +198,19 @@
     {:else if !signedIn}
       <div class="td-signin-cta">
         <Icon icon="lucide:user-plus" width="14" height="14" />
-        Sign in to claim this task.
+        {copy.signInToClaimTask}
       </div>
       <a href="/login?next=/task/{id}" class="btn-coral btn-lg">
-        Sign in to claim
+        {copy.signInToClaim}
         <Icon icon="lucide:arrow-right" width="16" height="16" />
       </a>
     {:else}
       <div class="td-cta-meta">
         <Icon icon="lucide:hand-heart" width="14" height="14" />
-        Ready to help?
+        {copy.readyToHelp}
       </div>
       <a href={`/task/${id}/claim`} class="btn-coral btn-lg">
-        Claim this task
+        {copy.claimTask}
         <Icon icon="lucide:arrow-right" width="16" height="16" />
       </a>
     {/if}

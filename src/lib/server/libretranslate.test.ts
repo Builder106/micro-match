@@ -5,7 +5,7 @@ vi.mock('$env/dynamic/private', () => ({
   env: new Proxy(envState, { get: (_, key: string) => envState[key] })
 }));
 
-import { translateText } from './libretranslate';
+import { translateText, translateTexts } from './libretranslate';
 
 describe('translateText', () => {
   beforeEach(() => {
@@ -35,7 +35,7 @@ describe('translateText', () => {
 
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({ translatedText: 'Hola mundo' })
+      json: async () => ({ translatedText: ['Hola mundo'] })
     });
     vi.stubGlobal('fetch', fetchMock);
 
@@ -48,7 +48,7 @@ describe('translateText', () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          q: 'Hello world unique-success',
+          q: ['Hello world unique-success'],
           source: 'auto',
           target: 'es',
           format: 'text',
@@ -59,14 +59,39 @@ describe('translateText', () => {
     );
   });
 
+  it('batches uncached task fields into one provider request', async () => {
+    envState.LIBRETRANSLATE_ENDPOINT = 'https://translate.example.com';
+    envState.LIBRETRANSLATE_API_KEY = 'server-only-key';
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ translatedText: ['Título', 'Descripción', 'datos'] })
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(
+      translateTexts({ texts: ['Title unique-batch', 'Description unique-batch', 'data unique-batch'], to: 'es' })
+    ).resolves.toEqual(['Título', 'Descripción', 'datos']);
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://translate.example.com/translate',
+      expect.objectContaining({
+        body: JSON.stringify({
+          q: ['Title unique-batch', 'Description unique-batch', 'data unique-batch'],
+          source: 'auto',
+          target: 'es',
+          format: 'text',
+          api_key: 'server-only-key'
+        })
+      })
+    );
+  });
+
   it('caches successful translations by endpoint, locale, and text', async () => {
     envState.LIBRETRANSLATE_ENDPOINT = 'https://translate.example.com';
     envState.LIBRETRANSLATE_API_KEY = 'server-only-key';
 
-    const fetchMock = vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({ translatedText: 'Bonjour unique-cache' })
-    });
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ translatedText: ['Bonjour unique-cache'] }) });
     vi.stubGlobal('fetch', fetchMock);
 
     const first = await translateText({ text: 'Hi unique-cache', to: 'fr' });
@@ -99,7 +124,7 @@ describe('translateText', () => {
     vi.useFakeTimers();
 
     const resultPromise = translateText({ text: 'Timeout me unique', to: 'de' });
-    await vi.advanceTimersByTimeAsync(10_000);
+    await vi.advanceTimersByTimeAsync(30_000);
 
     await expect(resultPromise).resolves.toBe('Timeout me unique');
     expect(fetchMock).toHaveBeenCalledTimes(1);

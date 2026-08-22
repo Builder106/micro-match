@@ -4,6 +4,10 @@
 > things happen — retrospectives need this raw material to land.
 > Reverse-chronological; one paragraph max per entry.
 
+## 2026-08-22 — Task detail translation covers the whole task context #decision
+
+Expanded `?lang=` on task pages beyond the title and full description. The server now translates the short description and displayed tag labels in the same LibreTranslate request, while keeping the NGO name unchanged as a proper name. The page also translates task-detail UI copy such as “Posted by,” translation notices, and claim prompts. LibreTranslate runs with one worker on the Oracle VM after the default worker count exhausted the VM during longer requests, and the application timeout is thirty seconds so slow but successful translations do not fall back early. Successful text is still cached individually; a provider failure leaves the page usable with original copy. Staging was checked with French and Portuguese task pages.
+
 ## 2026-08-21 — LibreTranslate now has a production boundary #decision
 
 Replaced the legacy Azure-named translation helper with a server-only LibreTranslate client. Task detail pages still translate only the title and full description through `?lang=`, but requests now require the production API key, use a ten-second timeout, validate supported language codes, and cache successful results for fifteen minutes with a 500-entry limit. Provider failures return the original text without caching the failure. The deployment contract is `translate.micromatch.app` behind the Oracle VM's named Cloudflare Tunnel; `scripts/verify-libretranslate.ts` checks health, an authenticated translation, and rejection of a request without the key. The VM, DNS, and production secret rollout remain external deployment steps.

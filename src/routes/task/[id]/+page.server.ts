@@ -2,7 +2,7 @@ import type { PageServerLoad } from './$types';
 import { env } from '$env/dynamic/private';
 import { getTaskById } from '$lib/server/appwrite';
 import { isSupportedTranslationCode } from '$lib/translation';
-import { translateText } from '$lib/server/libretranslate';
+import { translateTexts } from '$lib/server/libretranslate';
 import { error } from '@sveltejs/kit';
 
 async function lookupOrgName(orgId: string | undefined): Promise<string | null> {
@@ -38,12 +38,12 @@ export const load: PageServerLoad = async ({ params, url, locals }) => {
   // Optional auto-translation when `?lang=xx` is present.
   const to = url.searchParams.get('lang');
   if (to && isSupportedTranslationCode(to)) {
-    const [title, description] = await Promise.all([
-      translateText({ text: task.title, to }),
-      translateText({ text: task.description ?? '', to })
-    ]);
+    const [title, shortDescription, description, ...tags] = await translateTexts({
+      texts: [task.title, task.shortDescription, task.description ?? '', ...task.tags],
+      to
+    });
     return {
-      task: { ...task, title, description, language: 'Auto-translated' },
+      task: { ...task, title, shortDescription, description, tags, language: 'Auto-translated' },
       isOwner,
       orgName,
       translatedTo: to
