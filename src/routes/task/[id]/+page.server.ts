@@ -2,7 +2,6 @@ import type { PageServerLoad } from './$types';
 import { env } from '$env/dynamic/private';
 import { getTaskById } from '$lib/server/appwrite';
 import { isSupportedTranslationCode } from '$lib/translation';
-import { translateTexts } from '$lib/server/libretranslate';
 import { error } from '@sveltejs/kit';
 
 async function lookupOrgName(orgId: string | undefined): Promise<string | null> {
@@ -35,15 +34,13 @@ export const load: PageServerLoad = async ({ params, url, locals }) => {
 
   const orgName = await lookupOrgName(task.orgId);
 
-  // Optional auto-translation when `?lang=xx` is present.
+  // The page renders its original task immediately. The client fetches the
+  // optional translation after navigation, so slow provider responses never
+  // block task detail rendering.
   const to = url.searchParams.get('lang');
   if (to && isSupportedTranslationCode(to)) {
-    const [title, shortDescription, description, ...tags] = await translateTexts({
-      texts: [task.title, task.shortDescription, task.description ?? '', ...task.tags],
-      to
-    });
     return {
-      task: { ...task, title, shortDescription, description, tags, language: 'Auto-translated' },
+      task,
       isOwner,
       orgName,
       translatedTo: to

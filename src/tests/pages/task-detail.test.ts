@@ -4,7 +4,6 @@ const { envState, mocks } = vi.hoisted(() => ({
   envState: {} as Record<string, string | undefined>,
   mocks: {
     getTaskById: vi.fn(),
-    translateText: vi.fn(),
     usersGet: vi.fn()
   }
 }));
@@ -13,7 +12,6 @@ vi.mock('$env/dynamic/private', () => ({
   env: new Proxy(envState, { get: (_, key: string) => envState[key] })
 }));
 vi.mock('$lib/server/appwrite', () => ({ getTaskById: mocks.getTaskById }));
-vi.mock('$lib/server/libretranslate', () => ({ translateText: mocks.translateText }));
 vi.mock('node-appwrite', () => ({
   Client: class { setEndpoint() { return this; } setProject() { return this; } setKey() { return this; } },
   Users: class { get = mocks.usersGet; }
@@ -80,22 +78,19 @@ describe('/task/[id] load', () => {
     expect(result.orgName).toBe('Acme NGO');
   });
 
-  it('does not auto-translate when there is no ?lang= param', async () => {
+  it('does not request a translation when there is no ?lang= param', async () => {
     mocks.getTaskById.mockResolvedValue({ id: 'task-1', orgId: 'org-1', title: 'T', description: 'D' });
     const result = (await load(makeEvent())) as Exclude<Awaited<ReturnType<typeof load>>, void>;
     expect(result.translatedTo).toBeNull();
-    expect(mocks.translateText).not.toHaveBeenCalled();
   });
 
-  it('translates title/description and tags language as Auto-translated when ?lang= is present', async () => {
+  it('returns original task content and defers a supported ?lang= translation to the client', async () => {
     mocks.getTaskById.mockResolvedValue({ id: 'task-1', orgId: 'org-1', title: 'Hello', description: 'World' });
-    mocks.translateText.mockImplementation(async ({ text }: { text: string }) => `${text}-es`);
 
     const result = (await load(makeEvent({ search: '?lang=es' }))) as Exclude<Awaited<ReturnType<typeof load>>, void>;
 
-    expect(result.task.title).toBe('Hello-es');
-    expect(result.task.description).toBe('World-es');
-    expect(result.task.language).toBe('Auto-translated');
+    expect(result.task.title).toBe('Hello');
+    expect(result.task.description).toBe('World');
     expect(result.translatedTo).toBe('es');
   });
 
@@ -107,6 +102,5 @@ describe('/task/[id] load', () => {
     expect(result.task.title).toBe('Hello');
     expect(result.task.description).toBe('World');
     expect(result.translatedTo).toBeNull();
-    expect(mocks.translateText).not.toHaveBeenCalled();
   });
 });

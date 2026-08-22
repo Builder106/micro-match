@@ -4,6 +4,10 @@
 > things happen — retrospectives need this raw material to land.
 > Reverse-chronological; one paragraph max per entry.
 
+## 2026-08-22 — Translation no longer blocks task-page navigation #decision
+
+Moved the LibreTranslate call out of the task page load and into a task-scoped server endpoint. Selecting a language now updates the URL and leaves the original task page available while the browser requests translated display fields. The task detail panel shows a localized translating state and skeleton instead of making the entire page wait. The endpoint accepts only a supported language and loads the task itself, so the LibreTranslate key and arbitrary user-supplied text never reach the browser. Its response is privately cacheable for fifteen minutes; the existing successful-translation cache still applies on the server.
+
 ## 2026-08-22 — Task detail translation covers the whole task context #decision
 
 Expanded `?lang=` on task pages beyond the title and full description. The server now translates the short description and displayed tag labels in the same LibreTranslate request, while keeping the NGO name unchanged as a proper name. The page also translates task-detail UI copy such as “Posted by,” translation notices, and claim prompts. LibreTranslate runs with one worker on the Oracle VM after the default worker count exhausted the VM during longer requests, and the application timeout is thirty seconds so slow but successful translations do not fall back early. Successful text is still cached individually; a provider failure leaves the page usable with original copy. Staging was checked with French and Portuguese task pages.

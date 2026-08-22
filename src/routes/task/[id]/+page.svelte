@@ -1,5 +1,6 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
+  import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { getTaskDetailCopy, TRANSLATION_OPTIONS } from '$lib/translation';
@@ -14,16 +15,49 @@
   };
 
   $: id = $page.params.id;
-  $: task = data.task;
+  let translatedTask: Task | null = null;
+  $: task = translatedTask ?? data.task;
   $: orgName = data.orgName ?? 'Community organization';
   $: signedIn = $page.data.userRole && $page.data.userRole !== 'anonymous';
   $: copy = getTaskDetailCopy(data.translatedTo);
 
   let langSelection = data.translatedTo ?? '';
-  function applyTranslation() {
-    const path = `/task/${id}` + (langSelection ? `?lang=${encodeURIComponent(langSelection)}` : '');
-    goto(path);
+  let isTranslating = false;
+  let translationRequest = 0;
+
+  async function loadTranslation(to: string | null) {
+    const request = ++translationRequest;
+    translatedTask = null;
+
+    if (!to) {
+      isTranslating = false;
+      return;
+    }
+
+    isTranslating = true;
+    try {
+      const response = await fetch(`/api/tasks/${id}/translation?lang=${encodeURIComponent(to)}`);
+      if (!response.ok) return;
+
+      const result = (await response.json()) as { task?: Task };
+      if (request === translationRequest && result.task) translatedTask = result.task;
+    } catch {
+      // Preserve the original task when a translation request cannot finish.
+    } finally {
+      if (request === translationRequest) isTranslating = false;
+    }
   }
+
+  async function applyTranslation() {
+    const to = langSelection || null;
+    void loadTranslation(to);
+    const path = `/task/${id}` + (langSelection ? `?lang=${encodeURIComponent(langSelection)}` : '');
+    await goto(path, { keepFocus: true, noScroll: true });
+  }
+
+  onMount(() => {
+    if (data.translatedTo) void loadTranslation(data.translatedTo);
+  });
 
   let deleting = false;
   async function deleteTask() {
@@ -113,7 +147,7 @@
       {/if}
       {#if task.language}
         <span class="td-chip td-chip-lang">
-          <Icon icon="lucide:globe" width="14" height="14" /> {data.translatedTo ? copy.autoTranslated : task.language}
+          <Icon icon="lucide:globe" width="14" height="14" /> {translatedTask && data.translatedTo ? copy.autoTranslated : task.language}
         </span>
       {/if}
       {#if task.maxVolunteers}
@@ -139,20 +173,29 @@
       <h2>{copy.theMission}</h2>
       <label class="td-translate">
         <Icon icon="lucide:languages" width="14" height="14" />
-        <select bind:value={langSelection} on:change={applyTranslation} aria-label="Translate description">
+        <select bind:value={langSelection} on:change={applyTranslation} disabled={isTranslating} aria-label="Translate description">
           {#each TRANSLATION_OPTIONS as opt (opt.code)}
             <option value={opt.code}>{opt.label}</option>
           {/each}
         </select>
       </label>
     </header>
-    {#if data.translatedTo}
+    {#if isTranslating}
+      <div class="td-translating" role="status">
+        <span class="spin"><Icon icon="lucide:loader-2" width="13" height="13" /></span>
+        {copy.translating}
+      </div>
+    {:else if data.translatedTo && translatedTask}
       <div class="td-translated-note">
         <Icon icon="lucide:info" width="13" height="13" />
         {copy.translationNotice}
       </div>
     {/if}
-    {#if task.description}
+    {#if isTranslating}
+      <div class="td-skeleton" aria-hidden="true">
+        <span></span><span></span><span></span><span></span>
+      </div>
+    {:else if task.description}
       <div class="td-prose">
         {#each task.description.split(/\n\n+/) as para (para)}
           <p>{para}</p>
@@ -300,8 +343,15 @@
     outline: none;
     padding: 2px 4px;
   }
+  .td-translate select:disabled { cursor: wait; opacity: .65; }
 
   .td-translated-note { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; background: #FEF3C7; color: #92400E; border-radius: 10px; font-size: 12px; font-weight: 600; margin-bottom: 16px; }
+  .td-translating { display: inline-flex; align-items: center; gap: 6px; color: color-mix(in srgb, var(--color-text) 65%, transparent); font-size: 12px; font-weight: 700; margin-bottom: 16px; }
+  .td-skeleton { display: grid; gap: 12px; padding: 6px 0; }
+  .td-skeleton span { height: 18px; border-radius: 999px; background: linear-gradient(90deg, color-mix(in srgb, var(--color-text) 8%, transparent), color-mix(in srgb, var(--color-text) 15%, transparent), color-mix(in srgb, var(--color-text) 8%, transparent)); background-size: 200% 100%; animation: td-shimmer 1.2s ease-in-out infinite; }
+  .td-skeleton span:nth-child(2) { width: 92%; }
+  .td-skeleton span:nth-child(3) { width: 78%; }
+  .td-skeleton span:nth-child(4) { width: 58%; }
 
   .td-prose { display: flex; flex-direction: column; gap: 14px; }
   .td-prose p { font-size: 15px; line-height: 1.7; color: var(--color-text); margin: 0; white-space: pre-wrap; }
@@ -347,4 +397,7 @@
   }
   .td-delete:hover { background: color-mix(in srgb, var(--color-error) 10%, transparent); }
   .td-delete:disabled { opacity: 0.5; cursor: not-allowed; }
+  .spin { animation: spin .75s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes td-shimmer { to { background-position: -200% 0; } }
 </style>
