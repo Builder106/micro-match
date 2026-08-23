@@ -4,6 +4,10 @@
 > things happen — retrospectives need this raw material to land.
 > Reverse-chronological; one paragraph max per entry.
 
+## 2026-08-22 — NGO planner now shows the actual release schedule #decision
+
+The NGO planner is now a separate component with three ordered inputs: backlog hours, mission size, and release window. Its output is a daily schedule instead of a decorative stack of task cards. `createCapacityPlan` distributes the full mission count across the chosen days, so a remainder is visible instead of being hidden behind a rounded daily average. The controls use native radio inputs with full-card hit targets, and the summary announces only the changed result to assistive technology. Unit, component, viewport, and production-build checks cover the new behavior.
+
 ## 2026-08-22 — Lottie scenes now use the SVG-only light player #decision
 
 The dotLottie web component is deprecated and its final release still added direct `eval()` warnings to production builds. The app now extracts the embedded JSON from its local animation bundles and renders it with `lottie-web`'s SVG-only light player. It still loads on the client, respects reduced motion, and keeps the same static fallbacks, but leaves out the expression engine that contains `eval()`. The legacy dotLottie dependency and bundles are gone; the production client bundle contains no direct `eval()` calls.

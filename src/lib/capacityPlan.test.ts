@@ -12,8 +12,21 @@ describe('createCapacityPlan', () => {
     ).toEqual({
       missionCount: 48,
       missionsPerDay: 12,
+      dailyMissionCounts: [12, 12, 12, 12],
       reviewMinutes: 144
     });
+  });
+
+  it('spreads a remainder across the first release days without inventing missions', () => {
+    const plan = createCapacityPlan({
+      backlogHours: 3,
+      taskMinutes: 5,
+      deliveryDays: 7
+    });
+
+    expect(plan.dailyMissionCounts).toEqual([6, 5, 5, 5, 5, 5, 5]);
+    expect(plan.dailyMissionCounts.reduce((total, count) => total + count, 0)).toBe(plan.missionCount);
+    expect(Math.max(...plan.dailyMissionCounts) - Math.min(...plan.dailyMissionCounts)).toBeLessThanOrEqual(1);
   });
 
   it('rounds a partial mission up so the whole backlog has a home', () => {
@@ -33,7 +46,7 @@ describe('createCapacityPlan', () => {
         taskMinutes: 15,
         deliveryDays: 0
       })
-    ).toEqual({ missionCount: 0, missionsPerDay: 0, reviewMinutes: 0 });
+    ).toEqual({ missionCount: 0, missionsPerDay: 0, dailyMissionCounts: [0], reviewMinutes: 0 });
   });
 });
 

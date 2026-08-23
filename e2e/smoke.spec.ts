@@ -108,19 +108,21 @@ test.describe('public pages', () => {
     await page.goto('/for-ngos', { waitUntil: 'networkidle' });
     const plan = page.locator('.mission-plan');
 
-    await expect(page.getByRole('heading', { name: /Turn your backlog into micro-missions/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Plan a batch volunteers can finish/i })).toBeVisible();
     await expect(plan.getByText('48', { exact: true })).toBeVisible();
-    await expect(plan.getByText('12 missions a day', { exact: true })).toBeVisible();
-    await expect(plan.getByText('2 hr 24 min of review time', { exact: true })).toBeVisible();
+    await expect(plan.getByText('12 on your busiest day', { exact: true })).toBeVisible();
+    await expect(plan.getByText('2 hr 24 min to review', { exact: true })).toBeVisible();
+    await expect(plan.getByText('Day 4', { exact: true })).toBeVisible();
 
-    await page.getByRole('button', { name: /30 minutes deeper pass/i }).click();
+    await page.getByRole('radio', { name: /30 minutes/i }).check();
     await expect(plan.getByText('24', { exact: true })).toBeVisible();
-    await expect(plan.getByText('1 hr 12 min of review time', { exact: true })).toBeVisible();
+    await expect(plan.getByText('6 on your busiest day', { exact: true })).toBeVisible();
+    await expect(plan.getByText('1 hr 12 min to review', { exact: true })).toBeVisible();
 
-    await page.getByRole('button', { name: '2 days' }).click();
-    await expect(plan.getByText('12 missions a day', { exact: true })).toBeVisible();
-    await expect(plan.getByText('for 2 days', { exact: true })).toBeVisible();
-    await expect(page.getByText('at 3 minutes per completed mission', { exact: true })).toBeVisible();
+    await page.getByRole('radio', { name: '2 days' }).check();
+    await expect(plan.getByText('12 on your busiest day', { exact: true })).toBeVisible();
+    await expect(plan.getByText('Day 2', { exact: true })).toBeVisible();
+    await expect(page.getByText('Based on 3 minutes for each completed mission.', { exact: true })).toBeVisible();
   });
 
   test('for-ngos mission planner stays within narrow viewports', async ({ page }) => {
