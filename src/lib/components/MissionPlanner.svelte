@@ -160,7 +160,7 @@
 </section>
 
 <style>
-  /* Hallmark · pre-emit critique: P5 H5 E4 S5 R5 V4
+  /* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V4
    * component: mission planner · genre: playful · theme: MicroMatch warm coral
    * states: default · hover · focus · active · disabled · loading · error · success
    * contrast: pass */
@@ -171,13 +171,13 @@
   .planner-heading h2 { color: var(--color-text); font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.9rem, 3.2vw, 2.75rem); line-height: var(--leading-tight); margin-block: var(--space-3); overflow-wrap: anywhere; }
   .planner-heading > p { color: var(--color-text-secondary); font-size: var(--text-base); line-height: var(--leading-relaxed); }
   .planner-workbench { display: grid; gap: clamp(var(--space-8), 5vw, var(--space-12)); grid-template-columns: minmax(0, 1fr); }
-  .planner-inputs { display: grid; min-width: 0; }
-  .planner-step { border: 0; border-bottom: 1px solid var(--card-border-strong); margin: 0; min-width: 0; padding: 0 0 var(--space-8); }
-  .planner-step + .planner-step { padding-top: var(--space-8); }
+  .planner-inputs { align-self: start; display: grid; min-width: 0; }
+  .planner-step { border: 0; border-bottom: 1px solid var(--card-border-strong); margin: 0; min-width: 0; padding: 0 0 var(--space-6); }
+  .planner-step + .planner-step { padding-top: var(--space-6); }
   .planner-step:last-child { border-bottom: 0; padding-bottom: 0; }
   .planner-step legend { color: var(--color-text); display: flex; font-size: var(--text-lg); font-weight: var(--font-bold); gap: var(--space-3); padding: 0; }
   .planner-step legend span { align-items: center; background: color-mix(in srgb, var(--color-primary) 12%, transparent); border-radius: var(--radius-full); color: var(--color-primary); display: inline-flex; font-size: var(--text-xs); height: 1.5rem; justify-content: center; width: 1.5rem; }
-  .field-heading { align-items: center; display: flex; gap: var(--space-4); justify-content: space-between; margin-top: var(--space-5); }
+  .field-heading { align-items: center; display: flex; gap: var(--space-4); justify-content: space-between; margin-top: var(--space-4); }
   .field-heading label { color: var(--color-text); font-size: var(--text-sm); font-weight: var(--font-bold); }
   .hours-field { align-items: center; border: 1px solid var(--color-outline-variant); border-radius: var(--radius-md); color: var(--color-text-secondary); display: inline-flex; gap: var(--space-2); min-height: 44px; padding-inline: var(--space-3); }
   .hours-field:focus-within { outline: 3px solid color-mix(in srgb, var(--color-primary) 35%, transparent); outline-offset: 2px; }
@@ -186,20 +186,20 @@
   .choice-card:has(input:disabled), .release-option:has(input:disabled) { pointer-events: none; }
   .hours-field input { background: transparent; border: 0; color: var(--color-text); font: inherit; font-size: var(--text-lg); font-weight: var(--font-bold); min-width: 3rem; padding: 0; text-align: end; width: 3rem; }
   .hours-field input:focus { outline: 0; }
-  .range-input { accent-color: var(--color-primary); cursor: pointer; margin-top: var(--space-4); touch-action: manipulation; width: 100%; }
+  .range-input { accent-color: var(--color-primary); cursor: pointer; margin-top: var(--space-3); touch-action: manipulation; width: 100%; }
   .range-input:focus-visible { outline: 3px solid color-mix(in srgb, var(--color-primary) 35%, transparent); outline-offset: var(--space-2); }
   .range-scale { color: var(--color-text-tertiary); display: flex; font-size: var(--text-xs); justify-content: space-between; margin-top: var(--space-2); }
-  .field-help, .step-copy { color: var(--color-text-secondary); font-size: var(--text-xs); line-height: var(--leading-normal); margin-top: var(--space-3); min-height: 1lh; }
+  .field-help, .step-copy { color: var(--color-text-secondary); font-size: var(--text-xs); line-height: var(--leading-normal); margin-top: var(--space-2); min-height: 1lh; }
   .field-help.error { color: var(--color-error); }
-  .choice-grid { display: grid; gap: var(--space-3); grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: var(--space-4); }
+  .choice-grid { display: grid; gap: var(--space-3); grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: var(--space-3); }
   .choice-card, .release-option { border: 1px solid var(--color-outline-variant); color: var(--color-text-secondary); cursor: pointer; display: grid; min-height: 4.75rem; padding: var(--space-3); position: relative; }
-  .choice-card { border-radius: var(--radius-lg); gap: var(--space-1); }
+  .choice-card { align-content: start; border-radius: var(--radius-lg); gap: var(--space-1); }
   .choice-card input, .release-option input { cursor: pointer; inset: 0; margin: 0; opacity: 0; position: absolute; }
   .choice-card strong { color: var(--color-text); font-size: var(--text-sm); }
   .choice-card span { font-size: var(--text-xs); }
   .choice-card.selected, .release-option.selected { background: color-mix(in srgb, var(--color-primary) 10%, var(--color-surface)); border-color: var(--color-primary); box-shadow: 0 0 0 1px var(--color-primary); }
   .choice-card:has(input:focus-visible), .release-option:has(input:focus-visible), .plan-cta:focus-visible, .plan-assumptions summary:focus-visible { outline: 3px solid color-mix(in srgb, var(--color-primary) 35%, transparent); outline-offset: 3px; }
-  .release-options { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-4); }
+  .release-options { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-3); }
   .release-option { align-items: center; border-radius: var(--radius-full); font-size: var(--text-sm); font-weight: var(--font-bold); justify-content: center; min-height: 44px; min-width: 5.5rem; padding-inline: var(--space-4); }
   .mission-plan { align-self: start; background: var(--color-surface); border: 1px solid var(--card-border-strong); border-radius: var(--radius-xl); box-shadow: var(--elev-3); min-width: 0; padding: clamp(var(--space-5), 3vw, var(--space-8)); }
   .plan-label { color: var(--color-primary); font-size: var(--text-sm); font-weight: var(--font-bold); }
