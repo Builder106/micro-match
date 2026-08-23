@@ -5,6 +5,7 @@
   export let src: string;
   export let scene: string;
   export let aspectRatio = '4 / 3';
+  export let loop = false;
 
   let container: HTMLDivElement;
   let playerVisible = false;
@@ -41,7 +42,7 @@
   aria-hidden="true"
 >
   {#if playerVisible && !playerUnavailable}
-    <LottieAnimation className="player" {src} loop={false}>
+    <LottieAnimation className="player" {src} {loop}>
       <svg class="static-fallback" viewBox="0 0 120 90" fill="none" focusable="false">
         <rect x="18" y="18" width="84" height="54" rx="12" fill="currentColor" opacity="0.12" />
         <circle cx="44" cy="45" r="11" fill="currentColor" opacity="0.32" />

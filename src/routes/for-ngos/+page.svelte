@@ -88,6 +88,7 @@
           scene="ngo-document-review"
           src="/animations/ngo-document-review.json"
           aspectRatio="4 / 3"
+          loop={true}
         />
         <div class="hero-workflow" aria-label="Task review workflow">
           <span>Task brief</span>
