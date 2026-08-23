@@ -4,6 +4,7 @@
   import { account, uploadAvatar, getAvatarUrl } from '$lib/appwrite.client';
   import { refreshSessionCookie } from '$lib/appwrite.client';
   import VerificationCard from '$lib/components/VerificationCard.svelte';
+  import { resolve } from '$app/paths';
 
   export let data: { userRole: 'anonymous' | 'user' | 'ngo' | 'volunteer'; user: { id: string; email?: string } | null };
 
@@ -329,7 +330,7 @@
           in Safari and keep landing here, try Chrome or Firefox — Safari's
           strict tracking prevention can block our email sign-in cookie.
         </p>
-        <a href="/login?next=%2Fprofile" class="session-warning-cta">Sign in</a>
+        <a href={resolve('/login?next=%2Fprofile', {})} class="session-warning-cta">Sign in</a>
       </div>
     </div>
   {/if}
@@ -443,7 +444,7 @@
     </div>
     <div class="next-grid">
       {#each currentSteps as step (step.num)}
-        <a href={step.href} class="next-card">
+        <a href={resolve(step.href, {})} class="next-card">
           <div class="next-icon" style="background: {step.bg}; color: {step.color};">
             <Icon icon={step.icon} width="28" height="28" />
           </div>

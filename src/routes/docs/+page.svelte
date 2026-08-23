@@ -1,6 +1,7 @@
 <script lang="ts">
   import StaticArticle from '$lib/components/StaticArticle.svelte';
   import Icon from '@iconify/svelte';
+  import { resolve } from '$app/paths';
 </script>
 
 <StaticArticle
@@ -33,7 +34,7 @@
       </div>
 
       <div class="card-action">
-        <a href="/docs/api" class="btn-coral">
+        <a href={resolve('/docs/api', {})} class="btn-coral">
           Explore API Reference
           <Icon icon="heroicons:arrow-right-20-solid" width="18" height="18" />
         </a>
@@ -57,7 +58,7 @@
       </ul>
 
       <div class="card-action">
-        <a href="/for-volunteers" class="btn-secondary-link">
+        <a href={resolve('/for-volunteers', {})} class="btn-secondary-link">
           Read Volunteer Guide
           <Icon icon="heroicons:arrow-right-20-solid" width="16" height="16" />
         </a>
@@ -81,7 +82,7 @@
       </ul>
 
       <div class="card-action">
-        <a href="/for-ngos" class="btn-secondary-link">
+        <a href={resolve('/for-ngos', {})} class="btn-secondary-link">
           Read NGO Guide
           <Icon icon="heroicons:arrow-right-20-solid" width="16" height="16" />
         </a>
@@ -105,7 +106,7 @@
       </ul>
 
       <div class="card-action">
-        <a href="/how-it-works" class="btn-secondary-link">
+        <a href={resolve('/how-it-works', {})} class="btn-secondary-link">
           How MicroMatch Works
           <Icon icon="heroicons:arrow-right-20-solid" width="16" height="16" />
         </a>
@@ -116,7 +117,7 @@
   <div class="quick-resources">
     <h3>Quick Reference</h3>
     <div class="resources-grid">
-      <a href="/impact" class="resource-tile">
+      <a href={resolve('/impact', {})} class="resource-tile">
         <div class="resource-title">
           <div class="tile-icon-badge coral-bg">
             <Icon icon="heroicons:chart-bar-20-solid" width="18" height="18" />
@@ -126,7 +127,7 @@
         <p>Live stats on completed micro-tasks, participating NGOs, and volunteer hours.</p>
       </a>
 
-      <a href="/about" class="resource-tile">
+      <a href={resolve('/about', {})} class="resource-tile">
         <div class="resource-title">
           <div class="tile-icon-badge teal-bg">
             <Icon icon="heroicons:sparkles-20-solid" width="18" height="18" />
@@ -136,7 +137,7 @@
         <p>Our mission to lower civic barriers and empower grassroots global initiatives.</p>
       </a>
 
-      <a href="/help" class="resource-tile">
+      <a href={resolve('/help', {})} class="resource-tile">
         <div class="resource-title">
           <div class="tile-icon-badge indigo-bg">
             <Icon icon="heroicons:question-mark-circle-20-solid" width="18" height="18" />

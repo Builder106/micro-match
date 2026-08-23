@@ -1,6 +1,7 @@
 <script lang="ts">
   import Icon from '@iconify/svelte';
   import LottieAnimation from '$lib/components/LottieAnimation.svelte';
+  import { resolve } from '$app/paths';
 
   export let data: {
     userRole: 'anonymous' | 'user' | 'ngo' | 'volunteer';
@@ -58,10 +59,10 @@
       <h1>The story your <span class="coral-gradient">badges</span> tell.</h1>
       <p>See how volunteers are engaging with your work — which badges land, who's earning them, and how engagement is trending.</p>
       <div class="ba-hero-actions">
-        <a href="/badges/manage" class="btn-coral">
+        <a href={resolve("/badges/manage", {})} class="btn-coral">
           <Icon icon="lucide:shield-check" width="16" height="16" /> Manage badges
         </a>
-        <a href="/dashboard" class="btn-outline-dark">
+        <a href={resolve("/dashboard", {})} class="btn-outline-dark">
           <Icon icon="lucide:arrow-left" width="14" height="14" /> Dashboard
         </a>
       </div>
@@ -105,7 +106,7 @@
       </div>
       <h3>No data yet.</h3>
       <p>Once volunteers complete tasks and earn your badges, this is where you'll see distribution, trends, and recent activity.</p>
-      <a href="/badges/manage" class="btn-dark-pill">
+      <a href={resolve("/badges/manage", {})} class="btn-dark-pill">
         Create your first badge
         <Icon icon="lucide:arrow-right" width="14" height="14" />
       </a>

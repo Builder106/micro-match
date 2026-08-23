@@ -2,6 +2,7 @@
   import Icon from "@iconify/svelte";
   import PublicShell from '$lib/components/PublicShell.svelte';
   import { fly, fade, slide } from 'svelte/transition';
+  import { resolve } from '$app/paths';
 
   let activeStep = 0;
 
@@ -300,8 +301,8 @@
         <h2>Ready to start your micro-volunteering journey?</h2>
         <p>Join thousands of helpers and non-profits driving impact in minutes.</p>
         <div class="cta-btns">
-          <a href="/signup" class="btn-coral btn-lg">Get Started Free</a>
-          <a href="/tasks" class="btn-outline-dark btn-lg">Browse Active Feed</a>
+          <a href={resolve('/signup', {})} class="btn-coral btn-lg">Get Started Free</a>
+          <a href={resolve('/tasks', {})} class="btn-outline-dark btn-lg">Browse Active Feed</a>
         </div>
       </div>
     </div>

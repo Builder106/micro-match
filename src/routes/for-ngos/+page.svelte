@@ -3,6 +3,7 @@
   import DecorativeLottie from '$lib/components/DecorativeLottie.svelte';
   import MissionPlanner from '$lib/components/MissionPlanner.svelte';
   import PublicShell from '$lib/components/PublicShell.svelte';
+  import { resolve } from '$app/paths';
 
   const ngoPillars = [
     {
@@ -78,7 +79,7 @@
         </p>
 
         <div class="ngo-hero-btns">
-          <a href="/signup" class="btn-coral btn-lg">Create NGO Profile</a>
+          <a href={resolve('/signup', {})} class="btn-coral btn-lg">Create NGO Profile</a>
           <a href="#backlog-calculator" class="btn-outline-dark btn-lg">Calculate Capacity ↓</a>
         </div>
       </div>
@@ -173,8 +174,8 @@
         <h2>Start clearing your non-profit backlog today.</h2>
         <p>Register your NGO, complete soft-gated verification, and post your first task in minutes.</p>
         <div class="cta-actions">
-          <a href="/signup" class="btn-coral btn-lg">Register Organization</a>
-          <a href="/tasks" class="btn-outline-dark btn-lg">Browse Platform Tasks</a>
+          <a href={resolve('/signup', {})} class="btn-coral btn-lg">Register Organization</a>
+          <a href={resolve('/tasks', {})} class="btn-outline-dark btn-lg">Browse Platform Tasks</a>
         </div>
       </div>
     </div>

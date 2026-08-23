@@ -3,6 +3,7 @@
   import { page } from '$app/state';
   import ThemeToggle from '$lib/components/ThemeToggle.svelte';
   import { signOut } from '$lib/appwrite.client';
+  import { resolve } from '$app/paths';
 
   // Resilient role hint from cookie so NGO items render even if SSR local session is missing
   let roleHint = '';
@@ -29,50 +30,50 @@
       <div class="micromatch-logo-container">
         <img src="/logo.png" alt="MicroMatch Logo" width="24" height="24" />
       </div>
-      <a href="/" class="micromatch-header-link">MicroMatch</a>
+      <a href={resolve('/', {})} class="micromatch-header-link">MicroMatch</a>
     </div>
   </div>
   
   <nav class="nav-container">
-    <a href="/tasks" class="nav-link" class:active={page.url.pathname === '/tasks'} >
+    <a href={resolve('/tasks', {})} class="nav-link" class:active={page.url.pathname === '/tasks'} >
       <Icon icon="mdi:view-dashboard-outline" width="22" height="22"/>
       <span class="font-semibold">Feed</span>
     </a>
-          <a href="/dashboard" class="nav-link" class:active={page.url.pathname === '/dashboard'}>
+          <a href={resolve('/dashboard', {})} class="nav-link" class:active={page.url.pathname === '/dashboard'}>
         <Icon icon="mdi:seal-variant" width="22" height="22"/>
         <span class="font-medium">Dashboard</span>
       </a>
       {#if isNGO}
-        <a href="/org" class="nav-link" class:active={page.url.pathname === '/org'}>
+        <a href={resolve('/org', {})} class="nav-link" class:active={page.url.pathname === '/org'}>
           <Icon icon="mdi:plus-circle-outline" width="22" height="22"/>
           <span class="font-medium">Create Task</span>
         </a>
-        <a href="/badges/manage" class="nav-link" class:active={page.url.pathname === '/badges/manage'}>
+        <a href={resolve('/badges/manage', {})} class="nav-link" class:active={page.url.pathname === '/badges/manage'}>
           <Icon icon="mdi:shield-edit" width="22" height="22"/>
           <span class="font-medium">Manage Badges</span>
         </a>
-        <a href="/badges/analytics" class="nav-link" class:active={page.url.pathname === '/badges/analytics'}>
+        <a href={resolve('/badges/analytics', {})} class="nav-link" class:active={page.url.pathname === '/badges/analytics'}>
           <Icon icon="mdi:chart-line" width="22" height="22"/>
           <span class="font-medium">Analytics</span>
         </a>
       {/if}
     {#if isAdmin}
-        <a href="/admin/verifications" class="nav-link" class:active={page.url.pathname.startsWith('/admin/')}>
+        <a href={resolve('/admin/verifications', {})} class="nav-link" class:active={page.url.pathname.startsWith('/admin/')}>
           <Icon icon="mdi:shield-check-outline" width="22" height="22"/>
           <span class="font-medium">Verifications</span>
         </a>
       {/if}
     {#if page.data.userRole && page.data.userRole !== 'anonymous'}
-      <a href="/profile" class="nav-link" class:active={page.url.pathname === '/profile'}>
+      <a href={resolve('/profile', {})} class="nav-link" class:active={page.url.pathname === '/profile'}>
         <Icon icon="mdi:account-circle-outline" width="22" height="22"/>
         <span class="font-medium">Profile</span>
       </a>
-      <a href="/logout" class="nav-link" onclick={handleSignOut}>
+      <a href={resolve('/logout', {})} class="nav-link" onclick={handleSignOut}>
         <Icon icon="mdi:logout" width="22" height="22"/>
         <span class="font-medium">Sign out</span>
       </a>
     {:else}
-      <a href="/login" class="nav-link" class:active={page.url.pathname === '/login' || page.url.pathname === '/signup'}>
+      <a href={resolve('/login', {})} class="nav-link" class:active={page.url.pathname === '/login' || page.url.pathname === '/signup'}>
         <Icon icon="mdi:login-variant" width="22" height="22"/>
         <span class="font-medium">Sign in</span>
       </a>
@@ -209,4 +210,3 @@
     box-shadow: var(--elev-1);
   }
 </style>
-

@@ -1,6 +1,7 @@
 <script lang="ts">
   import PublicShell from '$lib/components/PublicShell.svelte';
   import Icon from '@iconify/svelte';
+  import { resolve } from '$app/paths';
 
   export let data;
 </script>
@@ -175,7 +176,7 @@
             <span>Earn verified credentials & badges</span>
           </li>
         </ul>
-        <a href="/signup" class="btn-primary-coral">Start Volunteering</a>
+        <a href={resolve('/signup', {})} class="btn-primary-coral">Start Volunteering</a>
       </div>
 
       <div class="cta-card ngo-cta">
@@ -194,7 +195,7 @@
             <span>Automated claim reviews & proof checks</span>
           </li>
         </ul>
-        <a href="/for-ngos" class="btn-secondary-outlined">Onboard Your NGO</a>
+        <a href={resolve('/for-ngos', {})} class="btn-secondary-outlined">Onboard Your NGO</a>
       </div>
     </section>
   </div>
@@ -606,4 +607,3 @@
     transform: translateY(-2px);
   }
 </style>
-

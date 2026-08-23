@@ -1,5 +1,6 @@
 <script lang="ts">
   import LottieAnimation from '$lib/components/LottieAnimation.svelte';
+  import { resolve } from '$app/paths';
   export let compact = false;
   export let showCopy = true;
   export let animation = '/animations/collaboration.json';
@@ -18,7 +19,7 @@
 
   <div class="shade"></div>
   <div class="content">
-    <a href="/" class="logo-lockup">
+    <a href={resolve("/", {})} class="logo-lockup">
       <img src="/logo.png" alt="MicroMatch" class="logo-mark" />
       <span>MicroMatch</span>
     </a>

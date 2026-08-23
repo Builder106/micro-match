@@ -5,6 +5,7 @@
   import { fireConfettiBurst } from '$lib/utils/confetti';
   import { getTagStyle } from '$lib/utils/tagColors';
   import { account } from '$lib/appwrite.client';
+  import { resolve } from '$app/paths';
 
   export let data: {
     signedIn: boolean;
@@ -134,11 +135,11 @@
         <p>Claim your first mission and start building momentum.</p>
       {/if}
       <div class="vol-hero-actions">
-        <a href="/tasks" class="btn-coral">
+        <a href={resolve('/tasks', {})} class="btn-coral">
           {approvedClaimsCount === 0 ? 'Pick up a task' : 'Browse tasks'}
           <Icon icon="lucide:arrow-right" width="16" height="16" />
         </a>
-        <a href="/profile" class="btn-outline-dark">Update profile</a>
+        <a href={resolve('/profile', {})} class="btn-outline-dark">Update profile</a>
       </div>
     </div>
 
@@ -194,14 +195,14 @@
     <div class="section-head">
       <h2>Today's mission</h2>
       {#if recommendations.length > 0}
-        <a href="/tasks" class="section-link">View all
+        <a href={resolve('/tasks', {})} class="section-link">View all
           <Icon icon="lucide:arrow-right" width="14" height="14" />
         </a>
       {/if}
     </div>
 
     {#if todayMission}
-      <a href="/task/{todayMission.id}" class="mission-card">
+      <a href={resolve(`/task/${todayMission.id}`, {})} class="mission-card">
         <div class="mission-card-top">
           <div class="mission-avatar"><Icon icon="lucide:heart-handshake" width="28" height="28" /></div>
           {#if todayMission.estimatedMinutes}
@@ -231,7 +232,7 @@
         </div>
         <h3>You're all caught up.</h3>
         <p>No tasks waiting right now. Check back soon, or browse the full feed.</p>
-        <a href="/tasks" class="btn-dark-pill">
+        <a href={resolve('/tasks', {})} class="btn-dark-pill">
           Browse all tasks
           <Icon icon="lucide:arrow-right" width="16" height="16" />
         </a>
@@ -244,13 +245,13 @@
     <section>
       <div class="section-head">
         <h2>More for you</h2>
-        <a href="/tasks" class="section-link">View all
+        <a href={resolve('/tasks', {})} class="section-link">View all
           <Icon icon="lucide:arrow-right" width="14" height="14" />
         </a>
       </div>
       <div class="more-grid">
         {#each otherMissions as task (task.id)}
-          <a href="/task/{task.id}" class="mini-mission">
+          <a href={resolve(`/task/${task.id}`, {})} class="mini-mission">
             <div class="mini-top">
               <div class="mini-avatar"><Icon icon="lucide:heart-handshake" width="20" height="20" /></div>
               {#if task.estimatedMinutes}
@@ -302,7 +303,7 @@
   <section>
     <div class="section-head">
       <h2>Badge vault</h2>
-      <a href="/dashboard" class="section-link">{badges.length} earned</a>
+      <a href={resolve('/dashboard', {})} class="section-link">{badges.length} earned</a>
     </div>
     <div class="vault-grid">
       {#if badges.length > 0}

@@ -4,6 +4,10 @@
 > things happen — retrospectives need this raw material to land.
 > Reverse-chronological; one paragraph max per entry.
 
+## 2026-08-23 - ESLint navigation checks now run as errors #decision
+
+Promoted the six remaining project-wide ESLint exceptions to error, including no-explicit-any, preserve-caught-error, and SvelteKit navigation resolution. The navigation rule exposed internal links and goto calls that bypassed resolve, so those paths now use the SvelteKit base-path-aware resolver across the app; external proof URLs remain explicitly marked as external. bun run lint and bun run check both pass with zero warnings.
+
 ## 2026-08-22 — NGO planner now shows the actual release schedule #decision
 
 The NGO planner is now a separate component with three ordered inputs: backlog hours, mission size, and release window. Its output is a daily schedule instead of a decorative stack of task cards. `createCapacityPlan` distributes the full mission count across the chosen days, so a remainder is visible instead of being hidden behind a rounded daily average. The controls use native radio inputs with full-card hit targets, and the summary announces only the changed result to assistive technology. Unit, component, viewport, and production-build checks cover the new behavior.

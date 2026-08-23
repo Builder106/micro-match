@@ -2,6 +2,7 @@
   import Icon from "@iconify/svelte";
   import { onMount } from 'svelte';
   import type { NgoVerification } from '$lib/types';
+  import { resolve } from '$app/paths';
 
   type EnrichedVerification = NgoVerification & {
     propublica?:
@@ -51,7 +52,7 @@
     rows = activeTab === 'all' ? allRows : allRows.filter((r) => r.status === activeTab);
   }
 
-  $: { activeTab; if (allRows.length || !loading) recompute(); }
+  $: if (activeTab && (allRows.length || !loading)) recompute();
 
   async function approve(userId: string) {
     if (working) return;
@@ -178,7 +179,7 @@
           {/if}
 
           {#if v.docFileId}
-            <a href={`/api/verifications/${v.userId}/document`} target="_blank" rel="noopener" class="admin-doc">
+            <a href={resolve(`/api/verifications/${v.userId}/document`, {})} target="_blank" rel="noopener" class="admin-doc">
               <Icon icon="lucide:paperclip" width="14" height="14" />
               View supporting document
               <Icon icon="lucide:external-link" width="12" height="12" />

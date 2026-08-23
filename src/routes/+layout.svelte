@@ -13,6 +13,7 @@
    import { get } from 'svelte/store';
    import { account, getJWT } from '$lib/appwrite.client';
    import { dev } from '$app/environment';
+   import { resolve } from '$app/paths';
    import { inject } from '@vercel/analytics';
   const authPaths = ['/login', '/signup', '/forgot-password', '/reset-password'];
   const publicPaths = ['/about', '/contact', '/cookies', '/docs', '/help', '/privacy', '/terms', '/how-it-works', '/for-ngos', '/for-volunteers', '/tasks', '/impact'];
@@ -134,7 +135,7 @@
 {#if showAppChrome}
 <TopAppBar style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(16px); box-shadow: var(--elev-1); z-index: 10; border-bottom: 1px solid var(--color-outline-variant);">
    <svelte:fragment slot="navigation">
-     <Button variant="text" href="/tasks" aria-label="Home" style="color: var(--color-primary); font-weight: var(--font-medium);">
+     <Button variant="text" href={resolve('/tasks', {})} aria-label="Home" style="color: var(--color-primary); font-weight: var(--font-medium);">
        <Icon icon="mdi:home" width="24" height="24"/>
      </Button>
    </svelte:fragment>
@@ -147,7 +148,7 @@
    <svelte:fragment slot="actions">
     <ThemeToggle compact={true} />
     {#if $page.data.userRole === 'ngo'}
-      <Button variant="text" href="/org" aria-label="Post task" class="btn-primary" style="padding: var(--space-2) var(--space-4); font-size: var(--text-sm);">
+      <Button variant="text" href={resolve('/org', {})} aria-label="Post task" class="btn-primary" style="padding: var(--space-2) var(--space-4); font-size: var(--text-sm);">
         <Icon icon="mdi:plus-circle-outline" width="24" height="24"/>
         <span style="margin-left: var(--space-1);">Post</span>
       </Button>
@@ -172,26 +173,26 @@
   {#if showAppChrome}
     <nav class="bottom-nav">
     <div style="display: flex; gap: var(--space-6); justify-content: space-around; padding: var(--space-4) 0;">
-      <a href="/tasks" style="text-align:center;text-decoration:none;color:inherit">
+      <a href={resolve('/tasks', {})} style="text-align:center;text-decoration:none;color:inherit">
         <div class:card-elevated={$page.url.pathname === '/tasks'} class:animate-scale-in={$page.url.pathname === '/tasks'} style="display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 40px; border-radius: var(--radius-xl); background: var(--color-primary); color: var(--color-on-primary); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);">
           <Icon icon="mdi:view-dashboard-outline" width="20" height="20"/>
         </div>
         <small style="display: block; color: var(--color-primary); margin-top: var(--space-2); font-weight: var(--font-medium); font-size: var(--text-xs);">Feed</small>
       </a>
-      <a href="/dashboard" style="text-align:center;text-decoration:none;color:inherit">
+      <a href={resolve('/dashboard', {})} style="text-align:center;text-decoration:none;color:inherit">
         <div class="hover-lift" style="width: 56px; height: 40px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--radius-xl); background: var(--color-surface-variant); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);">
           <Icon icon="mdi:seal-variant" width="20" height="20" style="color: var(--color-text-secondary);"/>
         </div>
         <small style="display: block; color: var(--color-text-secondary); margin-top: var(--space-2); font-weight: var(--font-medium); font-size: var(--text-xs);">Badges</small>
       </a>
       {#if $page.data.userRole === 'ngo'}
-        <a href="/badges/manage" style="text-align:center;text-decoration:none;color:inherit">
+        <a href={resolve('/badges/manage', {})} style="text-align:center;text-decoration:none;color:inherit">
           <div class="hover-lift" style="width: 56px; height: 40px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--radius-xl); background: var(--color-surface-variant); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);">
             <Icon icon="mdi:shield-edit" width="20" height="20" style="color: var(--color-text-secondary);"/>
           </div>
           <small style="display: block; color: var(--color-text-secondary); margin-top: var(--space-2); font-weight: var(--font-medium); font-size: var(--text-xs);">Manage</small>
         </a>
-        <a href="/badges/analytics" style="text-align:center;text-decoration:none;color:inherit">
+        <a href={resolve('/badges/analytics', {})} style="text-align:center;text-decoration:none;color:inherit">
           <div class="hover-lift" style="width: 56px; height: 40px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--radius-xl); background: var(--color-surface-variant); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);">
             <Icon icon="mdi:chart-line" width="20" height="20" style="color: var(--color-text-secondary);"/>
           </div>
@@ -199,7 +200,7 @@
         </a>
       {/if}
       {#if $page.data.userRole === 'ngo'}
-        <a href="/org" style="text-align:center;text-decoration:none;color:inherit">
+        <a href={resolve('/org', {})} style="text-align:center;text-decoration:none;color:inherit">
           <div class="hover-lift" style="width: 56px; height: 40px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--radius-xl); background: var(--color-surface-variant); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);">
             <Icon icon="mdi:plus-circle-outline" width="20" height="20" style="color: var(--color-text-secondary);"/>
           </div>

@@ -2,6 +2,7 @@
   import Icon from '@iconify/svelte';
   import { account } from '$lib/appwrite.client';
   import AuthBrandPanel from '$lib/components/AuthBrandPanel.svelte';
+  import { resolve } from '$app/paths';
 
   let email = '';
   let error: string | null = null;
@@ -39,7 +40,7 @@
 
     <div class="auth-card">
       <div class="auth-head">
-        <a href="/login" class="back-btn">
+        <a href={resolve('/login', {})} class="back-btn">
           <Icon icon="lucide:arrow-left" width="14" height="14" />
           Back to sign in
         </a>
@@ -55,7 +56,7 @@
             <span>We sent a reset link to <code>{email}</code>. The link is valid for one hour.</span>
           </div>
         </div>
-        <a href="/login" class="btn-coral btn-lg auth-submit">
+        <a href={resolve('/login', {})} class="btn-coral btn-lg auth-submit">
           Back to sign in
           <Icon icon="lucide:arrow-right" width="16" height="16" />
         </a>
@@ -91,7 +92,7 @@
       {/if}
 
       <p class="foot">
-        Remembered it? <a href="/login">Sign in instead</a>
+        Remembered it? <a href={resolve('/login', {})}>Sign in instead</a>
       </p>
     </div>
   </section>

@@ -1,6 +1,7 @@
 <script lang="ts">
   import StaticArticle from '$lib/components/StaticArticle.svelte';
   import Icon from '@iconify/svelte';
+  import { resolve } from '$app/paths';
 
   type FAQCategory = 'All' | 'Getting Started' | 'Tasks & Claims' | 'NGO Verification' | 'Account & Badges';
 
@@ -147,7 +148,7 @@
 
   <!-- Support Topics Cards -->
   <div class="topics-grid">
-    <a href="/for-volunteers" class="topic-card">
+    <a href={resolve('/for-volunteers', {})} class="topic-card">
       <div class="topic-icon-wrap indigo-glow">
         <Icon icon="heroicons:user-group-20-solid" width="22" height="22" />
       </div>
@@ -160,7 +161,7 @@
       </span>
     </a>
 
-    <a href="/for-ngos" class="topic-card">
+    <a href={resolve('/for-ngos', {})} class="topic-card">
       <div class="topic-icon-wrap rose-glow">
         <Icon icon="heroicons:building-office-20-solid" width="22" height="22" />
       </div>
@@ -173,7 +174,7 @@
       </span>
     </a>
 
-    <a href="/docs/api" class="topic-card">
+    <a href={resolve('/docs/api', {})} class="topic-card">
       <div class="topic-icon-wrap coral-glow">
         <Icon icon="heroicons:code-bracket-20-solid" width="22" height="22" />
       </div>
@@ -229,7 +230,7 @@
               <div class="faq-body">
                 <p>{faq.answer}</p>
                 {#if faq.linkUrl && faq.linkLabel}
-                  <a href={faq.linkUrl} class="faq-link">
+                  <a href={resolve(faq.linkUrl, {})} class="faq-link">
                     {faq.linkLabel}
                     <Icon icon="heroicons:arrow-right-20-solid" width="14" height="14" />
                   </a>
@@ -253,11 +254,11 @@
       <p>Our support team and platform documentation are here to help you get onboarded seamlessly.</p>
     </div>
     <div class="cta-actions">
-      <a href="/contact" class="btn-coral">
+      <a href={resolve('/contact', {})} class="btn-coral">
         Contact Support
         <Icon icon="heroicons:arrow-right-20-solid" width="18" height="18" />
       </a>
-      <a href="/docs" class="btn-outline-action">
+      <a href={resolve('/docs', {})} class="btn-outline-action">
         Documentation Hub
         <Icon icon="heroicons:book-open-20-solid" width="18" height="18" />
       </a>

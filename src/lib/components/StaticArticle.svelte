@@ -2,6 +2,7 @@
   import { page } from '$app/state';
   import PublicShell from '$lib/components/PublicShell.svelte';
   import Icon from '@iconify/svelte';
+  import { resolve } from '$app/paths';
 
   export let title: string;
   export let titleHighlight: string | undefined = undefined;
@@ -141,10 +142,10 @@
             {#if ctaText}<p>{ctaText}</p>{/if}
             <div class="cta-actions">
               {#if ctaPrimaryHref && ctaPrimaryLabel}
-                <a href={ctaPrimaryHref} class="btn-coral">{ctaPrimaryLabel} →</a>
+                <a href={ctaPrimaryHref.startsWith('/') ? resolve(ctaPrimaryHref, {}) : ctaPrimaryHref} class="btn-coral">{ctaPrimaryLabel} →</a>
               {/if}
               {#if ctaSecondaryHref && ctaSecondaryLabel}
-                <a href={ctaSecondaryHref} class="btn-outline-dark">{ctaSecondaryLabel}</a>
+                <a href={ctaSecondaryHref.startsWith('/') ? resolve(ctaSecondaryHref, {}) : ctaSecondaryHref} class="btn-outline-dark">{ctaSecondaryLabel}</a>
               {/if}
             </div>
           </div>
@@ -156,7 +157,7 @@
         <nav class="related" aria-label="Related pages">
           <span class="related-label">Quick Links:</span>
           {#each siblings.filter((s) => s.href !== pathname) as s (s.href)}
-            <a href={s.href}>{s.label}</a>
+            <a href={resolve(s.href, {})}>{s.label}</a>
           {/each}
         </nav>
       {/if}

@@ -4,6 +4,7 @@
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
   import AuthBrandPanel from '$lib/components/AuthBrandPanel.svelte';
+  import { resolve } from '$app/paths';
 
   let password = '';
   let passwordConfirm = '';
@@ -74,13 +75,13 @@
             <span>You can sign in with your new password now.</span>
           </div>
         </div>
-        <a href="/login" class="btn-coral btn-lg auth-submit">
+        <a href={resolve('/login', {})} class="btn-coral btn-lg auth-submit">
           Sign in
           <Icon icon="lucide:arrow-right" width="16" height="16" />
         </a>
       {:else if linkInvalid}
         <div class="error"><Icon icon="lucide:alert-circle" width="14" height="14" /> {error}</div>
-        <a href="/forgot-password" class="btn-coral btn-lg auth-submit">
+        <a href={resolve('/forgot-password', {})} class="btn-coral btn-lg auth-submit">
           Request a new link
           <Icon icon="lucide:arrow-right" width="16" height="16" />
         </a>

@@ -1,6 +1,7 @@
 <script lang="ts">
   import StaticArticle from '$lib/components/StaticArticle.svelte';
   import Icon from '@iconify/svelte';
+  import { resolve } from '$app/paths';
 
   type TopicCategory = 'General Inquiry' | 'NGO Partnership' | 'Volunteer Support' | 'Security Disclosure';
 
@@ -176,8 +177,8 @@
           <h4>Self-Service Help & Documentation</h4>
           <p>Looking for instant answers or developer API specifications?</p>
           <div class="channel-links-row">
-            <a href="/help" class="text-link">Help Center →</a>
-            <a href="/docs/api" class="text-link">Developer API →</a>
+            <a href={resolve('/help', {})} class="text-link">Help Center →</a>
+            <a href={resolve('/docs/api', {})} class="text-link">Developer API →</a>
           </div>
         </div>
       </div>

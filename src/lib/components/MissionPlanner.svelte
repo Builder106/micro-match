@@ -1,5 +1,6 @@
 <script lang="ts">
   import Icon from '@iconify/svelte';
+  import { resolve } from '$app/paths';
   import { createCapacityPlan, formatReviewTime, type TaskDuration } from '$lib/capacityPlan';
 
   const minimumBacklogHours = 2;
@@ -151,7 +152,7 @@
         <p>We round up so every piece of work has a mission, then distribute the missions as evenly as possible across the selected days.</p>
       </details>
 
-      <a href="/signup" class="plan-cta" aria-label={`Create an NGO profile to post ${capacityPlan.missionCount} missions`}>
+      <a href={resolve("/signup", {})} class="plan-cta" aria-label={`Create an NGO profile to post ${capacityPlan.missionCount} missions`}>
         Create profile to post this plan
         <Icon icon="lucide:arrow-right" width="17" height="17" aria-hidden="true" />
       </a>

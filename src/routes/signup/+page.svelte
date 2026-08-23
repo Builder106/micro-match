@@ -2,6 +2,7 @@
   import Icon from '@iconify/svelte';
   import { signInWithGoogle, signUpEmail } from '$lib/appwrite.client';
   import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import AuthBrandPanel from '$lib/components/AuthBrandPanel.svelte';
   let email = $state('');
   let password = $state('');
@@ -18,7 +19,7 @@
     try {
       const name = `${firstName} ${lastName}`.trim();
       await signUpEmail(email, password, name || undefined, role);
-      goto('/dashboard');
+      goto(resolve('/dashboard', {}));
     } catch {
       error = 'Sign up failed. Please check your details or try Google.';
     } finally {
@@ -72,7 +73,7 @@
         </div>
         <p class="foot">
           Already have an account?
-          <a href="/login">Sign in</a>
+          <a href={resolve('/login', {})}>Sign in</a>
         </p>
       {:else}
         <form onsubmit={(e) => { e.preventDefault(); signInWithGoogle(); }}>
@@ -120,7 +121,7 @@
             {/if}
           </button>
           <p class="legal-notice">
-            By registering, you agree to our <a href="/terms">Terms of Service</a> and <a href="/privacy">Privacy Policy</a>.
+            By registering, you agree to our <a href={resolve('/terms', {})}>Terms of Service</a> and <a href={resolve('/privacy', {})}>Privacy Policy</a>.
           </p>
         </form>
       {/if}

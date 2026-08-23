@@ -2,6 +2,7 @@
   import Icon from "@iconify/svelte";
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import { page } from '$app/stores';
   import { getTaskDetailCopy, TRANSLATION_OPTIONS } from '$lib/translation';
   import { getTagStyle } from '$lib/utils/tagColors';
@@ -53,7 +54,7 @@
     const to = langSelection || null;
     void loadTranslation(to);
     const path = `/task/${id}` + (langSelection ? `?lang=${encodeURIComponent(langSelection)}` : '');
-    await goto(path, { keepFocus: true, noScroll: true });
+    await goto(resolve(path, {}), { keepFocus: true, noScroll: true });
   }
 
   onMount(() => {
@@ -106,7 +107,7 @@
 <svelte:head><title>{task.title} · MicroMatch</title></svelte:head>
 
 <div class="td-page">
-  <a href="/tasks" class="td-back">
+  <a href={resolve('/tasks', {})} class="td-back">
     <Icon icon="lucide:arrow-left" width="14" height="14" />
     {copy.backToFeed}
   </a>
@@ -249,13 +250,13 @@
           This task isn't currently accepting claims.
         {/if}
       </div>
-      <a href="/tasks" class="btn-outline-dark">Browse other tasks</a>
+      <a href={resolve('/tasks', {})} class="btn-outline-dark">Browse other tasks</a>
     {:else if !signedIn}
       <div class="td-signin-cta">
         <Icon icon="lucide:user-plus" width="14" height="14" />
         {copy.signInToClaimTask}
       </div>
-      <a href="/login?next=/task/{id}" class="btn-coral btn-lg">
+      <a href={resolve(`/login?next=/task/${id}`, {})} class="btn-coral btn-lg">
         {copy.signInToClaim}
         <Icon icon="lucide:arrow-right" width="16" height="16" />
       </a>
@@ -264,7 +265,7 @@
         <Icon icon="lucide:hand-heart" width="14" height="14" />
         {copy.readyToHelp}
       </div>
-      <a href={`/task/${id}/claim`} class="btn-coral btn-lg">
+      <a href={resolve(`/task/${id}/claim`, {})} class="btn-coral btn-lg">
         {copy.claimTask}
         <Icon icon="lucide:arrow-right" width="16" height="16" />
       </a>

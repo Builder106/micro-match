@@ -1,5 +1,6 @@
 <script lang="ts">
   import StaticArticle from '$lib/components/StaticArticle.svelte';
+  import { resolve } from '$app/paths';
 
   type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'DELETE';
   type Category = 'Tasks' | 'Claims' | 'Verifications' | 'Badges' | 'Profile & Teams' | 'Auth';
@@ -829,7 +830,7 @@
   </div>
 
   <div class="back-link-wrapper">
-    <a href="/docs" class="back-link">← Back to Documentation</a>
+    <a href={resolve('/docs', {})} class="back-link">← Back to Documentation</a>
   </div>
 </StaticArticle>
 

@@ -1,6 +1,7 @@
 <script lang="ts">
   import StaticArticle from '$lib/components/StaticArticle.svelte';
   import Icon from '@iconify/svelte';
+  import { resolve } from '$app/paths';
 </script>
 
 <StaticArticle
@@ -130,11 +131,11 @@
       <p>Browse active micro-missions or explore our developer documentation.</p>
     </div>
     <div class="cta-actions">
-      <a href="/tasks" class="btn-coral">
+      <a href={resolve('/tasks', {})} class="btn-coral">
         Browse Micro-Tasks
         <Icon icon="heroicons:arrow-right-20-solid" width="18" height="18" />
       </a>
-      <a href="/docs/api" class="btn-outline-action">
+      <a href={resolve('/docs/api', {})} class="btn-outline-action">
         Explore API Docs
         <Icon icon="heroicons:code-bracket-20-solid" width="18" height="18" />
       </a>

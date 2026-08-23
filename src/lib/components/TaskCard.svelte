@@ -1,6 +1,7 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
   import { getTagStyle } from "$lib/utils/tagColors";
+  import { resolve } from '$app/paths';
   export let id: string;
   export let title: string;
   export let shortDescription: string;
@@ -68,7 +69,7 @@
     {#if language}
       <p class="tc-ngo"><Icon icon="lucide:globe" width="12" height="12" /> {language}</p>
     {/if}
-    <h3><a {href}>{title}</a></h3>
+    <h3><a href={resolve(href, {})}>{title}</a></h3>
     <p class="tc-desc">{shortDescription}</p>
   </div>
 
@@ -89,7 +90,7 @@
         </span>
       {/if}
     </div>
-    <a {href} class="btn-dark-pill btn-sm" aria-label={`View ${title}`}>
+    <a href={resolve(href, {})} class="btn-dark-pill btn-sm" aria-label={`View ${title}`}>
       View task
       <Icon icon="lucide:arrow-right" width="14" height="14" />
     </a>

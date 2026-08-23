@@ -3,6 +3,7 @@
   import { page } from "$app/state";
   import { authHeader } from "$lib/appwrite.client";
   import { getTagStyle } from '$lib/utils/tagColors';
+  import { resolve } from '$app/paths';
 
   export let data: {
     task: {
@@ -68,7 +69,7 @@
 <svelte:head><title>Submit work · {data.task.title}</title></svelte:head>
 
 <div class="cl-page">
-  <a href="/task/{data.task.id}" class="cl-back">
+  <a href={resolve(`/task/${data.task.id}`, {})} class="cl-back">
     <Icon icon="lucide:arrow-left" width="14" height="14" />
     Back to task
   </a>
@@ -141,7 +142,7 @@
     {/if}
 
     <footer class="cl-actions">
-      <a href="/task/{data.task.id}" class="cl-cancel">Cancel</a>
+      <a href={resolve(`/task/${data.task.id}`, {})} class="cl-cancel">Cancel</a>
       <button type="submit" class="btn-coral btn-lg" disabled={!validUrl || submitting}>
         {#if submitting}
           <Icon icon="lucide:loader-2" width="16" height="16" class="spin" />

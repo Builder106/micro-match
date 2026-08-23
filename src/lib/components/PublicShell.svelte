@@ -4,6 +4,7 @@
   import { tick, onDestroy } from 'svelte';
   import { fly, fade } from 'svelte/transition';
   import ThemeToggle from '$lib/components/ThemeToggle.svelte';
+  import { resolve } from '$app/paths';
 
   export let activeTab: 'home' | 'how-it-works' | 'for-ngos' | 'for-volunteers' | 'tasks' | 'impact' | undefined = undefined;
 
@@ -48,15 +49,15 @@
   <!-- ───── Header ───── -->
   <header class="site-header">
     <div class="header-inner">
-      <a href="/" class="header-brand">
+      <a href={resolve('/', {})} class="header-brand">
         <img src="/logo.png" alt="MicroMatch" width="36" height="36" />
         <span>MicroMatch</span>
       </a>
       <nav class="header-nav" aria-label="Main navigation">
-        <a href="/how-it-works" class:active={activeTab === 'how-it-works'}>How it Works</a>
-        <a href="/tasks" class:active={activeTab === 'tasks'}>Browse Tasks</a>
-        <a href="/for-ngos" class:active={activeTab === 'for-ngos'}>For NGOs</a>
-        <a href="/for-volunteers" class:active={activeTab === 'for-volunteers'}>For Volunteers</a>
+        <a href={resolve('/how-it-works', {})} class:active={activeTab === 'how-it-works'}>How it Works</a>
+        <a href={resolve('/tasks', {})} class:active={activeTab === 'tasks'}>Browse Tasks</a>
+        <a href={resolve('/for-ngos', {})} class:active={activeTab === 'for-ngos'}>For NGOs</a>
+        <a href={resolve('/for-volunteers', {})} class:active={activeTab === 'for-volunteers'}>For Volunteers</a>
       </nav>
       <div class="header-actions">
         <ThemeToggle compact={true} />
@@ -82,11 +83,11 @@
           <span>GitHub</span>
         </a>
         {#if isSignedIn}
-          <a href="/tasks" class="header-signin">Browse tasks</a>
-          <a href="/dashboard" class="btn-coral btn-sm" data-sveltekit-preload-data="hover">Go to dashboard</a>
+          <a href={resolve('/tasks', {})} class="header-signin">Browse tasks</a>
+          <a href={resolve('/dashboard', {})} class="btn-coral btn-sm" data-sveltekit-preload-data="hover">Go to dashboard</a>
         {:else}
-          <a href="/login" class="header-signin">Sign In</a>
-          <a href="/signup" class="btn-coral btn-sm">Join Now</a>
+          <a href={resolve('/login', {})} class="header-signin">Sign In</a>
+          <a href={resolve('/signup', {})} class="btn-coral btn-sm">Join Now</a>
         {/if}
       </div>
     </div>
@@ -105,17 +106,17 @@
       aria-label="Mobile"
       transition:fly={{ y: -12, duration: 200 }}
     >
-      <a href="/how-it-works" bind:this={firstMenuLinkEl} onclick={closeMenu}>How it Works</a>
-      <a href="/tasks" onclick={closeMenu}>Browse Tasks</a>
-      <a href="/for-ngos" onclick={closeMenu}>For NGOs</a>
-      <a href="/for-volunteers" onclick={closeMenu}>For Volunteers</a>
+      <a href={resolve('/how-it-works', {})} bind:this={firstMenuLinkEl} onclick={closeMenu}>How it Works</a>
+      <a href={resolve('/tasks', {})} onclick={closeMenu}>Browse Tasks</a>
+      <a href={resolve('/for-ngos', {})} onclick={closeMenu}>For NGOs</a>
+      <a href={resolve('/for-volunteers', {})} onclick={closeMenu}>For Volunteers</a>
       <div class="mobile-menu-divider"></div>
       {#if isSignedIn}
-        <a href="/tasks" onclick={closeMenu}>Browse tasks</a>
-        <a href="/dashboard" class="mobile-menu-cta" onclick={closeMenu}>Go to dashboard</a>
+        <a href={resolve('/tasks', {})} onclick={closeMenu}>Browse tasks</a>
+        <a href={resolve('/dashboard', {})} class="mobile-menu-cta" onclick={closeMenu}>Go to dashboard</a>
       {:else}
-        <a href="/login" onclick={closeMenu}>Sign In</a>
-        <a href="/signup" class="mobile-menu-cta" onclick={closeMenu}>Join Now</a>
+        <a href={resolve('/login', {})} onclick={closeMenu}>Sign In</a>
+        <a href={resolve('/signup', {})} class="mobile-menu-cta" onclick={closeMenu}>Join Now</a>
       {/if}
       <a
         href="https://github.com/Builder106/micro-match"
@@ -147,29 +148,29 @@
         <div class="footer-links">
           <div class="link-col">
             <h4>Platform</h4>
-            <a href="/tasks">Browse Tasks</a>
-            <a href="/dashboard">Dashboard</a>
+            <a href={resolve('/tasks', {})}>Browse Tasks</a>
+            <a href={resolve('/dashboard', {})}>Dashboard</a>
             {#if !isSignedIn}
-              <a href="/login">Sign In</a>
+              <a href={resolve('/login', {})}>Sign In</a>
             {/if}
           </div>
           <div class="link-col">
             <h4>Resources</h4>
-            <a href="/how-it-works">How It Works</a>
-            <a href="/for-ngos">For NGOs</a>
-            <a href="/for-volunteers">For Volunteers</a>
-            <a href="/impact">Impact</a>
-            <a href="/docs/api">API Docs</a>
-            <a href="/about">About Us</a>
-            <a href="/help">Help Center</a>
+            <a href={resolve('/how-it-works', {})}>How It Works</a>
+            <a href={resolve('/for-ngos', {})}>For NGOs</a>
+            <a href={resolve('/for-volunteers', {})}>For Volunteers</a>
+            <a href={resolve('/impact', {})}>Impact</a>
+            <a href={resolve('/docs/api', {})}>API Docs</a>
+            <a href={resolve('/about', {})}>About Us</a>
+            <a href={resolve('/help', {})}>Help Center</a>
           </div>
         </div>
       </div>
       <div class="footer-bottom">
         <p>&copy; 2026 MicroMatch. All rights reserved.</p>
         <div class="footer-legal">
-          <a href="/privacy">Privacy Policy</a>
-          <a href="/terms">Terms of Service</a>
+          <a href={resolve('/privacy', {})}>Privacy Policy</a>
+          <a href={resolve('/terms', {})}>Terms of Service</a>
         </div>
       </div>
     </div>

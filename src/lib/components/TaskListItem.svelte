@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from '$app/paths';
   export let avatarUrl = "";
   export let title = "";
   export let subtitle = "";
@@ -7,7 +8,7 @@
   export let href = "#";
 </script>
 
-<a href={href} style="display:flex;align-items:center;gap:12px;padding:12px 8px;text-decoration:none;color:inherit;">
+<a href={href.startsWith('/') ? resolve(href, {}) : href} style="display:flex;align-items:center;gap:12px;padding:12px 8px;text-decoration:none;color:inherit;">
   <img src={avatarUrl} alt="" width="44" height="44" style="border-radius:999px;object-fit:cover;" />
   <div style="flex:1;min-width:0;">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">

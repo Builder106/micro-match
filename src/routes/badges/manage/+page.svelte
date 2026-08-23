@@ -3,6 +3,7 @@
   import CustomSelect from '$lib/components/CustomSelect.svelte';
   import LottieAnimation from '$lib/components/LottieAnimation.svelte';
   import { invalidateAll } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import type { BadgeDefinition } from '$lib/types';
   export let data: {
     userRole: 'anonymous' | 'user' | 'ngo' | 'volunteer';
@@ -161,7 +162,7 @@
         <button class="btn-coral" on:click={openCreateModal}>
           <Icon icon="lucide:plus" width="16" height="16" /> Create badge
         </button>
-        <a href="/badges/analytics" class="btn-outline-dark">
+        <a href={resolve('/badges/analytics', {})} class="btn-outline-dark">
           <Icon icon="lucide:bar-chart-3" width="16" height="16" /> View analytics
         </a>
       </div>

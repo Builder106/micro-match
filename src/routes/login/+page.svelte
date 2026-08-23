@@ -2,6 +2,7 @@
   import Icon from '@iconify/svelte';
   import { signInWithGoogle, signInEmail, refreshSessionCookie } from '$lib/appwrite.client';
   import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import { page } from '$app/stores';
   import AuthBrandPanel from '$lib/components/AuthBrandPanel.svelte';
 
@@ -30,7 +31,7 @@
     try {
       await signInEmail(email, password);
       await refreshSessionCookie();
-      goto(safeNext());
+      goto(resolve(safeNext(), {}));
     } catch {
       error = 'Invalid email or password.';
     } finally {
@@ -87,7 +88,7 @@
           </div>
         </label>
         <div class="forgot-link">
-          <a href="/forgot-password">Forgot password?</a>
+          <a href={resolve('/forgot-password', {})}>Forgot password?</a>
         </div>
         <button type="submit" class="btn-coral btn-lg auth-submit" disabled={submitting}>
           {#if submitting}
@@ -101,7 +102,7 @@
 
       <p class="foot">
         Don't have an account?
-        <a href="/signup">Create one</a>
+        <a href={resolve('/signup', {})}>Create one</a>
       </p>
     </div>
   </section>

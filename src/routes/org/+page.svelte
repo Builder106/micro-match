@@ -2,6 +2,7 @@
   import Icon from "@iconify/svelte";
   import CustomSelect from '$lib/components/CustomSelect.svelte';
   import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
 
   export let data: { verificationStatus: 'pending' | 'approved' | 'rejected' | null };
 
@@ -58,7 +59,7 @@
         const created = await response.json();
         submitSuccess = true;
         // Tiny delay so the success state registers, then navigate.
-        setTimeout(() => goto(`/task/${created.id}`), 600);
+        setTimeout(() => goto(resolve(`/task/${created.id}`, {})), 600);
       } else {
         const payload = await response.json().catch(() => ({}));
         submitError = payload?.error || "Failed to create task";
@@ -105,7 +106,7 @@
           <span>Your tasks will show "Unverified" until you resubmit.</span>
         {:else}
           <strong>Org not yet verified.</strong>
-          <span>Posted tasks will show "Unverified" to volunteers. <a href="/profile">Verify your org →</a></span>
+          <span>Posted tasks will show "Unverified" to volunteers. <a href={resolve('/profile', {})}>Verify your org →</a></span>
         {/if}
       </div>
     </aside>
@@ -225,7 +226,7 @@
     {/if}
 
     <footer class="org-actions">
-      <a href="/dashboard" class="org-cancel">Cancel</a>
+      <a href={resolve('/dashboard', {})} class="org-cancel">Cancel</a>
       <button type="submit" class="btn-coral btn-lg" disabled={isSubmitting || submitSuccess}>
         {#if submitSuccess}
           <Icon icon="lucide:check-circle-2" width="18" height="18" />

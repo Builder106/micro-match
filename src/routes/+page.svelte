@@ -6,6 +6,7 @@
   import { page } from '$app/state';
   import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
+  import { resolve } from '$app/paths';
   export let data;
 
   let visible = false;
@@ -97,13 +98,13 @@
         <h1>Make a big impact in <br /><span class="coral-gradient">a few minutes.</span></h1>
         <p>MicroMatch connects you with bite-sized volunteer tasks from global NGOs. Complete them anytime, anywhere, and help drive change one small step at a time.</p>
         <div class="hero-buttons">
-          <a href="/tasks" class="btn-coral btn-lg" data-sveltekit-preload-data="hover">Find a Task</a>
+          <a href={resolve('/tasks', {})} class="btn-coral btn-lg" data-sveltekit-preload-data="hover">Find a Task</a>
           {#if page.data.userRole === 'ngo'}
-            <a href="/org" class="btn-outline btn-lg" data-sveltekit-preload-data="hover">Post a Task</a>
+            <a href={resolve('/org', {})} class="btn-outline btn-lg" data-sveltekit-preload-data="hover">Post a Task</a>
           {:else if page.data.userRole === 'volunteer' || page.data.userRole === 'user'}
-            <a href="/dashboard" class="btn-outline btn-lg" data-sveltekit-preload-data="hover">View your impact</a>
+            <a href={resolve('/dashboard', {})} class="btn-outline btn-lg" data-sveltekit-preload-data="hover">View your impact</a>
           {:else}
-            <a href="/signup" class="btn-outline btn-lg" data-sveltekit-preload-data="hover">Post a Task</a>
+            <a href={resolve('/signup', {})} class="btn-outline btn-lg" data-sveltekit-preload-data="hover">Post a Task</a>
           {/if}
         </div>
       </div>
@@ -127,7 +128,7 @@
               <span style="background:#F3E8FF;color:#7C3AED">#Spanish</span>
               <span style="background:#D1FAE5;color:#059669">#Health</span>
             </div>
-            <a href="/tasks" class="mc-claim-btn">
+            <a href={resolve('/tasks', {})} class="mc-claim-btn">
               Claim <Icon icon="lucide:arrow-right" width="12" height="12" />
             </a>
           </div>
@@ -146,7 +147,7 @@
             <div class="mc-tags">
               <span style="background:#DBEAFE;color:#2563EB">#History</span>
             </div>
-            <a href="/tasks" class="mc-claim-btn">
+            <a href={resolve('/tasks', {})} class="mc-claim-btn">
               Claim <Icon icon="lucide:arrow-right" width="12" height="12" />
             </a>
           </div>
@@ -166,7 +167,7 @@
               <span style="background:#FEF3C7;color:#D97706">#Data</span>
               <span style="background:#E0F2FE;color:#0284C7">#Water</span>
             </div>
-            <a href="/tasks" class="mc-claim-btn">
+            <a href={resolve('/tasks', {})} class="mc-claim-btn">
               Claim <Icon icon="lucide:arrow-right" width="12" height="12" />
             </a>
           </div>
@@ -185,7 +186,7 @@
             <div class="mc-tags">
               <span style="background:#FCE7F3;color:#DB2777">#Education</span>
             </div>
-            <a href="/tasks" class="mc-claim-btn">
+            <a href={resolve('/tasks', {})} class="mc-claim-btn">
               Claim <Icon icon="lucide:arrow-right" width="12" height="12" />
             </a>
           </div>
@@ -224,7 +225,7 @@
           <h2>Featured Tasks</h2>
           <p>Start making a difference today. Pick a quick task and help an NGO right now.</p>
         </div>
-        <a href="/tasks" class="btn-outline-dark" data-sveltekit-preload-data="hover">View All Tasks</a>
+        <a href={resolve('/tasks', {})} class="btn-outline-dark" data-sveltekit-preload-data="hover">View All Tasks</a>
       </div>
 
       {#if data.tasks && data.tasks.length > 0}
@@ -243,7 +244,7 @@
               </div>
               <div class="tc-body">
                 <p class="tc-ngo">{task.language ?? 'Community Task'}</p>
-                <h3><a href="/task/{task.id}">{task.title}</a></h3>
+                <h3><a href={resolve(`/task/${task.id}`, {})}>{task.title}</a></h3>
                 <p class="tc-desc">{task.shortDescription}</p>
               </div>
               <div class="tc-foot">
@@ -253,7 +254,7 @@
                     <span style="background:{s.bg};color:{s.color}">#{tag}</span>
                   {/each}
                 </div>
-                <a href="/task/{task.id}" class="btn-dark-pill" data-sveltekit-preload-data="hover">View Task</a>
+                <a href={resolve(`/task/${task.id}`, {})} class="btn-dark-pill" data-sveltekit-preload-data="hover">View Task</a>
               </div>
             </article>
           {/each}
@@ -275,7 +276,7 @@
             </div>
             <h2>You're too fast!</h2>
             <p>Our NGOs are busy preparing more bite-sized tasks. Check back soon, or browse the full task feed!</p>
-            <a href="/tasks" class="btn-dark-pill btn-lg" data-sveltekit-preload-data="hover">Browse All Tasks</a>
+            <a href={resolve('/tasks', {})} class="btn-dark-pill btn-lg" data-sveltekit-preload-data="hover">Browse All Tasks</a>
           </div>
         </div>
       {/if}

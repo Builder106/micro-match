@@ -4,6 +4,7 @@
   import LottieAnimation from '$lib/components/LottieAnimation.svelte';
   import { account } from '$lib/appwrite.client';
   import { getTagStyle } from '$lib/utils/tagColors';
+  import { resolve } from '$app/paths';
 
   export let data: {
     signedIn: boolean;
@@ -96,11 +97,11 @@
         {/if}
       </p>
       <div class="ngo-hero-actions">
-        <a href="/org" class="btn-coral">
+        <a href={resolve('/org', {})} class="btn-coral">
           Post a task
           <Icon icon="lucide:plus" width="16" height="16" />
         </a>
-        <a href="/badges/manage" class="btn-outline-dark">Manage badges</a>
+        <a href={resolve('/badges/manage', {})} class="btn-outline-dark">Manage badges</a>
       </div>
     </div>
 
@@ -141,7 +142,7 @@
             <p class="review-notes">{claim.notes || 'No notes provided.'}</p>
             <div class="review-actions">
               {#if claim.proofUrl}
-                <a href={claim.proofUrl} target="_blank" rel="noopener" class="review-proof">
+                <a href={claim.proofUrl} target="_blank" rel="external noopener noreferrer" class="review-proof">
                   <Icon icon="lucide:external-link" width="14" height="14" /> View proof
                 </a>
               {/if}
@@ -209,7 +210,7 @@
   <section>
     <div class="section-head">
       <h2>Your tasks</h2>
-      <a href="/org" class="section-link">Create new
+      <a href={resolve('/org', {})} class="section-link">Create new
         <Icon icon="lucide:plus" width="14" height="14" />
       </a>
     </div>
@@ -217,7 +218,7 @@
     {#if data.signedIn && tasks.length > 0}
       <div class="task-grid">
         {#each tasks as task (task.id)}
-          <a href="/task/{task.id}" class="task-mini">
+          <a href={resolve(`/task/${task.id}`, {})} class="task-mini">
             <div class="task-mini-top">
               <div class="task-mini-avatar"><Icon icon="lucide:heart-handshake" width="20" height="20" /></div>
               {#if task.estimatedMinutes}
@@ -245,7 +246,7 @@
         <Icon icon="lucide:plus-circle" width="44" height="44" style="color: var(--color-primary-light);" />
         <h3>No tasks yet.</h3>
         <p>Post your first micro-task and start matching with volunteers.</p>
-        <a href="/org" class="btn-coral btn-sm">
+        <a href={resolve('/org', {})} class="btn-coral btn-sm">
           Post a task
           <Icon icon="lucide:plus" width="14" height="14" />
         </a>

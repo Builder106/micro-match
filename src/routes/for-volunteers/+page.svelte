@@ -3,6 +3,7 @@
   import DecorativeLottie from '$lib/components/DecorativeLottie.svelte';
   import PublicShell from '$lib/components/PublicShell.svelte';
   import { fly, fade } from 'svelte/transition';
+  import { resolve } from '$app/paths';
 
   let selectedDuration: '5' | '15' | '30' = '15';
 
@@ -139,7 +140,7 @@
         </p>
 
         <div class="vol-hero-btns">
-          <a href="/tasks" class="btn-coral btn-lg">Browse Micro-Missions</a>
+          <a href={resolve('/tasks', {})} class="btn-coral btn-lg">Browse Micro-Missions</a>
           <a href="#interactive-feed" class="btn-outline-dark btn-lg">Explore Time Caps ↓</a>
         </div>
       </div>
@@ -278,7 +279,7 @@
                 </div>
                 <span class="st-xp">{task.xp}</span>
               </div>
-              <a href="/tasks" class="btn-dark-pill">Claim Task</a>
+              <a href={resolve('/tasks', {})} class="btn-dark-pill">Claim Task</a>
             </div>
           {/each}
         </div>
@@ -293,8 +294,8 @@
         <h2>Start your micro-volunteering streak today.</h2>
         <p>Create your volunteer profile and claim your first 5-minute task in minutes.</p>
         <div class="cta-actions">
-          <a href="/signup" class="btn-coral btn-lg">Join as Volunteer</a>
-          <a href="/tasks" class="btn-outline-dark btn-lg">Browse Active Feed</a>
+          <a href={resolve('/signup', {})} class="btn-coral btn-lg">Join as Volunteer</a>
+          <a href={resolve('/tasks', {})} class="btn-outline-dark btn-lg">Browse Active Feed</a>
         </div>
       </div>
     </div>
