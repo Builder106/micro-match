@@ -1,7 +1,7 @@
 <script lang="ts">
   import Icon from '@iconify/svelte';
   import CustomSelect from '$lib/components/CustomSelect.svelte';
-  import { onMount } from 'svelte';
+  import LottieAnimation from '$lib/components/LottieAnimation.svelte';
   import { invalidateAll } from '$app/navigation';
   import type { BadgeDefinition } from '$lib/types';
   export let data: {
@@ -13,7 +13,6 @@
 
   let showCreateModal = false;
   let editingBadge: BadgeDefinition | null = null;
-  let lottieReady = false;
   let firstInputBtn: HTMLInputElement | undefined;
   let saving = false;
   let saveError: string | null = null;
@@ -146,9 +145,6 @@
     return d.toLocaleDateString();
   }
 
-  onMount(() => {
-    import('@dotlottie/player-component').then(() => { lottieReady = true; }).catch(() => {});
-  });
 </script>
 
 <svelte:head><title>Manage badges · MicroMatch</title></svelte:head>
@@ -201,11 +197,9 @@
     {#if data.badges.length === 0}
       <div class="bm-empty">
         <div class="bm-mascot">
-          {#if lottieReady}
-            <dotlottie-player src="/animations/empty_state_mascot.lottie" autoplay loop="true"></dotlottie-player>
-          {:else}
+          <LottieAnimation src="/animations/empty_state_mascot.json">
             <Icon icon="lucide:trophy" width="64" height="64" />
-          {/if}
+          </LottieAnimation>
         </div>
         <h3>No badges yet.</h3>
         <p>Create your first badge from a template above — volunteers see them on completed tasks.</p>
@@ -408,7 +402,7 @@
     box-shadow: 0 16px 40px rgba(255, 107, 107, 0.05);
   }
   .bm-mascot { width: 140px; height: 140px; display: flex; align-items: center; justify-content: center; color: var(--color-primary-light); }
-  .bm-mascot :global(dotlottie-player) { width: 100%; height: 100%; }
+  .bm-mascot :global(.lottie-animation) { width: 100%; height: 100%; }
   .bm-empty h3 { font-size: 22px; font-weight: 800; margin: 0; }
   .bm-empty p { color: color-mix(in srgb, var(--color-text) 60%, transparent); font-size: 15px; font-weight: 500; max-width: 380px; margin: 0; }
 

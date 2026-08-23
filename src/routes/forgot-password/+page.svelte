@@ -29,12 +29,12 @@
 
 <div class="auth-shell">
   <div class="left-panel">
-    <AuthBrandPanel animation="/animations/empty_state_mascot.lottie" />
+    <AuthBrandPanel animation="/animations/empty_state_mascot.json" />
   </div>
 
   <section class="right-panel">
     <div class="mobile-stage">
-      <AuthBrandPanel compact animation="/animations/empty_state_mascot.lottie" />
+      <AuthBrandPanel compact animation="/animations/empty_state_mascot.json" />
     </div>
 
     <div class="auth-card">

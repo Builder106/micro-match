@@ -1,6 +1,7 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
   import { onMount } from 'svelte';
+  import LottieAnimation from '$lib/components/LottieAnimation.svelte';
   import { fireConfettiBurst } from '$lib/utils/confetti';
   import { getTagStyle } from '$lib/utils/tagColors';
   import { account } from '$lib/appwrite.client';
@@ -19,7 +20,6 @@
 
   let badges: Array<{ label: string; color?: string }> = [];
   let firstName = '';
-  let lottieReady = false;
 
   const approvedClaimsCount: number = data.userData?.approvedClaimsCount || 0;
   const totalHours: number = data.userData?.totalHours || 0;
@@ -77,8 +77,6 @@
   ];
 
   onMount(async () => {
-    import('@dotlottie/player-component').then(() => { lottieReady = true; }).catch(() => {});
-
     if (data.signedIn) {
       try {
         const me = await account.get();
@@ -227,11 +225,9 @@
     {:else}
       <div class="empty-card">
         <div class="empty-mascot">
-          {#if lottieReady}
-            <dotlottie-player src="/animations/empty_state_mascot.lottie" autoplay loop="true"></dotlottie-player>
-          {:else}
+          <LottieAnimation src="/animations/empty_state_mascot.json">
             <Icon icon="lucide:rocket" width="64" height="64" />
-          {/if}
+          </LottieAnimation>
         </div>
         <h3>You're all caught up.</h3>
         <p>No tasks waiting right now. Check back soon, or browse the full feed.</p>
@@ -443,7 +439,7 @@
   }
   .empty-card-compact { padding: 24px 20px; }
   .empty-mascot { width: 110px; height: 110px; display: flex; align-items: center; justify-content: center; color: var(--color-primary-light); }
-  .empty-mascot :global(dotlottie-player) { width: 100%; height: 100%; }
+  .empty-mascot :global(.lottie-animation) { width: 100%; height: 100%; }
   .empty-card h3 { font-size: 18px; font-weight: 800; margin: 0; }
   .empty-card p { color: color-mix(in srgb, var(--color-text) 60%, transparent); font-size: 13px; font-weight: 500; max-width: 340px; margin: 0; }
 

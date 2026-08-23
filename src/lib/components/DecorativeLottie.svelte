@@ -1,43 +1,15 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import LottieAnimation from '$lib/components/LottieAnimation.svelte';
 
   export let src: string;
   export let scene: string;
   export let aspectRatio = '4 / 3';
 
-  interface DotLottiePlayer extends HTMLElement {
-    pause?: () => void;
-    play?: () => void;
-    setLooping?: (looping: boolean) => void;
-  }
-
   let container: HTMLDivElement;
-  let playerReady = false;
+  let playerVisible = false;
   let playerUnavailable = false;
-  let hasPlayed = false;
   let observer: IntersectionObserver | null = null;
-
-  function markUnavailable() {
-    playerUnavailable = true;
-    observer?.disconnect();
-  }
-
-  function loadPlayer() {
-    import('@dotlottie/player-component')
-      .then(() => {
-        playerReady = true;
-      })
-      .catch(markUnavailable);
-  }
-
-  function startOnce(event: Event) {
-    if (hasPlayed) return;
-
-    hasPlayed = true;
-    const player = event.currentTarget as DotLottiePlayer;
-    player.setLooping?.(false);
-    player.play?.();
-  }
 
   onMount(() => {
     const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
@@ -51,7 +23,7 @@
         if (!entry?.isIntersecting) return;
 
         observer?.disconnect();
-        loadPlayer();
+        playerVisible = true;
       },
       { threshold: 0.4 }
     );
@@ -68,14 +40,14 @@
   data-motion-scene={scene}
   aria-hidden="true"
 >
-  {#if playerReady && !playerUnavailable}
-    <dotlottie-player
-      class="player"
-      src={src}
-      onready={startOnce}
-      onerror={markUnavailable}
-      onloadError={markUnavailable}
-    ></dotlottie-player>
+  {#if playerVisible && !playerUnavailable}
+    <LottieAnimation className="player" {src} loop={false}>
+      <svg class="static-fallback" viewBox="0 0 120 90" fill="none" focusable="false">
+        <rect x="18" y="18" width="84" height="54" rx="12" fill="currentColor" opacity="0.12" />
+        <circle cx="44" cy="45" r="11" fill="currentColor" opacity="0.32" />
+        <path d="M61 56C65.5 43 75 36 91 36" stroke="currentColor" stroke-width="7" stroke-linecap="round" opacity="0.32" />
+      </svg>
+    </LottieAnimation>
   {:else}
     <svg class="static-fallback" viewBox="0 0 120 90" fill="none" focusable="false">
       <rect x="18" y="18" width="84" height="54" rx="12" fill="currentColor" opacity="0.12" />
@@ -93,7 +65,7 @@
     color: var(--color-primary, #ff6b6b);
   }
 
-  .player,
+  :global(.player),
   .static-fallback {
     display: block;
     width: 100%;

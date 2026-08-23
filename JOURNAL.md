@@ -4,6 +4,14 @@
 > things happen — retrospectives need this raw material to land.
 > Reverse-chronological; one paragraph max per entry.
 
+## 2026-08-22 — Lottie scenes now use the SVG-only light player #decision
+
+The dotLottie web component is deprecated and its final release still added direct `eval()` warnings to production builds. The app now extracts the embedded JSON from its local animation bundles and renders it with `lottie-web`'s SVG-only light player. It still loads on the client, respects reduced motion, and keeps the same static fallbacks, but leaves out the expression engine that contains `eval()`. The legacy dotLottie dependency and bundles are gone; the production client bundle contains no direct `eval()` calls.
+
+## 2026-08-22 — The NGO calculator now makes a posting plan #decision
+
+Reworked the NGO capacity calculator around work the organization can actually plan. It now turns a chosen backlog, task size, and delivery window into a mission count, daily posting cadence, and explicit review-time estimate. The volunteer-count and turnaround predictions are gone because the page has no data to support them. Review time is labeled as a three-minute-per-submission assumption, and the output uses a small stack of mission cards to connect the number to MicroMatch's claim-and-review workflow.
+
 ## 2026-08-22 — Public landing scenes play once and respect motion preferences #decision
 
 Replaced the fictional profile and completion-count hero panels on the volunteer and NGO landing pages with three local dotLottie scenes. The volunteer scene pairs with a concrete sample task. The NGO scene shows the real brief, submission, and review sequence. The homepage impact scene replaces its confetti. A shared player loads only after its scene is visible, plays once, and shows a static fallback for reduced motion or a failed player import. The app already had the dotLottie component dependency, so this change adds no package.

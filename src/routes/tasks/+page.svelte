@@ -4,7 +4,7 @@
   import PublicShell from "$lib/components/PublicShell.svelte";
   import CustomSelect from "$lib/components/CustomSelect.svelte";
   import Icon from "@iconify/svelte";
-  import { onMount } from 'svelte';
+  import LottieAnimation from '$lib/components/LottieAnimation.svelte';
   import { page } from '$app/state';
 
   interface Task {
@@ -30,7 +30,6 @@
   ];
 
   let q = $state("");
-  let lottieReady = $state(false);
   const tasks = $derived(data.tasks);
 
   let selectedTags = $state<string[]>([]);
@@ -84,9 +83,6 @@
   const hasActiveFilters = $derived(q !== '' || selectedTags.length > 0 || maxMinutes !== null || sortBy !== 'recommended');
   const ngoCount = $derived(new Set(tasks.map(t => t.orgId).filter(Boolean)).size);
 
-  onMount(() => {
-    import('@dotlottie/player-component').then(() => { lottieReady = true; }).catch(() => {});
-  });
   let userRole = $derived(page.data?.userRole ?? 'anonymous');
   let isSignedIn = $derived(userRole !== 'anonymous');
 </script>
@@ -166,11 +162,9 @@
     {#if sorted.length === 0}
       <div class="feed-empty">
         <div class="empty-mascot">
-          {#if lottieReady}
-            <dotlottie-player src="/animations/empty_state_mascot.lottie" autoplay loop="true"></dotlottie-player>
-          {:else}
+          <LottieAnimation src="/animations/empty_state_mascot.json">
             <Icon icon="lucide:search-x" width="80" height="80" />
-          {/if}
+          </LottieAnimation>
         </div>
         {#if hasActiveFilters}
           <h2>Nothing matches those filters.</h2>
@@ -284,11 +278,9 @@
       {#if sorted.length === 0}
         <div class="feed-empty">
           <div class="empty-mascot">
-            {#if lottieReady}
-              <dotlottie-player src="/animations/empty_state_mascot.lottie" autoplay loop="true"></dotlottie-player>
-            {:else}
+            <LottieAnimation src="/animations/empty_state_mascot.json">
               <Icon icon="lucide:search-x" width="80" height="80" />
-            {/if}
+            </LottieAnimation>
           </div>
           {#if hasActiveFilters}
             <h2>Nothing matches those filters.</h2>
@@ -467,7 +459,7 @@
     box-shadow: 0 16px 40px rgba(255, 107, 107, 0.05);
   }
   .empty-mascot { width: 160px; height: 160px; display: flex; align-items: center; justify-content: center; color: var(--color-primary-light); margin-bottom: 8px; }
-  .empty-mascot :global(dotlottie-player) { width: 100%; height: 100%; }
+  .empty-mascot :global(.lottie-animation) { width: 100%; height: 100%; }
   .feed-empty h2 { font-size: 24px; font-weight: 800; margin: 0; }
   .feed-empty p { color: color-mix(in srgb, var(--color-text) 60%, transparent); font-size: 15px; font-weight: 500; max-width: 420px; margin: 0 0 8px; line-height: 1.6; }
 </style>

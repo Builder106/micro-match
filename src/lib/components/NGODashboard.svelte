@@ -1,6 +1,7 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
   import { onMount } from 'svelte';
+  import LottieAnimation from '$lib/components/LottieAnimation.svelte';
   import { account } from '$lib/appwrite.client';
   import { getTagStyle } from '$lib/utils/tagColors';
 
@@ -19,7 +20,6 @@
   };
 
   let orgName = '';
-  let lottieReady = false;
 
   const tasks: Array<{ id: string; title: string; shortDescription: string; estimatedMinutes?: number; tags?: string[]; status?: string }> = data.userData?.myTasks || [];
   const pendingReviews: Array<{ id: string; notes?: string; proofUrl?: string; createdAt?: string; task?: { title?: string } }> = data.userData?.pendingReviews || [];
@@ -66,8 +66,6 @@
   }
 
   onMount(async () => {
-    import('@dotlottie/player-component').then(() => { lottieReady = true; }).catch(() => {});
-
     if (data.signedIn) {
       try {
         const me = await account.get<import('$lib/types').UserPreferences>();
@@ -162,11 +160,9 @@
     {:else}
       <div class="empty-card">
         <div class="empty-mascot">
-          {#if lottieReady}
-            <dotlottie-player src="/animations/empty_state_mascot.lottie" autoplay loop="true"></dotlottie-player>
-          {:else}
+          <LottieAnimation src="/animations/empty_state_mascot.json">
             <Icon icon="lucide:inbox" width="64" height="64" />
-          {/if}
+          </LottieAnimation>
         </div>
         <h3>Inbox zero.</h3>
         <p>No submissions waiting right now. Volunteers' work will land here as it comes in.</p>
@@ -369,7 +365,7 @@
   }
   .empty-card-compact { padding: 24px 20px; }
   .empty-mascot { width: 110px; height: 110px; display: flex; align-items: center; justify-content: center; color: var(--color-primary-light); }
-  .empty-mascot :global(dotlottie-player) { width: 100%; height: 100%; }
+  .empty-mascot :global(.lottie-animation) { width: 100%; height: 100%; }
   .empty-card h3 { font-size: 18px; font-weight: 800; margin: 0; }
   .empty-card p { color: color-mix(in srgb, var(--color-text) 60%, transparent); font-size: 13px; font-weight: 500; max-width: 340px; margin: 0; }
 </style>

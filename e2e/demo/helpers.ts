@@ -195,7 +195,7 @@ export const BADGE_LABEL = process.env.SEED_BADGE_LABEL ?? 'First Mission';
 /**
  * Wait until the auth page has hydrated.
  *
- * AuthBrandPanel renders <dotlottie-player> only after onMount's dynamic import
+ * AuthBrandPanel renders its lottie container only after onMount's dynamic import
  * resolves, so its presence in the DOM proves Svelte finished hydrating — it's
  * the last thing these pages render.
  *
@@ -206,7 +206,7 @@ export const BADGE_LABEL = process.env.SEED_BADGE_LABEL ?? 'First Mission';
  * It's easy to miss because slowMo normally pauses long enough to hide it.
  */
 export async function waitForAuthHydration(page: Page): Promise<void> {
-  await page.locator('dotlottie-player').first().waitFor({ state: 'attached', timeout: 20_000 });
+  await page.locator('.lottie-animation').first().waitFor({ state: 'attached', timeout: 20_000 });
 }
 
 /**

@@ -1,6 +1,7 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
   import DecorativeLottie from '$lib/components/DecorativeLottie.svelte';
+  import LottieAnimation from '$lib/components/LottieAnimation.svelte';
   import PublicShell from '$lib/components/PublicShell.svelte';
   import { page } from '$app/state';
   import { onMount } from 'svelte';
@@ -15,28 +16,27 @@
     let disposed = false;
     let observer: IntersectionObserver | null = null;
     visible = true;
-    import("@dotlottie/player-component").then(() => {
-      if (disposed) return;
-      observer = new IntersectionObserver(
-        (entries) => {
-          if (!observer) return;
-          for (const entry of entries) {
-            if (!entry.isIntersecting) continue;
-            const badgeIndex = Number((entry.target as HTMLElement).dataset.badgeIndex);
-            if (Number.isInteger(badgeIndex) && badgeIndex >= 0) {
-              badgeSeen[badgeIndex] = true;
-              badgeSeen = [...badgeSeen];
-              observer.unobserve(entry.target);
-            }
+    observer = new IntersectionObserver(
+      (entries) => {
+        if (!observer) return;
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const badgeIndex = Number((entry.target as HTMLElement).dataset.badgeIndex);
+          if (Number.isInteger(badgeIndex) && badgeIndex >= 0) {
+            badgeSeen[badgeIndex] = true;
+            badgeSeen = [...badgeSeen];
+            observer.unobserve(entry.target);
           }
-        },
-        { threshold: 0.35 }
-      );
+        }
+      },
+      { threshold: 0.35 }
+    );
 
+    if (!disposed) {
       badgeCardEls.forEach((el) => {
         if (el) observer?.observe(el);
       });
-    });
+    }
 
     return () => {
       disposed = true;
@@ -267,7 +267,7 @@
             <div class="empty-mascot">
               <div class="empty-mascot-bg"></div>
               <div class="empty-mascot-icon">
-                <dotlottie-player src="/animations/empty_state_mascot.lottie" autoplay loop="true"></dotlottie-player>
+            <LottieAnimation src="/animations/empty_state_mascot.json" />
               </div>
               <div class="empty-sparkle">
                 <Icon icon="lucide:sparkles" width="28" height="28" />
@@ -294,7 +294,7 @@
           <div class="progress-community">
             <DecorativeLottie
               scene="community-impact"
-              src="/animations/community-impact.lottie"
+          src="/animations/community-impact.json"
               aspectRatio="1 / 1"
             />
           </div>
@@ -318,7 +318,7 @@
               <div class="badge-card" data-badge-index={i} bind:this={badgeCardEls[i]}>
                 <div class="badge-sparkle">
                   {#if badgeSeen[i]}
-                    <dotlottie-player src="/animations/badge_burst.lottie" autoplay></dotlottie-player>
+                    <LottieAnimation src="/animations/badge_burst.json" loop={false} />
                   {/if}
                 </div>
                 <div class="badge-icon" style="background:{badge.gradient};box-shadow:{badge.shadow}">
@@ -669,7 +669,7 @@
   .empty-mascot-bg { position: absolute; inset: 0; background: #FF6B6B; border-radius: 32px; transform: rotate(6deg); box-shadow: 0 16px 40px rgba(255,107,107,0.3); }
   .empty-mascot-icon { position: absolute; inset: 0; background: var(--color-surface); border-radius: 32px; transform: rotate(-3deg); border: 4px solid var(--card-border-strong); display: flex; align-items: center; justify-content: center; color: #FF6B6B; transition: transform .3s; }
   .empty-mascot-icon:hover { transform: rotate(0deg); }
-  .empty-mascot-icon dotlottie-player { width: 168px; height: 168px; display: block; }
+  .empty-mascot-icon :global(.lottie-animation) { width: 168px; height: 168px; display: block; }
   .empty-sparkle { position: absolute; top: -16px; right: -16px; color: #FF6B6B; animation: bounce 2s ease-in-out infinite; }
   @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
   .empty-card h2 { font-size: clamp(1.5rem, 3vw, 2.25rem); font-weight: 800; margin: 0 0 16px; color: var(--color-text); }
@@ -694,7 +694,7 @@
   .badges-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
   .badge-card { position: relative; overflow: hidden; background: var(--color-surface); border-radius: 24px; padding: 20px 16px; display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid var(--card-border); box-shadow: 0 2px 8px rgba(0,0,0,0.03); transition: transform .3s; }
   .badge-sparkle { position: absolute; inset: 0; pointer-events: none; }
-  .badge-sparkle dotlottie-player { width: 100%; height: 100%; display: block; }
+  .badge-sparkle :global(.lottie-animation) { width: 100%; height: 100%; display: block; }
   .badge-card:hover { transform: translateY(-4px); }
   .badge-icon { position: relative; width: 80px; height: 80px; border-radius: 24px; display: flex; align-items: center; justify-content: center; color: #fff; margin-bottom: 12px; transition: transform .3s; overflow: visible; }
   .badge-card:hover .badge-icon { transform: scale(1.1); }

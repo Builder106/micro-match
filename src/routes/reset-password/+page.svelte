@@ -52,12 +52,12 @@
 
 <div class="auth-shell">
   <div class="left-panel">
-    <AuthBrandPanel animation="/animations/confetti.lottie" />
+    <AuthBrandPanel animation="/animations/confetti.json" />
   </div>
 
   <section class="right-panel">
     <div class="mobile-stage">
-      <AuthBrandPanel compact animation="/animations/confetti.lottie" />
+      <AuthBrandPanel compact animation="/animations/confetti.json" />
     </div>
 
     <div class="auth-card">

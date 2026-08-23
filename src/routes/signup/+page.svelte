@@ -29,12 +29,12 @@
 
 <div class="auth-shell">
   <div class="left-panel">
-    <AuthBrandPanel animation="/animations/brainstorming.lottie" />
+    <AuthBrandPanel animation="/animations/brainstorming.json" />
   </div>
 
   <section class="right-panel">
     <div class="mobile-stage">
-      <AuthBrandPanel compact animation="/animations/brainstorming.lottie" />
+      <AuthBrandPanel compact animation="/animations/brainstorming.json" />
     </div>
 
     <div class="auth-card">
@@ -396,4 +396,3 @@
     }
   }
 </style>
-

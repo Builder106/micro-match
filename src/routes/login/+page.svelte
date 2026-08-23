@@ -41,12 +41,12 @@
 
 <div class="auth-shell">
   <div class="left-panel">
-    <AuthBrandPanel animation="/animations/collaboration.lottie" />
+    <AuthBrandPanel animation="/animations/collaboration.json" />
   </div>
 
   <section class="right-panel">
     <div class="mobile-stage">
-      <AuthBrandPanel compact animation="/animations/collaboration.lottie" />
+      <AuthBrandPanel compact animation="/animations/collaboration.json" />
     </div>
 
     <div class="auth-card">
@@ -312,4 +312,3 @@
     }
   }
 </style>
-

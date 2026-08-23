@@ -1,6 +1,6 @@
 <script lang="ts">
   import Icon from '@iconify/svelte';
-  import { onMount } from 'svelte';
+  import LottieAnimation from '$lib/components/LottieAnimation.svelte';
 
   export let data: {
     userRole: 'anonymous' | 'user' | 'ngo' | 'volunteer';
@@ -30,11 +30,6 @@
 
   // Trend chart scaling.
   const maxTrendBadges = Math.max(1, ...analytics.engagementTrend.map((t) => t.badges));
-
-  let lottieReady = false;
-  onMount(() => {
-    import('@dotlottie/player-component').then(() => { lottieReady = true; }).catch(() => {});
-  });
 
   function relativeWhen(iso: string): string {
     const d = new Date(iso);
@@ -104,11 +99,9 @@
     <!-- ───── Empty state for no data ───── -->
     <div class="ba-empty">
       <div class="ba-mascot">
-        {#if lottieReady}
-          <dotlottie-player src="/animations/empty_state_mascot.lottie" autoplay loop="true"></dotlottie-player>
-        {:else}
+        <LottieAnimation src="/animations/empty_state_mascot.json">
           <Icon icon="lucide:bar-chart-3" width="64" height="64" />
-        {/if}
+        </LottieAnimation>
       </div>
       <h3>No data yet.</h3>
       <p>Once volunteers complete tasks and earn your badges, this is where you'll see distribution, trends, and recent activity.</p>
@@ -296,7 +289,7 @@
     box-shadow: 0 16px 40px rgba(255, 107, 107, 0.05);
   }
   .ba-mascot { width: 140px; height: 140px; display: flex; align-items: center; justify-content: center; color: var(--color-primary-light); }
-  .ba-mascot :global(dotlottie-player) { width: 100%; height: 100%; }
+  .ba-mascot :global(.lottie-animation) { width: 100%; height: 100%; }
   .ba-empty h3 { font-size: 22px; font-weight: 800; margin: 0; }
   .ba-empty p { color: color-mix(in srgb, var(--color-text) 60%, transparent); font-size: 15px; font-weight: 500; max-width: 380px; margin: 0; }
 </style>

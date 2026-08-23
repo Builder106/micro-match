@@ -10,7 +10,7 @@ describe('DecorativeLottie', () => {
     );
 
     const { container } = render(DecorativeLottie, {
-      src: '/animations/example.lottie',
+      src: '/animations/example.json',
       scene: 'example-scene',
       aspectRatio: '3 / 2'
     });
@@ -19,7 +19,7 @@ describe('DecorativeLottie', () => {
     expect(scene).toHaveAttribute('aria-hidden', 'true');
     expect(scene).toHaveStyle({ '--motion-aspect-ratio': '3 / 2' });
     expect(scene?.querySelector('svg.static-fallback')).toBeInTheDocument();
-    expect(scene?.querySelector('dotlottie-player')).not.toBeInTheDocument();
+    expect(scene?.querySelector('.lottie-animation')).not.toBeInTheDocument();
 
     vi.unstubAllGlobals();
   });

@@ -1,15 +1,8 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import LottieAnimation from '$lib/components/LottieAnimation.svelte';
   export let compact = false;
   export let showCopy = true;
-  export let animation = '/animations/collaboration.lottie';
-
-  let playerReady = false;
-  onMount(() => {
-    import('@dotlottie/player-component').then(() => {
-      playerReady = true;
-    });
-  });
+  export let animation = '/animations/collaboration.json';
 </script>
 
 <section class:compact class="brand-stage">
@@ -18,36 +11,9 @@
   <div class="glow glow-teal"></div>
 
   <div class="scene-wrap" aria-hidden="true">
-    {#if playerReady}
-      {#key animation}
-        <dotlottie-player
-          src={animation}
-          autoplay
-          loop="true"
-          on:ready={(e: Event) => {
-            try {
-              interface DotLottieElement extends HTMLElement {
-                setLooping?: (loop: boolean) => void;
-                play?: () => void;
-              }
-              const el = e.currentTarget as DotLottieElement | null;
-              // setLooping is the documented imperative API; the `loop` attribute
-              // is parsed as a string and "true" is what the player expects.
-              el?.setLooping?.(true);
-              el?.play?.();
-            } catch {}
-          }}
-          on:complete={(e: Event) => {
-            try {
-              interface DotLottieElement extends HTMLElement {
-                play?: () => void;
-              }
-              (e.currentTarget as DotLottieElement | null)?.play?.();
-            } catch {}
-          }}
-        ></dotlottie-player>
-      {/key}
-    {/if}
+    {#key animation}
+      <LottieAnimation src={animation} loop={true} className="auth-brand-animation" />
+    {/key}
   </div>
 
   <div class="shade"></div>
@@ -127,12 +93,12 @@
     top: 12%;
     height: 42%;
   }
-  .scene-wrap dotlottie-player {
+  .scene-wrap :global(.auth-brand-animation) {
     width: min(460px, 70%);
     height: 100%;
     display: block;
   }
-  .compact .scene-wrap dotlottie-player {
+  .compact .scene-wrap :global(.auth-brand-animation) {
     width: min(280px, 60%);
   }
   .shade {

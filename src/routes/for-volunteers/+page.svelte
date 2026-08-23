@@ -147,7 +147,7 @@
       <div class="vol-hero-visual">
         <DecorativeLottie
           scene="volunteer-helping"
-          src="/animations/volunteer-helping.lottie"
+          src="/animations/volunteer-helping.json"
           aspectRatio="4 / 3"
         />
         <div class="hero-sample-task">

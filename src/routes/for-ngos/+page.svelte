@@ -1,15 +1,20 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
+  import { createCapacityPlan, formatReviewTime, type TaskDuration } from '$lib/capacityPlan';
   import DecorativeLottie from '$lib/components/DecorativeLottie.svelte';
   import PublicShell from '$lib/components/PublicShell.svelte';
 
-  // Backlog Calculator State
-  let weeklyBacklogHours = 12;
-  let avgTaskMinutes = 15;
+  let backlogHours = 12;
+  let taskMinutes: TaskDuration = 15;
+  let deliveryDays = 4;
 
-  $: tasksCount = Math.round((weeklyBacklogHours * 60) / avgTaskMinutes);
-  $: volunteersEngaged = Math.round(tasksCount * 0.85);
-  $: estTurnaroundHours = avgTaskMinutes <= 15 ? 12 : 24;
+  const durationOptions: Array<{ value: TaskDuration; title: string; detail: string; icon: string }> = [
+    { value: 5, title: '5 minutes', detail: 'Quick check', icon: 'lucide:zap' },
+    { value: 15, title: '15 minutes', detail: 'Focused task', icon: 'lucide:clock-3' },
+    { value: 30, title: '30 minutes', detail: 'Deeper pass', icon: 'lucide:scan-search' }
+  ];
+
+  $: capacityPlan = createCapacityPlan({ backlogHours, taskMinutes, deliveryDays });
 
   const ngoPillars = [
     {
@@ -93,7 +98,7 @@
       <div class="ngo-hero-visual">
         <DecorativeLottie
           scene="ngo-document-review"
-          src="/animations/ngo-document-review.lottie"
+          src="/animations/ngo-document-review.json"
           aspectRatio="4 / 3"
         />
         <div class="hero-workflow" aria-label="Task review workflow">
@@ -165,83 +170,124 @@
     </div>
   </section>
 
-  <!-- ───── Backlog Capacity Calculator ───── -->
+  <!-- ───── Backlog Mission Planner ───── -->
   <section class="section-calc" id="backlog-calculator">
     <div class="container">
       <div class="calc-card">
         <div class="calc-head">
           <div class="calc-tag">
-            <Icon icon="lucide:calculator" width="14" height="14" />
-            <span>Capacity Calculator</span>
+            <Icon icon="lucide:layout-list" width="14" height="14" />
+            <span>Mission planner</span>
           </div>
-          <h2>Estimate Your Backlog Acceleration</h2>
-          <p>Adjust parameters to see how quickly volunteers can complete your workload.</p>
+          <h2>Turn your backlog into micro-missions</h2>
+          <p>Choose the amount of work and the task size. We will map it into a plan you can post.</p>
         </div>
 
         <div class="calc-grid">
-          <div class="calc-controls">
-            <div class="slider-group">
+          <div class="calc-controls" aria-label="Mission plan inputs">
+            <div class="calc-section-label">
+              <Icon icon="lucide:sliders-horizontal" width="17" height="17" aria-hidden="true" />
+              <span>Shape the work</span>
+            </div>
+
+            <div class="slider-group workload-group">
               <div class="slider-head">
-                <span>Weekly Workload</span>
-                <strong>{weeklyBacklogHours} Hours / Week</strong>
+                <label for="backlog-hours">Backlog to package</label>
+                <div class="hours-input">
+                  <input id="backlog-hours" type="number" min="2" max="40" step="1" bind:value={backlogHours} />
+                  <span>hours</span>
+                </div>
               </div>
               <input
+                id="backlog-range"
                 type="range"
                 min="2"
                 max="40"
                 step="1"
-                bind:value={weeklyBacklogHours}
+                aria-label="Backlog hours to package"
+                bind:value={backlogHours}
                 class="range-input"
               />
+              <div class="range-scale" aria-hidden="true"><span>2 hrs</span><span>20 hrs</span><span>40 hrs</span></div>
             </div>
 
             <div class="slider-group">
               <div class="slider-head">
-                <span>Micro-Task Duration</span>
-                <strong>{avgTaskMinutes} Minutes / Mission</strong>
+                <span id="task-size-label">Task size</span>
+                <strong>{taskMinutes}-minute missions</strong>
               </div>
-              <div class="duration-chips">
-                <button
-                  type="button"
-                  class="dur-chip"
-                  class:selected={avgTaskMinutes === 5}
-                  on:click={() => (avgTaskMinutes = 5)}
-                >
-                  5 Min
-                </button>
-                <button
-                  type="button"
-                  class="dur-chip"
-                  class:selected={avgTaskMinutes === 15}
-                  on:click={() => (avgTaskMinutes = 15)}
-                >
-                  15 Min
-                </button>
-                <button
-                  type="button"
-                  class="dur-chip"
-                  class:selected={avgTaskMinutes === 30}
-                  on:click={() => (avgTaskMinutes = 30)}
-                >
-                  30 Min
-                </button>
+              <div class="duration-chips" role="group" aria-labelledby="task-size-label">
+                {#each durationOptions as option (option.value)}
+                  <button
+                    type="button"
+                    class="dur-chip"
+                    class:selected={taskMinutes === option.value}
+                    aria-pressed={taskMinutes === option.value}
+                    onclick={() => (taskMinutes = option.value)}
+                  >
+                    <Icon icon={option.icon} width="17" height="17" aria-hidden="true" />
+                    <span>{option.title}</span>
+                    <small>{option.detail}</small>
+                  </button>
+                {/each}
+              </div>
+            </div>
+
+            <div class="slider-group delivery-group">
+              <div class="slider-head">
+                <span id="delivery-window-label">Finish this batch in</span>
+                <strong>{deliveryDays} days</strong>
+              </div>
+              <div class="delivery-chips" role="group" aria-labelledby="delivery-window-label">
+                {#each [2, 4, 7] as days (days)}
+                  <button
+                    type="button"
+                    class="delivery-chip"
+                    class:selected={deliveryDays === days}
+                    aria-pressed={deliveryDays === days}
+                    onclick={() => (deliveryDays = days)}
+                  >
+                    {days} days
+                  </button>
+                {/each}
               </div>
             </div>
           </div>
 
-          <div class="calc-outputs">
-            <div class="out-box">
-              <span class="out-num">{tasksCount}</span>
-              <span class="out-lbl">Missions Created / Week</span>
+          <div class="mission-plan" aria-live="polite">
+            <div class="plan-header">
+              <span>Recommended plan</span>
+              <Icon icon="lucide:sparkles" width="17" height="17" aria-hidden="true" />
             </div>
-            <div class="out-box highlight">
-              <span class="out-num">{volunteersEngaged}</span>
-              <span class="out-lbl">Active Volunteers Engaged</span>
+            <div class="plan-total">
+              <span class="plan-number">{capacityPlan.missionCount}</span>
+              <div>
+                <h3>micro-missions to post</h3>
+                <p>Each mission should have one clear deliverable and a short review path.</p>
+              </div>
             </div>
-            <div class="out-box">
-              <span class="out-num">~{estTurnaroundHours} hrs</span>
-              <span class="out-lbl">Est. Turnaround Time</span>
+
+            <div class="plan-cadence">
+              <div class="cadence-icon"><Icon icon="lucide:send" width="19" height="19" aria-hidden="true" /></div>
+              <div><strong>{capacityPlan.missionsPerDay} missions a day</strong><span>for {deliveryDays} days</span></div>
             </div>
+
+            <div class="mission-stack" aria-hidden="true">
+              <div class="mission-card mission-card-back"><span>{taskMinutes} min</span><i></i><i></i></div>
+              <div class="mission-card mission-card-middle"><span>Clear finish line</span><i></i><i></i></div>
+              <div class="mission-card mission-card-front"><Icon icon="lucide:check" width="15" height="15" /><span>Ready to match</span></div>
+            </div>
+
+            <div class="review-note">
+              <Icon icon="lucide:clipboard-check" width="18" height="18" aria-hidden="true" />
+              <div><strong>{formatReviewTime(capacityPlan.reviewMinutes)} of review time</strong><span>at 3 minutes per completed mission</span></div>
+            </div>
+
+            <details class="plan-assumptions">
+              <summary>How this plan is calculated</summary>
+              <p>We divide your backlog by the selected task size, round up so every piece has a place, and spread the missions across your chosen window.</p>
+            </details>
+            <a href="/signup" class="plan-cta">Set up this plan <Icon icon="lucide:arrow-right" width="17" height="17" aria-hidden="true" /></a>
           </div>
         </div>
       </div>
@@ -585,27 +631,88 @@
   }
   .dur-chip:active { transform: scale(0.96); }
 
-  .calc-outputs { display: grid; grid-template-columns: 1fr; gap: 16px; }
-  .out-box {
-    background: var(--color-surface);
-    border: 1px solid var(--card-border-strong);
-    border-radius: 20px;
-    padding: 20px;
-    text-align: center;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Mission planner */
+  .calc-card {
+    background: linear-gradient(135deg, var(--color-surface) 0%, var(--color-surface) 65%, rgba(255, 107, 107, 0.06) 100%);
+    box-shadow: 0 18px 48px rgba(15, 23, 42, 0.05);
+    transition: none;
   }
-  .out-box:hover {
-    transform: scale(1.03);
-    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+  .calc-card:hover { box-shadow: 0 18px 48px rgba(15, 23, 42, 0.05); }
+  .calc-head { max-width: 660px; margin-bottom: 48px; }
+  .calc-head h2 { font-size: clamp(1.9rem, 3.2vw, 2.75rem); line-height: 1.1; overflow-wrap: anywhere; margin-bottom: 12px; }
+  .calc-head p { font-size: 16px; line-height: 1.55; }
+  .calc-tag { padding: 6px 12px; margin-bottom: 14px; }
+  .calc-grid { grid-template-columns: minmax(0, 1fr); gap: 32px; align-items: stretch; }
+  @media (min-width: 960px) { .calc-grid { grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: 48px; } }
+
+  .calc-controls { min-width: 0; }
+  .calc-section-label { display: flex; align-items: center; gap: 8px; color: var(--color-text); font-size: 14px; font-weight: 800; margin-bottom: 24px; }
+  .calc-section-label :global(svg) { color: var(--color-primary); }
+  .slider-group { margin-bottom: 30px; }
+  .slider-group:last-child { margin-bottom: 0; }
+  .slider-head { align-items: center; gap: 12px; margin-bottom: 12px; }
+  .slider-head label { cursor: pointer; }
+  .hours-input { display: inline-flex; align-items: center; gap: 6px; color: var(--color-text-secondary); font-size: 13px; }
+  .hours-input input { width: 48px; border: 0; border-bottom: 2px solid var(--color-primary); background: transparent; color: var(--color-text); font: inherit; font-weight: 800; text-align: right; padding: 2px; }
+  .hours-input input:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 3px; border-radius: 2px; }
+  .range-scale { display: flex; justify-content: space-between; color: var(--color-text-tertiary); font-size: 12px; margin-top: 6px; }
+
+  .duration-chips { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .dur-chip { align-items: flex-start; display: flex; flex-direction: column; gap: 4px; min-width: 0; padding: 14px; border-radius: 16px; color: var(--color-text); font-size: 13px; transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, background 0.2s ease; }
+  .dur-chip :global(svg) { color: var(--color-primary); }
+  .dur-chip small { color: var(--color-text-secondary); font-size: 11px; font-weight: 600; }
+  .dur-chip:hover:not(.selected) { color: var(--color-text); }
+  .dur-chip.selected { background: rgba(255, 107, 107, 0.1); border-color: var(--color-primary); box-shadow: 0 8px 18px rgba(255, 107, 107, 0.14); }
+  .dur-chip.selected :global(svg), .dur-chip.selected small { color: var(--color-primary); }
+  .dur-chip:focus-visible, .delivery-chip:focus-visible, .plan-cta:focus-visible { outline: 3px solid color-mix(in srgb, var(--color-primary) 35%, transparent); outline-offset: 3px; }
+
+  .delivery-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .delivery-chip { min-height: 38px; padding: 0 15px; border: 1px solid var(--card-border-strong); border-radius: 9999px; background: transparent; color: var(--color-text-secondary); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease, transform 0.2s ease; }
+  .delivery-chip:hover { border-color: var(--color-primary); color: var(--color-primary); }
+  .delivery-chip.selected { background: var(--color-text); border-color: var(--color-text); color: var(--color-surface); }
+
+  .mission-plan { align-self: stretch; background: var(--color-surface); border: 1px solid var(--card-border-strong); border-radius: 24px; box-shadow: 0 18px 30px rgba(15, 23, 42, 0.08); min-width: 0; overflow: hidden; padding: 24px; }
+  .plan-header { display: flex; align-items: center; justify-content: space-between; color: var(--color-primary); font-size: 13px; font-weight: 800; }
+  .plan-total { align-items: flex-start; display: flex; gap: 14px; margin: 24px 0; }
+  .plan-number { color: var(--color-primary); font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(3.4rem, 6vw, 4.7rem); font-weight: 800; letter-spacing: -0.07em; line-height: 0.88; }
+  .plan-total h3 { color: var(--color-text); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; line-height: 1.2; margin: 2px 0 7px; }
+  .plan-total p { color: var(--color-text-secondary); font-size: 13px; line-height: 1.5; margin: 0; }
+  .plan-cadence { align-items: center; background: var(--color-surface-variant); border-radius: 16px; display: flex; gap: 12px; padding: 12px; }
+  .cadence-icon { align-items: center; background: rgba(255, 107, 107, 0.14); border-radius: 12px; color: var(--color-primary); display: flex; height: 38px; justify-content: center; width: 38px; }
+  .plan-cadence strong, .plan-cadence span, .review-note strong, .review-note span { display: block; }
+  .plan-cadence strong, .review-note strong { color: var(--color-text); font-size: 13px; }
+  .plan-cadence span, .review-note span { color: var(--color-text-secondary); font-size: 12px; margin-top: 2px; }
+
+  .mission-stack { height: 100px; margin: 26px 0 18px; position: relative; }
+  .mission-card { align-items: center; border: 1px solid var(--card-border-strong); border-radius: 14px; box-sizing: border-box; display: flex; font-size: 12px; font-weight: 700; height: 52px; left: 50%; padding: 0 15px; position: absolute; transform-origin: center; transition: transform 0.3s ease; width: min(100%, 278px); }
+  .mission-card i { background: var(--card-border-strong); border-radius: 9999px; display: block; height: 6px; margin-left: 8px; width: 28px; }
+  .mission-card i:last-child { opacity: 0.6; width: 16px; }
+  .mission-card-back { background: var(--color-surface-variant); color: var(--color-text-secondary); top: 2px; transform: translateX(-50%) rotate(-5deg); }
+  .mission-card-middle { background: #fff5f0; color: var(--color-text-secondary); top: 21px; transform: translateX(-50%) rotate(4deg); }
+  .mission-card-front { background: var(--color-primary); box-shadow: 0 12px 20px rgba(255, 107, 107, 0.22); color: #fff; gap: 7px; justify-content: center; top: 45px; transform: translateX(-50%); }
+  .mission-plan:hover .mission-card-back { transform: translateX(-56%) rotate(-8deg); }
+  .mission-plan:hover .mission-card-middle { transform: translateX(-44%) rotate(7deg); }
+
+  .review-note { align-items: center; border-top: 1px solid var(--card-border); display: flex; gap: 10px; padding-top: 18px; }
+  .review-note :global(svg) { color: var(--color-success); flex: 0 0 auto; }
+  .plan-assumptions { color: var(--color-text-secondary); font-size: 12px; line-height: 1.5; margin-top: 16px; }
+  .plan-assumptions summary { color: var(--color-text); cursor: pointer; font-weight: 700; }
+  .plan-assumptions p { margin: 8px 0 0; }
+  .plan-cta { align-items: center; background: var(--color-primary); border-radius: 12px; color: #fff; display: flex; font-size: 14px; font-weight: 800; gap: 8px; justify-content: center; margin-top: 20px; min-height: 46px; text-decoration: none; transition: background 0.2s ease, transform 0.2s ease; }
+  .plan-cta:hover { background: var(--color-primary-variant); transform: translateY(-1px); }
+  @media (max-width: 520px) {
+    .slider-head { align-items: flex-start; flex-direction: column; }
+    .duration-chips { gap: 7px; }
+    .dur-chip { padding: 10px; }
+    .dur-chip small { display: none; }
+    .plan-total { align-items: center; flex-direction: column; text-align: center; }
+    .plan-number { font-size: 4rem; }
   }
-  .out-box.highlight { background: var(--color-primary); color: #FFF; border-color: var(--color-primary); }
-  .out-box.highlight:hover {
-    box-shadow: 0 10px 24px rgba(255, 107, 107, 0.3);
+  @media (prefers-reduced-motion: reduce) {
+    .dur-chip, .delivery-chip, .mission-card, .plan-cta { transition: none; }
+    .mission-plan:hover .mission-card-back { transform: translateX(-50%) rotate(-5deg); }
+    .mission-plan:hover .mission-card-middle { transform: translateX(-50%) rotate(4deg); }
   }
-  .out-num { display: block; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 32px; font-weight: 800; color: var(--color-primary); }
-  .out-box.highlight .out-num { color: #FFFFFF; }
-  .out-lbl { font-size: 13px; font-weight: 700; color: var(--color-text-tertiary); }
-  .out-box.highlight .out-lbl { color: rgba(255, 255, 255, 0.9); }
 
   /* CTA */
   .ngo-cta-section { padding: 96px 0; background: var(--color-surface-variant); width: 100%; }
