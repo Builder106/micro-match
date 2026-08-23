@@ -36,7 +36,7 @@
       <Icon icon="lucide:layout-list" width="15" height="15" aria-hidden="true" />
       <span>Mission planner</span>
     </div>
-    <h2 id="mission-planner-title">Plan a batch volunteers can finish</h2>
+    <h2 id="mission-planner-title">Plan a batch that volunteers can finish</h2>
     <p>Package work that can be completed independently, then release it at a pace your team can review.</p>
   </div>
 
@@ -79,7 +79,7 @@
             backlogMessage = `Choose between ${minimumBacklogHours} and ${maximumBacklogHours} hours.`;
           }}
         />
-        <div class="range-scale" aria-hidden="true"><span>2 hours</span><span>20</span><span>40 hours</span></div>
+        <div class="range-scale" aria-hidden="true"><span>2 hours</span><span>20 hours</span><span>40 hours</span></div>
         <p id="backlog-help" class:error={backlogHasError} class="field-help">{backlogMessage}</p>
       </fieldset>
 
@@ -152,7 +152,7 @@
       </details>
 
       <a href="/signup" class="plan-cta" aria-label={`Create an NGO profile to post ${capacityPlan.missionCount} missions`}>
-        Create NGO profile
+        Create profile to post this plan
         <Icon icon="lucide:arrow-right" width="17" height="17" aria-hidden="true" />
       </a>
     </aside>

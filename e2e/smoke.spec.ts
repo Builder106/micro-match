@@ -108,7 +108,7 @@ test.describe('public pages', () => {
     await page.goto('/for-ngos', { waitUntil: 'networkidle' });
     const plan = page.locator('.mission-plan');
 
-    await expect(page.getByRole('heading', { name: /Plan a batch volunteers can finish/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Plan a batch that volunteers can finish/i })).toBeVisible();
     await expect(plan.getByText('48', { exact: true })).toBeVisible();
     await expect(plan.getByText('12 on your busiest day', { exact: true })).toBeVisible();
     await expect(plan.getByText('2 hr 24 min to review', { exact: true })).toBeVisible();
