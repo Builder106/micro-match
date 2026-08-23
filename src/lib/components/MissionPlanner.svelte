@@ -172,10 +172,10 @@
   .planner-heading > p { color: var(--color-text-secondary); font-size: var(--text-base); line-height: var(--leading-relaxed); }
   .planner-workbench { display: grid; gap: clamp(var(--space-8), 5vw, var(--space-12)); grid-template-columns: minmax(0, 1fr); }
   .planner-inputs { align-self: start; display: grid; min-width: 0; }
-  .planner-step { border: 0; border-bottom: 1px solid var(--card-border-strong); margin: 0; min-width: 0; padding: 0 0 var(--space-6); }
+  .planner-step { border: 0; margin: 0; min-width: 0; padding: 0 0 var(--space-6); }
   .planner-step + .planner-step { padding-top: var(--space-6); }
-  .planner-step:last-child { border-bottom: 0; padding-bottom: 0; }
-  .planner-step legend { color: var(--color-text); display: flex; font-size: var(--text-lg); font-weight: var(--font-bold); gap: var(--space-3); padding: 0; }
+  .planner-step:last-child { padding-bottom: 0; }
+  .planner-step legend { border-bottom: 1px solid var(--card-border-strong); box-sizing: border-box; color: var(--color-text); display: flex; font-size: var(--text-lg); font-weight: var(--font-bold); gap: var(--space-3); padding: 0 0 var(--space-3); width: 100%; }
   .planner-step legend span { align-items: center; background: color-mix(in srgb, var(--color-primary) 12%, transparent); border-radius: var(--radius-full); color: var(--color-primary); display: inline-flex; font-size: var(--text-xs); height: 1.5rem; justify-content: center; width: 1.5rem; }
   .field-heading { align-items: center; display: flex; gap: var(--space-4); justify-content: space-between; margin-top: var(--space-4); }
   .field-heading label { color: var(--color-text); font-size: var(--text-sm); font-weight: var(--font-bold); }
