@@ -4,6 +4,10 @@
 > things happen — retrospectives need this raw material to land.
 > Reverse-chronological; one paragraph max per entry.
 
+## 2026-08-22 — Public landing scenes play once and respect motion preferences #decision
+
+Replaced the fictional profile and completion-count hero panels on the volunteer and NGO landing pages with three local dotLottie scenes. The volunteer scene pairs with a concrete sample task. The NGO scene shows the real brief, submission, and review sequence. The homepage impact scene replaces its confetti. A shared player loads only after its scene is visible, plays once, and shows a static fallback for reduced motion or a failed player import. The app already had the dotLottie component dependency, so this change adds no package.
+
 ## 2026-08-22 — Translation no longer blocks task-page navigation #decision
 
 Moved the LibreTranslate call out of the task page load and into a task-scoped server endpoint. Selecting a language now updates the URL and leaves the original task page available while the browser requests translated display fields. The task detail panel shows a localized translating state and skeleton instead of making the entire page wait. The endpoint accepts only a supported language and loads the task itself, so the LibreTranslate key and arbitrary user-supplied text never reach the browser. Its response is privately cacheable for fifteen minutes; the existing successful-translation cache still applies on the server.

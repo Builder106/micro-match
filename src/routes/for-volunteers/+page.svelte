@@ -1,5 +1,6 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
+  import DecorativeLottie from '$lib/components/DecorativeLottie.svelte';
   import PublicShell from '$lib/components/PublicShell.svelte';
   import { fly, fade } from 'svelte/transition';
 
@@ -117,7 +118,7 @@
 
 <svelte:head>
   <title>For Volunteers | MicroMatch</title>
-  <meta name="description" content="Turn spare coffee breaks into real impact. Earn badges, level up your profile, and support global NGOs." />
+  <meta name="description" content="Find short volunteer tasks and submit finished work for NGO review." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -134,7 +135,7 @@
         </div>
         <h1>Real impact in a <br /><span class="coral-gradient">coffee break.</span></h1>
         <p>
-          Turn spare minutes into verified change. Learn new skills, support world-changing non-profits, and build your digital volunteer portfolio—one micro-mission at a time.
+          Claim a task with a clear time estimate, complete it when you have a few spare minutes, and submit the finished work for NGO review.
         </p>
 
         <div class="vol-hero-btns">
@@ -143,36 +144,20 @@
         </div>
       </div>
 
-      <!-- Floating Volunteer Vault Card Mockup -->
       <div class="vol-hero-visual">
-        <div class="vault-card">
-          <div class="vc-top">
-            <div class="vc-user">
-              <div class="vc-avatar">
-                <Icon icon="lucide:smile" width="24" height="24" style="color:#FF6B6B" />
-              </div>
-              <div>
-                <strong>Elena Vance</strong>
-                <span class="vc-lvl">Level 12 Volunteer</span>
-              </div>
-            </div>
-            <span class="vc-xp">1,450 XP</span>
+        <DecorativeLottie
+          scene="volunteer-helping"
+          src="/animations/volunteer-helping.lottie"
+          aspectRatio="4 / 3"
+        />
+        <div class="hero-sample-task">
+          <div class="hero-sample-task-head">
+            <span>Sample task</span>
+            <span class="hero-sample-task-time"><Icon icon="lucide:clock-3" width="14" height="14" />15 min</span>
           </div>
-
-          <div class="vc-badges">
-            <div class="badge-box gold">
-              <Icon icon="lucide:trophy" width="22" height="22" />
-              <span>Speed Demon</span>
-            </div>
-            <div class="badge-box blue">
-              <Icon icon="lucide:globe" width="22" height="22" />
-              <span>Global Citizen</span>
-            </div>
-            <div class="badge-box green">
-              <Icon icon="lucide:sparkles" width="22" height="22" />
-              <span>Perfect Week</span>
-            </div>
-          </div>
+          <p class="hero-sample-task-ngo">Doctors Without Borders</p>
+          <h2>Translate a medical dosage flyer to Spanish</h2>
+          <p class="hero-sample-task-output">Submit the translated flyer copy for NGO review.</p>
         </div>
       </div>
     </div>
@@ -416,55 +401,54 @@
   }
   .btn-outline-dark:active { transform: scale(0.97); }
 
-  /* Vault Card Mockup */
+  /* Hero illustration and sample task */
   .vol-hero-visual {
     display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 20px;
     justify-content: flex-end;
   }
-  .vault-card {
+  .vol-hero-visual :global(.decorative-lottie) {
+    max-width: 440px;
+    width: 100%;
+  }
+  .hero-sample-task {
     background: var(--color-surface);
     color: var(--color-text);
     border: 1px solid var(--card-border-strong);
-    border-radius: 28px;
-    padding: 28px;
-    max-width: 480px;
+    border-radius: 20px;
+    padding: 20px;
+    max-width: 400px;
     width: 100%;
-    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
   }
-  .vault-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 28px 60px rgba(15, 23, 42, 0.12);
-    border-color: var(--color-primary);
-  }
-  .vc-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-  .vc-user { display: flex; align-items: center; gap: 12px; }
-  .vc-avatar { width: 44px; height: 44px; border-radius: 50%; background: rgba(255, 107, 107, 0.12); color: var(--color-primary); display: flex; align-items: center; justify-content: center; transition: transform 0.2s ease; }
-  .vault-card:hover .vc-avatar { transform: scale(1.1) rotate(6deg); }
-  .vc-user strong { display: block; font-size: 15px; color: var(--color-text); }
-  .vc-lvl { font-size: 12px; color: var(--color-text-secondary); font-weight: 600; }
-  .vc-xp { background: #059669; color: #FFF; font-size: 12px; font-weight: 800; padding: 4px 12px; border-radius: 9999px; }
-
-  .vc-badges { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  .badge-box {
-    padding: 16px 10px;
-    border-radius: 18px;
+  .hero-sample-task-head {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    text-align: center;
-    gap: 8px;
-    font-size: 11px;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--color-text-tertiary);
+    font-size: 12px;
     font-weight: 700;
-    color: #FFF;
-    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .badge-box:hover {
-    transform: scale(1.08) rotate(3deg);
+  .hero-sample-task-time {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--color-primary);
   }
-  .badge-box.gold { background: linear-gradient(135deg, #FDE68A, #F59E0B); color: #78350F; }
-  .badge-box.blue { background: linear-gradient(135deg, #93C5FD, #2563EB); }
-  .badge-box.green { background: linear-gradient(135deg, #6EE7B7, #059669); }
+  .hero-sample-task-ngo {
+    color: var(--color-text-secondary);
+    font-size: 13px;
+    font-weight: 700;
+    margin: 14px 0 6px;
+  }
+  .hero-sample-task h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; line-height: 1.35; margin: 0; }
+  .hero-sample-task-output { color: var(--color-text-secondary); font-size: 13px; line-height: 1.5; margin: 10px 0 0; }
+  @media (max-width: 1023px) {
+    .vol-hero-visual { align-items: flex-start; }
+  }
 
   /* Pillars */
   .section-pillars {

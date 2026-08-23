@@ -1,5 +1,6 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
+  import DecorativeLottie from '$lib/components/DecorativeLottie.svelte';
   import PublicShell from '$lib/components/PublicShell.svelte';
 
   // Backlog Calculator State
@@ -63,7 +64,7 @@
 
 <svelte:head>
   <title>For NGOs | MicroMatch</title>
-  <meta name="description" content="Clear your non-profit backlog in minutes with verified volunteer submissions." />
+  <meta name="description" content="Turn small pieces of your backlog into tasks and review volunteer submissions." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -80,7 +81,7 @@
         </div>
         <h1>Post tasks, <br /><span class="coral-gradient">not job openings.</span></h1>
         <p>
-          Clear the small stuff that never gets done. MicroMatch lets NGOs break down backlogs into 5 to 30-minute micro-tasks completed by eager, skilled volunteers worldwide.
+          Turn a defined piece of backlog into a task volunteers can claim. Review each submission before approving it for your organization.
         </p>
 
         <div class="ngo-hero-btns">
@@ -89,32 +90,18 @@
         </div>
       </div>
 
-      <!-- Floating NGO Card Mockup -->
       <div class="ngo-hero-visual">
-        <div class="ngo-card-mockup">
-          <div class="ncm-top">
-            <div class="ncm-verified-chip">
-              <Icon icon="lucide:badge-check" width="16" height="16" style="color:#059669" />
-              <span>IRS 501(c)(3) Verified NGO</span>
-            </div>
-            <span class="ncm-count">142 Tasks Completed</span>
-          </div>
-
-          <div class="ncm-body">
-            <h3>Doctors Without Borders</h3>
-            <p class="ncm-desc">Global medical humanitarian aid organization.</p>
-
-            <div class="ncm-queue">
-              <div class="nq-head">
-                <Icon icon="lucide:inbox" width="14" height="14" />
-                <span>Active Task Queue</span>
-              </div>
-              <div class="nq-item">
-                <span>Medical Flyer Spanish Translation (15m)</span>
-                <span class="nq-badge">Approved</span>
-              </div>
-            </div>
-          </div>
+        <DecorativeLottie
+          scene="ngo-document-review"
+          src="/animations/ngo-document-review.lottie"
+          aspectRatio="4 / 3"
+        />
+        <div class="hero-workflow" aria-label="Task review workflow">
+          <span>Task brief</span>
+          <Icon icon="lucide:arrow-right" width="16" height="16" aria-hidden="true" />
+          <span>Volunteer submission</span>
+          <Icon icon="lucide:arrow-right" width="16" height="16" aria-hidden="true" />
+          <span>NGO review</span>
         </div>
       </div>
     </div>
@@ -369,100 +356,39 @@
   }
   .btn-outline-dark:active { transform: scale(0.97); }
 
-  /* NGO Card Mockup */
+  /* Hero illustration and review workflow */
   .ngo-hero-visual {
     display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 20px;
     justify-content: flex-end;
   }
-  .ngo-card-mockup {
-    background: var(--color-surface);
-    color: var(--color-text);
-    border: 1px solid var(--card-border-strong);
-    border-radius: 28px;
-    padding: 28px;
-    max-width: 480px;
+  .ngo-hero-visual :global(.decorative-lottie) {
+    max-width: 440px;
     width: 100%;
-    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .ngo-card-mockup:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 28px 60px rgba(15, 23, 42, 0.12);
-    border-color: var(--color-primary);
-  }
-  .ncm-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-  }
-  .ncm-verified-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 12px;
-    background: rgba(5, 150, 105, 0.12);
-    color: #059669;
-    border-radius: 9999px;
-    font-size: 12px;
-    font-weight: 700;
-    transition: transform 0.2s ease;
-  }
-  .ngo-card-mockup:hover .ncm-verified-chip {
-    transform: scale(1.05);
-  }
-  .ncm-count {
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--color-text-tertiary);
-  }
-
-  .ncm-body h3 {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 22px;
-    font-weight: 800;
+  .hero-workflow {
+    background: var(--color-surface);
+    border: 1px solid var(--card-border-strong);
+    border-radius: 20px;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
     color: var(--color-text);
-    margin: 0 0 4px;
-  }
-  .ncm-desc {
-    font-size: 14px;
-    color: var(--color-text-secondary);
-    margin: 0 0 20px;
-  }
-
-  .ncm-queue {
-    background: var(--color-surface-variant);
-    border: 1px solid var(--card-border);
-    border-radius: 18px;
-    padding: 16px;
-    transition: border-color 0.2s ease;
-  }
-  .ngo-card-mockup:hover .ncm-queue {
-    border-color: var(--color-primary);
-  }
-  .nq-head {
     display: flex;
     align-items: center;
-    gap: 6px;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    max-width: 440px;
+    padding: 16px 20px;
+    width: 100%;
     font-size: 13px;
     font-weight: 700;
-    color: var(--color-text);
-    margin-bottom: 10px;
   }
-  .nq-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 13px;
-    color: var(--color-text-secondary);
-  }
-  .nq-badge {
-    background: #059669;
-    color: #FFF;
-    font-size: 11px;
-    font-weight: 700;
-    padding: 2px 10px;
-    border-radius: 9999px;
+  .hero-workflow :global(svg) { color: var(--color-primary); flex-shrink: 0; }
+  @media (max-width: 959px) {
+    .ngo-hero-visual { align-items: flex-start; }
+    .hero-workflow { justify-content: flex-start; }
   }
 
   /* Pillars */

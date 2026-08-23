@@ -10,6 +10,7 @@ test.describe('public pages', () => {
     await expect(page).toHaveTitle(/MicroMatch/);
     await expect(page.getByRole('heading', { name: /Make a big impact/i })).toBeVisible();
     await expect(page.getByRole('link', { name: /Find a Task/i }).first()).toBeVisible();
+    await expect(page.locator('[data-motion-scene="community-impact"]')).toBeAttached();
   });
 
   test('feed page renders the search + filter chips', async ({ page }) => {
@@ -93,15 +94,29 @@ test.describe('public pages', () => {
     expect(isDarkAfter).not.toBe(isDarkBefore);
   });
 
-  test('for-ngos page renders hero section and NGO card mockup', async ({ page }) => {
+  test('for-ngos page renders its task-review hero scene', async ({ page }) => {
     await page.goto('/for-ngos');
     await expect(page.getByRole('heading', { level: 1, name: /Post tasks/i })).toBeVisible();
-    await expect(page.getByText(/IRS 501\(c\)\(3\) Verified NGO/i)).toBeVisible();
+    await expect(page.locator('[data-motion-scene="ngo-document-review"]')).toBeAttached();
+    await expect(page.locator('[data-motion-scene="ngo-document-review"] dotlottie-player')).toBeAttached();
+    await expect(page.getByText('Task brief')).toBeVisible();
+    await expect(page.getByText('Volunteer submission')).toBeVisible();
+    await expect(page.getByText('NGO review')).toBeVisible();
   });
 
-  test('for-volunteers page renders hero section', async ({ page }) => {
+  test('for-volunteers page renders its contribution hero scene', async ({ page }) => {
     await page.goto('/for-volunteers');
     await expect(page.getByRole('heading', { level: 1, name: /Real impact/i })).toBeVisible();
+    await expect(page.locator('[data-motion-scene="volunteer-helping"]')).toBeAttached();
+    await expect(page.locator('[data-motion-scene="volunteer-helping"] dotlottie-player')).toBeAttached();
+    await expect(page.getByText('Sample task', { exact: true })).toBeVisible();
+  });
+
+  test('campaign Lottie scenes stay static when reduced motion is preferred', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/for-volunteers');
+    await expect(page.locator('[data-motion-scene="volunteer-helping"]')).toBeAttached();
+    await expect(page.locator('[data-motion-scene="volunteer-helping"] dotlottie-player')).toHaveCount(0);
   });
 
   test('how-it-works page renders process ribbon', async ({ page }) => {
