@@ -12,6 +12,18 @@
   let mobileMenuOpen = false;
   let menuToggleEl: HTMLButtonElement | null = null;
   let firstMenuLinkEl: HTMLAnchorElement | null = null;
+  let languageOpen = false;
+  let languageTriggerEl: HTMLButtonElement | null = null;
+
+  const languageNames: Record<Locale, string> = {
+    en: 'English',
+    es: 'Español',
+    fr: 'Français',
+    de: 'Deutsch',
+    pt: 'Português',
+    zh: '中文',
+    ar: 'العربية'
+  };
 
   async function toggleMenu() {
     mobileMenuOpen = !mobileMenuOpen;
@@ -29,6 +41,7 @@
 
   function handleWindowKeydown(e: KeyboardEvent) {
     if (e.key === 'Escape' && mobileMenuOpen) closeMenu();
+    if (e.key === 'Escape' && languageOpen) closeLanguageMenu();
   }
 
   $: if (typeof document !== 'undefined') {
@@ -45,13 +58,49 @@
   /* eslint-disable-next-line svelte/no-immutable-reactive-statements */
   $: currentLocale = (page.data?.locale as Locale | undefined) ?? 'en';
   function resolve(pathname: string, _options?: unknown) { return localizedHref(pathname, currentLocale); }
-  function changeLocale(event: Event) {
-    const target = event.currentTarget as HTMLSelectElement;
-    window.location.href = localizedHref(page.url.pathname, target.value as Locale) + page.url.search;
+  async function toggleLanguageMenu() {
+    languageOpen = !languageOpen;
+    if (languageOpen) {
+      await tick();
+      document.querySelector<HTMLButtonElement>('.locale-option.selected')?.focus();
+    }
+  }
+  function closeLanguageMenu(returnFocus = false) {
+    if (!languageOpen) return;
+    languageOpen = false;
+    if (returnFocus) languageTriggerEl?.focus();
+  }
+  function handleWindowClick(event: MouseEvent) {
+    const target = event.target as HTMLElement | null;
+    if (languageOpen && !target?.closest('.locale-picker')) closeLanguageMenu();
+  }
+  function handleLanguageKeydown(event: KeyboardEvent) {
+    const options = Array.from(document.querySelectorAll<HTMLButtonElement>('.locale-option'));
+    const current = options.indexOf(document.activeElement as HTMLButtonElement);
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      const next = event.key === 'ArrowDown'
+        ? (current + 1 + options.length) % options.length
+        : (current - 1 + options.length) % options.length;
+      options[next]?.focus();
+    } else if (event.key === 'Home' || event.key === 'End') {
+      event.preventDefault();
+      options[event.key === 'Home' ? 0 : options.length - 1]?.focus();
+    }
+  }
+  function handleLanguageTriggerKeydown(event: KeyboardEvent) {
+    if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      if (!languageOpen) toggleLanguageMenu();
+    }
+  }
+  function selectLocale(locale: Locale) {
+    closeLanguageMenu();
+    window.location.href = localizedHref(page.url.pathname, locale) + page.url.search;
   }
 </script>
 
-<svelte:window onkeydown={handleWindowKeydown} />
+<svelte:window onkeydown={handleWindowKeydown} onclick={handleWindowClick} />
 
 <div class="landing">
   <!-- ───── Header ───── -->
@@ -69,14 +118,41 @@
       </nav>
       <div class="header-actions">
         <ThemeToggle compact={true} />
-        <label class="locale-picker">
-          <span class="sr-only">Language</span>
-          <select value={currentLocale} onchange={changeLocale} aria-label="Language">
+        <div class="locale-picker">
+          <button
+            type="button"
+            class="locale-trigger"
+            aria-label="Language"
+            aria-haspopup="listbox"
+            aria-expanded={languageOpen}
+            aria-controls="language-menu"
+            bind:this={languageTriggerEl}
+            onclick={toggleLanguageMenu}
+            onkeydown={handleLanguageTriggerKeydown}
+          >
+            <Icon icon="lucide:globe-2" width="16" height="16" aria-hidden="true" />
+            <span>{currentLocale.toUpperCase()}</span>
+            <Icon icon={languageOpen ? 'lucide:chevron-up' : 'lucide:chevron-down'} width="15" height="15" aria-hidden="true" />
+          </button>
+          {#if languageOpen}
+            <div id="language-menu" class="locale-menu" role="listbox" tabindex="0" aria-label="Choose language" onkeydown={handleLanguageKeydown}>
             {#each locales as locale (locale)}
-              <option value={locale}>{locale.toUpperCase()}</option>
+              <button
+                type="button"
+                class:selected={locale === currentLocale}
+                class="locale-option"
+                role="option"
+                aria-selected={locale === currentLocale}
+                onclick={() => selectLocale(locale)}
+              >
+                <span class="locale-code">{locale.toUpperCase()}</span>
+                <span class="locale-name">{languageNames[locale]}</span>
+                {#if locale === currentLocale}<Icon icon="lucide:check" width="16" height="16" aria-hidden="true" />{/if}
+              </button>
             {/each}
-          </select>
-        </label>
+            </div>
+          {/if}
+        </div>
         <button
           type="button"
           class="menu-toggle"
@@ -225,6 +301,17 @@
   .header-nav a:hover { color: var(--color-primary-readable); }
   .header-nav a.active { color: var(--color-primary-readable); font-weight: 600; }
   .header-actions { display: flex; align-items: center; gap: 12px; }
+  .locale-picker { position: relative; }
+  .locale-trigger { align-items: center; background: var(--color-surface); border: 1px solid var(--card-border-strong); border-radius: 9999px; color: var(--color-text); cursor: pointer; display: inline-flex; font-size: 14px; font-weight: 700; gap: 7px; height: 40px; justify-content: center; min-width: 76px; padding: 0 12px; }
+  .locale-trigger:hover { border-color: var(--color-primary-readable); color: var(--color-primary-readable); }
+  .locale-trigger:focus-visible, .locale-option:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 3px; }
+  .locale-menu { background: var(--color-surface); border: 1px solid var(--card-border-strong); border-radius: 16px; box-shadow: var(--elev-4); display: grid; gap: 4px; min-width: 220px; padding: 8px; position: absolute; right: 0; top: calc(100% + 10px); z-index: 60; }
+  .locale-option { align-items: center; background: transparent; border: 0; border-radius: 10px; color: var(--color-text); cursor: pointer; display: grid; grid-template-columns: 34px 1fr 18px; font: inherit; gap: 8px; min-height: 44px; padding: 8px 10px; text-align: left; width: 100%; }
+  .locale-option:hover, .locale-option.selected { background: color-mix(in srgb, var(--color-primary) 10%, var(--color-surface)); }
+  .locale-option.selected { color: var(--color-primary-readable); }
+  .locale-code { font-weight: 800; }
+  .locale-name { color: var(--color-text-secondary); font-size: 13px; }
+  .locale-option.selected .locale-name { color: inherit; }
   .header-signin { font-size: 14px; font-weight: 600; color: var(--color-text); text-decoration: none; display: none; }
   .header-signin:hover { color: var(--color-primary-readable); }
   .header-github { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 40px; height: 40px; padding: 0; background: var(--color-surface); border: 1px solid var(--card-border-strong); border-radius: 9999px; color: var(--color-text); font-size: 14px; font-weight: 600; text-decoration: none; transition: all .2s; cursor: pointer; }
@@ -237,6 +324,7 @@
     .header-actions .btn-sm {
       display: none;
     }
+    .locale-menu { min-width: 200px; right: -4px; }
   }
   @media (min-width: 768px) {
     .header-nav { display: flex; }
