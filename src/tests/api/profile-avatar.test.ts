@@ -60,7 +60,13 @@ describe('POST /api/profile/avatar', () => {
     mocks.accountGet.mockResolvedValue({ $id: 'user-1' });
     const res = await POST(makeEvent({ authorization: 'Bearer good-jwt' }));
     expect(res.status).toBe(200);
+
+    // When account.get returns no $id
+    mocks.accountGet.mockResolvedValue({});
+    const resNoId = await POST(makeEvent({ authorization: 'Bearer good-jwt' }));
+    expect(resNoId.status).toBe(401);
   });
+
 
   it('returns 500 when the avatar bucket is not configured', async () => {
     delete envState.APPWRITE_AVATARS_BUCKET_ID;
@@ -83,7 +89,7 @@ describe('POST /api/profile/avatar', () => {
 
   it('returns 500 when the upload throws', async () => {
     mocks.createFile.mockRejectedValue(new Error('storage down'));
-    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
 
     const res = await POST(makeEvent({ userId: 'user-1' }));
     expect(res.status).toBe(500);

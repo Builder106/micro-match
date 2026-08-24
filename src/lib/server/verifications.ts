@@ -2,6 +2,7 @@ import { env } from '$env/dynamic/private';
 import type { NgoVerification } from '$lib/types';
 
 const useAppwrite =
+  process.env.PLAYWRIGHT_A11Y_HARNESS !== '1' &&
   !!env.APPWRITE_ENDPOINT &&
   !!env.APPWRITE_PROJECT_ID &&
   !!env.APPWRITE_API_KEY &&
@@ -62,21 +63,6 @@ function fromRow(row: DbVerificationRow): NgoVerification {
   };
 }
 
-function toRow(v: Partial<NgoVerification>): Omit<DbVerificationRow, keyof import('node-appwrite').Models.Row> {
-  return {
-    userID: v.userId ?? '',
-    orgName: v.orgName ?? '',
-    country: v.country ?? '',
-    taxId: v.taxId ?? '',
-    docFileId: v.docFileId ?? null,
-    status: v.status ?? 'pending',
-    reason: v.reason ?? null,
-    submittedAt: v.submittedAt ?? '',
-    reviewedBy: v.reviewedBy ?? null,
-    reviewedAt: v.reviewedAt ?? null
-  };
-}
-
 export async function getVerificationByUserId(userId: string): Promise<NgoVerification | undefined> {
   if (!useAppwrite) return Array.from(inMemory.values()).find((v) => v.userId === userId);
   return withAppwrite(async ({ tables, dbId, table, Query }) => {
@@ -94,7 +80,7 @@ export async function listVerifications(filter?: { status?: NgoVerification['sta
   if (!useAppwrite) {
     let rows = Array.from(inMemory.values());
     if (filter?.status) rows = rows.filter((v) => v.status === filter.status);
-    return rows.sort((a, b) => (b.submittedAt || '').localeCompare(a.submittedAt || ''));
+    return rows.sort((a, b) => b.submittedAt.localeCompare(a.submittedAt));
   }
   return withAppwrite(async ({ tables, dbId, table, Query }) => {
     const queries = [Query.limit(200), Query.orderDesc('submittedAt')];
@@ -139,18 +125,18 @@ export async function upsertVerification(input: {
   return withAppwrite(async ({ tables, dbId, table, ID, Query }) => {
     // Find existing row for this user
     const existing = await tables.listRows<DbVerificationRow>(dbId, table, [Query.equal('userID', input.userId), Query.limit(1)]);
-    const payload = toRow({
-      userId: input.userId,
+    const payload: Omit<DbVerificationRow, keyof import('node-appwrite').Models.Row> = {
+      userID: input.userId,
       orgName: input.orgName,
       country: input.country,
       taxId: input.taxId,
-      docFileId: input.docFileId,
+      docFileId: input.docFileId ?? null,
       status: 'pending',
       reason: '',
       submittedAt: now,
       reviewedBy: '',
       reviewedAt: ''
-    });
+    };
 
     if (existing.rows[0]) {
       const id = existing.rows[0].$id;

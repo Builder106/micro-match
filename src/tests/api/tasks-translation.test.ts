@@ -50,5 +50,14 @@ describe('GET /api/tasks/[id]/translation', () => {
     await expect(response.json()).resolves.toEqual({
       task: { ...task, title: 'Etiquetar fotos', shortDescription: 'Añade etiquetas', description: 'Etiqueta cada foto.', tags: ['datos', 'historia'], language: 'Auto-translated' }
     });
+
+    // When task has no description
+    const noDescTask = {
+      id: 'task-2', title: 'Task 2', shortDescription: 'Short 2', tags: ['t']
+    };
+    mocks.getTaskById.mockResolvedValue(noDescTask);
+    mocks.translateTexts.mockResolvedValue(['T2', 'S2', '', 't-es']);
+    const res2 = await GET(makeEvent('?lang=es', 'task-2'));
+    expect(res2.status).toBe(200);
   });
 });

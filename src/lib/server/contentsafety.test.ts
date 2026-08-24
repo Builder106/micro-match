@@ -121,4 +121,55 @@ describe('moderateText', () => {
     expect(result.reasons).toEqual([]);
     expect(result.blocked).toBe(false);
   });
+
+  it('fails open when the success response cannot be parsed', async () => {
+    envState.AZURE_CONTENT_SAFETY_ENDPOINT = 'https://safety.example.com';
+    envState.AZURE_CONTENT_SAFETY_KEY = 'fake-key';
+
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => { throw new Error('invalid json'); }
+    }));
+
+    expect(await moderateText('text')).toEqual({ blocked: false, reasons: [] });
+  });
+
+  it('uses an empty list when neither supported response field is present', async () => {
+    envState.AZURE_CONTENT_SAFETY_ENDPOINT = 'https://safety.example.com';
+    envState.AZURE_CONTENT_SAFETY_KEY = 'fake-key';
+
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ({}) }));
+
+    await expect(moderateText('text')).resolves.toMatchObject({ blocked: false, reasons: [] });
+  });
+
+  it('normalizes missing category fields and a null response body', async () => {
+    envState.AZURE_CONTENT_SAFETY_ENDPOINT = 'https://safety.example.com';
+    envState.AZURE_CONTENT_SAFETY_KEY = 'fake-key';
+
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ categoriesAnalysis: [{}] }) })
+      .mockResolvedValueOnce({ ok: true, json: async () => null });
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(moderateText('text')).resolves.toMatchObject({
+      blocked: false,
+      reasons: [{ category: '', severity: 0 }]
+    });
+    await expect(moderateText('text')).resolves.toMatchObject({ blocked: false, reasons: [] });
+  });
+
+  it('supports responses that return categories array instead of categoriesAnalysis', async () => {
+    envState.AZURE_CONTENT_SAFETY_ENDPOINT = 'https://safety.example.com';
+    envState.AZURE_CONTENT_SAFETY_KEY = 'fake-key';
+
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ categories: [{ category: 'Sexual', severity: 5 }] })
+    }));
+
+    const result = await moderateText('text');
+    expect(result.blocked).toBe(true);
+    expect(result.reasons).toEqual([{ category: 'Sexual', severity: 5 }]);
+  });
 });

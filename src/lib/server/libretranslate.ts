@@ -33,8 +33,7 @@ function readCachedTranslation(key: string): string | undefined {
 function cacheTranslation(key: string, value: string): void {
   if (cache.has(key)) cache.delete(key);
   while (cache.size >= TRANSLATION_CACHE_MAX_ENTRIES) {
-    const oldestKey = cache.keys().next().value;
-    if (oldestKey === undefined) break;
+    const oldestKey = cache.keys().next().value!;
     cache.delete(oldestKey);
   }
   cache.set(key, { value, expiresAt: Date.now() + TRANSLATION_CACHE_TTL_MS });

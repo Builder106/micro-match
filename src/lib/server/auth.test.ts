@@ -65,6 +65,29 @@ describe('getUserRole', () => {
     expect(role).toBe('anonymous');
   });
 
+  it('treats a blank bearer value as anonymous', async () => {
+    expect(await getUserRole(makeEvent({ authorization: 'Bearer    ' }))).toBe('anonymous');
+  });
+
+  it('treats a whitespace-only bearer token as anonymous after header parsing', async () => {
+    const event = {
+      locals: {},
+      request: {
+        headers: {
+          get: vi.fn().mockReturnValue('Bearer ')
+        }
+      }
+    } as unknown as import('@sveltejs/kit').RequestEvent;
+
+    await expect(getUserRole(event)).resolves.toBe('anonymous');
+  });
+
+  it('accepts a case-insensitive bearer scheme', async () => {
+    envState.NGO_API_TOKEN = 'shared-ngo-token';
+
+    expect(await getUserRole(makeEvent({ authorization: 'bearer shared-ngo-token' }))).toBe('ngo');
+  });
+
   it('resolves role via team membership when the JWT is valid and Appwrite is configured', async () => {
     envState.APPWRITE_ENDPOINT = 'https://fake.appwrite.io/v1';
     envState.APPWRITE_PROJECT_ID = 'proj';
@@ -104,6 +127,38 @@ describe('getUserRole', () => {
     expect(await getUserRole(makeEvent({ authorization: 'Bearer good-jwt' }))).toBe('user');
   });
 
+  it('defaults to "user" for a null preference object or unrecognized string role', async () => {
+    envState.APPWRITE_ENDPOINT = 'https://fake.appwrite.io/v1';
+    envState.APPWRITE_PROJECT_ID = 'proj';
+    mocks.isUserInTeam.mockResolvedValue(false);
+    mocks.accountGet
+      .mockResolvedValueOnce({ $id: 'user-1', prefs: null })
+      .mockResolvedValueOnce({ $id: 'user-1', prefs: { role: 'admin' } });
+
+    await expect(getUserRole(makeEvent({ authorization: 'Bearer good-jwt' }))).resolves.toBe('user');
+    await expect(getUserRole(makeEvent({ authorization: 'Bearer good-jwt' }))).resolves.toBe('user');
+  });
+
+  it('falls back to prefs when an Appwrite user has no id for team checks', async () => {
+    envState.APPWRITE_ENDPOINT = 'https://fake.appwrite.io/v1';
+    envState.APPWRITE_PROJECT_ID = 'proj';
+    mocks.accountGet.mockResolvedValue({ prefs: { role: 'volunteer' } });
+
+    expect(await getUserRole(makeEvent({ authorization: 'Bearer good-jwt' }))).toBe('volunteer');
+    expect(mocks.isUserInTeam).not.toHaveBeenCalled();
+  });
+
+  it('continues when reading event.locals throws', async () => {
+    const event = {
+      get locals() {
+        throw new Error('locals unavailable');
+      },
+      request: { headers: new Headers() }
+    } as unknown as import('@sveltejs/kit').RequestEvent;
+
+    expect(await getUserRole(event)).toBe('anonymous');
+  });
+
   it('continues to the shared-token fallback when the JWT fails to resolve a user', async () => {
     envState.APPWRITE_ENDPOINT = 'https://fake.appwrite.io/v1';
     envState.APPWRITE_PROJECT_ID = 'proj';
@@ -121,6 +176,14 @@ describe('getUserRole', () => {
   it('falls back to the USER_API_TOKEN shared secret when Appwrite is not configured', async () => {
     envState.USER_API_TOKEN = 'shared-user-token';
     expect(await getUserRole(makeEvent({ authorization: 'Bearer shared-user-token' }))).toBe('user');
+  });
+
+  it('uses a shared token when only part of the Appwrite configuration is present', async () => {
+    envState.APPWRITE_ENDPOINT = 'https://fake.appwrite.io/v1';
+    envState.NGO_API_TOKEN = 'shared-ngo-token';
+
+    expect(await getUserRole(makeEvent({ authorization: 'Bearer shared-ngo-token' }))).toBe('ngo');
+    expect(mocks.accountGet).not.toHaveBeenCalled();
   });
 
   it('returns anonymous when the bearer token matches neither shared secret', async () => {

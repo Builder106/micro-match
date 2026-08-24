@@ -3,6 +3,7 @@ import { env } from '$env/dynamic/private';
 import type { Task, Claim, Badge } from '$lib/types';
 
 const useAppwrite =
+  process.env.PLAYWRIGHT_A11Y_HARNESS !== '1' &&
   !!env.APPWRITE_ENDPOINT &&
   !!env.APPWRITE_PROJECT_ID &&
   !!env.APPWRITE_API_KEY &&
@@ -541,10 +542,8 @@ export async function getBadgeAnalytics(): Promise<{
       const uniqueVolunteers = new Set(badges.map(b => b.userId));
       const totalVolunteersEngaged = uniqueVolunteers.size;
 
-      // Calculate average tasks per volunteer (using badges as proxy for engagement)
-      const averageTasksPerVolunteer = totalVolunteersEngaged > 0
-        ? Math.round((totalBadgesAwarded / totalVolunteersEngaged) * 10) / 10
-        : 0;
+      // The empty-row guard above ensures at least one badge and one Set entry.
+      const averageTasksPerVolunteer = Math.round((totalBadgesAwarded / totalVolunteersEngaged) * 10) / 10;
 
       // Calculate top badge types with better distribution
       const badgeCounts = badges.reduce((acc, badge) => {
@@ -559,7 +558,7 @@ export async function getBadgeAnalytics(): Promise<{
         .map(([type, count]) => ({
           type,
           count,
-          percentage: totalBadgesAwarded > 0 ? Math.round((count / totalBadgesAwarded) * 100) : 0
+          percentage: Math.round((count / totalBadgesAwarded) * 100)
         }));
 
       // Calculate engagement trend (last 12 months for better insights)

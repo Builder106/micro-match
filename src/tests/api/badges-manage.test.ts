@@ -65,12 +65,27 @@ describe('POST /api/badges/manage', () => {
     expect(res.status).toBe(401);
   });
 
+  it('returns 400 on invalid JSON in POST', async () => {
+    const res = await POST(makeEvent({ orgId: 'org-1' }));
+    expect(res.status).toBe(400);
+  });
+
   it('rejects empty label with 400', async () => {
     const res = await POST(makeEvent({ orgId: 'org-1', body: { ...validBadge, label: '   ' } }));
     expect(res.status).toBe(400);
     const body = await res.json();
     expect(body.error).toMatch(/label/);
   });
+
+  it('rejects an omitted label with 400', async () => {
+    const { label: _label, ...badgeWithoutLabel } = validBadge;
+
+    const res = await POST(makeEvent({ orgId: 'org-1', body: badgeWithoutLabel }));
+
+    expect(res.status).toBe(400);
+    expect(mocks.createBadgeDefinition).not.toHaveBeenCalled();
+  });
+
 
   it('rejects label longer than 100 chars', async () => {
     const res = await POST(makeEvent({
@@ -133,14 +148,55 @@ describe('POST /api/badges/manage', () => {
     expect(args.description.length).toBe(500);
   });
 
-  it('returns the created badge in a 201 response', async () => {
-    const res = await POST(makeEvent({ orgId: 'org-1', body: validBadge }));
+  it('returns the created badge in a 201 response with icon and default values', async () => {
+    const res = await POST(makeEvent({
+      orgId: 'org-1',
+      body: {
+        label: 'Simple',
+        icon: '  custom-icon  ',
+        criteria: 'milestone',
+        taskId: '  task-99  ',
+        description: '  simple desc  '
+      }
+    }));
     expect(res.status).toBe(201);
     const body = await res.json();
     expect(body.ok).toBe(true);
     expect(body.badge.id).toBe('def-1');
+    expect(mocks.createBadgeDefinition).toHaveBeenCalledWith(expect.objectContaining({
+      icon: 'custom-icon',
+      criteria: 'milestone',
+      taskId: 'task-99',
+      description: 'simple desc'
+    }));
+  });
+
+  it('uses defaults when optional badge fields are omitted', async () => {
+    const res = await POST(makeEvent({
+      orgId: 'org-1',
+      body: { label: 'First contribution' }
+    }));
+
+    expect(res.status).toBe(201);
+    expect(mocks.createBadgeDefinition).toHaveBeenCalledWith({
+      orgId: 'org-1',
+      label: 'First contribution',
+      color: '#FF6B6B',
+      icon: undefined,
+      criteria: 'task-completion',
+      taskId: undefined,
+      description: undefined
+    });
+  });
+
+
+  it('returns 500 when createBadgeDefinition throws', async () => {
+    mocks.createBadgeDefinition.mockRejectedValue(new Error('db error'));
+    const res = await POST(makeEvent({ orgId: 'org-1', body: validBadge }));
+    expect(res.status).toBe(500);
   });
 });
+
 
 describe('GET /api/badges/manage', () => {
   beforeEach(() => {
@@ -182,6 +238,12 @@ describe('DELETE /api/badges/manage', () => {
     const res = await DELETE(makeEvent({ orgId: 'org-1', deleteId: 'def-1' }));
     expect(res.status).toBe(403);
   });
+
+  it('returns 401 when not signed in for DELETE', async () => {
+    const res = await DELETE(makeEvent({ orgId: null, deleteId: 'def-1' }));
+    expect(res.status).toBe(401);
+  });
+
 
   it('returns 400 when id is missing from query', async () => {
     const res = await DELETE(makeEvent({ orgId: 'org-1' }));

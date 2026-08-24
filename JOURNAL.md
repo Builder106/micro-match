@@ -4,6 +4,10 @@
 > things happen — retrospectives need this raw material to land.
 > Reverse-chronological; one paragraph max per entry.
 
+## 2026-08-23 - Coverage gate exercises every runtime branch #decision
+
+The coverage gate now requires 100% statements, branches, functions, and lines across runtime library code and server routes. Focused tests cover normal and failure paths for API handlers, Appwrite mapping, authentication, verification, email, and translation. The coverage suite runs files serially on ampere-dev because concurrent JSDOM workers intermittently timed out there; the assertions and threshold stay the same.
+
 ## 2026-08-23 - ESLint navigation checks now run as errors #decision
 
 Promoted the six remaining project-wide ESLint exceptions to error, including no-explicit-any, preserve-caught-error, and SvelteKit navigation resolution. The navigation rule exposed internal links and goto calls that bypassed resolve, so those paths now use the SvelteKit base-path-aware resolver across the app; external proof URLs remain explicitly marked as external. bun run lint and bun run check both pass with zero warnings.

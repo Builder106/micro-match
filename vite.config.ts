@@ -4,11 +4,27 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   plugins: [sveltekit()],
   test: {
+    fileParallelism: false,
     // Coverage applies across all projects
     coverage: {
       reporter: ['text', 'html'],
-      include: ['src/lib/**/*.ts'],
-      exclude: ['src/lib/**/*.d.ts', 'src/lib/**/index.ts']
+      include: [
+        'src/lib/**/*.ts',
+        'src/routes/**/*.server.ts',
+        'src/routes/**/+server.ts'
+      ],
+      exclude: [
+        'src/lib/**/*.d.ts',
+        'src/lib/types.ts',
+        'src/lib/**/index.ts',
+        'src/routes/**/*.d.ts'
+      ],
+      thresholds: {
+        lines: 100,
+        branches: 100,
+        functions: 100,
+        statements: 100
+      }
     },
     // Two projects so server logic and Svelte components can each get the
     // module resolution they need:

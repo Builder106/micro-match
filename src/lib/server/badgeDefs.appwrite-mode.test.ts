@@ -86,8 +86,20 @@ describe('badgeDefs (Appwrite-backed mode)', () => {
   });
 
   it('getBadgeDefinition maps the row and returns undefined on error', async () => {
-    mocks.getRow.mockResolvedValueOnce(row);
-    expect(await getBadgeDefinition('def-1')).toEqual(expect.objectContaining({ id: 'def-1' }));
+    const fullRow = {
+      ...row,
+      taskID: 'task-123',
+      description: 'full description',
+      icon: 'icon-trophy'
+    };
+    mocks.getRow.mockResolvedValueOnce(fullRow);
+    const result = await getBadgeDefinition('def-1');
+    expect(result).toEqual(expect.objectContaining({
+      id: 'def-1',
+      taskId: 'task-123',
+      description: 'full description',
+      icon: 'icon-trophy'
+    }));
 
     mocks.getRow.mockRejectedValueOnce(new Error('not found'));
     expect(await getBadgeDefinition('ghost')).toBeUndefined();

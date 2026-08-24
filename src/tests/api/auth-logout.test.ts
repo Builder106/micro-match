@@ -48,6 +48,13 @@ describe('POST /api/auth/logout', () => {
     expect(event.setCalls.every((c: { value: string; opts: Record<string, unknown> }) => c.value === '' && c.opts.maxAge === 0)).toBe(true);
   });
 
+  it('handles logout over http in development', async () => {
+    const event = makeEvent({ sessionCookie: 'sess-1', protocol: 'http:' });
+    const res = await POST(event);
+    expect(await res.json()).toEqual({ ok: true });
+    expect(event.setCalls[0].opts.secure).toBe(false);
+  });
+
   it('returns { ok: true }', async () => {
     const res = await POST(makeEvent());
     expect(await res.json()).toEqual({ ok: true });

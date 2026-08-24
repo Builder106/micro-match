@@ -102,6 +102,89 @@ describe('translateText', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
+  it('keeps a single cache entry when concurrent requests translate the same text', async () => {
+    envState.LIBRETRANSLATE_ENDPOINT = 'https://translate.example.com';
+    envState.LIBRETRANSLATE_API_KEY = 'server-only-key';
+
+    let resolveFirst!: () => void;
+    let resolveSecond!: () => void;
+    const fetchMock = vi
+      .fn()
+      .mockImplementationOnce(() => new Promise<Response>((resolve) => {
+        resolveFirst = () => resolve({ ok: true, json: async () => ({ translatedText: ['Bonjour'] }) } as Response);
+      }))
+      .mockImplementationOnce(() => new Promise<Response>((resolve) => {
+        resolveSecond = () => resolve({ ok: true, json: async () => ({ translatedText: ['Bonjour'] }) } as Response);
+      }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const first = translateText({ text: 'Concurrent cache key', to: 'fr' });
+    const second = translateText({ text: 'Concurrent cache key', to: 'fr' });
+    resolveFirst();
+    resolveSecond();
+
+    await expect(Promise.all([first, second])).resolves.toEqual(['Bonjour', 'Bonjour']);
+    await expect(translateText({ text: 'Concurrent cache key', to: 'fr' })).resolves.toBe('Bonjour');
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it('evicts expired cache entries and expires after TTL', async () => {
+    envState.LIBRETRANSLATE_ENDPOINT = 'https://translate.example.com';
+    envState.LIBRETRANSLATE_API_KEY = 'server-only-key';
+
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ translatedText: ['Bonjour expired'] }) });
+    vi.stubGlobal('fetch', fetchMock);
+
+    await translateText({ text: 'Hi expired-cache', to: 'fr' });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    // Fast-forward past TTL (15 minutes + 1 ms)
+    const originalNow = Date.now;
+    try {
+      Date.now = () => originalNow() + 16 * 60 * 1000;
+      await translateText({ text: 'Hi expired-cache', to: 'fr' });
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+    } finally {
+      Date.now = originalNow;
+    }
+  });
+
+  it('handles empty texts array and empty strings in texts', async () => {
+    envState.LIBRETRANSLATE_ENDPOINT = 'https://translate.example.com';
+    envState.LIBRETRANSLATE_API_KEY = 'server-only-key';
+
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ translatedText: ['Traducido'] }) });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const emptyRes = await translateTexts({ texts: [], to: 'es' });
+    expect(emptyRes).toEqual([]);
+
+    const withEmpty = await translateTexts({ texts: ['', 'Hola'], to: 'es' });
+    expect(withEmpty).toEqual(['', 'Traducido']);
+  });
+
+  it('evicts oldest entries when cache exceeds TRANSLATION_CACHE_MAX_ENTRIES (500)', async () => {
+    envState.LIBRETRANSLATE_ENDPOINT = 'https://translate.example.com';
+    envState.LIBRETRANSLATE_API_KEY = 'server-only-key';
+
+    const fetchMock = vi.fn().mockImplementation(async (url, opts) => {
+      const parsed = JSON.parse(opts.body);
+      return {
+        ok: true,
+        json: async () => ({ translatedText: parsed.q.map((text: string) => `trans-${text}`) })
+      };
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    // Insert 505 unique translations to trigger the while loop eviction in cacheTranslation
+    const largeBatch = Array.from({ length: 505 }, (_, i) => `item-${i}`);
+    const results = await translateTexts({ texts: largeBatch, to: 'es' });
+    expect(results).toHaveLength(505);
+    expect(fetchMock).toHaveBeenCalled();
+  });
+
+
+
   it.each([403, 429, 500])('falls back to the original text for HTTP %s', async (status) => {
     envState.LIBRETRANSLATE_ENDPOINT = 'https://translate.example.com';
     envState.LIBRETRANSLATE_API_KEY = 'server-only-key';

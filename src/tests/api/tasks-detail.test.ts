@@ -39,6 +39,14 @@ describe('PATCH /api/tasks/[id]', () => {
     mocks.updateTaskLastActivity.mockResolvedValue(undefined);
   });
 
+  it('returns 400 when task id param is missing', async () => {
+    const res = await PATCH({
+      params: {},
+      locals: { session: { user: { id: 'org-1' } } }
+    } as unknown as Parameters<typeof PATCH>[0]);
+    expect(res.status).toBe(400);
+  });
+
   it('returns 403 for non-NGO roles', async () => {
     mocks.getUserRole.mockResolvedValue('volunteer');
     const res = await PATCH(makeEvent({ userId: 'org-1', body: { status: 'completed' } }));
@@ -50,6 +58,7 @@ describe('PATCH /api/tasks/[id]', () => {
     const res = await PATCH(makeEvent({ userId: null, body: {} }));
     expect(res.status).toBe(401);
   });
+
 
   it('returns 404 when the task does not exist', async () => {
     mocks.getUserRole.mockResolvedValue('ngo');
@@ -75,7 +84,16 @@ describe('PATCH /api/tasks/[id]', () => {
     expect(mocks.updateTaskStatus).toHaveBeenCalledWith('task-1', 'completed');
     expect(mocks.updateTaskLastActivity).toHaveBeenCalledWith('task-1');
     expect(res.status).toBe(200);
+
+    // Body with no status field (only updateTaskLastActivity)
+    mocks.updateTaskStatus.mockClear();
+    mocks.updateTaskLastActivity.mockClear();
+    const resNoStatus = await PATCH(makeEvent({ userId: 'org-1', body: {} }));
+    expect(resNoStatus.status).toBe(200);
+    expect(mocks.updateTaskStatus).not.toHaveBeenCalled();
+    expect(mocks.updateTaskLastActivity).toHaveBeenCalledWith('task-1');
   });
+
 
   it('returns 500 when updateTaskStatus fails to find the row', async () => {
     mocks.getUserRole.mockResolvedValue('ngo');
@@ -89,7 +107,7 @@ describe('PATCH /api/tasks/[id]', () => {
   it('returns 500 when the request body cannot be parsed', async () => {
     mocks.getUserRole.mockResolvedValue('ngo');
     mocks.getTaskById.mockResolvedValue({ id: 'task-1', orgId: 'org-1' });
-    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
 
     const res = await PATCH(makeEvent({ userId: 'org-1' }));
     expect(res.status).toBe(500);
@@ -102,11 +120,20 @@ describe('DELETE /api/tasks/[id]', () => {
     Object.values(mocks).forEach((m) => m.mockReset());
   });
 
+  it('returns 400 when task id param is missing', async () => {
+    const res = await DELETE({
+      params: {},
+      locals: { session: { user: { id: 'org-1' } } }
+    } as unknown as Parameters<typeof DELETE>[0]);
+    expect(res.status).toBe(400);
+  });
+
   it('returns 403 for non-NGO roles', async () => {
     mocks.getUserRole.mockResolvedValue('volunteer');
     const res = await DELETE(makeEvent({ userId: 'org-1' }));
     expect(res.status).toBe(403);
   });
+
 
   it('returns 401 when there is no session', async () => {
     mocks.getUserRole.mockResolvedValue('ngo');

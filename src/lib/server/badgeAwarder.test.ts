@@ -117,7 +117,7 @@ describe('processBadgeAwards', () => {
 
   it('returns [] without throwing if the criteria engine errors', async () => {
     mockEvaluate.mockRejectedValue(new Error('db down'));
-    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
 
     const ids = await processBadgeAwards('user-1', { type: 'task-completed', taskId: 'task-1' });
 
@@ -133,6 +133,18 @@ describe('processBadgeAwards', () => {
     expect(mockEvaluate).toHaveBeenCalledWith(
       'user-1',
       expect.objectContaining({ type: 'task-completed', taskId: 'task-1', taskTimeMinutes: 15 })
+    );
+  });
+
+  it('onTaskCompleted backwards-compatibility wrapper invokes onTaskApproved', async () => {
+    const { onTaskCompleted } = await import('./badgeAwarder');
+    mockEvaluate.mockResolvedValue([def('First')]);
+
+    await onTaskCompleted('user-1', 'task-1', 20);
+
+    expect(mockEvaluate).toHaveBeenCalledWith(
+      'user-1',
+      expect.objectContaining({ type: 'task-completed', taskId: 'task-1', taskTimeMinutes: 20 })
     );
   });
 });

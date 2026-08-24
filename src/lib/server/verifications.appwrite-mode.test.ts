@@ -83,6 +83,18 @@ describe('verifications (Appwrite-backed mode)', () => {
     expect(all).toEqual([expect.objectContaining({ id: 'v1' })]);
   });
 
+  it('listVerifications omits the status query when no filter is supplied', async () => {
+    mocks.listRows.mockResolvedValueOnce({ rows: [row] });
+
+    await listVerifications();
+
+    expect(mocks.listRows).toHaveBeenCalledWith(
+      'db',
+      'verifications',
+      ['limit(200)', 'orderDesc(submittedAt)']
+    );
+  });
+
   it('listVerifications returns [] when the query throws', async () => {
     mocks.listRows.mockRejectedValueOnce(new Error('down'));
     expect(await listVerifications()).toEqual([]);
@@ -96,6 +108,35 @@ describe('verifications (Appwrite-backed mode)', () => {
 
     expect(mocks.createRow).toHaveBeenCalled();
     expect(created).toEqual(expect.objectContaining({ id: 'v1', userId: 'user-1' }));
+  });
+
+  it('normalizes optional Appwrite row fields and omitted upload data', async () => {
+    mocks.listRows.mockResolvedValueOnce({ rows: [] });
+    mocks.createRow.mockResolvedValueOnce({
+      ...row,
+      docFileId: null,
+      reason: null,
+      submittedAt: undefined,
+      $createdAt: undefined,
+      reviewedBy: null,
+      reviewedAt: null
+    });
+
+    const created = await upsertVerification({ userId: 'user-1', orgName: 'Org', country: 'US', taxId: '123' });
+
+    expect(mocks.createRow).toHaveBeenCalledWith('db', 'verifications', 'new-id', expect.objectContaining({
+      docFileId: null,
+      reason: '',
+      reviewedBy: '',
+      reviewedAt: ''
+    }));
+    expect(created).toEqual(expect.objectContaining({
+      docFileId: undefined,
+      reason: undefined,
+      submittedAt: '',
+      reviewedBy: undefined,
+      reviewedAt: undefined
+    }));
   });
 
   it('upsertVerification updates the existing row for the user when one is found', async () => {
@@ -117,6 +158,18 @@ describe('verifications (Appwrite-backed mode)', () => {
 
     mocks.listRows.mockResolvedValueOnce({ rows: [] });
     expect(await setVerificationStatus('ghost', 'approved', 'admin-1')).toBeUndefined();
+  });
+
+  it('uses an empty rejection reason when none is supplied', async () => {
+    mocks.listRows.mockResolvedValueOnce({ rows: [row] });
+    mocks.updateRow.mockResolvedValueOnce({ ...row, status: 'rejected', reason: '' });
+
+    await setVerificationStatus('user-1', 'rejected', 'admin-1');
+
+    expect(mocks.updateRow).toHaveBeenCalledWith('db', 'verifications', 'v1', expect.objectContaining({
+      status: 'rejected',
+      reason: ''
+    }));
   });
 
   it('withdrawVerification deletes the matching row and returns true/false accordingly', async () => {
@@ -142,6 +195,11 @@ describe('verifications (Appwrite-backed mode)', () => {
     expect(await getUserEmail('ghost')).toBeNull();
   });
 
+  it('getUserEmail returns null when Appwrite returns a user without an email', async () => {
+    mocks.usersGet.mockResolvedValueOnce({});
+    expect(await getUserEmail('user-1')).toBeNull();
+  });
+
   it('setUserVerificationPref merges verificationStatus into existing prefs', async () => {
     mocks.usersGet.mockResolvedValueOnce({ prefs: { role: 'ngo' } });
     mocks.usersUpdatePrefs.mockResolvedValueOnce(undefined);
@@ -149,6 +207,15 @@ describe('verifications (Appwrite-backed mode)', () => {
     await setUserVerificationPref('user-1', 'approved');
 
     expect(mocks.usersUpdatePrefs).toHaveBeenCalledWith('user-1', { role: 'ngo', verificationStatus: 'approved' });
+  });
+
+  it('setUserVerificationPref supports absent prefs and clearing the status', async () => {
+    mocks.usersGet.mockResolvedValueOnce({});
+    mocks.usersUpdatePrefs.mockResolvedValueOnce(undefined);
+
+    await setUserVerificationPref('user-1', null);
+
+    expect(mocks.usersUpdatePrefs).toHaveBeenCalledWith('user-1', { verificationStatus: '' });
   });
 
   it('setUserVerificationPref swallows errors', async () => {

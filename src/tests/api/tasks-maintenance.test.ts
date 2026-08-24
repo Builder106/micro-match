@@ -80,4 +80,35 @@ describe('GET/POST /api/tasks/maintenance', () => {
     expect(mocks.autoArchiveTasks).not.toHaveBeenCalled();
     expect(body).toMatchObject({ success: true, expiredCount: 2 });
   });
+
+  it('POST runs archive action for an admin', async () => {
+    const res = await POST(makeEvent({ userId: 'admin-1', body: { action: 'archive' } }));
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(mocks.autoArchiveTasks).toHaveBeenCalled();
+    expect(body).toMatchObject({ success: true, archivedCount: 5 });
+  });
+
+  it('POST runs both action for an admin', async () => {
+    const res = await POST(makeEvent({ userId: 'admin-1', body: { action: 'both' } }));
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(mocks.expireTasks).toHaveBeenCalled();
+    expect(mocks.autoArchiveTasks).toHaveBeenCalled();
+    expect(body).toMatchObject({ success: true, expiredCount: 2, archivedCount: 5 });
+  });
+
+  it('GET returns 500 when maintenance operations throw', async () => {
+    mocks.expireTasks.mockRejectedValue(new Error('db down'));
+    const res = await GET(makeEvent({ userId: 'admin-1' }));
+    expect(res.status).toBe(500);
+  });
+
+  it('POST returns 500 when maintenance operations throw', async () => {
+    mocks.expireTasks.mockRejectedValue(new Error('db down'));
+    const res = await POST(makeEvent({ userId: 'admin-1', body: { action: 'expire' } }));
+    expect(res.status).toBe(500);
+  });
 });

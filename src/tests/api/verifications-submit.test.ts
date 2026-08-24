@@ -87,7 +87,7 @@ describe('POST /api/verifications', () => {
     expect(body.error).toMatch(/orgName/);
   });
 
-  it('rejects when country is not exactly 2 characters', async () => {
+  it('rejects when country is not exactly 2 characters or missing', async () => {
     mocks.getUserRole.mockResolvedValue('ngo');
     const res = await POST(makeEvent({
       userId: 'u1',
@@ -96,7 +96,14 @@ describe('POST /api/verifications', () => {
     expect(res.status).toBe(400);
     const body = await res.json();
     expect(body.error).toMatch(/country/);
+
+    const resEmpty = await POST(makeEvent({
+      userId: 'u1',
+      body: { orgName: 'Org', country: '', taxId: '123456789' }
+    }));
+    expect(resEmpty.status).toBe(400);
   });
+
 
   it('rejects when taxId is missing', async () => {
     mocks.getUserRole.mockResolvedValue('ngo');
@@ -107,6 +114,27 @@ describe('POST /api/verifications', () => {
     expect(res.status).toBe(400);
     const body = await res.json();
     expect(body.error).toMatch(/taxId/);
+  });
+
+  it('rejects each omitted required field', async () => {
+    mocks.getUserRole.mockResolvedValue('ngo');
+
+    const missingOrgName = await POST(makeEvent({
+      userId: 'u1',
+      body: { country: 'US', taxId: '123456789' }
+    }));
+    const missingCountry = await POST(makeEvent({
+      userId: 'u1',
+      body: { orgName: 'Org', taxId: '123456789' }
+    }));
+    const missingTaxId = await POST(makeEvent({
+      userId: 'u1',
+      body: { orgName: 'Org', country: 'US' }
+    }));
+
+    expect(missingOrgName.status).toBe(400);
+    expect(missingCountry.status).toBe(400);
+    expect(missingTaxId.status).toBe(400);
   });
 
   it('upper-cases the country code before persisting', async () => {
@@ -133,6 +161,18 @@ describe('POST /api/verifications', () => {
       docFileId: 'f-1'
     });
     expect(mocks.setUserVerificationPref).toHaveBeenCalledWith('u1', 'pending');
+  });
+
+  it('persists an undefined document file id when no document is supplied', async () => {
+    mocks.getUserRole.mockResolvedValue('ngo');
+
+    const res = await POST(makeEvent({
+      userId: 'u1',
+      body: { orgName: 'Doctors Without Borders', country: 'US', taxId: '13-3433452' }
+    }));
+
+    expect(res.status).toBe(200);
+    expect(mocks.upsertVerification).toHaveBeenCalledWith(expect.objectContaining({ docFileId: undefined }));
   });
 });
 

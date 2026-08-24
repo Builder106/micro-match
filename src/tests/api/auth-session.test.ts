@@ -4,12 +4,20 @@ const { mocks } = vi.hoisted(() => ({
   mocks: {
     accountGet: vi.fn(),
     createSession: vi.fn(),
-    isUserInTeam: vi.fn()
+    isUserInTeam: vi.fn(),
+    env: {
+      APPWRITE_ENDPOINT: 'https://fake.appwrite.io/v1',
+      APPWRITE_PROJECT_ID: 'proj',
+      APPWRITE_API_KEY: 'key',
+      NODE_ENV: 'test'
+    },
+    ngoTeamId: 'ngo-team',
+    volunteerTeamId: 'volunteer-team'
   }
 }));
 
 vi.mock('$env/dynamic/private', () => ({
-  env: { APPWRITE_ENDPOINT: 'https://fake.appwrite.io/v1', APPWRITE_PROJECT_ID: 'proj', APPWRITE_API_KEY: 'key' }
+  env: mocks.env
 }));
 vi.mock('node-appwrite', () => ({
   Client: class { setEndpoint() { return this; } setProject() { return this; } setJWT() { return this; } },
@@ -20,8 +28,8 @@ vi.mock('$lib/server/session', () => ({
   SESSION_TTL_SECONDS: 1209600
 }));
 vi.mock('$lib/server/teams', () => ({
-  NGO_TEAM_ID: 'ngo-team',
-  VOLUNTEER_TEAM_ID: 'volunteer-team',
+  get NGO_TEAM_ID() { return mocks.ngoTeamId; },
+  get VOLUNTEER_TEAM_ID() { return mocks.volunteerTeamId; },
   isUserInTeam: mocks.isUserInTeam
 }));
 
@@ -48,13 +56,24 @@ function makeEvent(body: unknown, protocol = 'https:'): MockEvent {
 
 describe('POST /api/auth/session', () => {
   beforeEach(() => {
-    Object.values(mocks).forEach((m) => m.mockReset());
+    mocks.accountGet.mockReset();
+    mocks.createSession.mockReset();
+    mocks.isUserInTeam.mockReset();
     mocks.createSession.mockImplementation((input: Record<string, unknown>) => ({ id: 'sess-1', ...input, expiresAt: Date.now() + 1000 }));
+    mocks.env.APPWRITE_API_KEY = 'key';
+    mocks.env.NODE_ENV = 'test';
+    mocks.ngoTeamId = 'ngo-team';
+    mocks.volunteerTeamId = 'volunteer-team';
   });
 
   it('returns 400 when the body has no jwt', async () => {
     const res = await POST(makeEvent({}));
     expect(res.status).toBe(400);
+  });
+
+  it('returns 400 when the JWT is null or blank', async () => {
+    expect((await POST(makeEvent(null))).status).toBe(400);
+    expect((await POST(makeEvent({ jwt: '  ' }))).status).toBe(400);
   });
 
   it('returns 400 on invalid JSON', async () => {
@@ -72,6 +91,9 @@ describe('POST /api/auth/session', () => {
     mocks.accountGet.mockResolvedValue({});
     const res = await POST(makeEvent({ jwt: 'jwt' }));
     expect(res.status).toBe(401);
+
+    mocks.accountGet.mockResolvedValue({ email: 'jane@example.com' });
+    expect((await POST(makeEvent({ jwt: 'jwt' }))).status).toBe(401);
   });
 
   it('creates a session with role="user" by default and sets both cookies', async () => {
@@ -95,6 +117,35 @@ describe('POST /api/auth/session', () => {
     expect(body.roleSource).toBe('preferences');
   });
 
+  it('derives role="volunteer" from prefs when set', async () => {
+    mocks.accountGet.mockResolvedValue({ $id: 'user-1', email: 'jane@example.com', prefs: { role: 'volunteer' } });
+
+    const res = await POST(makeEvent({ jwt: 'good-jwt' }));
+
+    expect(await res.json()).toMatchObject({ role: 'volunteer', roleSource: 'preferences' });
+  });
+
+  it('uses an empty preference object and skips teams when no API key is configured', async () => {
+    mocks.env.APPWRITE_API_KEY = '';
+    mocks.accountGet.mockResolvedValue({ $id: 'user-1', email: 'jane@example.com', prefs: undefined });
+
+    const res = await POST(makeEvent({ jwt: 'good-jwt' }));
+
+    expect(await res.json()).toMatchObject({ role: 'user', roleSource: 'default' });
+    expect(mocks.isUserInTeam).not.toHaveBeenCalled();
+  });
+
+  it('skips team membership checks when the team identifiers are unavailable', async () => {
+    mocks.ngoTeamId = '';
+    mocks.volunteerTeamId = '';
+    mocks.accountGet.mockResolvedValue({ $id: 'user-1', email: 'jane@example.com', prefs: {} });
+
+    const res = await POST(makeEvent({ jwt: 'good-jwt' }));
+
+    expect(await res.json()).toMatchObject({ role: 'user', roleSource: 'default' });
+    expect(mocks.isUserInTeam).not.toHaveBeenCalled();
+  });
+
   it('team membership overrides prefs when an API key is configured', async () => {
     mocks.accountGet.mockResolvedValue({ $id: 'user-1', email: 'jane@example.com', prefs: { role: 'volunteer' } });
     mocks.isUserInTeam.mockImplementation(async (_id: string, teamId: string) => teamId === 'ngo-team');
@@ -106,6 +157,18 @@ describe('POST /api/auth/session', () => {
     expect(body.roleSource).toBe('team_membership');
   });
 
+  it('sets role="volunteer" via team membership', async () => {
+    mocks.accountGet.mockResolvedValue({ $id: 'user-1', email: 'jane@example.com', prefs: {} });
+    mocks.isUserInTeam.mockImplementation(async (_id: string, teamId: string) => teamId === 'volunteer-team');
+
+    const res = await POST(makeEvent({ jwt: 'good-jwt' }, 'http:'));
+    const body = await res.json();
+
+    expect(body.role).toBe('volunteer');
+    expect(body.roleSource).toBe('team_membership');
+    expect(res.headers.get('content-type')).toContain('application/json');
+  });
+
   it('falls back to role=user if the team check throws', async () => {
     mocks.accountGet.mockResolvedValue({ $id: 'user-1', email: 'jane@example.com', prefs: {} });
     mocks.isUserInTeam.mockRejectedValue(new Error('teams down'));
@@ -114,4 +177,73 @@ describe('POST /api/auth/session', () => {
     expect(res.status).toBe(200);
     expect((await res.json()).role).toBe('user');
   });
+
+  it('handles role determination error gracefully', async () => {
+    const brokenUser = {
+      $id: 'user-1',
+      email: 'jane@example.com',
+      get prefs() {
+        throw new Error('prefs property getter crashed');
+      }
+    };
+    mocks.accountGet.mockResolvedValue(brokenUser);
+
+    const res = await POST(makeEvent({ jwt: 'good-jwt' }));
+    expect(res.status).toBe(200);
+    expect((await res.json()).role).toBe('user');
+  });
+
+  it('returns 400 when session creation fails', async () => {
+    mocks.accountGet.mockResolvedValue({ $id: 'user-1', email: 'jane@example.com', prefs: {} });
+    mocks.createSession.mockImplementation(() => {
+      throw new Error('session creation error');
+    });
+
+    const res = await POST(makeEvent({ jwt: 'good-jwt' }));
+    expect(res.status).toBe(400);
+  });
+
+  it('handles role and session failures without development diagnostics in production', async () => {
+    mocks.env.NODE_ENV = 'production';
+
+    mocks.accountGet.mockResolvedValue({
+      $id: 'user-1',
+      email: 'jane@example.com',
+      get prefs() {
+        throw new Error('prefs property getter crashed');
+      }
+    });
+    expect((await POST(makeEvent({ jwt: 'good-jwt' }))).status).toBe(200);
+
+    mocks.accountGet.mockResolvedValue({ $id: 'user-1', email: 'jane@example.com', prefs: {} });
+    mocks.isUserInTeam.mockRejectedValue(new Error('teams down'));
+    expect((await POST(makeEvent({ jwt: 'good-jwt' }))).status).toBe(200);
+
+    mocks.isUserInTeam.mockResolvedValue(false);
+    mocks.createSession.mockImplementation(() => {
+      throw new Error('session creation error');
+    });
+    expect((await POST(makeEvent({ jwt: 'good-jwt' }))).status).toBe(400);
+  });
+
+  it('sets secure cookies for HTTPS and production HTTP requests only', async () => {
+    mocks.accountGet.mockResolvedValue({ $id: 'user-1', email: 'jane@example.com', prefs: {} });
+    mocks.isUserInTeam.mockResolvedValue(false);
+
+    const httpEvent = makeEvent({ jwt: 'good-jwt' }, 'http:');
+    await POST(httpEvent);
+    expect(httpEvent.setCalls).toEqual([
+      expect.objectContaining({ name: 'mm_session', opts: expect.objectContaining({ secure: false }) }),
+      expect.objectContaining({ name: 'mm_role', opts: expect.objectContaining({ secure: false }) })
+    ]);
+
+    mocks.env.NODE_ENV = 'production';
+    const productionEvent = makeEvent({ jwt: 'good-jwt' }, 'http:');
+    await POST(productionEvent);
+    expect(productionEvent.setCalls).toEqual([
+      expect.objectContaining({ name: 'mm_session', opts: expect.objectContaining({ secure: true }) }),
+      expect.objectContaining({ name: 'mm_role', opts: expect.objectContaining({ secure: true }) })
+    ]);
+  });
+
 });

@@ -51,6 +51,13 @@ describe('appwrite (in-memory mode) — tasks', () => {
     expect(task.createdAt).toBeTruthy();
   });
 
+  it('normalizes empty task statuses to active on create and update', async () => {
+    const task = await createTask({ title: 'Empty status', shortDescription: 'short', tags: [], status: '' as never });
+    expect(task.status).toBe('active');
+
+    await expect(updateTaskStatus(task.id, '' as never)).resolves.toEqual(expect.objectContaining({ status: 'active' }));
+  });
+
   it('getTaskById returns the created task and undefined for unknown ids', async () => {
     const created = await createTask({ title: 'T2', shortDescription: 'short', tags: [] });
     expect(await getTaskById(created.id)).toEqual(created);

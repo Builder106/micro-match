@@ -72,6 +72,18 @@ describe('verifications (in-memory mode)', () => {
     expect(all.filter((v) => v.userId === 'user-1')).toHaveLength(1);
   });
 
+  it('preserves the uploaded document when a resubmission omits it', async () => {
+    await upsertVerification({
+      userId: 'document-user', orgName: 'Org', country: 'US', taxId: '111', docFileId: 'file-1'
+    });
+
+    const resubmitted = await upsertVerification({
+      userId: 'document-user', orgName: 'Updated Org', country: 'US', taxId: '222'
+    });
+
+    expect(resubmitted.docFileId).toBe('file-1');
+  });
+
   it('getVerificationByUserId returns the row when present and undefined otherwise', async () => {
     expect(await getVerificationByUserId('ghost')).toBeUndefined();
 
@@ -98,6 +110,14 @@ describe('verifications (in-memory mode)', () => {
     expect(rejected?.status).toBe('rejected');
     expect(rejected?.reason).toBe('Document does not show tax-exempt status.');
     expect(rejected?.reviewedBy).toBe('admin-1');
+  });
+
+  it('stores an undefined rejection reason when the reviewer omits one', async () => {
+    await upsertVerification({ userId: 'user-no-reason', orgName: 'Org', country: 'US', taxId: '111' });
+
+    const rejected = await setVerificationStatus('user-no-reason', 'rejected', 'admin-1');
+
+    expect(rejected?.reason).toBeUndefined();
   });
 
   it('returns undefined when setting status on a non-existent user', async () => {
@@ -143,5 +163,10 @@ describe('verifications (in-memory mode)', () => {
     const approved = await setVerificationStatus('doc-user', 'approved', 'admin-1');
 
     expect(approved?.docFileId).toBe('storage-file-abc');
+  });
+
+  it('getUserEmail returns null in in-memory mode', async () => {
+    const { getUserEmail } = await import('./verifications');
+    expect(await getUserEmail('user-1')).toBeNull();
   });
 });

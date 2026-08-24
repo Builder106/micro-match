@@ -2,6 +2,7 @@ import { env } from '$env/dynamic/private';
 import type { BadgeDefinition } from '$lib/types';
 
 const useAppwrite =
+  process.env.PLAYWRIGHT_A11Y_HARNESS !== '1' &&
   !!env.APPWRITE_ENDPOINT &&
   !!env.APPWRITE_PROJECT_ID &&
   !!env.APPWRITE_API_KEY &&

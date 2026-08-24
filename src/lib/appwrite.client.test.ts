@@ -146,6 +146,17 @@ describe('appwrite.client', () => {
     expect(fetchMock).toHaveBeenCalledWith('/api/auth/logout', expect.objectContaining({ method: 'POST' }));
   });
 
+  it('signOut clears the browser session after successful server cleanup', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true });
+    vi.stubGlobal('fetch', fetchMock);
+
+    await signOut();
+
+    expect(mocks.deleteSessions).toHaveBeenCalledOnce();
+    expect(fetchMock).toHaveBeenCalledOnce();
+    expect(localStorage.removeItem).toHaveBeenCalledWith('mm_has_session');
+  });
+
   it('refreshSessionCookie posts the JWT to the session endpoint', async () => {
     mocks.createJWT.mockResolvedValue({ jwt: 'abc.def.ghi' });
     const fetchMock = vi.fn().mockResolvedValue({ ok: true });
@@ -166,6 +177,13 @@ describe('appwrite.client', () => {
 
     await refreshSessionCookie();
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('refreshSessionCookie ignores a session-endpoint failure', async () => {
+    mocks.createJWT.mockResolvedValue({ jwt: 'abc.def.ghi' });
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network down')));
+
+    await expect(refreshSessionCookie()).resolves.toBeUndefined();
   });
 
   it('assignTeamForCurrentRole posts with the auth header when a JWT is available', async () => {
@@ -190,6 +208,13 @@ describe('appwrite.client', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  it('assignTeamForCurrentRole ignores a team-assignment failure', async () => {
+    mocks.createJWT.mockResolvedValue({ jwt: 'abc.def.ghi' });
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network down')));
+
+    await expect(assignTeamForCurrentRole()).resolves.toBeUndefined();
+  });
+
   it('uploadAvatar posts multipart form data and returns fileId/url on success', async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
@@ -209,14 +234,34 @@ describe('appwrite.client', () => {
   });
 
   it('uploadAvatar throws with the server error message on failure', async () => {
-    vi.stubGlobal('FormData', class { append() {} });
+    vi.stubGlobal('FormData', class { append() { } });
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
       ok: false,
       json: async () => ({ error: 'File too large' })
     }));
 
     await expect(uploadAvatar({} as File)).rejects.toThrow('File too large');
+
+    // Server returns error with non-JSON or missing error property
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: false,
+      json: async () => { throw new Error('bad json'); }
+    }));
+    await expect(uploadAvatar({} as File)).rejects.toThrow('Upload failed');
+
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: false,
+      json: async () => ({ error: '' })
+    }));
+    await expect(uploadAvatar({} as File)).rejects.toThrow('Upload failed');
   });
+
+  it('getJWT returns null when jwt property is missing in response', async () => {
+
+    mocks.createJWT.mockResolvedValue({});
+    expect(await getJWT()).toBeNull();
+  });
+
 
   it('getAvatarUrl returns empty string when the bucket id is not configured', () => {
     expect(getAvatarUrl('file-1')).toBe('');
@@ -231,6 +276,14 @@ describe('appwrite.client', () => {
 
     expect(mocks.getFilePreview).toHaveBeenCalledWith('avatars-bucket', 'file-1', 64, 64);
     expect(url).toBe('https://cdn/avatars/file-1');
+  });
+
+  it('getAvatarUrl uses the default square preview size', () => {
+    publicEnvState.PUBLIC_APPWRITE_AVATARS_BUCKET_ID = 'avatars-bucket';
+    mocks.getFilePreview.mockReturnValue('https://cdn/avatars/file-1');
+
+    expect(getAvatarUrl('file-1')).toBe('https://cdn/avatars/file-1');
+    expect(mocks.getFilePreview).toHaveBeenCalledWith('avatars-bucket', 'file-1', 128, 128);
   });
 
   it('getAvatarUrl returns empty string if getFilePreview throws', () => {

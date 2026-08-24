@@ -1,10 +1,11 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
-const { envState, mocks, AppwriteCtors } = vi.hoisted(() => {
+const { envState, mocks, AppwriteCtors, teamIds } = vi.hoisted(() => {
   const userPrefs: Record<string, string> = { role: '' };
   return {
     envState: {} as Record<string, string | undefined>,
     mocks: {
+      accountGet: vi.fn(),
       addUserToTeam: vi.fn(),
       removeUserFromTeam: vi.fn(),
       withdrawVerification: vi.fn(),
@@ -17,7 +18,8 @@ const { envState, mocks, AppwriteCtors } = vi.hoisted(() => {
         Object.assign(userPrefs, p);
       })
     },
-    AppwriteCtors: { userPrefs }
+    AppwriteCtors: { userPrefs },
+    teamIds: { ngo: 'team-ngo', volunteer: 'team-vol' }
   };
 });
 
@@ -32,13 +34,14 @@ vi.mock('node-appwrite', () => ({
     setKey() { return this; }
     setJWT() { return this; }
   },
-  Account: class { get = vi.fn(async () => ({ $id: 'jwt-user' })); },
+  Account: class { get = mocks.accountGet; },
   Users: class { get = mocks.usersGet; updatePrefs = mocks.usersUpdatePrefs; }
 }));
 
+
 vi.mock('$lib/server/teams', () => ({
-  NGO_TEAM_ID: 'team-ngo',
-  VOLUNTEER_TEAM_ID: 'team-vol',
+  get NGO_TEAM_ID() { return teamIds.ngo; },
+  get VOLUNTEER_TEAM_ID() { return teamIds.volunteer; },
   addUserToTeam: mocks.addUserToTeam,
   removeUserFromTeam: mocks.removeUserFromTeam
 }));
@@ -70,6 +73,8 @@ describe('POST /api/profile/role', () => {
     Object.values(mocks).forEach((m) => m.mockReset?.() ?? m.mockClear?.());
     // Reset the simulated user prefs.
     Object.keys(AppwriteCtors.userPrefs).forEach((k) => delete AppwriteCtors.userPrefs[k]);
+    teamIds.ngo = 'team-ngo';
+    teamIds.volunteer = 'team-vol';
     mocks.usersGet.mockImplementation(async () => ({ prefs: { ...AppwriteCtors.userPrefs } }));
     mocks.usersUpdatePrefs.mockImplementation(async (_id: string, p: Record<string, unknown>) => {
       Object.keys(AppwriteCtors.userPrefs).forEach((k) => delete AppwriteCtors.userPrefs[k]);
@@ -81,7 +86,46 @@ describe('POST /api/profile/role', () => {
     const res = await POST(makeEvent({ body: { newRole: 'ngo' } }));
     expect(res.status).toBe(401);
     expect(mocks.usersUpdatePrefs).not.toHaveBeenCalled();
+
+    // Invalid auth header prefix
+    const makeCustomHeaderEvent = (authValue: string) => {
+      const headers = new Map<string, string>([['authorization', authValue]]);
+      return {
+        locals: { session: null },
+        request: {
+          json: async () => ({ newRole: 'ngo' }),
+          headers: { get: (k: string) => headers.get(k.toLowerCase()) ?? null }
+        }
+      } as unknown as import("@sveltejs/kit").RequestEvent;
+    };
+
+    const resBadHeader = await POST(makeCustomHeaderEvent('Basic abc'));
+    expect(resBadHeader.status).toBe(401);
+
+    // Empty auth header
+    const resEmptyHeader = await POST(makeCustomHeaderEvent(''));
+    expect(resEmptyHeader.status).toBe(401);
   });
+
+  it('authenticates via Bearer JWT header when session is missing', async () => {
+    mocks.accountGet.mockResolvedValue({ $id: 'jwt-user' });
+    const res = await POST(makeEvent({ jwt: 'valid-jwt-token', body: { newRole: 'ngo' } }));
+    expect(res.status).toBe(200);
+
+    // Account.get returning no $id
+    mocks.accountGet.mockResolvedValue({});
+    const resNoId = await POST(makeEvent({ jwt: 'valid-jwt-token', body: { newRole: 'ngo' } }));
+    expect(resNoId.status).toBe(401);
+
+    // Account.get throwing error
+    mocks.accountGet.mockRejectedValue(new Error('jwt invalid'));
+    const resErr = await POST(makeEvent({ jwt: 'valid-jwt-token', body: { newRole: 'ngo' } }));
+    expect(resErr.status).toBe(401);
+  });
+
+
+
+
 
   it('returns 400 for invalid newRole', async () => {
     const res = await POST(makeEvent({ userId: 'u1', body: { newRole: 'staff' } }));
@@ -92,6 +136,13 @@ describe('POST /api/profile/role', () => {
   it('returns 400 for missing body', async () => {
     const res = await POST(makeEvent({ userId: 'u1' }));
     expect(res.status).toBe(400);
+  });
+
+  it('returns 400 when JSON resolves to null', async () => {
+    const res = await POST(makeEvent({ userId: 'u1', body: null }));
+
+    expect(res.status).toBe(400);
+    expect(mocks.usersUpdatePrefs).not.toHaveBeenCalled();
   });
 
   it('volunteer → ngo: swaps teams and updates prefs without firing cleanup', async () => {
@@ -147,6 +198,28 @@ describe('POST /api/profile/role', () => {
     expect(mocks.withdrawVerification).not.toHaveBeenCalled();
     // Team reconciliation still runs (so the user can recover from a stale state).
     expect(mocks.addUserToTeam).toHaveBeenCalledWith('u1', 'team-vol', ['volunteer']);
+  });
+
+  it('updates role preferences when the user has no existing preferences', async () => {
+    mocks.usersGet
+      .mockResolvedValueOnce({ prefs: { role: 'volunteer' } })
+      .mockResolvedValueOnce({});
+
+    const res = await POST(makeEvent({ userId: 'u1', body: { newRole: 'ngo' } }));
+
+    expect(res.status).toBe(200);
+    expect(mocks.usersUpdatePrefs).toHaveBeenCalledWith('u1', { role: 'ngo' });
+  });
+
+  it('does not add a membership when the target team is not configured', async () => {
+    AppwriteCtors.userPrefs.role = 'volunteer';
+    teamIds.ngo = '';
+
+    const res = await POST(makeEvent({ userId: 'u1', body: { newRole: 'ngo' } }));
+
+    expect(res.status).toBe(200);
+    expect(mocks.removeUserFromTeam).toHaveBeenCalledWith('u1', 'team-vol');
+    expect(mocks.addUserToTeam).not.toHaveBeenCalled();
   });
 
   it('returns 200 even when team reconciliation throws (prefs already saved)', async () => {

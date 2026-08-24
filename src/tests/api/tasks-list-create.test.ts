@@ -47,7 +47,6 @@ describe('GET /api/tasks', () => {
     expect(body[0].description).toBeUndefined();
   });
 });
-
 const validBody = { title: 'Translate flyer', shortDescription: 'Short', description: 'Long', tags: ['i18n'] };
 
 describe('POST /api/tasks', () => {
@@ -107,11 +106,37 @@ describe('POST /api/tasks', () => {
     expect(mocks.createTask).toHaveBeenCalledWith(expect.objectContaining({ isVerified: false }));
   });
 
-  it('returns the created task with a 201 status', async () => {
+  it('returns the created task with a 201 status and covers optional fields branches', async () => {
     mocks.getUserRole.mockResolvedValue('ngo');
-    const res = await POST(makeEvent({ orgId: 'org-1', body: validBody }));
+    // Test with description, explicit language, estimatedMinutes, maxVolunteers
+    const fullBody = {
+      title: 'Full title',
+      shortDescription: 'Full short',
+      description: 'Full desc',
+      language: 'Spanish',
+      tags: ['a', 'b'],
+      estimatedMinutes: 45,
+      maxVolunteers: 3,
+      deadline: '2026-12-31'
+    };
+    const res = await POST(makeEvent({ orgId: 'org-1', body: fullBody }));
     expect(res.status).toBe(201);
     const body = await res.json();
     expect(body.id).toBe('new-task');
+
+    // Test with missing/non-array tags, non-number estimatedMinutes/maxVolunteers, no description/language
+    const sparseBody = {
+      title: 'Sparse title',
+      shortDescription: 'Sparse short'
+    };
+    const sparseRes = await POST(makeEvent({ orgId: 'org-1', body: sparseBody }));
+    expect(sparseRes.status).toBe(201);
+    expect(mocks.createTask).toHaveBeenCalledWith(expect.objectContaining({
+      language: 'English',
+      tags: [],
+      description: '',
+      estimatedMinutes: undefined,
+      maxVolunteers: undefined
+    }));
   });
 });

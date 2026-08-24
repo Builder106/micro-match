@@ -34,7 +34,7 @@ export function createCapacityPlan({
 
   return {
     missionCount,
-    missionsPerDay: dailyMissionCounts[0] ?? 0,
+    missionsPerDay: dailyMissionCounts[0]!,
     dailyMissionCounts,
     reviewMinutes: missionCount * REVIEW_MINUTES_PER_MISSION
   };

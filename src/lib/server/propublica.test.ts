@@ -76,7 +76,7 @@ describe('lookupNonprofitByEin', () => {
   });
 
   it('handles a malformed response that lacks the organization field', async () => {
-    mockFetchOnce({ ok: true, status: 200, json: async () => ({ }) });
+    mockFetchOnce({ ok: true, status: 200, json: async () => ({}) });
     const result = await lookupNonprofitByEin('222222222');
     expect(result).toEqual({ found: false, error: 'Empty response' });
   });
@@ -85,5 +85,20 @@ describe('lookupNonprofitByEin', () => {
     vi.stubGlobal('fetch', vi.fn(async () => { throw new Error('connect ECONNREFUSED'); }));
     const result = await lookupNonprofitByEin('333333333');
     expect(result).toEqual({ found: false, error: 'connect ECONNREFUSED' });
+
+    // Non-Error exception throw
+    vi.stubGlobal('fetch', vi.fn(async () => { throw 'string exception'; }));
+    const resultStringErr = await lookupNonprofitByEin('333333333');
+    expect(resultStringErr).toEqual({ found: false, error: 'string exception' });
+  });
+
+  it('falls back to "Unknown" when organization has no name', async () => {
+    mockFetchOnce({
+      ok: true,
+      status: 200,
+      json: async () => ({ organization: {} })
+    });
+    const result = await lookupNonprofitByEin('444444444');
+    expect(result).toEqual({ found: true, orgName: 'Unknown', status: 'active', ntee: undefined, rulingDate: undefined });
   });
 });

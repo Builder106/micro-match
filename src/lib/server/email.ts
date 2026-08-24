@@ -1,6 +1,6 @@
 import { env } from '$env/dynamic/private';
 
-type SendArgs = {
+export type SendArgs = {
   to: string;
   subject: string;
   html: string;
@@ -13,7 +13,7 @@ function mailgunBaseUrl(): string {
   return region === 'eu' ? 'https://api.eu.mailgun.net' : 'https://api.mailgun.net';
 }
 
-async function sendEmail(args: SendArgs): Promise<{ ok: boolean; id?: string; error?: string }> {
+export async function sendEmail(args: SendArgs): Promise<{ ok: boolean; id?: string; error?: string }> {
   const apiKey = env.MAILGUN_API_KEY;
   const domain = env.MAILGUN_DOMAIN;
   const from = env.MAILGUN_FROM_EMAIL || (domain ? `MicroMatch <noreply@${domain}>` : '');

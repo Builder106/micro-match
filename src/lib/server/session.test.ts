@@ -52,9 +52,17 @@ describe('session store', () => {
     const expiring = createSession({ userId: 'u7', email: 'g@example.com', role: 'user', ttlSeconds: 60 });
     vi.spyOn(Date, 'now').mockReturnValue(expiring.expiresAt + 1);
 
-    createSession({ userId: 'u8', email: 'h@example.com', role: 'user' });
-    vi.spyOn(Date, 'now').mockRestore();
-
     expect(getSession(expiring.id)).toBeNull();
+  });
+
+  it('falls back to node crypto when globalThis.crypto is undefined', () => {
+    const cryptoDescriptor = Object.getOwnPropertyDescriptor(globalThis, 'crypto');
+    try {
+      Reflect.deleteProperty(globalThis, 'crypto');
+      const s = createSession({ userId: 'u-fallback', email: 'fallback@example.com', role: 'user' });
+      expect(s.id).toBeTruthy();
+    } finally {
+      if (cryptoDescriptor) Object.defineProperty(globalThis, 'crypto', cryptoDescriptor);
+    }
   });
 });

@@ -57,11 +57,20 @@ describe('GET /api/verifications/[userId]/document', () => {
     await expectHttpError(GET(makeEvent({ adminId: 'user-1' })), 403);
   });
 
+  it('400s when userId param is missing', async () => {
+    mocks.isUserAdmin.mockResolvedValue(true);
+    await expectHttpError(GET({
+      locals: { session: { user: { id: 'admin-1' } } },
+      params: {}
+    } as unknown as import("@sveltejs/kit").RequestEvent), 400);
+  });
+
   it('404s when the target user has no verification document on file', async () => {
     mocks.isUserAdmin.mockResolvedValue(true);
     mocks.getVerificationByUserId.mockResolvedValue({ id: 'v1', docFileId: undefined });
     await expectHttpError(GET(makeEvent({ adminId: 'admin-1' })), 404);
   });
+
 
   it('500s when the verifications bucket is not configured', async () => {
     delete envState.APPWRITE_VERIFICATIONS_BUCKET_ID;
@@ -80,13 +89,19 @@ describe('GET /api/verifications/[userId]/document', () => {
     expect(res.status).toBe(200);
     expect(res.headers.get('Content-Type')).toBe('application/octet-stream');
     expect(res.headers.get('Content-Disposition')).toContain('verification-target-1');
+
+    // Also when buffer is ArrayBuffer (not instance of Uint8Array)
+    mocks.getFileDownload.mockResolvedValue(new ArrayBuffer(8));
+    const res2 = await GET(makeEvent({ adminId: 'admin-1', targetUserId: 'target-1' }));
+    expect(res2.status).toBe(200);
   });
+
 
   it('500s when the storage fetch throws', async () => {
     mocks.isUserAdmin.mockResolvedValue(true);
     mocks.getVerificationByUserId.mockResolvedValue({ id: 'v1', docFileId: 'file-1' });
     mocks.getFileDownload.mockRejectedValue(new Error('storage down'));
-    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
 
     await expectHttpError(GET(makeEvent({ adminId: 'admin-1' })), 500);
     errSpy.mockRestore();

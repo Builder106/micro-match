@@ -65,10 +65,56 @@ describe('POST /api/teams/assign', () => {
     expect(mocks.addUserToTeam).toHaveBeenCalledWith('user-1', 'volunteer-team', ['volunteer']);
   });
 
+  it('extracts userId via JWT authorization header if session is missing', async () => {
+    mocks.getUserRole.mockResolvedValue('ngo');
+    mocks.removeUserFromTeam.mockResolvedValue(undefined);
+    mocks.addUserToTeam.mockResolvedValue(undefined);
+
+    vi.doMock('node-appwrite', () => ({
+      Client: class {
+        setEndpoint() { return this; }
+        setProject() { return this; }
+        setJWT() { return this; }
+      },
+      Account: class {
+        get = vi.fn().mockResolvedValue({ $id: 'jwt-user-1' });
+      }
+    }));
+
+    const res = await POST(makeEvent({ authorization: 'Bearer valid-jwt-token' }));
+    expect(res.status).toBe(200);
+
+    // Account.get returning no id
+    vi.doMock('node-appwrite', () => ({
+      Client: class {
+        setEndpoint() { return this; } setProject() { return this; } setJWT() { return this; }
+      },
+      Account: class { get = vi.fn().mockResolvedValue({}); }
+    }));
+    const resNoId = await POST(makeEvent({ authorization: 'Bearer valid-jwt-token' }));
+    expect(resNoId.status).toBe(401);
+
+    // Account.get throwing error
+    vi.doMock('node-appwrite', () => ({
+      Client: class {
+        setEndpoint() { return this; } setProject() { return this; } setJWT() { return this; }
+      },
+      Account: class { get = vi.fn().mockRejectedValue(new Error('jwt bad')); }
+    }));
+    const resThrow = await POST(makeEvent({ authorization: 'Bearer valid-jwt-token' }));
+    expect(resThrow.status).toBe(401);
+
+    // Non-bearer auth header
+    const resNonBearer = await POST(makeEvent({ authorization: 'Basic abc' }));
+    expect(resNonBearer.status).toBe(401);
+  });
+
+
+
   it('returns 500 when the team API throws', async () => {
     mocks.getUserRole.mockResolvedValue('ngo');
     mocks.removeUserFromTeam.mockRejectedValue(new Error('down'));
-    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
 
     const res = await POST(makeEvent({ userId: 'user-1' }));
 

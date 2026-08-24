@@ -72,18 +72,40 @@ describe('POST /api/claims/[id]/approve', () => {
     expect(mocks.getClaimById).not.toHaveBeenCalled();
   });
 
+  it('returns 400 when claim id param is missing', async () => {
+    const res = await approve({
+      locals: { session: { user: { id: 'ngo-1' } } },
+      params: {}
+    } as unknown as import("@sveltejs/kit").RequestEvent);
+    expect(res.status).toBe(400);
+  });
+
+
   it('returns 404 when the claim does not exist', async () => {
     mocks.getClaimById.mockResolvedValue(undefined);
     const res = await approve(makeEvent({ reviewerId: 'ngo-1' }));
     expect(res.status).toBe(404);
   });
 
-  it('returns 404 when the claim references a task that no longer exists', async () => {
-    mocks.getTaskById.mockResolvedValue(undefined);
+  it('returns 404 when the claim has no taskId or referenced task is missing', async () => {
+    mocks.getClaimById.mockResolvedValue({ id: 'c1' }); // no taskId
     const res = await approve(makeEvent({ reviewerId: 'ngo-1' }));
     expect(res.status).toBe(404);
+
+    mocks.getClaimById.mockResolvedValue(claimOnOwnedTask);
+    mocks.getTaskById.mockResolvedValue(undefined);
+    const res2 = await approve(makeEvent({ reviewerId: 'ngo-1' }));
+    expect(res2.status).toBe(404);
     expect(mocks.updateClaimStatus).not.toHaveBeenCalled();
   });
+
+  it('handles updated claim without userId/taskId when awarding badges', async () => {
+    mocks.updateClaimStatus.mockResolvedValue({ id: 'claim-1', status: 'approved' }); // no userId / taskId
+    const res = await approve(makeEvent({ reviewerId: 'ngo-1' }));
+    expect(res.status).toBe(200);
+    expect(mocks.onTaskApproved).not.toHaveBeenCalled();
+  });
+
 
   it('returns 403 when the calling NGO does not own the task (cross-org IDOR)', async () => {
     const res = await approve(makeEvent({ reviewerId: 'some-other-ngo' }));
@@ -108,6 +130,15 @@ describe('POST /api/claims/[id]/approve', () => {
     expect(mocks.updateClaimStatus).toHaveBeenCalledWith('claim-1', 'approved', 'ngo-1');
     expect(mocks.onTaskApproved).toHaveBeenCalledWith('volunteer-1', 'task-owned', 15);
     expect(body.awardedBadgeIds).toEqual(['badge-1']);
+  });
+
+  it('awards badges without an estimate when the task does not provide one', async () => {
+    mocks.getTaskById.mockResolvedValue({ ...ownedTask, estimatedMinutes: undefined });
+
+    const res = await approve(makeEvent({ reviewerId: 'ngo-1' }));
+
+    expect(res.status).toBe(200);
+    expect(mocks.onTaskApproved).toHaveBeenCalledWith('volunteer-1', 'task-owned', undefined);
   });
 
   it('still approves when badge awarding throws (best-effort)', async () => {
@@ -150,6 +181,31 @@ describe('POST /api/claims/[id]/reject', () => {
     const res = await reject(makeEvent({ reviewerId: 'some-other-ngo' }));
     expect(res.status).toBe(403);
     expect(mocks.updateClaimStatus).not.toHaveBeenCalled();
+  });
+
+  it('returns 400 when claim id param is missing', async () => {
+    const res = await reject({
+      locals: { session: { user: { id: 'ngo-1' } } },
+      params: {}
+    } as unknown as import("@sveltejs/kit").RequestEvent);
+    expect(res.status).toBe(400);
+  });
+
+  it('returns 404 when the claim has no taskId or referenced task is missing', async () => {
+    mocks.getClaimById.mockResolvedValue({ id: 'c1' }); // no taskId
+    const res = await reject(makeEvent({ reviewerId: 'ngo-1' }));
+    expect(res.status).toBe(404);
+
+    mocks.getClaimById.mockResolvedValue(claimOnOwnedTask);
+    mocks.getTaskById.mockResolvedValue(undefined);
+    const res2 = await reject(makeEvent({ reviewerId: 'ngo-1' }));
+    expect(res2.status).toBe(404);
+  });
+
+  it('returns 500 when the status update fails', async () => {
+    mocks.updateClaimStatus.mockResolvedValue(undefined);
+    const res = await reject(makeEvent({ reviewerId: 'ngo-1' }));
+    expect(res.status).toBe(500);
   });
 
   it('rejects and records the real reviewer id on the happy path', async () => {

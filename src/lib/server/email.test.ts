@@ -8,7 +8,7 @@ vi.mock('$env/dynamic/private', () => ({
 }));
 
 // Now import after mock.
-import { sendVerificationApproved, sendVerificationRejected } from './email';
+import { sendEmail, sendVerificationApproved, sendVerificationRejected } from './email';
 
 function setEnv(values: Record<string, string | undefined>) {
   for (const k of Object.keys(envState)) delete envState[k];
@@ -24,14 +24,42 @@ describe('email module (Mailgun)', () => {
 
   it('returns an error when Mailgun is not configured (dev mode no-op)', async () => {
     setEnv({ NODE_ENV: 'development' });
-    const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, 'log').mockImplementation(() => { });
 
     const result = await sendVerificationApproved({ to: 'jane@example.com', orgName: 'Example' });
 
     expect(result.ok).toBe(false);
     expect(result.error).toMatch(/Mailgun not configured/);
     expect(logSpy).toHaveBeenCalled(); // dev-mode debug log fired
+
+    // Production mode (does not call console.log)
+    setEnv({ NODE_ENV: 'production' });
+    logSpy.mockClear();
+    const prodResult = await sendVerificationApproved({ to: 'jane@example.com', orgName: 'Example' });
+    expect(prodResult.ok).toBe(false);
+    expect(logSpy).not.toHaveBeenCalled();
   });
+
+
+  it('falls back to default from email when MAILGUN_FROM_EMAIL is not set', async () => {
+    setEnv({
+      MAILGUN_API_KEY: 'key-test',
+      MAILGUN_DOMAIN: 'mg.example.com'
+    });
+    const fetchSpy = vi.fn<typeof fetch>().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({ id: 'mailgun-msg-id' }),
+      text: async () => ''
+    } as unknown as Response);
+    vi.stubGlobal('fetch', fetchSpy);
+
+    const result = await sendVerificationApproved({ to: 'jane@example.com', orgName: 'Doctors Without Borders' });
+    expect(result.ok).toBe(true);
+    const body = (fetchSpy.mock.calls[0]![1] as RequestInit).body as URLSearchParams;
+    expect(body.get('from')).toBe('MicroMatch <noreply@mg.example.com>');
+  });
+
 
   it('hits the US Mailgun endpoint by default and uses Basic auth', async () => {
     setEnv({
@@ -96,6 +124,17 @@ describe('email module (Mailgun)', () => {
     expect(body.get('text')).toMatch(/Example Org/);
   });
 
+  it('omits the plain-text field when a caller does not provide one', async () => {
+    setEnv({ MAILGUN_API_KEY: 'k', MAILGUN_DOMAIN: 'd', MAILGUN_FROM_EMAIL: 'a <a@b>' });
+    const fetchSpy = vi.fn<typeof fetch>().mockResolvedValue({ ok: true, status: 200, json: async () => ({}) } as Response);
+    vi.stubGlobal('fetch', fetchSpy);
+
+    await expect(sendEmail({ to: 'jane@example.com', subject: 'HTML only', html: '<p>Hello</p>' })).resolves.toEqual({ ok: true, id: undefined });
+
+    const body = (fetchSpy.mock.calls[0]![1] as RequestInit).body as URLSearchParams;
+    expect(body.has('text')).toBe(false);
+  });
+
   it('escapes HTML in the org name to prevent template injection', async () => {
     setEnv({ MAILGUN_API_KEY: 'k', MAILGUN_DOMAIN: 'd', MAILGUN_FROM_EMAIL: 'a <a@b>' });
     const fetchSpy = vi.fn<typeof fetch>().mockResolvedValue({ ok: true, status: 200, json: async () => ({}), text: async () => '' } as unknown as Response);
@@ -135,6 +174,34 @@ describe('email module (Mailgun)', () => {
 
     expect(result.ok).toBe(false);
     expect(result.error).toMatch(/Mailgun 401/);
+  });
+
+  it('returns a status error when Mailgun sends an unreadable error body', async () => {
+    setEnv({ MAILGUN_API_KEY: 'k', MAILGUN_DOMAIN: 'd', MAILGUN_FROM_EMAIL: 'a <a@b>' });
+    vi.stubGlobal('fetch', vi.fn(async () => ({
+      ok: false,
+      status: 503,
+      text: async () => { throw new Error('response body unavailable'); }
+    }) as unknown as Response));
+
+    await expect(sendEmail({ to: 'a@b', subject: 'Subject', html: '<p>Body</p>' })).resolves.toEqual({
+      ok: false,
+      error: 'Mailgun 503: '
+    });
+  });
+
+  it('treats a successful response without JSON as a sent email', async () => {
+    setEnv({ MAILGUN_API_KEY: 'k', MAILGUN_DOMAIN: 'd', MAILGUN_FROM_EMAIL: 'a <a@b>' });
+    vi.stubGlobal('fetch', vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      json: async () => { throw new Error('empty response'); }
+    }) as unknown as Response));
+
+    await expect(sendEmail({ to: 'a@b', subject: 'Subject', html: '<p>Body</p>' })).resolves.toEqual({
+      ok: true,
+      id: undefined
+    });
   });
 
   it('catches network errors and surfaces them', async () => {
