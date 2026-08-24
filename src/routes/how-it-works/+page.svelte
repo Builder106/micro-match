@@ -22,8 +22,8 @@
       demoNgo: 'Doctors Without Borders',
       demoTime: '15 min',
       demoTags: [
-        { label: '#Spanish', bg: '#F3E8FF', color: '#7C3AED' },
-        { label: '#Health', bg: '#D1FAE5', color: '#059669' }
+        { label: '#Spanish', bg: '#F3E8FF', color: '#581C87' },
+        { label: '#Health', bg: '#D1FAE5', color: '#064E3B' }
       ]
     },
     {
@@ -59,7 +59,7 @@
       demoNgo: 'Dosage terms: "dosificación" → "dosage"',
       demoTime: 'Guide',
       demoTags: [
-        { label: 'Resource Ready', bg: '#D1FAE5', color: '#059669' }
+        { label: 'Resource Ready', bg: '#D1FAE5', color: '#064E3B' }
       ]
     },
     {
@@ -77,7 +77,7 @@
       demoNgo: 'URL: https://docs.google.com/document/...',
       demoTime: 'Pending',
       demoTags: [
-        { label: 'Under Review', bg: '#FCE7F3', color: '#DB2777' }
+        { label: 'Under Review', bg: '#FCE7F3', color: '#831843' }
       ]
     },
     {
@@ -95,7 +95,7 @@
       demoNgo: '+50 XP Awarded to Elena Vance',
       demoTime: 'Earned',
       demoTags: [
-        { label: 'In Vault', bg: '#FFEDD5', color: '#EA580C' }
+        { label: 'In Vault', bg: '#FFEDD5', color: '#7C2D12' }
       ]
     }
   ];
@@ -243,25 +243,25 @@
       <div class="diagram-grid">
         <div class="diag-box">
           <div class="diag-icon"><Icon icon="lucide:building-2" width="24" height="24" /></div>
-          <h4>1. NGO Posts Task</h4>
+          <h3>1. NGO Posts Task</h3>
           <p>NGO scopes 15-minute mission & sets volunteer limits.</p>
         </div>
-        <div class="diag-arrow">→</div>
+        <div class="diag-arrow" aria-hidden="true"><Icon icon="lucide:arrow-right" width="18" height="18" /></div>
         <div class="diag-box">
           <div class="diag-icon"><Icon icon="lucide:user-check" width="24" height="24" /></div>
-          <h4>2. Volunteer Claims</h4>
+          <h3>2. Volunteer Claims</h3>
           <p>Volunteer reserves mission & reviews embedded guide.</p>
         </div>
-        <div class="diag-arrow">→</div>
+        <div class="diag-arrow" aria-hidden="true"><Icon icon="lucide:arrow-right" width="18" height="18" /></div>
         <div class="diag-box">
           <div class="diag-icon"><Icon icon="lucide:upload-cloud" width="24" height="24" /></div>
-          <h4>3. Proof Submitted</h4>
+          <h3>3. Proof Submitted</h3>
           <p>Volunteer submits work output via link or file upload.</p>
         </div>
-        <div class="diag-arrow">→</div>
+        <div class="diag-arrow" aria-hidden="true"><Icon icon="lucide:arrow-right" width="18" height="18" /></div>
         <div class="diag-box highlight">
           <div class="diag-icon"><Icon icon="lucide:award" width="24" height="24" /></div>
-          <h4>4. NGO Approves</h4>
+          <h3>4. NGO Approves</h3>
           <p>Claim approved, badge minted, XP awarded automatically.</p>
         </div>
       </div>
@@ -330,7 +330,7 @@
     margin: 0 0 16px;
   }
   .coral-gradient {
-    color: var(--color-primary);
+    color: var(--color-primary-readable);
   }
   .hiw-hero-head p {
     font-size: 18px;
@@ -466,6 +466,9 @@
     font-weight: 800;
     color: var(--color-text);
     margin: 0 0 12px;
+    background: var(--color-surface);
+    position: relative;
+    z-index: 1;
   }
   .ins-summary {
     font-size: 16px;
@@ -714,7 +717,7 @@
     background: var(--color-primary);
     color: #FFF;
   }
-  .diag-box h4 {
+  .diag-box h3 {
     font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 15px;
     font-weight: 700;
@@ -812,7 +815,7 @@
     width: 100%;
   }
   .cta-banner {
-    background: linear-gradient(135deg, #FF6B6B, #E85555);
+    background: var(--color-primary);
     color: #FFFFFF;
     border-radius: 36px;
     padding: clamp(40px, 6vw, 64px) 24px;
@@ -844,7 +847,7 @@
   }
   .cta-btns .btn-coral {
     background: #FFFFFF;
-    color: #FF6B6B;
+    color: var(--color-primary-readable);
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .cta-btns .btn-coral:hover {

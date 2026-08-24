@@ -37,5 +37,19 @@ describe('/badges/analytics load', () => {
     expect(result.user).toEqual({ id: 'org-1', email: 'jane@example.com' });
     expect(result.tasks).toEqual([{ id: 't1' }]);
     expect(result.analytics).toEqual({ totalBadgesAwarded: 5 });
+
+    // Test with user without email
+    const result2 = (await load({
+      locals: {
+        userRole: 'ngo',
+        session: { user: { id: 'org-2' } }
+      }
+    } as unknown as Parameters<typeof load>[0])) as unknown as AnalyticsResult;
+    expect(result2.user).toEqual({ id: 'org-2', email: undefined });
+  });
+
+  it('handles locals with default anonymous role', async () => {
+    await expect(load({ locals: {} } as unknown as Parameters<typeof load>[0])).rejects.toThrow(/NGO access required/);
   });
 });
+

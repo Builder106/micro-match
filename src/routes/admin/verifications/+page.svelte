@@ -204,9 +204,9 @@
 
 <!-- Reject dialog -->
 {#if rejectingUserId}
-  <div class="modal" role="dialog" aria-modal="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="reject-dialog-title" tabindex="-1">
     <div class="modal-card">
-      <h2>Reject submission</h2>
+      <h2 id="reject-dialog-title">Reject submission</h2>
       <p>This becomes the user-facing message in their REJECTED state. Be specific so they know how to fix it.</p>
       <textarea bind:value={rejectReason} rows="4" placeholder="Document doesn't show tax-exempt status. Please upload your IRS Form 990 or determination letter." maxlength="1000"></textarea>
       <div class="modal-actions">

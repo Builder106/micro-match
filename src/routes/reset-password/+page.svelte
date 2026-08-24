@@ -56,7 +56,7 @@
     <AuthBrandPanel animation="/animations/confetti.json" />
   </div>
 
-  <section class="right-panel">
+  <main class="right-panel">
     <div class="mobile-stage">
       <AuthBrandPanel compact animation="/animations/confetti.json" />
     </div>
@@ -132,7 +132,7 @@
         </form>
       {/if}
     </div>
-  </section>
+  </main>
 </div>
 
 <style>
@@ -155,11 +155,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     overflow-y: auto;
   }
-  .mobile-stage { display: block; width: 100%; margin-bottom: 8px; }
-  .auth-card { width: min(440px, calc(100% - 2rem)); padding: 28px 18px 30px; }
+  .mobile-stage { display: block; width: 100%; height: 300px; flex: 0 0 300px; margin-bottom: 8px; }
+  .auth-card { width: min(440px, calc(100% - 2rem)); padding: 28px 18px 30px; position: relative; z-index: 1; background: var(--color-background); }
   .auth-head { margin-bottom: 22px; }
   h1 {
     font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
@@ -208,11 +208,11 @@
   }
   input:focus { border-color: var(--color-primary); background: var(--color-surface); box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12); outline: none; }
   .auth-submit { margin-top: 8px; width: 100%; }
-  .error { margin: 0 0 16px; padding: 10px 12px; background: color-mix(in srgb, #dc2626 10%, transparent); color: #dc2626; font-size: 13px; font-weight: 600; border-radius: 10px; display: inline-flex; align-items: center; gap: 6px; }
+  .error { margin: 0 0 16px; padding: 10px 12px; background: #f5e5e7; color: #7f1d1d; font-size: 13px; font-weight: 600; border-radius: 10px; display: inline-flex; align-items: center; gap: 6px; }
 
   @media (min-width: 1024px) {
     .left-panel { display: block; }
-    .right-panel { width: 45%; padding: 36px 16px; }
+    .right-panel { width: 45%; padding: 36px 16px; justify-content: center; }
     .mobile-stage { display: none; }
     .auth-card { width: min(440px, 100%); padding: 8px 4px; }
   }

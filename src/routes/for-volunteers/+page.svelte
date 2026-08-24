@@ -15,7 +15,7 @@
       title: 'Tag 10 historical photos for digital archive',
       ngo: 'National Historical Trust',
       xp: '+25 XP',
-      tags: [{ name: '#history', bg: '#DBEAFE', color: '#2563EB' }, { name: '#data', bg: '#FEF3C7', color: '#D97706' }]
+      tags: [{ name: '#history', bg: '#DBEAFE', color: '#172554' }, { name: '#data', bg: '#FEF3C7', color: '#78350F' }]
     },
     {
       id: 2,
@@ -24,7 +24,7 @@
       title: 'Proofread 3 social media announcement captions',
       ngo: 'Ocean Conservation Alliance',
       xp: '+25 XP',
-      tags: [{ name: '#writing', bg: '#FCE7F3', color: '#DB2777' }, { name: '#environment', bg: '#D1FAE5', color: '#059669' }]
+      tags: [{ name: '#writing', bg: '#FCE7F3', color: '#831843' }, { name: '#environment', bg: '#D1FAE5', color: '#064E3B' }]
     },
     {
       id: 3,
@@ -33,7 +33,7 @@
       title: 'Translate medical dosage flyer to Spanish',
       ngo: 'Doctors Without Borders',
       xp: '+50 XP',
-      tags: [{ name: '#spanish', bg: '#F3E8FF', color: '#7C3AED' }, { name: '#health', bg: '#D1FAE5', color: '#059669' }]
+      tags: [{ name: '#spanish', bg: '#F3E8FF', color: '#581C87' }, { name: '#health', bg: '#D1FAE5', color: '#064E3B' }]
     },
     {
       id: 4,
@@ -42,7 +42,7 @@
       title: 'Audit Excel spreadsheet for missing donor ZIP codes',
       ngo: 'Global Literacy Fund',
       xp: '+50 XP',
-      tags: [{ name: '#excel', bg: '#D1FAE5', color: '#059669' }, { name: '#data', bg: '#FEF3C7', color: '#D97706' }]
+      tags: [{ name: '#excel', bg: '#D1FAE5', color: '#064E3B' }, { name: '#data', bg: '#FEF3C7', color: '#78350F' }]
     },
     {
       id: 5,
@@ -51,7 +51,7 @@
       title: 'Design 2 Canva Instagram graphics for cleanup drive',
       ngo: 'Clean City Project',
       xp: '+100 XP',
-      tags: [{ name: '#design', bg: '#FCE7F3', color: '#DB2777' }, { name: '#media', bg: '#DBEAFE', color: '#2563EB' }]
+      tags: [{ name: '#design', bg: '#FCE7F3', color: '#831843' }, { name: '#media', bg: '#DBEAFE', color: '#172554' }]
     },
     {
       id: 6,
@@ -60,7 +60,7 @@
       title: 'Research top 5 youth literacy non-profit statistics',
       ngo: 'Reading for All',
       xp: '+100 XP',
-      tags: [{ name: '#research', bg: '#FEF3C7', color: '#D97706' }, { name: '#education', bg: '#F3E8FF', color: '#7C3AED' }]
+      tags: [{ name: '#research', bg: '#FEF3C7', color: '#78350F' }, { name: '#education', bg: '#F3E8FF', color: '#581C87' }]
     }
   ];
 
@@ -70,7 +70,7 @@
     {
       icon: 'lucide:clock',
       bg: '#D1FAE5',
-      color: '#059669',
+      color: '#064E3B',
       tag: '5–30 Minute Caps',
       title: 'Bite-sized missions',
       desc: 'Every task is scoped to 5, 15, or 30 minutes with clear time estimates upfront. Fit impact into spare study gaps, commutes, or coffee breaks.'
@@ -78,7 +78,7 @@
     {
       icon: 'lucide:zap',
       bg: '#DBEAFE',
-      color: '#2563EB',
+      color: '#172554',
       tag: 'Zero Onboarding',
       title: 'Claim, learn, and submit',
       desc: 'No interviews or background checks required. Claim a task, read embedded contextual guides, and submit link or document proof straight from your device.'
@@ -86,7 +86,7 @@
     {
       icon: 'lucide:trophy',
       bg: '#FFEDD5',
-      color: '#EA580C',
+      color: '#7C2D12',
       tag: 'Gamified Growth',
       title: 'Badges and XP vault',
       desc: 'Approved work awards XP level-ups and mints custom NGO achievement badges into your public portfolio, proving your real-world contribution history.'
@@ -333,7 +333,7 @@
     border-radius: 9999px;
     font-size: 13px;
     font-weight: 700;
-    color: var(--color-primary);
+    color: var(--color-primary-readable);
     margin-bottom: 16px;
     box-shadow: 0 2px 8px rgba(255,107,107,0.1);
   }
@@ -347,7 +347,7 @@
     margin: 0 0 16px;
   }
   .coral-gradient {
-    color: var(--color-primary);
+    color: var(--color-primary-readable);
   }
   .vol-hero-text p {
     font-size: 17px;
@@ -642,12 +642,12 @@
   }
   .st-top { display: flex; justify-content: space-between; align-items: center; }
   .st-ngo { font-size: 13px; font-weight: 700; color: var(--color-text-tertiary); }
-  .st-time { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; background: rgba(255, 107, 107, 0.12); color: var(--color-primary); border-radius: 9999px; font-size: 12px; font-weight: 700; }
+  .st-time { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; background: var(--color-surface-variant); color: var(--color-primary-readable); border-radius: 9999px; font-size: 12px; font-weight: 700; }
   .sample-task-card h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; font-weight: 700; margin: 0; color: var(--color-text); }
   .st-foot { display: flex; justify-content: space-between; align-items: center; }
   .st-tags { display: flex; gap: 6px; }
   .st-tags span { padding: 3px 10px; border-radius: 9999px; font-size: 11px; font-weight: 700; }
-  .st-xp { font-size: 13px; font-weight: 800; color: #059669; }
+  .st-xp { font-size: 13px; font-weight: 800; color: #064E3B; }
 
   .btn-dark-pill {
     display: inline-flex;
@@ -674,7 +674,7 @@
   /* CTA */
   .vol-cta-section { padding: 96px 0; background: var(--color-surface-variant); width: 100%; }
   .cta-box {
-    background: linear-gradient(135deg, #FF6B6B, #E85555);
+    background: var(--color-primary);
     color: #FFFFFF;
     border-radius: 36px;
     padding: clamp(40px, 6vw, 64px);
@@ -691,7 +691,7 @@
   .cta-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
   .cta-actions .btn-coral {
     background: #FFFFFF;
-    color: #FF6B6B;
+    color: #881337;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .cta-actions .btn-coral:hover {

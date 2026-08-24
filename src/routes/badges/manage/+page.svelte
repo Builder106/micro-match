@@ -234,18 +234,14 @@
 
 <!-- ───── Create / edit modal ───── -->
 {#if showCreateModal}
-  <!-- svelte-ignore a11y_click_events_have_key_events -->
   <div
     class="bm-modal"
     role="dialog"
     aria-modal="true"
     aria-labelledby="bm-modal-title"
-    on:click={closeModal}
     tabindex="-1"
   >
-    <!-- svelte-ignore a11y_click_events_have_key_events -->
-    <!-- svelte-ignore a11y_no_static_element_interactions -->
-    <div class="bm-modal-card" on:click|stopPropagation>
+    <div class="bm-modal-card">
       <header class="bm-modal-head">
         <h2 id="bm-modal-title">{editingBadge ? 'Edit badge' : 'Create new badge'}</h2>
         <button class="bm-icon-btn" on:click={closeModal} aria-label="Close">

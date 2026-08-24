@@ -130,7 +130,7 @@
       {/if}
     </div>
 
-    <div class="category-pills" role="tablist" aria-label="Help Categories">
+    <div class="category-pills" role="group" aria-label="Help Categories">
       {#each categories as cat (cat)}
         <button
           class="pill-btn"
@@ -153,7 +153,7 @@
         <Icon icon="heroicons:user-group-20-solid" width="22" height="22" />
       </div>
       <div class="topic-info">
-        <h4>Volunteer Guide</h4>
+        <h2>Volunteer Guide</h2>
         <p>Finding tasks, submitting proof, & earning badges.</p>
       </div>
       <span class="arrow-icon-wrap">
@@ -166,7 +166,7 @@
         <Icon icon="heroicons:building-office-20-solid" width="22" height="22" />
       </div>
       <div class="topic-info">
-        <h4>NGO Partner Guide</h4>
+        <h2>NGO Partner Guide</h2>
         <p>EIN verification, task creation, & reviewing claims.</p>
       </div>
       <span class="arrow-icon-wrap">
@@ -179,7 +179,7 @@
         <Icon icon="heroicons:code-bracket-20-solid" width="22" height="22" />
       </div>
       <div class="topic-info">
-        <h4>Developer API Docs</h4>
+        <h2>Developer API Docs</h2>
         <p>Interactive REST reference & authentication endpoints.</p>
       </div>
       <span class="arrow-icon-wrap">
@@ -384,7 +384,7 @@
   }
 
   .pill-btn.active .count-tag {
-    background: rgba(255, 255, 255, 0.25);
+    background: rgba(0, 0, 0, 0.35);
   }
 
   /* Support Topics Grid */
@@ -426,9 +426,9 @@
 
   .indigo-glow { background: #eff6ff; color: #3b82f6; }
   .rose-glow { background: #fff1f2; color: #e11d48; }
-  .coral-glow { background: #fff1f1; color: #ff6b6b; }
+  .coral-glow { background: #fff1f1; color: var(--color-primary); }
 
-  .topic-info h4 {
+  .topic-info h2 {
     font-size: 0.95rem;
     font-weight: 700;
     margin: 0 0 2px 0;
@@ -599,7 +599,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 20px;
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    background: #0f172a;
     color: #ffffff;
     border-radius: 20px;
     padding: 28px 32px;
@@ -627,7 +627,7 @@
 
   .cta-content p {
     font-size: 0.9rem !important;
-    color: #94a3b8 !important;
+    color: #e2e8f0 !important;
     margin: 0 !important;
   }
 
@@ -645,7 +645,7 @@
     gap: 8px;
     padding: 10px 22px;
     border-radius: 9999px;
-    background: #FF6B6B;
+    background: var(--color-primary);
     color: #ffffff !important;
     font-weight: 700 !important;
     font-size: 0.9rem;

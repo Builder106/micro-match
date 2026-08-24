@@ -165,9 +165,9 @@
    * component: mission planner · genre: playful · theme: MicroMatch warm coral
    * states: default · hover · focus · active · disabled · loading · error · success
    * contrast: pass */
-  .mission-planner { background: linear-gradient(135deg, var(--color-surface), color-mix(in srgb, var(--color-primary) 5%, var(--color-surface))); border: 1px solid var(--card-border-strong); border-radius: var(--radius-2xl); box-shadow: var(--elev-2); padding: clamp(var(--space-8), 5vw, var(--space-16)); }
+  .mission-planner { background: var(--color-surface); border: 1px solid var(--card-border-strong); border-radius: var(--radius-2xl); box-shadow: var(--elev-2); padding: clamp(var(--space-8), 5vw, var(--space-16)); }
   .planner-heading { margin: 0 auto clamp(var(--space-8), 5vw, var(--space-12)); max-width: 42rem; text-align: center; }
-  .planner-kicker { align-items: center; background: color-mix(in srgb, var(--color-primary) 12%, transparent); border-radius: var(--radius-full); color: var(--color-primary); display: inline-flex; font-size: var(--text-xs); font-weight: var(--font-bold); gap: var(--space-2); padding: var(--space-2) var(--space-3); }
+  .planner-kicker { align-items: center; background: color-mix(in srgb, var(--color-primary) 12%, transparent); border-radius: var(--radius-full); color: var(--color-primary-readable); display: inline-flex; font-size: var(--text-xs); font-weight: var(--font-bold); gap: var(--space-2); padding: var(--space-2) var(--space-3); }
   h2, h3, p { margin-block: 0; }
   .planner-heading h2 { color: var(--color-text); font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.9rem, 3.2vw, 2.75rem); line-height: var(--leading-tight); margin-block: var(--space-3); overflow-wrap: anywhere; }
   .planner-heading > p { color: var(--color-text-secondary); font-size: var(--text-base); line-height: var(--leading-relaxed); }
@@ -177,7 +177,7 @@
   .planner-step + .planner-step { padding-top: var(--space-6); }
   .planner-step:last-child { padding-bottom: 0; }
   .planner-step legend { border-bottom: 1px solid var(--card-border-strong); box-sizing: border-box; color: var(--color-text); display: flex; font-size: var(--text-lg); font-weight: var(--font-bold); gap: var(--space-3); padding: 0 0 var(--space-3); width: 100%; }
-  .planner-step legend span { align-items: center; background: color-mix(in srgb, var(--color-primary) 12%, transparent); border-radius: var(--radius-full); color: var(--color-primary); display: inline-flex; font-size: var(--text-xs); height: 1.5rem; justify-content: center; width: 1.5rem; }
+  .planner-step legend span { align-items: center; background: color-mix(in srgb, var(--color-primary) 12%, transparent); border-radius: var(--radius-full); color: var(--color-primary-readable); display: inline-flex; font-size: var(--text-xs); height: 1.5rem; justify-content: center; width: 1.5rem; }
   .field-heading { align-items: center; display: flex; gap: var(--space-4); justify-content: space-between; margin-top: var(--space-4); }
   .field-heading label { color: var(--color-text); font-size: var(--text-sm); font-weight: var(--font-bold); }
   .hours-field { align-items: center; border: 1px solid var(--color-outline-variant); border-radius: var(--radius-md); color: var(--color-text-secondary); display: inline-flex; gap: var(--space-2); min-height: 44px; padding-inline: var(--space-3); }
@@ -203,13 +203,13 @@
   .release-options { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-3); }
   .release-option { align-items: center; border-radius: var(--radius-full); font-size: var(--text-sm); font-weight: var(--font-bold); justify-content: center; min-height: 44px; min-width: 5.5rem; padding-inline: var(--space-4); }
   .mission-plan { align-self: start; background: var(--color-surface); border: 1px solid var(--card-border-strong); border-radius: var(--radius-xl); box-shadow: var(--elev-3); min-width: 0; padding: clamp(var(--space-5), 3vw, var(--space-8)); }
-  .plan-label { color: var(--color-primary); font-size: var(--text-sm); font-weight: var(--font-bold); }
+  .plan-label { color: var(--color-primary-readable); font-size: var(--text-sm); font-weight: var(--font-bold); }
   .plan-total { align-items: center; display: flex; gap: var(--space-4); margin-block: var(--space-5); }
-  .plan-total > strong { color: var(--color-primary); font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(3.5rem, 7vw, 5rem); font-variant-numeric: tabular-nums; letter-spacing: -0.07em; line-height: 0.85; }
+  .plan-total > strong { color: var(--color-primary-readable); font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(3.5rem, 7vw, 5rem); font-variant-numeric: tabular-nums; letter-spacing: -0.07em; line-height: 0.85; }
   .plan-total h3 { color: var(--color-text); font-family: 'Plus Jakarta Sans', sans-serif; font-size: var(--text-xl); line-height: var(--leading-tight); }
   .plan-total p { color: var(--color-text-secondary); font-size: var(--text-sm); line-height: var(--leading-normal); margin-top: var(--space-2); }
   .schedule-summary { align-items: center; background: var(--color-surface-variant); border-radius: var(--radius-lg); display: flex; gap: var(--space-3); padding: var(--space-3); }
-  .summary-icon { align-items: center; background: color-mix(in srgb, var(--color-primary) 14%, transparent); border-radius: var(--radius-md); color: var(--color-primary); display: flex; flex: 0 0 2.5rem; height: 2.5rem; justify-content: center; }
+  .summary-icon { align-items: center; background: color-mix(in srgb, var(--color-primary) 14%, transparent); border-radius: var(--radius-md); color: var(--color-primary-readable); display: flex; flex: 0 0 2.5rem; height: 2.5rem; justify-content: center; }
   .schedule-summary strong, .schedule-summary span, .review-note strong, .review-note span { display: block; }
   .schedule-summary strong, .review-note strong { color: var(--color-text); font-size: var(--text-sm); }
   .schedule-summary span, .review-note span { color: var(--color-text-secondary); font-size: var(--text-xs); line-height: var(--leading-normal); margin-top: var(--space-1); }

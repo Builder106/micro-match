@@ -126,7 +126,7 @@
     <div class="guarantee-box">
       <div class="guarantee-head">
         <Icon icon="lucide:lock" width="18" height="18" class="guarantee-icon" />
-        <h4>Zero AI Model Training Guarantee</h4>
+        <h3>Zero AI Model Training Guarantee</h3>
       </div>
       <p>
         User uploads and documents are stored securely in Appwrite database tables and storage buckets. 

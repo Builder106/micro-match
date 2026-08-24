@@ -4,6 +4,8 @@
 import '@testing-library/jest-dom/vitest';
 import { afterEach } from 'vitest';
 
+
+
 // Storage shim for JSDOM / happy-dom environments where localStorage isn't fully wired
 const memory = new Map<string, string>();
 
@@ -46,7 +48,23 @@ if (typeof globalThis !== 'undefined') {
 // Only attach the DOM cleanup when running against jsdom (component tests).
 // On node-environment server tests, document/window don't exist.
 if (typeof document !== 'undefined') {
+  if (typeof Element !== 'undefined' && !Element.prototype.animate) {
+    Element.prototype.animate = function () {
+      return {
+        onfinish: null,
+        oncancel: null,
+        finished: Promise.resolve(),
+        cancel: () => { },
+        finish: () => { },
+        play: () => { },
+        pause: () => { },
+        reverse: () => { }
+      } as unknown as Animation;
+    };
+  }
+
   // Lazy-import so the node project doesn't try to resolve @testing-library/svelte.
   const { cleanup } = await import('@testing-library/svelte');
   afterEach(() => cleanup());
 }
+

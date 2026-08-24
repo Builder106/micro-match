@@ -46,8 +46,8 @@
   });
 
   const steps = [
-    { icon: 'lucide:search', title: 'Find a Task', description: 'Browse our feed of bite-sized tasks and find one that matches your skills and interests.', bg: '#DBEAFE', color: '#2563EB' },
-    { icon: 'lucide:pen-tool', title: 'Learn & Complete', description: 'Access just-in-time learning resources and complete the task successfully in minutes.', bg: '#D1FAE5', color: '#059669' },
+    { icon: 'lucide:search', title: 'Find a Task', description: 'Browse our feed of bite-sized tasks and find one that matches your skills and interests.', bg: '#DBEAFE', color: '#172554' },
+    { icon: 'lucide:pen-tool', title: 'Learn & Complete', description: 'Access just-in-time learning resources and complete the task successfully in minutes.', bg: '#D1FAE5', color: '#064E3B' },
     { icon: 'lucide:award', title: 'Earn Recognition', description: 'Submit your work, get it approved by the NGO, and earn a badge for your contribution.', bg: '#FFEDD5', color: '#EA580C' },
   ];
 
@@ -60,19 +60,19 @@
   badgeSeen = Array(demoBadges.length).fill(false);
 
   const tagColors: Record<string, { bg: string; color: string }> = {
-    spanish: { bg: '#F3E8FF', color: '#7C3AED' },
-    health: { bg: '#D1FAE5', color: '#059669' },
-    translation: { bg: '#DBEAFE', color: '#2563EB' },
-    design: { bg: '#FCE7F3', color: '#DB2777' },
-    data: { bg: '#FEF3C7', color: '#D97706' },
-    history: { bg: '#DBEAFE', color: '#2563EB' },
-    environment: { bg: '#D1FAE5', color: '#059669' },
-    excel: { bg: '#D1FAE5', color: '#059669' },
+    spanish: { bg: '#F3E8FF', color: '#581C87' },
+    health: { bg: '#D1FAE5', color: '#064E3B' },
+    translation: { bg: '#DBEAFE', color: '#1E3A8A' },
+    design: { bg: '#FCE7F3', color: '#831843' },
+    data: { bg: '#FEF3C7', color: '#78350F' },
+    history: { bg: '#DBEAFE', color: '#1E3A8A' },
+    environment: { bg: '#D1FAE5', color: '#064E3B' },
+    excel: { bg: '#D1FAE5', color: '#064E3B' },
   };
 
   function getTagStyle(tag: string) {
     const key = tag.replace('#', '').toLowerCase();
-    return tagColors[key] ?? { bg: '#F1F5F9', color: '#475569' };
+    return tagColors[key] ?? { bg: '#F1F5F9', color: '#334155' };
   }
 </script>
 
@@ -110,7 +110,7 @@
       </div>
       {/if}
 
-      <div class="hero-visual">
+      <div class="hero-visual" aria-hidden="true">
         {#if visible}
         <div class="hero-glow"></div>
 
@@ -121,16 +121,16 @@
             <img src="https://images.unsplash.com/photo-1638897212550-b0f4c5d8eb3d?w=150&h=150&fit=crop" alt="Volunteer avatar" class="mc-avatar" />
             <span class="mc-time"><Icon icon="lucide:clock" width="14" height="14" /> 15 mins</span>
           </div>
-          <h3>Translate a medical flyer</h3>
+        <h2>Translate a medical flyer</h2>
           <p class="mc-ngo">Doctors Without Borders <Icon icon="lucide:badge-check" width="14" height="14" class="mc-verified" /></p>
           <div class="mc-bottom">
             <div class="mc-tags">
-              <span style="background:#F3E8FF;color:#7C3AED">#Spanish</span>
-              <span style="background:#D1FAE5;color:#059669">#Health</span>
+              <span style="background:#F3E8FF;color:#581C87">#Spanish</span>
+              <span style="background:#D1FAE5;color:#064E3B">#Health</span>
             </div>
-            <a href={resolve('/tasks', {})} class="mc-claim-btn">
+            <span class="mc-claim-btn">
               Claim <Icon icon="lucide:arrow-right" width="12" height="12" />
-            </a>
+            </span>
           </div>
         </div>
 
@@ -141,15 +141,15 @@
             <img src="https://images.unsplash.com/photo-1614807536394-cd67bd4a634b?w=150&h=150&fit=crop" alt="Volunteer avatar" class="mc-avatar" />
             <span class="mc-time"><Icon icon="lucide:clock" width="14" height="14" /> 5 mins</span>
           </div>
-          <h3>Tag historical photos</h3>
+        <h2>Tag historical photos</h2>
           <p class="mc-ngo">Smithsonian Archives <Icon icon="lucide:badge-check" width="14" height="14" class="mc-verified" /></p>
           <div class="mc-bottom">
             <div class="mc-tags">
-              <span style="background:#DBEAFE;color:#2563EB">#History</span>
+              <span style="background:#DBEAFE;color:#172554">#History</span>
             </div>
-            <a href={resolve('/tasks', {})} class="mc-claim-btn">
+            <span class="mc-claim-btn">
               Claim <Icon icon="lucide:arrow-right" width="12" height="12" />
-            </a>
+            </span>
           </div>
         </div>
 
@@ -160,16 +160,16 @@
             <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop" alt="Volunteer avatar" class="mc-avatar" />
             <span class="mc-time"><Icon icon="lucide:clock" width="14" height="14" /> 10 mins</span>
           </div>
-          <h3>Verify water pump data</h3>
+        <h2>Verify water pump data</h2>
           <p class="mc-ngo">Charity: Water <Icon icon="lucide:badge-check" width="14" height="14" class="mc-verified" /></p>
           <div class="mc-bottom">
             <div class="mc-tags">
-              <span style="background:#FEF3C7;color:#D97706">#Data</span>
-              <span style="background:#E0F2FE;color:#0284C7">#Water</span>
+              <span style="background:#FEF3C7;color:#78350F">#Data</span>
+              <span style="background:#E0F2FE;color:#075985">#Water</span>
             </div>
-            <a href={resolve('/tasks', {})} class="mc-claim-btn">
+            <span class="mc-claim-btn">
               Claim <Icon icon="lucide:arrow-right" width="12" height="12" />
-            </a>
+            </span>
           </div>
         </div>
 
@@ -180,15 +180,15 @@
             <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop" alt="Volunteer avatar" class="mc-avatar" />
             <span class="mc-time"><Icon icon="lucide:clock" width="14" height="14" /> 8 mins</span>
           </div>
-          <h3>Proofread storybook</h3>
+        <h2>Proofread storybook</h2>
           <p class="mc-ngo">Room to Read <Icon icon="lucide:badge-check" width="14" height="14" class="mc-verified" /></p>
           <div class="mc-bottom">
             <div class="mc-tags">
-              <span style="background:#FCE7F3;color:#DB2777">#Education</span>
+              <span style="background:#FCE7F3;color:#831843">#Education</span>
             </div>
-            <a href={resolve('/tasks', {})} class="mc-claim-btn">
+            <span class="mc-claim-btn">
               Claim <Icon icon="lucide:arrow-right" width="12" height="12" />
-            </a>
+            </span>
           </div>
         </div>
         {/if}
@@ -300,7 +300,7 @@
             />
           </div>
           <div class="progress-ring-wrap">
-            <svg viewBox="0 0 100 100" class="progress-ring">
+            <svg viewBox="0 0 100 100" class="progress-ring" aria-hidden="true" focusable="false">
               <circle cx="50" cy="50" r="40" class="ring-bg" />
               <circle cx="50" cy="50" r="40" class="ring-fg" />
             </svg>
@@ -317,7 +317,7 @@
           <div class="badges-grid">
             {#each demoBadges as badge, i (badge.title)}
               <div class="badge-card" data-badge-index={i} bind:this={badgeCardEls[i]}>
-                <div class="badge-sparkle">
+                <div class="badge-sparkle" aria-hidden="true">
                   {#if badgeSeen[i]}
                     <LottieAnimation src="/animations/badge_burst.json" loop={false} />
                   {/if}
@@ -341,14 +341,14 @@
   /* ──────────── Foundation ──────────── */
   .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
   .section-warm { background: var(--color-background); padding: 96px 0; }
-  .section-white { background: var(--color-surface); padding: 96px 0; }
+  .section-white { isolation: isolate; background: var(--color-surface); padding: 96px 0; }
   .section-head h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.75rem, 3vw + 0.5rem, 2.75rem); font-weight: 800; margin: 0 0 12px; color: var(--color-text); }
   .section-head p { color: var(--color-text-secondary); font-size: 18px; font-weight: 500; margin: 0; }
   h1, h2, h3, h4 { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; color: var(--color-text); }
 
   /* ──────────── Buttons ──────────── */
-  .btn-coral { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #FF6B6B; color: #fff; font-weight: 700; border: none; border-radius: 9999px; cursor: pointer; text-decoration: none; transition: all .3s; }
-  .btn-coral:hover { background: #ff5252; transform: translateY(-2px); box-shadow: 0 16px 40px rgba(255,107,107,0.35); }
+  .btn-coral { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--color-primary); color: #fff; font-weight: 700; border: none; border-radius: 9999px; cursor: pointer; text-decoration: none; transition: all .3s; }
+  .btn-coral:hover { background: var(--color-primary-variant); transform: translateY(-2px); box-shadow: 0 16px 40px rgba(159,18,57,0.35); }
   .btn-coral:active { transform: scale(0.97); }
   .btn-outline { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--color-surface); backdrop-filter: blur(12px); color: var(--color-text); font-weight: 700; border: 1px solid var(--card-border-strong); border-radius: 9999px; cursor: pointer; text-decoration: none; transition: all .3s; }
   .btn-outline:hover { background: var(--color-surface-variant); border-color: var(--card-border-strong); }
@@ -359,16 +359,16 @@
   .btn-lg { padding: 0 32px; height: 56px; font-size: 18px; }
 
   /* ──────────── Hero ──────────── */
-  .hero { position: relative; min-height: 90vh; display: flex; align-items: center; overflow: hidden; padding: 80px 0 0; }
-  .blob { position: absolute; border-radius: 50%; pointer-events: none; mix-blend-mode: multiply; }
+  .hero { position: relative; min-height: 90vh; display: flex; align-items: center; overflow: hidden; padding: 80px 0 0; background: var(--color-background); }
+  .blob { position: absolute; z-index: 0; border-radius: 50%; pointer-events: none; }
   .blob-yellow { top: -10%; left: -10%; width: 500px; height: 500px; background: rgba(253,224,71,0.4); filter: blur(100px); opacity: 0.7; }
   .blob-coral { top: 20%; right: -10%; width: 600px; height: 600px; background: rgba(255,107,107,0.2); filter: blur(120px); opacity: 0.6; }
   .blob-blue { bottom: -20%; left: 20%; width: 700px; height: 700px; background: rgba(147,197,253,0.3); filter: blur(140px); opacity: 0.5; }
   .hero-inner { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 0 24px; display: grid; grid-template-columns: 1fr; gap: 48px; align-items: center; }
   @media (min-width: 1024px) { .hero-inner { grid-template-columns: 1fr 1fr; gap: 32px; } .hero { padding: 0; } }
-  .hero-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 28px; max-width: 560px; }
+  .hero-copy { background: var(--color-background); border-radius: 24px; display: flex; flex-direction: column; align-items: flex-start; gap: 28px; max-width: 560px; padding: 16px; position: relative; z-index: 1; }
   .hero-copy h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2.25rem, 5vw + 0.5rem, 4.25rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin: 0; color: var(--color-text); }
-  .coral-gradient { color: var(--color-primary); }
+  .coral-gradient { color: var(--color-primary-readable); }
   .hero-copy p { color: var(--color-text-secondary); font-size: clamp(1rem, 1.5vw + 0.25rem, 1.25rem); font-weight: 500; line-height: 1.7; margin: 0; max-width: 480px; }
   .hero-buttons { display: flex; flex-wrap: wrap; gap: 16px; width: 100%; }
   @media (max-width: 639px) { .hero-buttons { flex-direction: column; } .hero-buttons a { width: 100%; } }
@@ -607,12 +607,12 @@
   .mc-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid var(--color-surface); box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform 0.3s ease; }
   .mock-card:hover .mc-avatar { transform: scale(1.12); }
   .mc-time { padding: 4px 12px; background: var(--color-surface-variant); border-radius: 9999px; font-size: 12px; font-weight: 700; border: 1px solid var(--card-border); transition: all 0.3s ease; color: var(--color-text-secondary); }
-  .mock-card:hover .mc-time { background: rgba(255,107,107,0.12); color: #FF6B6B; border-color: rgba(255,107,107,0.2); }
-  .mock-card h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; font-weight: 700; line-height: 1.3; margin: 0; color: var(--color-text); }
+  .mock-card:hover .mc-time { background: color-mix(in srgb, var(--color-primary) 12%, transparent); color: var(--color-primary); border-color: color-mix(in srgb, var(--color-primary) 20%, transparent); }
+  .mock-card h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; font-weight: 700; line-height: 1.3; margin: 0; color: var(--color-text); }
   
   /* Verified NGO Badge */
   .mc-ngo { color: var(--color-text-secondary); font-size: 13px; font-weight: 600; margin: 0; display: flex; align-items: center; gap: 4px; }
-  :global(.mc-verified) { color: #0284C7; flex-shrink: 0; }
+  :global(.mc-verified) { color: #075985; flex-shrink: 0; }
 
   /* Bottom Row with Tag Stagger and Claim Button */
   .mc-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; gap: 8px; }
@@ -622,9 +622,9 @@
   .mock-card:hover .mc-tags span:nth-child(2) { transform: translateY(-2px) scale(1.04); transition-delay: 0.05s; }
 
   /* Quick Claim Button */
-  .mc-claim-btn { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 9999px; background: #FF6B6B; color: #fff; font-size: 11px; font-weight: 700; text-decoration: none; opacity: 0; transform: scale(0.92) translateX(4px); transition: all 0.3s cubic-bezier(0.34, 1.4, 0.64, 1); white-space: nowrap; }
+  .mc-claim-btn { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 9999px; background: var(--color-primary); color: #fff; font-size: 11px; font-weight: 700; text-decoration: none; opacity: 0; transform: scale(0.92) translateX(4px); transition: all 0.3s cubic-bezier(0.34, 1.4, 0.64, 1); white-space: nowrap; }
   .mock-card:hover .mc-claim-btn { opacity: 1; transform: scale(1) translateX(0); }
-  .mc-claim-btn:hover { background: #ff5252; transform: scale(1.06) !important; box-shadow: 0 4px 12px rgba(255,107,107,0.35); }
+  .mc-claim-btn:hover { background: var(--color-primary-variant); transform: scale(1.06) !important; box-shadow: 0 4px 12px color-mix(in srgb, var(--color-primary) 35%, transparent); }
 
   /* ──────────── How It Works ──────────── */
   .steps { display: grid; grid-template-columns: 1fr; gap: 48px; max-width: 1000px; margin: 0 auto; }
@@ -648,8 +648,8 @@
   .tc-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
   .tc-avatar-wrap { transition: transform .3s; }
   .task-card:hover .tc-avatar-wrap { transform: scale(1.1); }
-  .tc-avatar { width: 56px; height: 56px; border-radius: 20px; background: #DBEAFE; display: flex; align-items: center; justify-content: center; color: #2563EB; border: 3px solid var(--color-surface); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-  .tc-time { padding: 6px 14px; border-radius: 9999px; font-size: 14px; font-weight: 700; background: rgba(255,107,107,0.1); color: #FF6B6B; }
+  .tc-avatar { width: 56px; height: 56px; border-radius: 20px; background: #DBEAFE; display: flex; align-items: center; justify-content: center; color: #172554; border: 3px solid var(--color-surface); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .tc-time { padding: 6px 14px; border-radius: 9999px; font-size: 14px; font-weight: 700; background: var(--color-surface-variant); color: var(--color-text-secondary); }
   .tc-body { flex: 1; margin-bottom: 20px; }
   .tc-ngo { font-size: 13px; font-weight: 600; color: var(--color-text-secondary); margin: 0 0 8px; }
   .tc-body h3 { font-size: 22px; font-weight: 700; line-height: 1.3; margin: 0 0 8px; color: var(--color-text); }

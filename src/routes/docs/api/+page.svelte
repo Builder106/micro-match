@@ -602,15 +602,15 @@
   <div class="api-overview">
     <div class="overview-grid">
       <div class="overview-card">
-        <h3>Base URL</h3>
+        <h2>Base URL</h2>
         <code>https://trymicromatch.com</code>
       </div>
       <div class="overview-card">
-        <h3>Authentication</h3>
+        <h2>Authentication</h2>
         <p>Public endpoints require no tokens. Protected endpoints use HTTP session cookies or session headers.</p>
       </div>
       <div class="overview-card">
-        <h3>Content Safety</h3>
+        <h2>Content Safety</h2>
         <p>Automated moderation scans titles, descriptions, and claim notes. Violations return <code>400 Bad Request</code>.</p>
       </div>
     </div>
@@ -642,7 +642,7 @@
     <div class="filters-row">
       <div class="filter-group">
         <span class="group-label">Category:</span>
-        <div class="category-pills" role="tablist" aria-label="API Categories">
+        <div class="category-pills" role="group" aria-label="API Categories">
           {#each categories as cat (cat)}
             <button
               class="pill-btn"
@@ -660,7 +660,7 @@
 
       <div class="filter-group">
         <span class="group-label">Access Role:</span>
-        <div class="auth-filter-pills" role="tablist" aria-label="Auth Role Filters">
+        <div class="auth-filter-pills" role="group" aria-label="Auth Role Filters">
           {#each authRoles as role (role.id)}
             <button
               class="auth-pill-btn auth-{role.id}"
@@ -774,7 +774,7 @@
 
               {#if ep.queryParams && ep.queryParams.length > 0}
                 <div class="section-block">
-                  <h4 class="section-title">Query Parameters</h4>
+                  <h3 class="section-title">Query Parameters</h3>
                   <div class="table-wrapper">
                     <table class="params-table">
                       <thead>
@@ -810,14 +810,14 @@
             <div class="card-right-col">
               {#if ep.requestBody}
                 <div class="section-block">
-                  <h4 class="section-title">Request Body</h4>
+                  <h3 class="section-title">Request Body</h3>
                   <pre class="code-block"><code>{ep.requestBody}</code></pre>
                 </div>
               {/if}
 
               <div class="section-block">
                 <div class="response-header">
-                  <h4 class="section-title">Response</h4>
+                  <h3 class="section-title">Response</h3>
                   <span class="status-badge">{ep.responseStatus}</span>
                 </div>
                 <pre class="code-block"><code>{ep.responseBody}</code></pre>
@@ -885,7 +885,7 @@
     padding: 18px 22px;
   }
 
-  .overview-card h3 {
+  .overview-card h2 {
     font-size: 0.95rem;
     font-weight: 700;
     margin: 0 0 8px 0;
@@ -1040,27 +1040,27 @@
   }
 
   .auth-pill-btn.auth-public.active {
-    background: #047857;
+    background: #064e3b;
     color: #ffffff;
-    border-color: #047857;
+    border-color: #064e3b;
   }
 
   .auth-pill-btn.auth-user.active {
-    background: #1d4ed8;
+    background: #172554;
     color: #ffffff;
-    border-color: #1d4ed8;
+    border-color: #172554;
   }
 
   .auth-pill-btn.auth-ngo.active {
-    background: #be123c;
+    background: #831843;
     color: #ffffff;
-    border-color: #be123c;
+    border-color: #831843;
   }
 
   .auth-pill-btn.auth-admin.active {
-    background: #b45309;
+    background: #713f12;
     color: #ffffff;
-    border-color: #b45309;
+    border-color: #713f12;
   }
 
   .count-tag {
@@ -1071,7 +1071,7 @@
   }
 
   .active .count-tag {
-    background: rgba(255, 255, 255, 0.25);
+    background: rgba(0, 0, 0, 0.35);
   }
 
   .endpoints-list {
@@ -1123,22 +1123,22 @@
 
   .method-get {
     background: #dcfce7;
-    color: #15803d;
+    color: #14532d;
   }
 
   .method-post {
     background: #dbeafe;
-    color: #1d4ed8;
+    color: #1e3a8a;
   }
 
   .method-patch {
     background: #fef3c7;
-    color: #b45309;
+    color: #78350f;
   }
 
   .method-delete {
     background: #ffe4e6;
-    color: #be123c;
+    color: #881337;
   }
 
   .path-text {
@@ -1186,25 +1186,25 @@
 
   .auth-public {
     background: #ecfdf5;
-    color: #047857;
+    color: #064e3b;
     border: 1px solid #a7f3d0;
   }
 
   .auth-user {
     background: #eff6ff;
-    color: #1d4ed8;
+    color: #172554;
     border: 1px solid #bfdbfe;
   }
 
   .auth-ngo {
     background: #fff1f2;
-    color: #be123c;
+    color: #831843;
     border: 1px solid #fecdd3;
   }
 
   .auth-admin {
     background: #fffbeb;
-    color: #b45309;
+    color: #713f12;
     border: 1px solid #fde68a;
   }
 
@@ -1271,7 +1271,7 @@
     padding: 2px 8px;
     border-radius: 4px;
     background: #e0f2fe;
-    color: #0369a1;
+    color: #0c4a6e;
   }
 
   .table-wrapper {
@@ -1291,7 +1291,7 @@
     background: var(--color-surface-variant, #f8fafc);
     padding: 8px 10px;
     font-weight: 700;
-    color: #475569;
+    color: #334155;
     border-bottom: 1px solid #e2e8f0;
   }
 
@@ -1308,17 +1308,17 @@
   .type-tag {
     font-family: var(--font-mono, 'JetBrains Mono', monospace);
     font-size: 0.775rem;
-    color: #6366f1;
+    color: #1e3a8a;
   }
 
   .req-tag {
     font-size: 0.75rem;
     font-weight: 600;
-    color: #64748b;
+    color: #334155;
   }
 
   .req-tag.is-req {
-    color: #dc2626;
+    color: #991b1b;
   }
 
   .code-block {
@@ -1337,7 +1337,7 @@
   .note-box {
     margin-top: 16px;
     padding: 12px 14px;
-    background: #fffbeeb0;
+    background: #fffbeb;
     border: 1px solid #fef08a;
     border-radius: 8px;
   }
@@ -1346,7 +1346,7 @@
     font-size: 0.85rem !important;
     line-height: 1.45 !important;
     margin: 0 !important;
-    color: #854d0e !important;
+    color: #713f12 !important;
   }
 
   .empty-state {
@@ -1377,7 +1377,12 @@
     display: inline-flex;
     align-items: center;
     font-weight: 700 !important;
+    color: var(--color-primary-readable) !important;
   }
+
+  :global(:root.dark) .params-table th { color: #e2e8f0; }
+  :global(:root.dark) .type-tag { color: #bfdbfe; }
+  :global(:root.dark) .req-tag { color: #e2e8f0; }
 
   @media (max-width: 640px) {
     .card-header {

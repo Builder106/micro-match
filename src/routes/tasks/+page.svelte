@@ -327,7 +327,7 @@
 
   /* Header */
   .feed-head h1 { font-size: clamp(1.75rem, 3vw + 0.5rem, 2.75rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 12px; }
-  .feed-head p { color: color-mix(in srgb, var(--color-text) 65%, transparent); font-size: 16px; font-weight: 500; line-height: 1.6; margin: 0; max-width: 640px; }
+  .feed-head p { color: var(--color-text-secondary); font-size: 16px; font-weight: 500; line-height: 1.6; margin: 0; max-width: 640px; }
 
   /* Search */
   .search {
@@ -376,7 +376,7 @@
   /* Filters */
   .filters { display: flex; flex-direction: column; gap: 10px; }
   .filter-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-  .filter-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: color-mix(in srgb, var(--color-text) 50%, transparent); margin-right: 4px; min-width: 36px; }
+  .filter-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-secondary); margin-right: 4px; min-width: 36px; }
   .filter-chip {
     display: inline-flex;
     align-items: center;
@@ -389,7 +389,7 @@
     cursor: pointer;
     border: 1px solid var(--card-border-strong);
     background: var(--color-surface);
-    color: color-mix(in srgb, var(--color-text) 70%, transparent);
+    color: var(--color-text);
     transition: all .15s;
   }
   .filter-chip:hover { border-color: color-mix(in srgb, var(--color-primary) 35%, transparent); color: var(--color-text); }
@@ -414,7 +414,7 @@
     transition: border-color .15s;
   }
   .sort:focus-within { border-color: var(--color-primary); }
-  .sort-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: color-mix(in srgb, var(--color-text) 50%, transparent); }
+  .sort-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-secondary); }
   .sort :global(.custom-select) { width: auto; min-width: 156px; }
   .sort :global(.custom-select-trigger) { min-height: 38px; padding: 0 4px; border: 0; background: transparent; font-size: 13px; font-weight: 700; }
   .sort :global(.custom-select-trigger:hover), .sort :global(.custom-select.open .custom-select-trigger) { border: 0; background: transparent; }

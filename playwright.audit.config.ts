@@ -5,7 +5,7 @@ const BASE_URL = process.env.PLAYWRIGHT_BASE_URL ?? `http://localhost:${PORT}`;
 
 export default defineConfig({
   testDir: './e2e',
-  testMatch: 'responsiveness.spec.ts',
+  testMatch: /(?:responsiveness|accessibility)\.spec\.ts/,
   fullyParallel: false,
   workers: 1,
   retries: 0,
@@ -32,9 +32,12 @@ export default defineConfig({
   webServer: process.env.PLAYWRIGHT_BASE_URL
     ? undefined
     : {
-        command: 'bun run dev',
-        url: BASE_URL,
-        reuseExistingServer: !process.env.CI,
-        timeout: 60_000
+      command: `bun run dev -- --port ${PORT}`,
+      url: BASE_URL,
+      reuseExistingServer: false,
+      timeout: 60_000,
+      env: {
+        PLAYWRIGHT_A11Y_HARNESS: '1'
       }
+    }
 });

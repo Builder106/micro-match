@@ -69,7 +69,7 @@
     {#if language}
       <p class="tc-ngo"><Icon icon="lucide:globe" width="12" height="12" /> {language}</p>
     {/if}
-    <h3><a href={resolve(href, {})}>{title}</a></h3>
+    <h2><a href={resolve(href, {})}>{title}</a></h2>
     <p class="tc-desc">{shortDescription}</p>
   </div>
 
@@ -80,7 +80,7 @@
         <span class="tag" style:background={s.bg} style:color={s.color}>#{tag}</span>
       {/each}
       {#if maxVolunteers}
-        <span class="tag" style="background:#F1F5F9;color:#475569;">
+        <span class="tag" style="background:#F1F5F9;color:#334155;">
           <Icon icon="lucide:users" width="12" height="12" /> Max {maxVolunteers}
         </span>
       {/if}
@@ -137,8 +137,8 @@
     border-radius: 9999px;
     font-size: 13px;
     font-weight: 700;
-    background: rgba(255, 107, 107, 0.1);
-    color: var(--color-primary);
+    background: var(--color-surface-variant);
+    color: var(--color-text-secondary);
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -162,25 +162,25 @@
     gap: 4px;
     font-size: 12px;
     font-weight: 700;
-    color: color-mix(in srgb, var(--color-text) 55%, transparent);
+    color: var(--color-text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.06em;
     margin: 0;
   }
-  .tc-body h3 {
+  .tc-body h2 {
     font-size: 20px;
     font-weight: 700;
     line-height: 1.3;
     margin: 0;
   }
-  .tc-body h3 a {
+  .tc-body h2 a {
     color: inherit;
     text-decoration: none;
     transition: color .2s;
   }
-  .tc-body h3 a:hover { color: var(--color-primary); }
+  .tc-body h2 a:hover { color: var(--color-primary); }
   .tc-desc {
-    color: color-mix(in srgb, var(--color-text) 65%, transparent);
+    color: var(--color-text-secondary);
     font-size: 14px;
     line-height: 1.55;
     margin: 0;
@@ -203,7 +203,7 @@
   }
   .tag.tone-soon { background: #FEF3C7; color: #D97706; }
   .tag.tone-late { background: #FEE2E2; color: #DC2626; }
-  .tag.tone-normal { background: #F1F5F9; color: #475569; }
+  .tag.tone-normal { background: #F1F5F9; color: #334155; }
 
   .btn-dark-pill {
     align-self: stretch;

@@ -58,8 +58,36 @@ describe('TaskCard', () => {
     expect(screen.getByText('Expired')).toBeInTheDocument();
   });
 
+  it('shows status flags for expired and moderated statuses', () => {
+    render(TaskCard, { id: 't1', title: 'T', shortDescription: 'S', status: 'expired' });
+    expect(screen.getByText('Expired')).toBeInTheDocument();
+
+    render(TaskCard, { id: 't2', title: 'T2', shortDescription: 'S2', status: 'moderated' });
+    expect(screen.getByText('Under review')).toBeInTheDocument();
+  });
+
+  it('renders the language indicator when provided', () => {
+    render(TaskCard, { id: 't1', title: 'T', shortDescription: 'S', language: 'French' });
+    expect(screen.getByText('French')).toBeInTheDocument();
+  });
+
+  it('formats various deadline windows (tomorrow, in N days, future)', () => {
+    const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+    render(TaskCard, { id: 't1', title: 'T', shortDescription: 'S', deadline: tomorrow });
+    expect(screen.getByText('Due tomorrow')).toBeInTheDocument();
+
+    const inFourDays = new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toISOString();
+    render(TaskCard, { id: 't2', title: 'T', shortDescription: 'S', deadline: inFourDays });
+    expect(screen.getByText(/Due in \d+ days/)).toBeInTheDocument();
+
+    const inTwentyDays = new Date(Date.now() + 20 * 24 * 60 * 60 * 1000).toISOString();
+    render(TaskCard, { id: 't3', title: 'T', shortDescription: 'S', deadline: inTwentyDays });
+    expect(screen.getByText(/Due \d+/)).toBeInTheDocument();
+  });
+
   it('shows a max-volunteers tag when maxVolunteers is set', () => {
     render(TaskCard, { id: 't1', title: 'T', shortDescription: 'S', maxVolunteers: 5 });
     expect(screen.getByText(/Max 5/)).toBeInTheDocument();
   });
 });
+

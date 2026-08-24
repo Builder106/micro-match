@@ -9,7 +9,7 @@
     {
       icon: 'lucide:layers',
       bg: '#FFF5F0',
-      color: '#FF6B6B',
+      color: '#881337',
       tag: 'Micro-Scoped Work',
       title: 'Post tasks, not job openings',
       desc: 'Break down your backlog into 5 to 30-minute units — translation, photo tagging, data audits — getting reviewable work done without recruitment drag.'
@@ -17,7 +17,7 @@
     {
       icon: 'lucide:shield-check',
       bg: '#D1FAE5',
-      color: '#059669',
+      color: '#064E3B',
       tag: 'IRS Trust Signal',
       title: 'ProPublica NGO verification',
       desc: 'Submit your tax/charity EIN to earn soft-gated NGO verification. Verified status back-fills a prominent trust badge across all your posted tasks.'
@@ -25,7 +25,7 @@
     {
       icon: 'lucide:user-check',
       bg: '#FEF3C7',
-      color: '#D97706',
+      color: '#78350F',
       tag: 'Quality Control',
       title: 'Human-in-the-loop review',
       desc: 'Maintain 100% control over quality. Every submission is routed to your moderation queue before approval, badge minting, or public recognition.'
@@ -91,7 +91,7 @@
           aspectRatio="4 / 3"
           loop={true}
         />
-        <div class="hero-workflow" aria-label="Task review workflow">
+        <div class="hero-workflow">
           <span>Task brief</span>
           <Icon icon="lucide:arrow-right" width="16" height="16" aria-hidden="true" />
           <span>Volunteer submission</span>
@@ -204,7 +204,7 @@
     gap: 6px;
     padding: 6px 14px;
     background: rgba(255, 107, 107, 0.12);
-    color: var(--color-primary);
+    color: var(--color-primary-readable);
     border-radius: 9999px;
     font-size: 13px;
     font-weight: 700;
@@ -220,7 +220,7 @@
     margin: 0 0 16px;
   }
   .coral-gradient {
-    color: var(--color-primary);
+    color: var(--color-primary-readable);
   }
   .ngo-hero-text p {
     font-size: 17px;
@@ -304,7 +304,7 @@
     font-size: 13px;
     font-weight: 700;
   }
-  .hero-workflow :global(svg) { color: var(--color-primary); flex-shrink: 0; }
+  .hero-workflow :global(svg) { color: var(--color-primary-readable); flex-shrink: 0; }
   @media (max-width: 959px) {
     .ngo-hero-visual { align-items: flex-start; }
     .hero-workflow { justify-content: flex-start; }
@@ -459,7 +459,7 @@
   /* CTA */
   .ngo-cta-section { padding: 96px 0; background: var(--color-surface-variant); width: 100%; }
   .cta-box {
-    background: linear-gradient(135deg, #FF6B6B, #E85555);
+    background: var(--color-primary);
     color: #FFFFFF;
     border-radius: 36px;
     padding: clamp(40px, 6vw, 64px);
@@ -476,7 +476,7 @@
   .cta-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
   .cta-actions .btn-coral {
     background: #FFFFFF;
-    color: #FF6B6B;
+    color: #881337;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .cta-actions .btn-coral:hover {

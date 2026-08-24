@@ -54,13 +54,13 @@ jobs:
       - run: bun run lint
 
   test:
-    name: Unit tests
+    name: Unit tests & Coverage Gate
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
-      - run: bun run test
+      - run: bun run test:coverage
 
   build:
     name: Build & Bundle Budget
@@ -82,7 +82,7 @@ jobs:
           echo "Output bundle size: ${TOTAL_KB} KB"
 
   responsiveness:
-    name: Responsiveness & Accessibility Audit
+    name: Responsiveness & WCAG 2.2 AAA-Oriented Audit
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
@@ -94,6 +94,9 @@ jobs:
         env:
           PUBLIC_APPWRITE_ENDPOINT: https://placeholder.example.com
           PUBLIC_APPWRITE_PROJECT_ID: placeholder
+          PLAYWRIGHT_A11Y_HARNESS: '1'
+      - name: Verify accessibility evidence matrix
+        run: bun run verify:a11y-matrix
       - name: Upload audit artifacts on failure
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v7
@@ -101,5 +104,6 @@ jobs:
           name: audit-results
           path: |
             test-results/
+            audit-output/
           retention-days: 7
           if-no-files-found: ignore

@@ -23,6 +23,7 @@ coverage/
 .nyc_output/
 playwright-report/
 test-results/
+audit-output/
 .vitest-cache/
 
 # Demo MP4 sources (regenerable; only the static/demos/*.gif outputs are committed)

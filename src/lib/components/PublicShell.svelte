@@ -50,7 +50,7 @@
   <header class="site-header">
     <div class="header-inner">
       <a href={resolve('/', {})} class="header-brand">
-        <img src="/logo.png" alt="MicroMatch" width="36" height="36" />
+        <img src="/logo.png" alt="" width="36" height="36" />
         <span>MicroMatch</span>
       </a>
       <nav class="header-nav" aria-label="Main navigation">
@@ -140,14 +140,14 @@
       <div class="footer-grid">
         <div class="footer-brand">
           <div class="footer-logo">
-            <img src="/logo.png" alt="MicroMatch" width="36" height="36" />
+            <img src="/logo.png" alt="" width="36" height="36" />
             <span>MicroMatch</span>
           </div>
           <p>Connecting volunteers with bite-sized tasks for maximum impact. Small efforts, big changes.</p>
         </div>
         <div class="footer-links">
           <div class="link-col">
-            <h4>Platform</h4>
+          <h2>Platform</h2>
             <a href={resolve('/tasks', {})}>Browse Tasks</a>
             <a href={resolve('/dashboard', {})}>Dashboard</a>
             {#if !isSignedIn}
@@ -155,7 +155,7 @@
             {/if}
           </div>
           <div class="link-col">
-            <h4>Resources</h4>
+          <h2>Resources</h2>
             <a href={resolve('/how-it-works', {})}>How It Works</a>
             <a href={resolve('/for-ngos', {})}>For NGOs</a>
             <a href={resolve('/for-volunteers', {})}>For Volunteers</a>
@@ -194,18 +194,18 @@
   .container, :global(.container) { max-width: 1200px !important; margin: 0 auto !important; padding: 0 24px !important; box-sizing: border-box !important; }
 
   /* Buttons */
-  .btn-coral { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #FF6B6B; color: #fff; font-weight: 700; border: none; border-radius: 9999px; cursor: pointer; text-decoration: none; transition: all .3s; }
-  .btn-coral:hover { background: #ff5252; transform: translateY(-2px); box-shadow: 0 16px 40px rgba(255,107,107,0.35); }
+  .btn-coral { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--color-primary); color: #fff; font-weight: 700; border: none; border-radius: 9999px; cursor: pointer; text-decoration: none; transition: all .3s; }
+  .btn-coral:hover { background: var(--color-primary-variant); transform: translateY(-2px); box-shadow: 0 16px 40px rgba(136,19,55,0.35); }
   .btn-coral:active { transform: scale(0.97); }
   .btn-sm { padding: 10px 24px; font-size: 14px; }
 
   /* Header */
-  .site-header { position: sticky; top: 0; z-index: 50; background: color-mix(in srgb, var(--color-background) 85%, transparent); backdrop-filter: blur(16px); border-bottom: 1px solid var(--card-border); }
+  .site-header { position: sticky; top: 0; z-index: 50; background: var(--color-background); border-bottom: 1px solid var(--card-border); }
   .header-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; height: 72px; display: flex; align-items: center; justify-content: space-between; }
   .header-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--color-text); }
   .header-brand span { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
   .header-nav { display: none; gap: 32px; }
-  .header-nav a { font-size: 14px; font-weight: 500; color: var(--color-text-secondary); text-decoration: none; transition: color .2s; }
+  .header-nav a { background: var(--color-background); border-radius: 6px; font-size: 14px; font-weight: 500; color: var(--color-text-secondary); text-decoration: none; transition: color .2s; }
   .header-nav a:hover { color: var(--color-primary); }
   .header-nav a.active { color: var(--color-primary); font-weight: 600; }
   .header-actions { display: flex; align-items: center; gap: 12px; }
@@ -231,6 +231,14 @@
     .menu-toggle { display: none; }
     .mobile-menu, .mobile-menu-backdrop { display: none; }
   }
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .header-nav { gap: 12px; }
+    .header-actions { gap: 8px; }
+    .header-signin { display: none; }
+    .header-github { width: 40px; height: 40px; padding: 0; }
+    .header-github span { display: none; }
+    .header-actions .btn-sm { padding-inline: 12px; }
+  }
 
   /* Mobile menu */
   .mobile-menu-backdrop { position: fixed; inset: 72px 0 0 0; background: rgba(15,23,42,0.35); z-index: 49; }
@@ -248,9 +256,9 @@
   @media (min-width: 768px) { .footer-grid { grid-template-columns: 2fr 1fr; } }
   .footer-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
   .footer-logo span { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 700; color: var(--color-text); }
-  .footer-brand p { color: var(--color-text-secondary); font-weight: 500; line-height: 1.7; margin: 0; max-width: 360px; }
+  .footer-brand p { color: var(--color-text-secondary); font-weight: 500; line-height: 1.7; margin: 0; max-width: 360px; position: relative; z-index: 1; background: var(--color-surface); }
   .footer-links { display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px; }
-  .link-col h4 { font-size: 18px; font-weight: 700; margin: 0 0 16px; color: var(--color-text); }
+  .link-col h2 { font-size: 18px; font-weight: 700; margin: 0 0 16px; color: var(--color-text); }
   .link-col a { display: block; color: var(--color-text-secondary); text-decoration: none; margin-bottom: 12px; font-weight: 500; transition: color .2s; }
   .link-col a:hover { color: var(--color-primary); }
   .footer-bottom { padding-top: 32px; border-top: 1px solid var(--card-border); display: flex; flex-direction: column; gap: 16px; align-items: center; text-align: center; color: var(--color-text-tertiary); font-size: 14px; font-weight: 500; }

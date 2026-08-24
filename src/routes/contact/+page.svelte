@@ -55,7 +55,7 @@
     <!-- Left Column: Form -->
     <div class="contact-form-card">
       <div class="card-head">
-        <h3>Send Us a Message</h3>
+        <h2>Send Us a Message</h2>
         <p>Fill out the form below and our team will get back to you within 1–2 business days.</p>
       </div>
 
@@ -146,7 +146,7 @@
           <Icon icon="heroicons:envelope-20-solid" width="22" height="22" />
         </div>
         <div class="channel-info">
-          <h4>General Support & Partnerships</h4>
+    <h3>General Support & Partnerships</h3>
           <p>For product questions, media inquiries, or NGO onboarding support:</p>
           <a href="mailto:hello@trymicromatch.com" class="channel-link">
             hello@trymicromatch.com
@@ -160,7 +160,7 @@
           <Icon icon="heroicons:shield-check-20-solid" width="22" height="22" />
         </div>
         <div class="channel-info">
-          <h4>Security & Responsible Disclosure</h4>
+    <h3>Security & Responsible Disclosure</h3>
           <p>Reporting a security vulnerability? Include steps to reproduce and expected vs. actual behavior:</p>
           <a href="mailto:security@trymicromatch.com" class="channel-link">
             security@trymicromatch.com
@@ -174,7 +174,7 @@
           <Icon icon="heroicons:book-open-20-solid" width="22" height="22" />
         </div>
         <div class="channel-info">
-          <h4>Self-Service Help & Documentation</h4>
+    <h3>Self-Service Help & Documentation</h3>
           <p>Looking for instant answers or developer API specifications?</p>
           <div class="channel-links-row">
             <a href={resolve('/help', {})} class="text-link">Help Center →</a>
@@ -237,7 +237,7 @@
     box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
   }
 
-  .card-head h3 {
+  .card-head h2 {
     font-size: 1.25rem;
     font-weight: 700;
     margin: 0 0 6px 0;
@@ -327,7 +327,7 @@
     background: #fffbeeb0;
     border: 1px solid #fef08a;
     font-size: 0.8rem;
-    color: #854d0e;
+    color: #713f12;
   }
 
   .note-icon-wrap {
@@ -349,7 +349,7 @@
     gap: 8px;
     padding: 11px 22px;
     border-radius: 9999px;
-    background: #FF6B6B;
+    background: var(--color-primary);
     color: #ffffff !important;
     font-weight: 700 !important;
     font-size: 0.9rem;
@@ -444,11 +444,11 @@
     flex-shrink: 0;
   }
 
-  .coral-glow { background: #fff1f1; color: #ff6b6b; }
+  .coral-glow { background: #fff1f1; color: var(--color-primary); }
   .rose-glow { background: #fff1f2; color: #e11d48; }
   .indigo-glow { background: #eff6ff; color: #3b82f6; }
 
-  .channel-info h4 {
+  .channel-info h3 {
     font-size: 1rem;
     font-weight: 700;
     margin: 0 0 4px 0;

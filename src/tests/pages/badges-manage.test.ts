@@ -24,7 +24,9 @@ describe('/badges/manage load', () => {
 
   it('403s for an NGO role with no resolvable user id', async () => {
     await expect(load(makeEvent({ userRole: 'ngo' }))).rejects.toMatchObject({ status: 403 });
+    await expect(load({ locals: {} } as unknown as Parameters<typeof load>[0])).rejects.toMatchObject({ status: 403 });
   });
+
 
   it('scopes tasks and badge definitions to the NGO\'s own org', async () => {
     mocks.getTasks.mockResolvedValue([{ id: 't1', orgId: 'org-1' }]);
@@ -42,5 +44,15 @@ describe('/badges/manage load', () => {
     expect(mocks.listBadgeDefinitions).toHaveBeenCalledWith('org-1');
     expect(result.tasks).toEqual([{ id: 't1', orgId: 'org-1' }]);
     expect(result.badges).toEqual([{ id: 'b1', orgId: 'org-1' }]);
+
+    // Test NGO user without email
+    const result2 = (await load({
+      locals: {
+        userRole: 'ngo',
+        session: { user: { id: 'org-2' } }
+      }
+    } as unknown as Parameters<typeof load>[0])) as unknown as ManageResult;
+    expect(result2.user?.email).toBeUndefined();
   });
 });
+

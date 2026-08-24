@@ -15,6 +15,7 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:audit": "playwright test --config=playwright.audit.config.ts",
+    "verify:a11y-matrix": "bun run scripts/verify-a11y-matrix.ts",
     "test:demo": "DEMO=1 playwright test --config=playwright.demo.config.ts",
     "demo:gif": "bun run scripts/demos-to-gif.ts",
     "demo": "bun run seed && bun run test:demo && bun run demo:gif",
@@ -48,6 +49,7 @@
     "vite": "^8.2.1"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.12.1",
     "@eslint/js": "^10.0.1",
     "@lottiefiles/lottie-types": "^1.5.0",
     "@playwright/test": "^1.62.1",

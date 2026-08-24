@@ -23,7 +23,7 @@
         </div>
         <span class="role-badge role-api">REST API v1</span>
       </div>
-      <h3>Developer API Reference</h3>
+      <h2>Developer API Reference</h2>
       <p>Interactive REST API specification with 20+ endpoints for task discovery, claims, NGO verifications, badge issuance, and auth.</p>
 
       <div class="chip-list">
@@ -206,7 +206,7 @@
   }
 
   .doc-card.featured-card {
-    background: linear-gradient(135deg, #ffffff 0%, #fffbfb 100%);
+    background: var(--color-surface, #ffffff);
     border-color: rgba(255, 107, 107, 0.25);
   }
 
@@ -229,7 +229,7 @@
 
   .coral-glow {
     background: #fff1f1;
-    color: #ff6b6b;
+    color: var(--color-primary);
   }
 
   .indigo-glow {
@@ -255,25 +255,25 @@
   }
 
   .role-api {
-    background: #ff6b6b;
+    background: var(--color-primary);
     color: #ffffff;
   }
 
   .role-user {
     background: #eff6ff;
-    color: #1d4ed8;
+    color: #172554;
     border: 1px solid #bfdbfe;
   }
 
   .role-ngo {
     background: #fff1f2;
-    color: #be123c;
+    color: #881337;
     border: 1px solid #fecdd3;
   }
 
   .role-system {
     background: #ecfdf5;
-    color: #047857;
+    color: #065f46;
     border: 1px solid #a7f3d0;
   }
 
@@ -347,7 +347,7 @@
     width: 100%;
     padding: 10px 18px;
     border-radius: 9999px;
-    background: #FF6B6B;
+    background: var(--color-primary);
     color: #ffffff !important;
     font-weight: 700 !important;
     font-size: 0.9rem;

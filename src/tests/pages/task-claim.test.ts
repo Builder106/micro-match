@@ -25,7 +25,17 @@ describe('/task/[id]/claim load', () => {
       expect(e.location).toBe('/login?next=/task/task-1/claim');
     }
     expect(mocks.getTaskById).not.toHaveBeenCalled();
+
+    // Also test when locals.userRole is undefined
+    try {
+      await load({ params: { id: 'task-1' }, locals: {} } as unknown as Parameters<typeof load>[0]);
+      throw new Error('expected redirect');
+    } catch (err: unknown) {
+      const e = err as { status?: number; location?: string };
+      expect(e.status).toBe(303);
+    }
   });
+
 
   it('404s when the task does not exist', async () => {
     mocks.getTaskById.mockResolvedValue(undefined);

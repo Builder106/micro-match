@@ -33,7 +33,7 @@
     <AuthBrandPanel animation="/animations/brainstorming.json" />
   </div>
 
-  <section class="right-panel">
+  <main class="right-panel">
     <div class="mobile-stage">
       <AuthBrandPanel compact animation="/animations/brainstorming.json" />
     </div>
@@ -126,7 +126,7 @@
         </form>
       {/if}
     </div>
-  </section>
+  </main>
 </div>
 
 <style>
@@ -149,17 +149,22 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     overflow-y: auto;
   }
   .mobile-stage {
     width: 100%;
     display: block;
+    height: 300px;
+    flex: 0 0 300px;
     margin-bottom: 8px;
   }
   .auth-card {
     width: min(540px, calc(100% - 2rem));
     padding: 28px 18px 32px;
+    position: relative;
+    z-index: 1;
+    background: var(--color-background);
   }
   .auth-head {
     margin-bottom: 22px;
@@ -322,7 +327,7 @@
     margin: 0;
     padding: 10px 12px;
     background: color-mix(in srgb, #dc2626 10%, transparent);
-    color: #dc2626;
+    color: #991b1b;
     font-size: 13px;
     font-weight: 600;
     border-radius: 10px;
@@ -369,6 +374,7 @@
     .right-panel {
       width: 45%;
       padding: 36px 16px;
+      justify-content: center;
     }
     .mobile-stage {
       display: none;

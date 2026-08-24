@@ -66,7 +66,7 @@ test.describe('Responsiveness Audit - Interactive Flow Videos', () => {
     await page.setViewportSize({ width: 375, height: 812 });
 
     // Step 1: Home page
-    await page.goto('/', { waitUntil: 'networkidle' });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(800);
 
     // Step 2: Open Mobile Menu
@@ -80,13 +80,13 @@ test.describe('Responsiveness Audit - Interactive Flow Videos', () => {
     }
 
     // Step 3: Browse Tasks
-    await page.goto('/tasks', { waitUntil: 'networkidle' });
+    await page.goto('/tasks', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(1000);
     await page.mouse.wheel(0, 400);
     await page.waitForTimeout(800);
 
     // Step 4: Signup Flow
-    await page.goto('/signup', { waitUntil: 'networkidle' });
+    await page.goto('/signup', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(800);
     const volunteerBtn = page.getByRole('button', { name: /I'm a Volunteer/i });
     if (await volunteerBtn.isVisible()) {
@@ -95,7 +95,7 @@ test.describe('Responsiveness Audit - Interactive Flow Videos', () => {
     }
 
     // Step 5: How it Works
-    await page.goto('/how-it-works', { waitUntil: 'networkidle' });
+    await page.goto('/how-it-works', { waitUntil: 'domcontentloaded' });
     await page.mouse.wheel(0, 600);
     await page.waitForTimeout(1000);
   });
@@ -105,19 +105,19 @@ test.describe('Responsiveness Audit - Interactive Flow Videos', () => {
     await page.setViewportSize({ width: 768, height: 1024 });
 
     // Step 1: Home page
-    await page.goto('/', { waitUntil: 'networkidle' });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(800);
     await page.mouse.wheel(0, 500);
     await page.waitForTimeout(800);
 
     // Step 2: For NGOs
-    await page.goto('/for-ngos', { waitUntil: 'networkidle' });
+    await page.goto('/for-ngos', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(800);
     await page.mouse.wheel(0, 600);
     await page.waitForTimeout(800);
 
     // Step 3: Browse Tasks with filter
-    await page.goto('/tasks', { waitUntil: 'networkidle' });
+    await page.goto('/tasks', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(800);
     const chip15 = page.getByRole('button', { name: /≤ 15 min/ });
     if (await chip15.isVisible()) {
@@ -131,7 +131,7 @@ test.describe('Responsiveness Audit - Interactive Flow Videos', () => {
     await page.setViewportSize({ width: 1440, height: 900 });
 
     // Step 1: Home page full scroll
-    await page.goto('/', { waitUntil: 'networkidle' });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(800);
     await page.mouse.wheel(0, 600);
     await page.waitForTimeout(800);
@@ -139,13 +139,13 @@ test.describe('Responsiveness Audit - Interactive Flow Videos', () => {
     await page.waitForTimeout(800);
 
     // Step 2: Impact page
-    await page.goto('/impact', { waitUntil: 'networkidle' });
+    await page.goto('/impact', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(800);
     await page.mouse.wheel(0, 500);
     await page.waitForTimeout(800);
 
     // Step 3: API Docs page
-    await page.goto('/docs/api', { waitUntil: 'networkidle' });
+    await page.goto('/docs/api', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(800);
     await page.mouse.wheel(0, 500);
     await page.waitForTimeout(800);

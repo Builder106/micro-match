@@ -228,7 +228,7 @@
     gap: 6px;
     padding: 6px 14px;
     background: #FFF5F0;
-    color: #FF6B6B;
+    color: #881337;
     border-radius: 9999px;
     font-size: 0.85rem;
     font-weight: 600;
@@ -297,12 +297,12 @@
     flex-shrink: 0;
   }
 
-  .icon-box.coral { background: #FFE5DC; color: #FF6B6B; }
-  .icon-box.peach { background: #FED7AA; color: #FB923C; }
-  .icon-box.emerald { background: #D1FAE5; color: #059669; }
-  .icon-box.blue { background: #DBEAFE; color: #2563EB; }
-  .icon-box.purple { background: #F3E8FF; color: #7C3AED; }
-  .icon-box.amber { background: #FEF3C7; color: #D97706; }
+  .icon-box.coral { background: #FFE5DC; color: #881337; }
+  .icon-box.peach { background: #FED7AA; color: #9A3412; }
+  .icon-box.emerald { background: #D1FAE5; color: #064E3B; }
+  .icon-box.blue { background: #DBEAFE; color: #172554; }
+  .icon-box.purple { background: #F3E8FF; color: #581C87; }
+  .icon-box.amber { background: #FEF3C7; color: #78350F; }
 
   .metric-content {
     display: flex;
@@ -376,7 +376,7 @@
     padding: 4px 10px;
     border-radius: 9999px;
     background: #FFF5F0;
-    color: #FF6B6B;
+    color: #881337;
   }
 
   .velocity-count {
@@ -461,7 +461,7 @@
     height: 48px;
     border-radius: 12px;
     background: #FFF5F0;
-    color: #FF6B6B;
+    color: #881337;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -508,22 +508,22 @@
   }
 
   .volunteer-cta {
-    background: linear-gradient(180deg, #FFFFFF 0%, #FFF5F0 100%);
+    background: #FFF5F0;
     border-color: rgba(255, 107, 107, 0.2);
   }
 
   .ngo-cta {
-    background: linear-gradient(180deg, #FFFFFF 0%, #FAF7F0 100%);
+    background: #FAF7F0;
     border-color: rgba(251, 146, 60, 0.2);
   }
 
   .cta-icon-header {
-    color: #FF6B6B;
+    color: #881337;
     margin-bottom: 4px;
   }
 
   .ngo-cta .cta-icon-header {
-    color: #FB923C;
+    color: #9A3412;
   }
 
   .cta-card h3 {
@@ -569,7 +569,7 @@
     align-items: center;
     justify-content: center;
     padding: 12px 24px;
-    background: linear-gradient(135deg, #FF6B6B, #E85555);
+    background: #881337;
     color: #ffffff;
     font-weight: 700;
     font-size: 0.95rem;

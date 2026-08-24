@@ -33,7 +33,7 @@
     <AuthBrandPanel animation="/animations/empty_state_mascot.json" />
   </div>
 
-  <section class="right-panel">
+  <main class="right-panel">
     <div class="mobile-stage">
       <AuthBrandPanel compact animation="/animations/empty_state_mascot.json" />
     </div>
@@ -95,7 +95,7 @@
         Remembered it? <a href={resolve('/login', {})}>Sign in instead</a>
       </p>
     </div>
-  </section>
+  </main>
 </div>
 
 <style>
@@ -118,11 +118,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     overflow-y: auto;
   }
-  .mobile-stage { display: block; width: 100%; margin-bottom: 8px; }
-  .auth-card { width: min(440px, calc(100% - 2rem)); padding: 28px 18px 30px; }
+  .mobile-stage { display: block; width: 100%; height: 300px; flex: 0 0 300px; margin-bottom: 8px; }
+  .auth-card { width: min(440px, calc(100% - 2rem)); padding: 28px 18px 30px; position: relative; z-index: 1; background: var(--color-background); }
   .auth-head { margin-bottom: 22px; display: flex; flex-direction: column; gap: 10px; }
   .back-btn {
     display: inline-flex;
@@ -184,7 +184,7 @@
   }
   input:focus { border-color: var(--color-primary); background: var(--color-surface); box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12); outline: none; }
   .auth-submit { margin-top: 8px; width: 100%; }
-  .error { margin: 0; padding: 10px 12px; background: color-mix(in srgb, #dc2626 10%, transparent); color: #dc2626; font-size: 13px; font-weight: 600; border-radius: 10px; display: inline-flex; align-items: center; gap: 6px; }
+  .error { margin: 0; padding: 10px 12px; background: color-mix(in srgb, #dc2626 10%, transparent); color: #991b1b; font-size: 13px; font-weight: 600; border-radius: 10px; display: inline-flex; align-items: center; gap: 6px; }
 
   .foot { margin-top: 22px; text-align: center; font-size: 14px; color: var(--color-text-secondary); }
   .foot a { color: var(--color-text); text-decoration: underline; text-decoration-color: var(--card-border-strong); text-decoration-thickness: 2px; text-underline-offset: 4px; font-weight: 700; margin-left: 4px; }
@@ -192,7 +192,7 @@
 
   @media (min-width: 1024px) {
     .left-panel { display: block; }
-    .right-panel { width: 45%; padding: 36px 16px; }
+    .right-panel { width: 45%; padding: 36px 16px; justify-content: center; }
     .mobile-stage { display: none; }
     .auth-card { width: min(440px, 100%); padding: 8px 4px; }
   }

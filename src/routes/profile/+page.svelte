@@ -458,19 +458,15 @@
 
 <!-- ───── Downgrade confirmation modal ───── -->
 {#if showDowngradeModal}
-  <!-- svelte-ignore a11y_click_events_have_key_events -->
   <div
     class="dg-modal"
     role="dialog"
     aria-modal="true"
     aria-labelledby="dg-title"
-    on:click={cancelDowngrade}
     on:keydown={handleModalKeydown}
     tabindex="-1"
   >
-    <!-- svelte-ignore a11y_click_events_have_key_events -->
-    <!-- svelte-ignore a11y_no_static_element_interactions -->
-    <div class="dg-card" on:click|stopPropagation>
+    <div class="dg-card">
       <div class="dg-icon">
         <Icon icon="lucide:alert-triangle" width="24" height="24" />
       </div>

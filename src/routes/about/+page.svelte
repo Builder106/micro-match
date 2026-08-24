@@ -21,7 +21,7 @@
       <div class="pillar-icon-wrap coral-glow">
         <Icon icon="heroicons:clock-20-solid" width="22" height="22" />
       </div>
-      <h3>15-Minute Micro-Missions</h3>
+      <h2>15-Minute Micro-Missions</h2>
       <p>
         We built MicroMatch so people can contribute real work in minutes, not hours. Tasks are scoped to fit into a lunch break or commute—no long onboarding walls or rigid schedules.
       </p>
@@ -31,7 +31,7 @@
       <div class="pillar-icon-wrap indigo-glow">
         <Icon icon="heroicons:building-office-20-solid" width="22" height="22" />
       </div>
-      <h3>Direct NGO Empowerment</h3>
+      <h2>Direct NGO Empowerment</h2>
       <p>
         NGOs post needs as small, modular units—translation, tagging, light design, document proofreading, and accessibility checks—mobilizing global volunteer energy instantly.
       </p>
@@ -41,7 +41,7 @@
       <div class="pillar-icon-wrap teal-glow">
         <Icon icon="heroicons:sparkles-20-solid" width="22" height="22" />
       </div>
-      <h3>Verifiable Civic Impact</h3>
+      <h2>Verifiable Civic Impact</h2>
       <p>
         Volunteers earn digital badges, build active streaks, and compile a clear, verifiable record of completed work while helping non-profits drive real change.
       </p>
@@ -64,7 +64,7 @@
           </div>
           <span class="step-num">01</span>
         </div>
-        <h4>NGO Posts Scoped Task</h4>
+        <h3>NGO Posts Scoped Task</h3>
         <p>NGOs outline a 15–60 minute need with clear instructions and optional learning primer links.</p>
       </div>
 
@@ -75,7 +75,7 @@
           </div>
           <span class="step-num">02</span>
         </div>
-        <h4>Volunteer Claims & Completes</h4>
+        <h3>Volunteer Claims & Completes</h3>
         <p>Volunteers pick tasks matching their skills and language, then submit proof of completion (PR, doc link, file).</p>
       </div>
 
@@ -86,7 +86,7 @@
           </div>
           <span class="step-num">03</span>
         </div>
-        <h4>Review & Verification</h4>
+        <h3>Review & Verification</h3>
         <p>NGO admins review proof submissions, automatically granting XP and issuing achievement badges upon approval.</p>
       </div>
 
@@ -97,7 +97,7 @@
           </div>
           <span class="step-num">04</span>
         </div>
-        <h4>Open Civic Ledger</h4>
+        <h3>Open Civic Ledger</h3>
         <p>Completed tasks update the volunteer's streak and contribute to transparent platform telemetry.</p>
       </div>
     </div>
@@ -205,11 +205,11 @@
     margin-bottom: 16px;
   }
 
-  .coral-glow { background: #fff1f1; color: #ff6b6b; }
+  .coral-glow { background: #fff1f1; color: var(--color-primary); }
   .indigo-glow { background: #eff6ff; color: #3b82f6; }
-  .teal-glow { background: #f0fdf4; color: #10b981; }
+  .teal-glow { background: #f0fdf4; color: #065f46; }
 
-  .pillar-card h3 {
+  .pillar-card h2 {
     font-size: 1.15rem;
     font-weight: 700;
     margin: 0 0 8px 0;
@@ -247,8 +247,8 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: var(--color-primary, #ff6b6b);
-    background: rgba(255, 107, 107, 0.12);
+    color: var(--color-primary-readable);
+    background: var(--color-surface-variant);
     padding: 5px 14px;
     border-radius: 20px;
     margin-bottom: 12px;
@@ -323,7 +323,7 @@
     border-radius: 6px;
   }
 
-  .step-card h4 {
+  .step-card h3 {
     font-size: 1rem;
     font-weight: 700;
     margin: 0 0 6px 0;
@@ -340,7 +340,7 @@
 
   /* Tech Foundation Card */
   .tech-foundation-card {
-    background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
+    background: var(--color-surface);
     border: 1px solid var(--color-outline-variant, rgba(0, 0, 0, 0.1));
     border-radius: 16px;
     padding: 28px;
@@ -357,7 +357,7 @@
     gap: 6px;
     font-size: 0.775rem;
     font-weight: 700;
-    color: #10b981;
+    color: #065f46;
     background: #f0fdf4;
     padding: 4px 10px;
     border-radius: 20px;
@@ -404,7 +404,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 20px;
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    background: #0f172a;
     color: #ffffff;
     border-radius: 20px;
     padding: 28px 32px;
@@ -419,7 +419,7 @@
 
   .cta-text p {
     font-size: 0.9rem !important;
-    color: #94a3b8 !important;
+    color: #e2e8f0 !important;
     margin: 0 !important;
   }
 
@@ -437,7 +437,7 @@
     gap: 8px;
     padding: 10px 22px;
     border-radius: 9999px;
-    background: #FF6B6B;
+    background: var(--color-primary);
     color: #ffffff !important;
     font-weight: 700 !important;
     font-size: 0.9rem;

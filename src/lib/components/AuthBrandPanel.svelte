@@ -20,7 +20,7 @@
   <div class="shade"></div>
   <div class="content">
     <a href={resolve("/", {})} class="logo-lockup">
-      <img src="/logo.png" alt="MicroMatch" class="logo-mark" />
+      <img src="/logo.png" alt="" class="logo-mark" />
       <span>MicroMatch</span>
     </a>
 
@@ -102,6 +102,7 @@
   .compact .scene-wrap :global(.auth-brand-animation) {
     width: min(280px, 60%);
   }
+  .compact .shade { background: #0f172a; }
   .shade {
     position: absolute;
     left: 0;
@@ -133,6 +134,8 @@
     color: #fff;
     text-decoration: none;
     width: fit-content;
+    position: relative;
+    z-index: 1;
     transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
   .logo-lockup span {
@@ -199,6 +202,11 @@
   .compact .copy {
     position: static;
     margin-top: auto;
+    position: relative;
+    z-index: 1;
+    background: #0f172a;
+    padding: 12px 14px;
+    border-radius: 16px;
   }
   .compact .copy h1 {
     font-size: 1.5rem;

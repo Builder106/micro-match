@@ -202,7 +202,7 @@
     gap: 6px;
     padding: 6px 14px;
     background: rgba(255, 107, 107, 0.12);
-    color: var(--color-primary);
+    color: var(--color-primary-readable);
     border-radius: 9999px;
     font-size: 13px;
     font-weight: 700;
@@ -220,7 +220,7 @@
   }
 
   .coral-gradient {
-    color: var(--color-primary);
+    color: var(--color-primary-readable);
   }
 
   .hero-lede {
@@ -255,7 +255,7 @@
   .meta-tag-accent {
     background: rgba(255, 107, 107, 0.12);
     border-color: rgba(255, 107, 107, 0.25);
-    color: var(--color-primary);
+    color: var(--color-primary-readable);
   }
 
   /* Section Ribbon Navigation */

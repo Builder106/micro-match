@@ -45,7 +45,13 @@ describe('/org load', () => {
       expect(err.status).toBe(303);
       expect(err.location).toBe('/login?next=/org');
     });
+
+    await expectThrow(load({ locals: {} } as unknown as Parameters<typeof load>[0]), (err) => {
+      expect(err.status).toBe(303);
+      expect(err.location).toBe('/login?next=/org');
+    });
   });
+
 
   it('403s for a non-NGO role', async () => {
     await expectThrow(load(makeLoadEvent({ userRole: 'volunteer' })), (err) => {
@@ -63,8 +69,13 @@ describe('/org load', () => {
     mocks.getVerificationByUserId.mockResolvedValue(undefined);
     const result = await load(makeLoadEvent({ userRole: 'ngo', userId: 'org-1' }));
     expect(result).toEqual({ verificationStatus: null });
+
+    // NGO user without userId
+    const resultNoUser = await load(makeLoadEvent({ userRole: 'ngo' }));
+    expect(resultNoUser).toEqual({ verificationStatus: null });
   });
 });
+
 
 function makeActionEvent(opts: { userId?: string; fields: Record<string, string> }) {
   const form = new FormData();
@@ -94,7 +105,14 @@ describe('/org action (create task)', () => {
     const result = (await actions.default(makeActionEvent({ userId: 'org-1', fields: { title: 'T' } }))) as ActionResult;
     expect(result.success).toBe(false);
     expect(mocks.createTask).not.toHaveBeenCalled();
+
+    const result2 = (await actions.default(makeActionEvent({ userId: 'org-1', fields: { title: 'T', shortDescription: 'S' } }))) as ActionResult;
+    expect(result2.success).toBe(false);
+
+    const result3 = (await actions.default(makeActionEvent({ userId: 'org-1', fields: { shortDescription: 'S', description: 'D' } }))) as ActionResult;
+    expect(result3.success).toBe(false);
   });
+
 
   it('parses tags and minutes, and derives isVerified from the org verification status', async () => {
     mocks.getUserRole.mockResolvedValue('ngo');
@@ -128,4 +146,24 @@ describe('/org action (create task)', () => {
 
     expect(mocks.createTask).toHaveBeenCalledWith(expect.objectContaining({ isVerified: false }));
   });
+
+  it('handles empty estimatedMinutes safely in action', async () => {
+    mocks.getUserRole.mockResolvedValue('ngo');
+    mocks.getVerificationByUserId.mockResolvedValue(undefined);
+
+    await actions.default(makeActionEvent({
+      userId: 'org-1',
+      fields: { title: 'T', shortDescription: 'S', description: 'D', minutes: 'invalid' }
+    }));
+
+    expect(mocks.createTask).toHaveBeenCalledWith(expect.objectContaining({ estimatedMinutes: undefined }));
+
+    // Test without session userId (orgId undefined)
+    await actions.default(makeActionEvent({
+      fields: { title: 'T', shortDescription: 'S', description: 'D', language: 'Spanish' }
+    }));
+    expect(mocks.createTask).toHaveBeenCalledWith(expect.objectContaining({ orgId: undefined, language: 'Spanish' }));
+  });
 });
+
+
