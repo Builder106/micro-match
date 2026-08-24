@@ -1,9 +1,10 @@
 <script lang="ts">
+  /* eslint-disable svelte/no-navigation-without-resolve, svelte/no-immutable-reactive-statements */
   import Icon from '@iconify/svelte';
   import { page } from '$app/state';
   import ThemeToggle from '$lib/components/ThemeToggle.svelte';
   import { signOut } from '$lib/appwrite.client';
-  import { resolve } from '$app/paths';
+  import { localizedHref, stripLocale, type Locale } from '$lib/locale';
 
   // Resilient role hint from cookie so NGO items render even if SSR local session is missing
   let roleHint = '';
@@ -15,12 +16,18 @@
   }
   const isNGO = page.data.userRole === 'ngo' || roleHint === 'ngo';
   const isAdmin = page.data.isAdmin === true;
+  $: currentLocale = (page.data?.locale as Locale | undefined) ?? 'en';
+  function resolve(pathname: string, _options?: unknown) { return localizedHref(pathname, currentLocale); }
+  function isPath(pathname: string) {
+    const current = stripLocale(page.url.pathname);
+    return pathname === '/admin/' ? current.startsWith('/admin/') : current === pathname;
+  }
 
   function handleSignOut(e: Event) {
     e.preventDefault();
     Promise.resolve()
       .then(() => signOut())
-      .finally(() => { try { window.location.href = '/'; } catch {} });
+      .finally(() => { try { window.location.href = resolve('/'); } catch {} });
   }
 </script>
 
@@ -35,36 +42,36 @@
   </div>
   
   <nav class="nav-container">
-    <a href={resolve('/tasks', {})} class="nav-link" class:active={page.url.pathname === '/tasks'} >
+    <a href={resolve('/tasks')} class="nav-link" class:active={isPath('/tasks')} >
       <Icon icon="mdi:view-dashboard-outline" width="22" height="22"/>
       <span class="font-semibold">Feed</span>
     </a>
-          <a href={resolve('/dashboard', {})} class="nav-link" class:active={page.url.pathname === '/dashboard'}>
+          <a href={resolve('/dashboard', {})} class="nav-link" class:active={isPath('/dashboard')}>
         <Icon icon="mdi:seal-variant" width="22" height="22"/>
         <span class="font-medium">Dashboard</span>
       </a>
       {#if isNGO}
-        <a href={resolve('/org', {})} class="nav-link" class:active={page.url.pathname === '/org'}>
+        <a href={resolve('/org', {})} class="nav-link" class:active={isPath('/org')}>
           <Icon icon="mdi:plus-circle-outline" width="22" height="22"/>
           <span class="font-medium">Create Task</span>
         </a>
-        <a href={resolve('/badges/manage', {})} class="nav-link" class:active={page.url.pathname === '/badges/manage'}>
+        <a href={resolve('/badges/manage', {})} class="nav-link" class:active={isPath('/badges/manage')}>
           <Icon icon="mdi:shield-edit" width="22" height="22"/>
           <span class="font-medium">Manage Badges</span>
         </a>
-        <a href={resolve('/badges/analytics', {})} class="nav-link" class:active={page.url.pathname === '/badges/analytics'}>
+        <a href={resolve('/badges/analytics', {})} class="nav-link" class:active={isPath('/badges/analytics')}>
           <Icon icon="mdi:chart-line" width="22" height="22"/>
           <span class="font-medium">Analytics</span>
         </a>
       {/if}
     {#if isAdmin}
-        <a href={resolve('/admin/verifications', {})} class="nav-link" class:active={page.url.pathname.startsWith('/admin/')}>
+        <a href={resolve('/admin/verifications', {})} class="nav-link" class:active={isPath('/admin/')}>
           <Icon icon="mdi:shield-check-outline" width="22" height="22"/>
           <span class="font-medium">Verifications</span>
         </a>
       {/if}
     {#if page.data.userRole && page.data.userRole !== 'anonymous'}
-      <a href={resolve('/profile', {})} class="nav-link" class:active={page.url.pathname === '/profile'}>
+      <a href={resolve('/profile', {})} class="nav-link" class:active={isPath('/profile')}>
         <Icon icon="mdi:account-circle-outline" width="22" height="22"/>
         <span class="font-medium">Profile</span>
       </a>
@@ -73,7 +80,7 @@
         <span class="font-medium">Sign out</span>
       </a>
     {:else}
-      <a href={resolve('/login', {})} class="nav-link" class:active={page.url.pathname === '/login' || page.url.pathname === '/signup'}>
+      <a href={resolve('/login', {})} class="nav-link" class:active={isPath('/login') || isPath('/signup')}>
         <Icon icon="mdi:login-variant" width="22" height="22"/>
         <span class="font-medium">Sign in</span>
       </a>

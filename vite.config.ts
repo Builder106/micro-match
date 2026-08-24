@@ -1,8 +1,43 @@
 import { sveltekit } from '@sveltejs/kit/vite';
+import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-  plugins: [sveltekit()],
+  plugins: [
+    paraglideVitePlugin({
+      project: './project.inlang',
+      outdir: './src/lib/paraglide',
+      emitTsDeclarations: true,
+      strategy: ['url', 'cookie', 'preferredLanguage', 'baseLocale'],
+      urlPatterns: [
+        {
+          pattern: '/',
+          localized: [
+            ['en', '/en'],
+            ['es', '/es'],
+            ['fr', '/fr'],
+            ['de', '/de'],
+            ['pt', '/pt'],
+            ['zh', '/zh'],
+            ['ar', '/ar']
+          ]
+        },
+        {
+          pattern: '/:path(.*)?',
+          localized: [
+            ['en', '/en/:path(.*)?'],
+            ['es', '/es/:path(.*)?'],
+            ['fr', '/fr/:path(.*)?'],
+            ['de', '/de/:path(.*)?'],
+            ['pt', '/pt/:path(.*)?'],
+            ['zh', '/zh/:path(.*)?'],
+            ['ar', '/ar/:path(.*)?']
+          ]
+        }
+      ]
+    }),
+    sveltekit()
+  ],
   test: {
     fileParallelism: false,
     // Coverage applies across all projects
@@ -17,7 +52,8 @@ export default defineConfig({
         'src/lib/**/*.d.ts',
         'src/lib/types.ts',
         'src/lib/**/index.ts',
-        'src/routes/**/*.d.ts'
+        'src/routes/**/*.d.ts',
+        'src/lib/paraglide/**'
       ],
       thresholds: {
         lines: 100,

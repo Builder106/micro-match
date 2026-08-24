@@ -1,4 +1,5 @@
 <script lang="ts">
+  /* eslint-disable svelte/no-navigation-without-resolve */
    import '@smui/top-app-bar';
    import '@smui/button';
    import '../app.css';
@@ -13,7 +14,7 @@
    import { get } from 'svelte/store';
    import { account, getJWT } from '$lib/appwrite.client';
    import { dev } from '$app/environment';
-   import { resolve } from '$app/paths';
+   import { localizedHref, stripLocale, type Locale } from '$lib/locale';
    import { inject } from '@vercel/analytics';
   const authPaths = ['/login', '/signup', '/forgot-password', '/reset-password'];
   const publicPaths = ['/about', '/contact', '/cookies', '/docs', '/help', '/privacy', '/terms', '/how-it-works', '/for-ngos', '/for-volunteers', '/tasks', '/impact'];
@@ -25,12 +26,15 @@
   $: ogUrl = origin + $page.url.pathname;
   $: ogImage = origin + '/social-preview.png';
   $: pathname = $page.url.pathname;
-  $: isLanding = pathname === '/';
-  $: isAuthPath = authPaths.includes(pathname);
-  $: isPublicPath = publicPaths.some((p) => pathname === p || pathname.startsWith(p + '/'));
+  $: currentPath = stripLocale(pathname);
+  $: currentLocale = ($page.data.locale as Locale | undefined) ?? 'en';
+  $: isLanding = currentPath === '/';
+  $: isAuthPath = authPaths.includes(currentPath);
+  $: isPublicPath = publicPaths.some((p) => currentPath === p || currentPath.startsWith(p + '/'));
+  function resolve(pathname: string, _options?: unknown) { return localizedHref(pathname, currentLocale); }
   $: userRole = $page.data.userRole ?? 'anonymous';
   $: isSignedIn = userRole !== 'anonymous';
-  $: showAppChrome = !isLanding && !isAuthPath && (!isPublicPath || (pathname === '/tasks' && isSignedIn)) && isSignedIn;
+  $: showAppChrome = !isLanding && !isAuthPath && (!isPublicPath || (currentPath === '/tasks' && isSignedIn)) && isSignedIn;
 
 
  
@@ -55,7 +59,7 @@
       // Skip the account/JWT round-trip on auth pages and when there's no session
       // hint at all — `account.get()` would 401 and pollute the console for users
       // who aren't logged in (which is, by definition, the case on /login).
-      const onAuthPage = authPaths.includes(window.location.pathname);
+      const onAuthPage = authPaths.includes(stripLocale(window.location.pathname));
       const hasRoleCookie = /(?:^|;\s*)mm_role=/.test(document.cookie || '');
       const hadSessionFlag = (() => { try { return localStorage.getItem('mm_has_session') === '1'; } catch { return false; } })();
       if (onAuthPage || (!hasRoleCookie && !hadSessionFlag)) return;
@@ -77,8 +81,9 @@
             
             // If user doesn't have a role set, redirect to profile
             const prefs = user?.prefs ?? {};
-            if (!prefs.role && window.location.pathname !== '/profile' && window.location.pathname !== '/login' && window.location.pathname !== '/signup') {
-              window.location.href = '/profile';
+            const authPath = stripLocale(window.location.pathname);
+            if (!prefs.role && authPath !== '/profile' && authPath !== '/login' && authPath !== '/signup') {
+              window.location.href = resolve('/profile');
             }
 
             // Ensure UI reflects role immediately after session creation.

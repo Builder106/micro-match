@@ -1,10 +1,11 @@
 <script lang="ts">
+  /* eslint-disable svelte/no-navigation-without-resolve */
   import Icon from "@iconify/svelte";
   import { page } from '$app/state';
   import { tick, onDestroy } from 'svelte';
   import { fly, fade } from 'svelte/transition';
   import ThemeToggle from '$lib/components/ThemeToggle.svelte';
-  import { resolve } from '$app/paths';
+  import { localizedHref, locales, type Locale } from '$lib/locale';
 
   export let activeTab: 'home' | 'how-it-works' | 'for-ngos' | 'for-volunteers' | 'tasks' | 'impact' | undefined = undefined;
 
@@ -41,6 +42,13 @@
   /* eslint-disable-next-line svelte/no-immutable-reactive-statements */
   $: userRole = (page.data?.userRole as string | undefined) ?? 'anonymous';
   $: isSignedIn = userRole !== 'anonymous';
+  /* eslint-disable-next-line svelte/no-immutable-reactive-statements */
+  $: currentLocale = (page.data?.locale as Locale | undefined) ?? 'en';
+  function resolve(pathname: string, _options?: unknown) { return localizedHref(pathname, currentLocale); }
+  function changeLocale(event: Event) {
+    const target = event.currentTarget as HTMLSelectElement;
+    window.location.href = localizedHref(page.url.pathname, target.value as Locale) + page.url.search;
+  }
 </script>
 
 <svelte:window onkeydown={handleWindowKeydown} />
@@ -61,6 +69,14 @@
       </nav>
       <div class="header-actions">
         <ThemeToggle compact={true} />
+        <label class="locale-picker">
+          <span class="sr-only">Language</span>
+          <select value={currentLocale} onchange={changeLocale} aria-label="Language">
+            {#each locales as locale (locale)}
+              <option value={locale}>{locale.toUpperCase()}</option>
+            {/each}
+          </select>
+        </label>
         <button
           type="button"
           class="menu-toggle"

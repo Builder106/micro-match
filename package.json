@@ -5,6 +5,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "vite dev",
+    "precheck": "paraglide-js compile",
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-check --fail-on-warnings --tsconfig ./tsconfig.json --output human",
@@ -26,6 +27,7 @@
     "format": "prettier -w ."
   },
   "dependencies": {
+    "@inlang/paraglide-js": "^2.7.1",
     "@iconify/svelte": "^5.2.2",
     "@smui/button": "^9.0.2",
     "@smui/card": "^9.0.2",

@@ -13,10 +13,10 @@ describe('TaskCard', () => {
     expect(screen.getByText(/20 min/)).toBeInTheDocument();
   });
 
-  it('links to /task/{id} by default', () => {
+  it('links to the English task route by default', () => {
     render(TaskCard, { id: 'abc123', title: 'T', shortDescription: 'S' });
     const link = screen.getByRole('link', { name: /View T/i });
-    expect(link).toHaveAttribute('href', '/task/abc123');
+    expect(link).toHaveAttribute('href', '/en/task/abc123');
   });
 
   it('renders each tag with a leading #', () => {
@@ -90,4 +90,3 @@ describe('TaskCard', () => {
     expect(screen.getByText(/Max 5/)).toBeInTheDocument();
   });
 });
-

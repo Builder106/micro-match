@@ -6,8 +6,11 @@
   import Icon from "@iconify/svelte";
   import LottieAnimation from '$lib/components/LottieAnimation.svelte';
   import { page } from '$app/state';
+  import { localizedHref, type Locale } from '$lib/locale';
+  import { translateTaskBatch, type DisplayTask } from '$lib/taskTranslationClient';
+  import { onMount } from 'svelte';
 
-  interface Task {
+  interface Task extends DisplayTask {
     id: string;
     title: string;
     shortDescription: string;
@@ -30,7 +33,7 @@
   ];
 
   let q = $state("");
-  const tasks = $derived(data.tasks);
+  let tasks = $state<Task[]>([]);
 
   let selectedTags = $state<string[]>([]);
   let maxMinutes = $state<number | null>(null);
@@ -85,6 +88,19 @@
 
   let userRole = $derived(page.data?.userRole ?? 'anonymous');
   let isSignedIn = $derived(userRole !== 'anonymous');
+  let currentLocale = $derived((page.data?.locale as Locale | undefined) ?? 'en');
+  const taskHref = (id: string) => localizedHref(`/task/${id}`, currentLocale);
+
+  onMount(() => {
+    const sourceTasks = data.tasks.map((task) => ({
+      ...task,
+      translation: { locale: 'en' as const, status: 'original' as const }
+    }));
+    tasks = sourceTasks;
+    void translateTaskBatch(sourceTasks, currentLocale).then((translated) => {
+      tasks = translated as Task[];
+    });
+  });
 </script>
 
 {#if isSignedIn}
@@ -188,7 +204,7 @@
             tags={t.tags}
             estimatedMinutes={t.estimatedMinutes}
             language={t.language}
-            href={`/task/${t.id}`}
+            href={taskHref(t.id)}
             status={t.status}
             deadline={t.deadline}
             maxVolunteers={t.maxVolunteers}
@@ -304,7 +320,7 @@
               tags={t.tags}
               estimatedMinutes={t.estimatedMinutes}
               language={t.language}
-              href={`/task/${t.id}`}
+              href={taskHref(t.id)}
               status={t.status}
               deadline={t.deadline}
               maxVolunteers={t.maxVolunteers}

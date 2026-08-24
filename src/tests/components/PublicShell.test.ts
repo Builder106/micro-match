@@ -26,8 +26,8 @@ describe('PublicShell', () => {
 
     expect(container.querySelector('.header-brand span')?.textContent).toBe('MicroMatch');
     expect(screen.getByRole('navigation', { name: 'Main navigation' })).toBeInTheDocument();
-    expect(container.querySelector('.header-actions a[href="/login"]')).toBeInTheDocument();
-    expect(container.querySelector('.header-actions a[href="/signup"]')).toBeInTheDocument();
+    expect(container.querySelector('.header-actions a[href="/en/login"]')).toBeInTheDocument();
+    expect(container.querySelector('.header-actions a[href="/en/signup"]')).toBeInTheDocument();
     expect(container.querySelector('footer.site-footer')).toBeInTheDocument();
   });
 
@@ -82,7 +82,7 @@ describe('PublicShell', () => {
     await tick();
 
     const mobileNav = container.querySelector('#mobile-menu');
-    const howItWorksLink = mobileNav?.querySelector('a[href="/how-it-works"]');
+    const howItWorksLink = mobileNav?.querySelector('a[href="/en/how-it-works"]');
     expect(howItWorksLink).toBeInTheDocument();
 
     if (howItWorksLink) {
@@ -92,4 +92,3 @@ describe('PublicShell', () => {
     expect(container.querySelector('#mobile-menu')).toBeNull();
   });
 });
-

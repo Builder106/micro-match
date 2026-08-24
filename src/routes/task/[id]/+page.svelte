@@ -1,8 +1,8 @@
 <script lang="ts">
+  /* eslint-disable svelte/no-navigation-without-resolve */
   import Icon from "@iconify/svelte";
   import { onMount } from 'svelte';
-  import { goto } from '$app/navigation';
-  import { resolve } from '$app/paths';
+  import { localizedHref, type Locale } from '$lib/locale';
   import { page } from '$app/stores';
   import { getTaskDetailCopy, TRANSLATION_OPTIONS } from '$lib/translation';
   import { getTagStyle } from '$lib/utils/tagColors';
@@ -21,9 +21,11 @@
   $: task = translatedTask ?? data.task;
   $: orgName = data.orgName ?? 'Community organization';
   $: signedIn = $page.data.userRole && $page.data.userRole !== 'anonymous';
-  $: copy = getTaskDetailCopy(data.translatedTo);
+  $: currentLocale = ($page.data.locale as Locale | undefined) ?? 'en';
+  function resolve(pathname: string) { return localizedHref(pathname, currentLocale); }
+  $: copy = getTaskDetailCopy(currentLocale === 'en' ? null : currentLocale);
 
-  let langSelection = data.translatedTo ?? '';
+  let langSelection = currentLocale;
   let isTranslating = false;
   let translationRequest = 0;
 
@@ -31,7 +33,7 @@
     const request = ++translationRequest;
     translatedTask = null;
 
-    if (!to) {
+    if (!to || to === 'en') {
       isTranslating = false;
       return;
     }
@@ -53,12 +55,11 @@
   async function applyTranslation() {
     const to = langSelection || null;
     void loadTranslation(to);
-    const path = `/task/${id}` + (langSelection ? `?lang=${encodeURIComponent(langSelection)}` : '');
-    await goto(resolve(path, {}), { keepFocus: true, noScroll: true });
+    window.location.href = resolve(`/task/${id}`);
   }
 
   onMount(() => {
-    if (data.translatedTo) void loadTranslation(data.translatedTo);
+    if (currentLocale !== 'en') void loadTranslation(currentLocale);
   });
 
   let deleting = false;
@@ -68,7 +69,7 @@
     try {
       const res = await fetch(`/api/tasks/${id}`, { method: 'DELETE' });
       if (res.ok) {
-        window.location.href = '/tasks';
+        window.location.href = resolve('/tasks');
       } else {
         alert('Failed to delete task.');
       }
@@ -107,7 +108,7 @@
 <svelte:head><title>{task.title} · MicroMatch</title></svelte:head>
 
 <div class="td-page">
-  <a href={resolve('/tasks', {})} class="td-back">
+  <a href={resolve('/tasks')} class="td-back">
     <Icon icon="lucide:arrow-left" width="14" height="14" />
     {copy.backToFeed}
   </a>
@@ -250,13 +251,13 @@
           This task isn't currently accepting claims.
         {/if}
       </div>
-      <a href={resolve('/tasks', {})} class="btn-outline-dark">Browse other tasks</a>
+      <a href={resolve('/tasks')} class="btn-outline-dark">Browse other tasks</a>
     {:else if !signedIn}
       <div class="td-signin-cta">
         <Icon icon="lucide:user-plus" width="14" height="14" />
         {copy.signInToClaimTask}
       </div>
-      <a href={resolve(`/login?next=/task/${id}`, {})} class="btn-coral btn-lg">
+      <a href={resolve(`/login?next=/task/${id}`)} class="btn-coral btn-lg">
         {copy.signInToClaim}
         <Icon icon="lucide:arrow-right" width="16" height="16" />
       </a>
@@ -265,7 +266,7 @@
         <Icon icon="lucide:hand-heart" width="14" height="14" />
         {copy.readyToHelp}
       </div>
-      <a href={resolve(`/task/${id}/claim`, {})} class="btn-coral btn-lg">
+      <a href={resolve(`/task/${id}/claim`)} class="btn-coral btn-lg">
         {copy.claimTask}
         <Icon icon="lucide:arrow-right" width="16" height="16" />
       </a>

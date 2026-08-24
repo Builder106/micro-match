@@ -1,7 +1,9 @@
 <script lang="ts">
+  /* eslint-disable svelte/no-navigation-without-resolve, svelte/no-immutable-reactive-statements */
   import Icon from "@iconify/svelte";
   import { getTagStyle } from "$lib/utils/tagColors";
-  import { resolve } from '$app/paths';
+  import { page } from '$app/state';
+  import { localizedHref, type Locale } from '$lib/locale';
   export let id: string;
   export let title: string;
   export let shortDescription: string;
@@ -13,6 +15,8 @@
   export let deadline: string | undefined = undefined;
   export let maxVolunteers: number | undefined = undefined;
   export let isVerified: boolean | undefined = undefined;
+  $: currentLocale = (page.data?.locale as Locale | undefined) ?? 'en';
+  function resolve(pathname: string, _options?: unknown) { return localizedHref(pathname, currentLocale); }
 
   function getStatusInfo(s: string | undefined) {
     switch (s) {
