@@ -330,7 +330,7 @@
     resize: vertical;
     min-height: 100px;
   }
-  .modal-card textarea:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12); }
+  .modal-card textarea:focus { outline: none; border-color: var(--color-primary-readable); box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12); }
   .modal-actions { display: flex; justify-content: flex-end; gap: 8px; }
   .modal-actions button:not(.btn-reject) {
     padding: 9px 16px;

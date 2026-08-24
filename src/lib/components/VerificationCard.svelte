@@ -300,7 +300,7 @@
     font-weight: 500;
     transition: all .2s;
   }
-  .vc-field input:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12); }
+  .vc-field input:focus { outline: none; border-color: var(--color-primary-readable); box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12); }
 
   .vc-upload {
     display: inline-flex;
@@ -316,7 +316,7 @@
     color: color-mix(in srgb, var(--color-text) 70%, transparent);
     transition: all .15s;
   }
-  .vc-upload:hover { border-color: var(--color-primary); color: var(--color-text); }
+  .vc-upload:hover { border-color: var(--color-primary-readable); color: var(--color-text); }
   .vc-upload input[type="file"] { display: none; }
 
   .vc-hint { font-size: 12px; color: color-mix(in srgb, var(--color-text) 55%, transparent); }

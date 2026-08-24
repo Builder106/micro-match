@@ -135,7 +135,7 @@
     font-weight: 700;
     padding: 4px 0;
   }
-  .back-btn:hover { color: var(--color-primary); }
+  .back-btn:hover { color: var(--color-primary-readable); }
   h1 {
     font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
     font-size: clamp(2rem, 3vw, 2.6rem);
@@ -182,13 +182,13 @@
     font-weight: 500;
     transition: all 150ms ease;
   }
-  input:focus { border-color: var(--color-primary); background: var(--color-surface); box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12); outline: none; }
+  input:focus { border-color: var(--color-primary-readable); background: var(--color-surface); box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12); outline: none; }
   .auth-submit { margin-top: 8px; width: 100%; }
   .error { margin: 0; padding: 10px 12px; background: color-mix(in srgb, #dc2626 10%, transparent); color: #991b1b; font-size: 13px; font-weight: 600; border-radius: 10px; display: inline-flex; align-items: center; gap: 6px; }
 
   .foot { margin-top: 22px; text-align: center; font-size: 14px; color: var(--color-text-secondary); }
   .foot a { color: var(--color-text); text-decoration: underline; text-decoration-color: var(--card-border-strong); text-decoration-thickness: 2px; text-underline-offset: 4px; font-weight: 700; margin-left: 4px; }
-  .foot a:hover { color: var(--color-primary); text-decoration-color: var(--color-primary); }
+  .foot a:hover { color: var(--color-primary-readable); text-decoration-color: var(--color-primary-readable); }
 
   @media (min-width: 1024px) {
     .left-panel { display: block; }

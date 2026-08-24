@@ -347,26 +347,26 @@
   h1, h2, h3, h4 { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; color: var(--color-text); }
 
   /* ──────────── Buttons ──────────── */
-  .btn-coral { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--color-primary); color: #fff; font-weight: 700; border: none; border-radius: 9999px; cursor: pointer; text-decoration: none; transition: all .3s; }
+  .btn-coral { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--color-primary); color: var(--color-action-on-coral); font-weight: 700; border: none; border-radius: 9999px; cursor: pointer; text-decoration: none; transition: all .3s; }
   .btn-coral:hover { background: var(--color-primary-variant); transform: translateY(-2px); box-shadow: 0 16px 40px rgba(159,18,57,0.35); }
   .btn-coral:active { transform: scale(0.97); }
   .btn-outline { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--color-surface); backdrop-filter: blur(12px); color: var(--color-text); font-weight: 700; border: 1px solid var(--card-border-strong); border-radius: 9999px; cursor: pointer; text-decoration: none; transition: all .3s; }
   .btn-outline:hover { background: var(--color-surface-variant); border-color: var(--card-border-strong); }
   .btn-outline-dark { display: inline-flex; align-items: center; justify-content: center; padding: 12px 32px; background: var(--color-surface); border: 1px solid var(--card-border-strong); border-radius: 9999px; color: var(--color-text); font-weight: 700; font-size: 16px; text-decoration: none; transition: all .3s; white-space: nowrap; }
-  .btn-outline-dark:hover { border-color: var(--color-primary); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+  .btn-outline-dark:hover { border-color: var(--color-primary-readable); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
   .btn-dark-pill { display: inline-flex; align-items: center; justify-content: center; width: 100%; padding: 14px 0; background: var(--color-text); color: var(--color-surface); font-weight: 700; font-size: 15px; border-radius: 9999px; text-decoration: none; transition: all .3s; }
   .btn-dark-pill:hover { opacity: 0.9; }
   .btn-lg { padding: 0 32px; height: 56px; font-size: 18px; }
 
   /* ──────────── Hero ──────────── */
-  .hero { position: relative; min-height: 90vh; display: flex; align-items: center; overflow: hidden; padding: 80px 0 0; background: var(--color-background); }
-  .blob { position: absolute; z-index: 0; border-radius: 50%; pointer-events: none; }
+  .hero { position: relative; min-height: 90vh; display: flex; align-items: center; overflow: hidden; padding: 80px 0 0; }
+  .blob { position: absolute; border-radius: 50%; pointer-events: none; mix-blend-mode: multiply; }
   .blob-yellow { top: -10%; left: -10%; width: 500px; height: 500px; background: rgba(253,224,71,0.4); filter: blur(100px); opacity: 0.7; }
   .blob-coral { top: 20%; right: -10%; width: 600px; height: 600px; background: rgba(255,107,107,0.2); filter: blur(120px); opacity: 0.6; }
   .blob-blue { bottom: -20%; left: 20%; width: 700px; height: 700px; background: rgba(147,197,253,0.3); filter: blur(140px); opacity: 0.5; }
   .hero-inner { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 0 24px; display: grid; grid-template-columns: 1fr; gap: 48px; align-items: center; }
   @media (min-width: 1024px) { .hero-inner { grid-template-columns: 1fr 1fr; gap: 32px; } .hero { padding: 0; } }
-  .hero-copy { background: var(--color-background); border-radius: 24px; display: flex; flex-direction: column; align-items: flex-start; gap: 28px; max-width: 560px; padding: 16px; position: relative; z-index: 1; }
+  .hero-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 28px; max-width: 560px; }
   .hero-copy h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2.25rem, 5vw + 0.5rem, 4.25rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin: 0; color: var(--color-text); }
   .coral-gradient { color: var(--color-primary-readable); }
   .hero-copy p { color: var(--color-text-secondary); font-size: clamp(1rem, 1.5vw + 0.25rem, 1.25rem); font-weight: 500; line-height: 1.7; margin: 0; max-width: 480px; }
@@ -607,7 +607,7 @@
   .mc-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid var(--color-surface); box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform 0.3s ease; }
   .mock-card:hover .mc-avatar { transform: scale(1.12); }
   .mc-time { padding: 4px 12px; background: var(--color-surface-variant); border-radius: 9999px; font-size: 12px; font-weight: 700; border: 1px solid var(--card-border); transition: all 0.3s ease; color: var(--color-text-secondary); }
-  .mock-card:hover .mc-time { background: color-mix(in srgb, var(--color-primary) 12%, transparent); color: var(--color-primary); border-color: color-mix(in srgb, var(--color-primary) 20%, transparent); }
+  .mock-card:hover .mc-time { background: color-mix(in srgb, var(--color-primary) 12%, transparent); color: var(--color-primary-readable); border-color: color-mix(in srgb, var(--color-primary-readable) 20%, transparent); }
   .mock-card h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; font-weight: 700; line-height: 1.3; margin: 0; color: var(--color-text); }
   
   /* Verified NGO Badge */
@@ -622,7 +622,7 @@
   .mock-card:hover .mc-tags span:nth-child(2) { transform: translateY(-2px) scale(1.04); transition-delay: 0.05s; }
 
   /* Quick Claim Button */
-  .mc-claim-btn { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 9999px; background: var(--color-primary); color: #fff; font-size: 11px; font-weight: 700; text-decoration: none; opacity: 0; transform: scale(0.92) translateX(4px); transition: all 0.3s cubic-bezier(0.34, 1.4, 0.64, 1); white-space: nowrap; }
+  .mc-claim-btn { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 9999px; background: var(--color-primary); color: var(--color-action-on-coral); font-size: 11px; font-weight: 700; text-decoration: none; opacity: 0; transform: scale(0.92) translateX(4px); transition: all 0.3s cubic-bezier(0.34, 1.4, 0.64, 1); white-space: nowrap; }
   .mock-card:hover .mc-claim-btn { opacity: 1; transform: scale(1) translateX(0); }
   .mc-claim-btn:hover { background: var(--color-primary-variant); transform: scale(1.06) !important; box-shadow: 0 4px 12px color-mix(in srgb, var(--color-primary) 35%, transparent); }
 
@@ -654,7 +654,7 @@
   .tc-ngo { font-size: 13px; font-weight: 600; color: var(--color-text-secondary); margin: 0 0 8px; }
   .tc-body h3 { font-size: 22px; font-weight: 700; line-height: 1.3; margin: 0 0 8px; color: var(--color-text); }
   .tc-body h3 a { color: inherit; text-decoration: none; }
-  .tc-body h3 a:hover { color: #FF6B6B; }
+  .tc-body h3 a:hover { color: var(--color-primary-readable); }
   .tc-desc { color: var(--color-text-secondary); font-size: 15px; line-height: 1.6; margin: 0; display: -webkit-box; line-clamp: 2; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .tc-foot { display: flex; flex-direction: column; gap: 16px; }
   .tc-tags { display: flex; flex-wrap: wrap; gap: 8px; }

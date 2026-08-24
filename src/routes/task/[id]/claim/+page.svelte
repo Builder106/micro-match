@@ -183,14 +183,14 @@
 
   /* Task summary */
   .cl-task { padding: 18px 22px; display: flex; align-items: flex-start; gap: 16px; }
-  .cl-task-icon { width: 48px; height: 48px; border-radius: 16px; background: #FFE5DC; color: var(--color-primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .cl-task-icon { width: 48px; height: 48px; border-radius: 16px; background: #FFE5DC; color: var(--color-primary-readable); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .cl-task-meta { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
   .cl-task-meta small { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: color-mix(in srgb, var(--color-text) 50%, transparent); }
   .cl-task-meta h2 { font-size: 17px; font-weight: 700; margin: 0; line-height: 1.3; }
   .cl-task-meta p { font-size: 13px; color: color-mix(in srgb, var(--color-text) 60%, transparent); margin: 0 0 4px; line-height: 1.5; }
   .cl-task-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
   .cl-chip { padding: 3px 10px; border-radius: 9999px; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; background: color-mix(in srgb, var(--color-text) 5%, transparent); color: color-mix(in srgb, var(--color-text) 65%, transparent); }
-  .cl-chip-time { background: rgba(255, 107, 107, 0.12); color: var(--color-primary); }
+  .cl-chip-time { background: rgba(255, 107, 107, 0.12); color: var(--color-primary-readable); }
 
   /* Form */
   .cl-form { padding: 28px 32px; display: flex; flex-direction: column; gap: 18px; }
@@ -199,7 +199,7 @@
 
   .cl-field { display: flex; flex-direction: column; gap: 6px; }
   .cl-label { font-size: 13px; font-weight: 700; color: var(--color-text); display: inline-flex; align-items: center; gap: 6px; }
-  .cl-label em { font-style: normal; font-size: 11px; font-weight: 600; padding: 2px 6px; background: color-mix(in srgb, var(--color-primary) 12%, transparent); color: var(--color-primary); border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .cl-label em { font-style: normal; font-size: 11px; font-weight: 600; padding: 2px 6px; background: color-mix(in srgb, var(--color-primary) 12%, transparent); color: var(--color-primary-readable); border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.04em; }
   .cl-em-optional { background: color-mix(in srgb, var(--color-text) 8%, transparent) !important; color: color-mix(in srgb, var(--color-text) 60%, transparent) !important; }
 
   .cl-field input, .cl-field textarea {
@@ -213,7 +213,7 @@
     font-weight: 500;
     transition: all .2s;
   }
-  .cl-field input:focus, .cl-field textarea:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12); }
+  .cl-field input:focus, .cl-field textarea:focus { outline: none; border-color: var(--color-primary-readable); box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12); }
   .cl-field textarea { resize: vertical; min-height: 100px; line-height: 1.55; }
   .cl-hint { font-size: 12px; color: color-mix(in srgb, var(--color-text) 55%, transparent); }
   .cl-counter { font-size: 12px; font-weight: 600; color: color-mix(in srgb, var(--color-text) 50%, transparent); }

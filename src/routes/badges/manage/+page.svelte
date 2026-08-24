@@ -345,7 +345,7 @@
     gap: 12px;
     transition: all .25s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .bm-template:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06); border-color: color-mix(in srgb, var(--color-primary) 25%, transparent); }
+  .bm-template:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06); border-color: color-mix(in srgb, var(--color-primary-readable) 25%, transparent); }
   .bm-template-icon { width: 48px; height: 48px; border-radius: 16px; display: flex; align-items: center; justify-content: center; }
   .bm-template h3 { font-size: 16px; font-weight: 700; margin: 0; }
   .bm-template p { font-size: 13px; color: color-mix(in srgb, var(--color-text) 60%, transparent); margin: 0; line-height: 1.5; }
@@ -388,7 +388,7 @@
   /* Empty */
   .bm-empty {
     background: var(--color-surface);
-    border: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-primary-readable) 12%, transparent);
     border-radius: 32px;
     padding: 48px 32px;
     text-align: center;
@@ -461,7 +461,7 @@
     font-weight: 500;
     transition: all .2s;
   }
-  .bm-field input:focus, .bm-field textarea:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12); }
+  .bm-field input:focus, .bm-field textarea:focus { outline: none; border-color: var(--color-primary-readable); box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12); }
   .bm-field textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
 
   .bm-color-row { display: flex; align-items: center; gap: 12px; }

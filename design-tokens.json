@@ -4,11 +4,28 @@
   "version": "1.0.0",
   "description": "Design system tokens for MicroMatch — warm cream and coral micro-volunteering platform.",
   "color": {
+    "brand": {
+      "coral": { "$value": "#FF6B6B", "$type": "color", "$description": "Bright MicroMatch brand coral for visual fills and decoration" },
+      "hover": { "$value": "#E85555", "$type": "color", "$description": "Brand coral hover and active fill" },
+      "light": { "$value": "#FF9E5E", "$type": "color", "$description": "Light coral visual accent" }
+    },
+    "readable": {
+      "coral": { "$value": "#9F1239", "$type": "color", "$description": "Readable coral-family color for light-mode text and meaningful icons" },
+      "darkCoral": { "$value": "#FDA4AF", "$type": "color", "$description": "Readable coral-family color for dark-mode text and meaningful icons" },
+      "secondary": { "$value": "#475569", "$type": "color", "$description": "Readable secondary text color for light mode" }
+    },
+    "action": {
+      "onBrightCoral": { "$value": "#020617", "$type": "color", "$description": "Dark text and icons on bright coral controls" }
+    },
+    "focus": {
+      "light": { "$value": "#0F172A", "$type": "color", "$description": "High-contrast focus indicator for light mode" },
+      "dark": { "$value": "#FDA4AF", "$type": "color", "$description": "High-contrast focus indicator for dark mode" }
+    },
     "primary": {
       "base": { "$value": "#FF6B6B", "$type": "color", "$description": "Warm coral brand primary color" },
       "variant": { "$value": "#E85555", "$type": "color", "$description": "Darker coral for hover and active states" },
       "light": { "$value": "#FF9E5E", "$type": "color", "$description": "Lighter coral gradient accent" },
-      "onPrimary": { "$value": "#FFFFFF", "$type": "color", "$description": "Text/icon color on primary background" }
+      "onPrimary": { "$value": "#020617", "$type": "color", "$description": "Dark text/icon color on bright primary background" }
     },
     "secondary": {
       "base": { "$value": "#FDBA74", "$type": "color", "$description": "Warm peach secondary accent" },
@@ -42,9 +59,9 @@
       "tertiaryDark": { "$value": "#94A3B8", "$type": "color", "$description": "Tertiary subtle text in dark mode" }
     },
     "feedback": {
-      "success": { "$value": "#059669", "$type": "color", "$description": "Approved claims, verified status, success indicators" },
-      "warning": { "$value": "#D97706", "$type": "color", "$description": "Pending verification, expiring deadlines" },
-      "error": { "$value": "#DC2626", "$type": "color", "$description": "Rejected claims, destructive action alerts" }
+      "success": { "$value": "#064E3B", "$type": "color", "$description": "Readable success status foreground" },
+      "warning": { "$value": "#78350F", "$type": "color", "$description": "Readable warning status foreground" },
+      "error": { "$value": "#7F1D1D", "$type": "color", "$description": "Readable error status foreground" }
     },
     "accent": {
       "coral50": { "$value": "#FFF5F0", "$type": "color", "$description": "Light coral background tint" },

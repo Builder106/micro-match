@@ -181,14 +181,14 @@
   .field-heading { align-items: center; display: flex; gap: var(--space-4); justify-content: space-between; margin-top: var(--space-4); }
   .field-heading label { color: var(--color-text); font-size: var(--text-sm); font-weight: var(--font-bold); }
   .hours-field { align-items: center; border: 1px solid var(--color-outline-variant); border-radius: var(--radius-md); color: var(--color-text-secondary); display: inline-flex; gap: var(--space-2); min-height: 44px; padding-inline: var(--space-3); }
-  .hours-field:focus-within { outline: 3px solid color-mix(in srgb, var(--color-primary) 35%, transparent); outline-offset: 2px; }
+  .hours-field:focus-within { outline: 3px solid var(--color-primary-readable); outline-offset: 2px; }
   .hours-field.has-error { border-color: var(--color-error); }
   .hours-field:has(input:disabled), .choice-card:has(input:disabled), .release-option:has(input:disabled), .range-input:disabled { cursor: not-allowed; opacity: 0.55; }
   .choice-card:has(input:disabled), .release-option:has(input:disabled) { pointer-events: none; }
   .hours-field input { background: transparent; border: 0; color: var(--color-text); font: inherit; font-size: var(--text-lg); font-weight: var(--font-bold); min-width: 3rem; padding: 0; text-align: end; width: 3rem; }
   .hours-field input:focus { outline: 0; }
-  .range-input { accent-color: var(--color-primary); cursor: pointer; margin-top: var(--space-3); touch-action: manipulation; width: 100%; }
-  .range-input:focus-visible { outline: 3px solid color-mix(in srgb, var(--color-primary) 35%, transparent); outline-offset: var(--space-2); }
+  .range-input { accent-color: var(--color-primary-readable); cursor: pointer; margin-top: var(--space-3); touch-action: manipulation; width: 100%; }
+  .range-input:focus-visible { outline: 3px solid var(--color-primary-readable); outline-offset: var(--space-2); }
   .range-scale { color: var(--color-text-tertiary); display: flex; font-size: var(--text-xs); justify-content: space-between; margin-top: var(--space-2); }
   .field-help, .step-copy { color: var(--color-text-secondary); font-size: var(--text-xs); line-height: var(--leading-normal); margin-top: var(--space-2); min-height: 1lh; }
   .field-help.error { color: var(--color-error); }
@@ -198,8 +198,8 @@
   .choice-card input, .release-option input { cursor: pointer; inset: 0; margin: 0; opacity: 0; position: absolute; }
   .choice-card strong { color: var(--color-text); font-size: var(--text-sm); }
   .choice-card span { font-size: var(--text-xs); }
-  .choice-card.selected, .release-option.selected { background: color-mix(in srgb, var(--color-primary) 10%, var(--color-surface)); border-color: var(--color-primary); box-shadow: 0 0 0 1px var(--color-primary); }
-  .choice-card:has(input:focus-visible), .release-option:has(input:focus-visible), .plan-cta:focus-visible, .plan-assumptions summary:focus-visible { outline: 3px solid color-mix(in srgb, var(--color-primary) 35%, transparent); outline-offset: 3px; }
+  .choice-card.selected, .release-option.selected { background: color-mix(in srgb, var(--color-primary) 10%, var(--color-surface)); border-color: var(--color-primary-readable); box-shadow: 0 0 0 1px var(--color-primary-readable); }
+  .choice-card:has(input:focus-visible), .release-option:has(input:focus-visible), .plan-cta:focus-visible, .plan-assumptions summary:focus-visible { outline: 3px solid var(--color-primary-readable); outline-offset: 3px; }
   .release-options { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-3); }
   .release-option { align-items: center; border-radius: var(--radius-full); font-size: var(--text-sm); font-weight: var(--font-bold); justify-content: center; min-height: 44px; min-width: 5.5rem; padding-inline: var(--space-4); }
   .mission-plan { align-self: start; background: var(--color-surface); border: 1px solid var(--card-border-strong); border-radius: var(--radius-xl); box-shadow: var(--elev-3); min-width: 0; padding: clamp(var(--space-5), 3vw, var(--space-8)); }
@@ -222,8 +222,8 @@
   .plan-assumptions { color: var(--color-text-secondary); font-size: var(--text-xs); line-height: var(--leading-normal); margin-top: var(--space-5); }
   .plan-assumptions summary { color: var(--color-text); cursor: pointer; font-weight: var(--font-bold); }
   .plan-assumptions p { margin-top: var(--space-2); }
-  .plan-cta { align-items: center; background: var(--color-primary); border-radius: var(--radius-md); color: var(--color-on-primary); display: flex; font-size: var(--text-sm); font-weight: var(--font-bold); gap: var(--space-2); justify-content: center; margin-top: var(--space-5); min-height: 48px; text-decoration: none; white-space: nowrap; }
-  @media (hover: hover) and (pointer: fine) { .choice-card:hover, .release-option:hover { border-color: var(--color-primary); } .plan-cta:hover { background: var(--color-primary-variant); } }
+  .plan-cta { align-items: center; background: #FF6B6B; border-radius: var(--radius-md); color: #0F172A; display: flex; font-size: var(--text-sm); font-weight: var(--font-bold); gap: var(--space-2); justify-content: center; margin-top: var(--space-5); min-height: 48px; text-decoration: none; white-space: nowrap; }
+  @media (hover: hover) and (pointer: fine) { .choice-card:hover, .release-option:hover { border-color: var(--color-primary-readable); } .plan-cta:hover { background: var(--color-primary-variant); } }
   .choice-card:active, .release-option:active, .plan-cta:active { transform: translateY(1px); }
   @media (min-width: 60rem) { .planner-workbench { grid-template-columns: minmax(0, 1.05fr) minmax(20rem, 0.95fr); } .mission-plan { position: sticky; top: var(--space-6); } }
   @media (max-width: 32rem) { .field-heading { align-items: flex-start; flex-direction: column; } .choice-grid { gap: var(--space-2); } .choice-card { min-height: 4.25rem; padding: var(--space-2); } .choice-card span { display: none; } .plan-total { align-items: flex-start; flex-direction: column; } }

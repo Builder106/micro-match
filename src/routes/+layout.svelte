@@ -140,14 +140,14 @@
 {#if showAppChrome}
 <TopAppBar style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(16px); box-shadow: var(--elev-1); z-index: 10; border-bottom: 1px solid var(--color-outline-variant);">
    <svelte:fragment slot="navigation">
-     <Button variant="text" href={resolve('/tasks', {})} aria-label="Home" style="color: var(--color-primary); font-weight: var(--font-medium);">
+     <Button variant="text" href={resolve('/tasks', {})} aria-label="Home" style="color: var(--color-primary-readable); font-weight: var(--font-medium);">
        <Icon icon="mdi:home" width="24" height="24"/>
      </Button>
    </svelte:fragment>
    <svelte:fragment slot="title">
      <div style="display: flex; align-items: center; gap: var(--space-2);">
        <img src="/logo.png" alt="MicroMatch Logo" width="32" height="32" style="display: block;" />
-        <span style="font-weight: var(--font-bold); font-size: var(--text-xl); color: var(--color-primary);">MicroMatch</span>
+        <span style="font-weight: var(--font-bold); font-size: var(--text-xl); color: var(--color-primary-readable);">MicroMatch</span>
      </div>
    </svelte:fragment>
    <svelte:fragment slot="actions">
@@ -182,7 +182,7 @@
         <div class:card-elevated={$page.url.pathname === '/tasks'} class:animate-scale-in={$page.url.pathname === '/tasks'} style="display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 40px; border-radius: var(--radius-xl); background: var(--color-primary); color: var(--color-on-primary); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);">
           <Icon icon="mdi:view-dashboard-outline" width="20" height="20"/>
         </div>
-        <small style="display: block; color: var(--color-primary); margin-top: var(--space-2); font-weight: var(--font-medium); font-size: var(--text-xs);">Feed</small>
+        <small style="display: block; color: var(--color-primary-readable); margin-top: var(--space-2); font-weight: var(--font-medium); font-size: var(--text-xs);">Feed</small>
       </a>
       <a href={resolve('/dashboard', {})} style="text-align:center;text-decoration:none;color:inherit">
         <div class="hover-lift" style="width: 56px; height: 40px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--radius-xl); background: var(--color-surface-variant); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);">

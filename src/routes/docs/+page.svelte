@@ -229,7 +229,7 @@
 
   .coral-glow {
     background: #fff1f1;
-    color: var(--color-primary);
+    color: var(--color-primary-readable);
   }
 
   .indigo-glow {

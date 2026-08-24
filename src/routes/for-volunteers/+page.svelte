@@ -397,7 +397,7 @@
   }
   .btn-outline-dark:hover {
     transform: translateY(-2px);
-    border-color: var(--color-primary);
+    border-color: var(--color-primary-readable);
     box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
   }
   .btn-outline-dark:active { transform: scale(0.97); }
@@ -437,7 +437,7 @@
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    color: var(--color-primary);
+    color: var(--color-primary-readable);
   }
   .hero-sample-task-ngo {
     color: var(--color-text-secondary);
@@ -497,7 +497,7 @@
   .pillar-card:hover {
     transform: translateY(-6px);
     box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
-    border-color: var(--color-primary);
+    border-color: var(--color-primary-readable);
   }
   .pillar-icon {
     width: 56px;
@@ -609,14 +609,14 @@
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .tab-btn:hover:not(.active) {
-    border-color: var(--color-primary);
-    color: var(--color-primary);
+    border-color: var(--color-primary-readable);
+    color: var(--color-primary-readable);
     transform: translateY(-2px);
   }
   .tab-btn.active {
     background: var(--color-primary);
     color: #FFF;
-    border-color: var(--color-primary);
+    border-color: var(--color-primary-readable);
     box-shadow: 0 4px 14px rgba(255, 107, 107, 0.25);
   }
   .tab-btn:active { transform: scale(0.96); }
@@ -638,7 +638,7 @@
   .sample-task-card:hover {
     transform: translateY(-6px);
     box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
-    border-color: var(--color-primary);
+    border-color: var(--color-primary-readable);
   }
   .st-top { display: flex; justify-content: space-between; align-items: center; }
   .st-ngo { font-size: 13px; font-weight: 700; color: var(--color-text-tertiary); }

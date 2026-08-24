@@ -70,8 +70,7 @@
 
   .theme-toggle:hover {
     box-shadow: var(--elev-1);
-    border-color: var(--color-primary);
+    border-color: var(--color-primary-readable);
     transform: translateY(-1px);
   }
 </style>
-

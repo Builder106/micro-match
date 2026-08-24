@@ -270,7 +270,7 @@
   }
   .btn-outline-dark:hover {
     transform: translateY(-2px);
-    border-color: var(--color-primary);
+    border-color: var(--color-primary-readable);
     box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
   }
   .btn-outline-dark:active { transform: scale(0.97); }
@@ -356,7 +356,7 @@
   .pillar-card:hover {
     transform: translateY(-6px);
     box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
-    border-color: var(--color-primary);
+    border-color: var(--color-primary-readable);
   }
   .pillar-icon {
     width: 56px;

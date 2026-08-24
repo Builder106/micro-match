@@ -4,6 +4,10 @@
 > things happen — retrospectives need this raw material to land.
 > Reverse-chronological; one paragraph max per entry.
 
+## 2026-08-24 - Coral remains visual while semantic colors carry AAA contrast #decision
+
+Restored MicroMatch's bright coral for brand fills, decoration, progress visuals, and illustrations after the accessibility audit made the whole interface burgundy. Added separate readable coral, action foreground, status, and focus tokens so meaningful text and controls keep the AAA-oriented contrast target. Removed the audit-added opaque landing hero panel and kept the audit's semantic markup, dialog, keyboard, and reduced-motion changes. The accessibility matrix remains an evidence gate, not a formal WCAG AAA claim.
+
 ## 2026-08-23 - Coverage gate exercises every runtime branch #decision
 
 The coverage gate now requires 100% statements, branches, functions, and lines across runtime library code and server routes. Focused tests cover normal and failure paths for API handlers, Appwrite mapping, authentication, verification, email, and translation. The coverage suite runs files serially on ampere-dev because concurrent JSDOM workers intermittently timed out there; the assertions and threshold stay the same.

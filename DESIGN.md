@@ -272,7 +272,7 @@ The design system follows a WCAG 2.2 AAA-oriented target. The audit and evidence
 1. **Touch Targets**: Aim for a minimum `44px x 44px` interactive area for touch controls.
 2. **Focus Visibility**: Every keyboard focus state must remain visible against its actual background and must not be hidden by sticky or fixed content.
 3. **Safe Areas**: Top and bottom padding respond to mobile environment insets (`env(safe-area-inset-top)` and `env(safe-area-inset-bottom)`).
-4. **Enhanced Contrast**: Target at least `7:1` for normal text and `4.5:1` for large text where the AAA contrast criterion applies. Check non-text controls, focus indicators, charts, and theme variants separately.
+4. **Enhanced Contrast**: Use bright coral for decorative and non-text brand visuals. Use readable coral, navy, or dark status foregrounds for meaningful text and controls. Target at least `7:1` for normal text and `4.5:1` for large text where the AAA contrast criterion applies. Check non-text controls, focus indicators, charts, and theme variants separately.
 5. **Adaptation**: Content must remain usable at 200% and 400% zoom, at a 320px CSS viewport, with increased text spacing, and with reduced motion.
 6. **Semantic interaction**: Dialogs, menus, selects, tabs, forms, errors, and status messages must expose their name, role, state, and value to assistive technology.
 

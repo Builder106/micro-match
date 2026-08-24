@@ -602,8 +602,8 @@
   }
 
   .btn-secondary-outlined:hover {
-    border-color: #FF6B6B;
-    color: #FF6B6B;
+    border-color: var(--color-primary-readable);
+    color: var(--color-primary-readable);
     transform: translateY(-2px);
   }
 </style>

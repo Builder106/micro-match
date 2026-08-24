@@ -349,8 +349,8 @@
     gap: 8px;
     padding: 11px 22px;
     border-radius: 9999px;
-    background: var(--color-primary);
-    color: #ffffff !important;
+    background: #FF6B6B;
+    color: #0F172A !important;
     font-weight: 700 !important;
     font-size: 0.9rem;
     border: none;
@@ -444,7 +444,7 @@
     flex-shrink: 0;
   }
 
-  .coral-glow { background: #fff1f1; color: var(--color-primary); }
+  .coral-glow { background: #fff1f1; color: var(--color-primary-readable); }
   .rose-glow { background: #fff1f2; color: #e11d48; }
   .indigo-glow { background: #eff6ff; color: #3b82f6; }
 

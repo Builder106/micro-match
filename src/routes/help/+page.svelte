@@ -426,7 +426,7 @@
 
   .indigo-glow { background: #eff6ff; color: #3b82f6; }
   .rose-glow { background: #fff1f2; color: #e11d48; }
-  .coral-glow { background: #fff1f1; color: var(--color-primary); }
+  .coral-glow { background: #fff1f1; color: var(--color-primary-readable); }
 
   .topic-info h2 {
     font-size: 0.95rem;
@@ -645,8 +645,8 @@
     gap: 8px;
     padding: 10px 22px;
     border-radius: 9999px;
-    background: var(--color-primary);
-    color: #ffffff !important;
+    background: #FF6B6B;
+    color: #0F172A !important;
     font-weight: 700 !important;
     font-size: 0.9rem;
     text-decoration: none !important;

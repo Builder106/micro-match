@@ -292,13 +292,13 @@
 
   .ribbon-btn:hover {
     background: rgba(255, 107, 107, 0.12);
-    border-color: var(--color-primary);
+    border-color: var(--color-primary-readable);
     transform: translateY(-1px);
   }
 
   .ribbon-btn.active {
     background: rgba(255, 107, 107, 0.15);
-    border-color: var(--color-primary);
+    border-color: var(--color-primary-readable);
     box-shadow: 0 2px 8px rgba(255, 107, 107, 0.15);
   }
 
@@ -316,7 +316,7 @@
 
   .ribbon-btn:hover .ribbon-num,
   .ribbon-btn.active .ribbon-num {
-    background: var(--color-primary);
+    background: #FF6B6B;
     color: #ffffff;
   }
 
@@ -332,7 +332,7 @@
 
   .ribbon-btn:hover .ribbon-label,
   .ribbon-btn.active .ribbon-label {
-    color: var(--color-primary);
+    color: var(--color-primary-readable);
   }
 
   @media (max-width: 580px) {
@@ -365,7 +365,7 @@
   }
 
   .static-body :global(.legal-card:hover) {
-    border-color: var(--color-primary);
+    border-color: var(--color-primary-readable);
     box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
   }
 
@@ -387,14 +387,14 @@
     gap: 6px;
     padding: 6px 12px;
     background: rgba(255, 107, 107, 0.12);
-    color: var(--color-primary);
+    color: var(--color-primary-readable);
     border-radius: 9999px;
     font-size: 12px;
     font-weight: 800;
   }
 
   .static-body :global(.notice-card .section-badge-pill) {
-    background: var(--color-primary);
+    background: #FF6B6B;
     color: #ffffff;
   }
 
@@ -428,7 +428,7 @@
   }
 
   .static-body :global(.legal-card a) {
-    color: var(--color-primary);
+    color: var(--color-primary-readable);
     font-weight: 600;
     text-decoration: underline;
     text-underline-offset: 2px;
@@ -475,7 +475,7 @@
 
   .static-body :global(.vendor-card:hover) {
     transform: translateY(-2px);
-    border-color: var(--color-primary);
+    border-color: var(--color-primary-readable);
     box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
   }
 
@@ -527,7 +527,7 @@
     gap: 4px;
     font-size: 13px;
     font-weight: 700;
-    color: var(--color-primary);
+    color: var(--color-primary-readable);
     text-decoration: none !important;
   }
 
@@ -599,7 +599,7 @@
   }
 
   .static-body :global(.check-icon) {
-    color: var(--color-primary);
+    color: var(--color-primary-readable);
     margin-top: 2px;
     flex-shrink: 0;
   }
@@ -672,7 +672,7 @@
   }
 
   .btn-outline-dark:hover {
-    border-color: var(--color-primary);
+    border-color: var(--color-primary-readable);
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
   }
@@ -699,6 +699,6 @@
     transition: color 0.2s ease;
   }
   .related a:hover {
-    color: var(--color-primary);
+    color: var(--color-primary-readable);
   }
 </style>

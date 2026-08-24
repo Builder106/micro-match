@@ -313,7 +313,7 @@
   .stat-icon-green { background: #D1FAE5; color: #059669; }
   .stat-icon-blue { background: #DBEAFE; color: #2563EB; }
   .stat-icon-amber { background: #FEF3C7; color: #D97706; }
-  .stat-icon-coral { background: rgba(255, 107, 107, 0.12); color: var(--color-primary); }
+  .stat-icon-coral { background: rgba(255, 107, 107, 0.12); color: var(--color-primary-readable); }
   .stat-body { min-width: 0; }
   .stat-num { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: 19px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; color: var(--color-text); }
   .stat-label { font-size: 11px; font-weight: 600; color: color-mix(in srgb, var(--color-text) 55%, transparent); margin-top: 2px; }
@@ -355,7 +355,7 @@
   .empty-card {
     background: var(--color-surface);
     border-radius: 24px;
-    border: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-primary-readable) 12%, transparent);
     padding: 32px 24px;
     text-align: center;
     display: flex;

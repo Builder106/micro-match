@@ -123,7 +123,7 @@
     padding: 14px 14px;
     background: color-mix(in srgb, var(--color-primary) 10%, var(--color-surface));
     border-radius: 16px;
-    border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-primary-readable) 20%, transparent);
   }
   .quick-tip-container::before {
     content: '';
@@ -145,11 +145,11 @@
     gap: var(--space-2);
     margin-bottom: 6px;
   }
-  .quick-tip-header :global(svg) { color: var(--color-primary); }
+  .quick-tip-header :global(svg) { color: var(--color-primary-readable); }
 
   .quick-tip-title {
     font-weight: 800;
-    color: var(--color-primary);
+    color: var(--color-primary-readable);
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.08em;
@@ -193,7 +193,7 @@
     text-decoration: none; 
     font-weight: var(--font-bold); 
     font-size: 17px; 
-    color: var(--color-primary);
+    color: var(--color-primary-readable);
   }
 
   .nav-link {

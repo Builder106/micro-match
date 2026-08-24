@@ -285,7 +285,7 @@
 
   .org-field { display: flex; flex-direction: column; gap: 6px; position: relative; }
   .org-label { font-size: 13px; font-weight: 700; color: var(--color-text); display: inline-flex; align-items: center; gap: 6px; }
-  .org-label em { font-style: normal; font-size: 11px; font-weight: 600; padding: 2px 6px; background: color-mix(in srgb, var(--color-primary) 12%, transparent); color: var(--color-primary); border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .org-label em { font-style: normal; font-size: 11px; font-weight: 600; padding: 2px 6px; background: color-mix(in srgb, var(--color-primary) 12%, transparent); color: var(--color-primary-readable); border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.04em; }
 
   .org-field input, .org-field textarea {
     padding: 12px 14px;
@@ -298,7 +298,7 @@
     font-weight: 500;
     transition: all .2s;
   }
-  .org-field input:focus, .org-field textarea:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12); }
+  .org-field input:focus, .org-field textarea:focus { outline: none; border-color: var(--color-primary-readable); box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12); }
   .org-field textarea { resize: vertical; min-height: 120px; line-height: 1.55; }
   .org-counter { position: absolute; right: 4px; bottom: -18px; font-size: 11px; font-weight: 600; color: color-mix(in srgb, var(--color-text) 50%, transparent); }
   .org-hint { font-size: 12px; color: color-mix(in srgb, var(--color-text) 55%, transparent); }
@@ -316,8 +316,8 @@
     cursor: pointer;
     transition: all .15s;
   }
-  .org-preset:hover { color: var(--color-text); border-color: color-mix(in srgb, var(--color-primary) 30%, transparent); }
-  .org-preset.active { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+  .org-preset:hover { color: var(--color-text); border-color: color-mix(in srgb, var(--color-primary-readable) 30%, transparent); }
+  .org-preset.active { background: var(--color-primary); border-color: var(--color-primary-readable); color: var(--color-action-on-coral); }
 
   .org-error { display: inline-flex; align-items: center; gap: 8px; padding: 12px 14px; background: color-mix(in srgb, var(--color-error) 10%, transparent); color: var(--color-error); border-radius: 12px; font-size: 14px; font-weight: 600; }
 

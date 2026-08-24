@@ -129,7 +129,7 @@
     height: 52px;
     border-radius: 18px;
     background: #FFE5DC;
-    color: var(--color-primary);
+    color: var(--color-primary-readable);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -182,7 +182,7 @@
     text-decoration: none;
     transition: color .2s;
   }
-  .tc-body h2 a:hover { color: var(--color-primary); }
+  .tc-body h2 a:hover { color: var(--color-primary-readable); }
   .tc-desc {
     color: var(--color-text-secondary);
     font-size: 14px;

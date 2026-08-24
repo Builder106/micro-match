@@ -18,7 +18,7 @@
     <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px;">
       <span style="color:var(--color-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{subtitle}</span>
       {#if unread > 0}
-        <span style="display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 6px;border-radius:999px;background:color-mix(in srgb, var(--color-primary) 18%, transparent);color:var(--color-primary-variant);font-size:12px;">{unread}</span>
+        <span style="display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 6px;border-radius:999px;background:color-mix(in srgb, #FF6B6B 18%, transparent);color:var(--color-primary-readable);font-size:12px;">{unread}</span>
       {/if}
     </div>
   </div>

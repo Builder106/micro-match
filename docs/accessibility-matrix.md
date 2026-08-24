@@ -69,4 +69,6 @@ The grouped rows above are an index. Before making a conformance claim, expand e
 
 ## Exceptions
 
+The color policy keeps bright coral for decorative and non-text brand visuals. Meaningful text, icons, borders, status labels, and controls use the readable semantic tokens; bright-coral controls use the dark action foreground. Automated contrast-token tests cover the selected AAA-oriented pairs, while manual review still must verify the rendered themes, states, zoom levels, and backgrounds listed above.
+
 The landing-page audit excludes four non-interactive visual regions from axe color analysis because their layered illustrations intentionally overlap text and SVG artwork: `.hero-visual`, `.progress-card`, `.badges-section`, and `.blob`. These regions remain in the manual visual, keyboard, zoom, contrast, and reduced-motion review. This is a test-scope exception, not an accessibility waiver; record the manual evidence before release.

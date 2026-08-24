@@ -206,7 +206,7 @@
     font-weight: 500;
     transition: all 150ms ease;
   }
-  input:focus { border-color: var(--color-primary); background: var(--color-surface); box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12); outline: none; }
+  input:focus { border-color: var(--color-primary-readable); background: var(--color-surface); box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12); outline: none; }
   .auth-submit { margin-top: 8px; width: 100%; }
   .error { margin: 0 0 16px; padding: 10px 12px; background: #f5e5e7; color: #7f1d1d; font-size: 13px; font-weight: 600; border-radius: 10px; display: inline-flex; align-items: center; gap: 6px; }
 

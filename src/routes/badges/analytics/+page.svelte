@@ -218,7 +218,7 @@
   .ba-stat-icon { width: 40px; height: 40px; border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .ba-icon-green { background: #D1FAE5; color: #059669; }
   .ba-icon-blue { background: #DBEAFE; color: #2563EB; }
-  .ba-icon-coral { background: rgba(255, 107, 107, 0.12); color: var(--color-primary); }
+  .ba-icon-coral { background: rgba(255, 107, 107, 0.12); color: var(--color-primary-readable); }
   .ba-stat-body { min-width: 0; }
   .ba-stat-num { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: 22px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; color: var(--color-text); }
   .ba-stat-label { font-size: 12px; font-weight: 600; color: color-mix(in srgb, var(--color-text) 55%, transparent); margin-top: 2px; }
@@ -273,13 +273,13 @@
   .ba-award-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
   .ba-award-text strong { font-size: 14px; font-weight: 700; color: var(--color-text); }
   .ba-award-text small { font-size: 12px; color: color-mix(in srgb, var(--color-text) 60%, transparent); font-weight: 500; }
-  .ba-award-text small em { font-style: normal; font-weight: 700; color: var(--color-primary); }
+  .ba-award-text small em { font-style: normal; font-weight: 700; color: var(--color-primary-readable); }
   .ba-award-time { font-size: 12px; font-weight: 600; color: color-mix(in srgb, var(--color-text) 50%, transparent); flex-shrink: 0; }
 
   /* Empty state */
   .ba-empty {
     background: var(--color-surface);
-    border: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-primary-readable) 12%, transparent);
     border-radius: 32px;
     padding: 48px 32px;
     text-align: center;

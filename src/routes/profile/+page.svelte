@@ -501,8 +501,8 @@
   @media (max-width: 640px) { .profile-hero { grid-template-columns: 1fr; padding: 28px; gap: 20px; text-align: center; } }
   .profile-hero-blob { position: absolute; top: -50%; right: -10%; width: 360px; height: 360px; border-radius: 50%; background: rgba(255, 107, 107, 0.18); filter: blur(80px); pointer-events: none; }
   .avatar-stack { display: flex; flex-direction: column; align-items: center; gap: 10px; position: relative; z-index: 1; }
-  .avatar-ring { position: relative; width: 120px; height: 120px; border-radius: 50%; padding: 4px; background: var(--color-primary); }
-  .avatar-face { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; background: var(--color-surface); display: flex; align-items: center; justify-content: center; font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: 44px; font-weight: 800; color: var(--color-primary); }
+  .avatar-ring { position: relative; width: 120px; height: 120px; border-radius: 50%; padding: 4px; background: #FF6B6B; }
+  .avatar-face { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; background: var(--color-surface); display: flex; align-items: center; justify-content: center; font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: 44px; font-weight: 800; color: var(--color-primary-readable); }
   .avatar-face img { width: 100%; height: 100%; object-fit: cover; }
   .avatar-edit { position: absolute; bottom: 0; right: 0; width: 36px; height: 36px; border-radius: 50%; background: var(--color-text); color: var(--color-surface); display: flex; align-items: center; justify-content: center; cursor: pointer; border: 3px solid var(--color-surface); transition: all .2s; }
   .avatar-edit:hover { transform: scale(1.08); background: color-mix(in srgb, var(--color-text) 88%, black); }
@@ -537,7 +537,7 @@
     font-weight: 500;
     transition: all .2s;
   }
-  .field input:focus, .field textarea:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12); }
+  .field input:focus, .field textarea:focus { outline: none; border-color: var(--color-primary-readable); box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12); }
   .field textarea { resize: vertical; min-height: 100px; line-height: 1.5; }
   .field-hint { font-size: 12px; font-weight: 500; color: color-mix(in srgb, var(--color-text) 55%, transparent); }
   .field-foot { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
@@ -548,12 +548,12 @@
   @media (max-width: 540px) { .role-picker { grid-template-columns: 1fr; } }
   .role-picker legend { font-size: 13px; font-weight: 700; color: var(--color-text); margin-bottom: 12px; padding: 0; }
   .role-card { position: relative; background: var(--color-surface); border: 2px solid var(--card-border-strong); border-radius: 18px; padding: 20px; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; cursor: pointer; transition: all .2s; text-align: left; font-family: inherit; }
-  .role-card:hover { border-color: color-mix(in srgb, var(--color-primary) 30%, transparent); transform: translateY(-2px); }
-  .role-card.selected { border-color: var(--color-primary); background: color-mix(in srgb, var(--color-primary) 4%, var(--color-surface)); box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.08); }
+  .role-card:hover { border-color: color-mix(in srgb, var(--color-primary-readable) 30%, transparent); transform: translateY(-2px); }
+  .role-card.selected { border-color: var(--color-primary-readable); background: color-mix(in srgb, var(--color-primary) 4%, var(--color-surface)); box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.08); }
   .role-icon { width: 52px; height: 52px; border-radius: 16px; display: flex; align-items: center; justify-content: center; }
   .role-card h3 { font-size: 16px; font-weight: 700; margin: 0; }
   .role-card p { font-size: 13px; color: color-mix(in srgb, var(--color-text) 60%, transparent); margin: 0; line-height: 1.4; }
-  .role-check { position: absolute; top: 12px; right: 12px; width: 24px; height: 24px; border-radius: 50%; background: var(--color-primary); color: #fff; display: flex; align-items: center; justify-content: center; }
+  .role-check { position: absolute; top: 12px; right: 12px; width: 24px; height: 24px; border-radius: 50%; background: #FF6B6B; color: #0F172A; display: flex; align-items: center; justify-content: center; }
   .role-hint { display: inline-flex; align-items: flex-start; gap: 6px; font-size: 12px; line-height: 1.5; color: color-mix(in srgb, var(--color-text) 55%, transparent); margin: -8px 0 0; }
   .role-hint-warn { color: var(--color-warning); padding: 8px 12px; background: color-mix(in srgb, var(--color-warning) 10%, transparent); border-radius: 10px; font-weight: 600; margin: 0; }
 
@@ -569,7 +569,7 @@
   .next-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06); }
   .next-icon { width: 56px; height: 56px; border-radius: 18px; display: flex; align-items: center; justify-content: center; }
   .next-card h3 { font-size: 17px; font-weight: 700; margin: 0; }
-  .next-num { color: var(--color-primary); margin-right: 4px; }
+  .next-num { color: var(--color-primary-readable); margin-right: 4px; }
   .next-card p { font-size: 13px; color: color-mix(in srgb, var(--color-text) 60%, transparent); margin: 0; line-height: 1.5; }
 
   /* ───── Downgrade modal ───── */

@@ -358,7 +358,7 @@
   .stat-icon-green { background: #D1FAE5; color: #059669; }
   .stat-icon-blue { background: #DBEAFE; color: #2563EB; }
   .stat-icon-amber { background: #FEF3C7; color: #D97706; }
-  .stat-icon-coral { background: rgba(255, 107, 107, 0.12); color: var(--color-primary); }
+  .stat-icon-coral { background: rgba(255, 107, 107, 0.12); color: var(--color-primary-readable); }
   .stat-body { min-width: 0; }
   .stat-num { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: 19px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; color: var(--color-text); }
   .stat-label { font-size: 11px; font-weight: 600; color: color-mix(in srgb, var(--color-text) 55%, transparent); margin-top: 2px; }
@@ -383,13 +383,13 @@
   }
   .mission-card:hover { transform: translateY(-3px); box-shadow: 0 20px 48px rgba(15, 23, 42, 0.06); }
   .mission-card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-  .mission-avatar { width: 44px; height: 44px; border-radius: 16px; background: #FFE5DC; color: var(--color-primary); display: flex; align-items: center; justify-content: center; }
-  .mission-time { padding: 5px 12px; border-radius: 9999px; font-size: 12px; font-weight: 700; background: rgba(255, 107, 107, 0.1); color: var(--color-primary); display: inline-flex; align-items: center; gap: 5px; }
+  .mission-avatar { width: 44px; height: 44px; border-radius: 16px; background: #FFE5DC; color: var(--color-primary-readable); display: flex; align-items: center; justify-content: center; }
+  .mission-time { padding: 5px 12px; border-radius: 9999px; font-size: 12px; font-weight: 700; background: rgba(255, 107, 107, 0.1); color: var(--color-primary-readable); display: inline-flex; align-items: center; gap: 5px; }
   .mission-card h3 { font-size: 18px; font-weight: 700; line-height: 1.3; margin: 0 0 6px; }
   .mission-card p { color: color-mix(in srgb, var(--color-text) 65%, transparent); font-size: 14px; line-height: 1.5; margin: 0 0 16px; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .mission-card-bottom { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; }
   .mission-tags { display: flex; flex-wrap: wrap; gap: 6px; }
-  .mission-cta { display: inline-flex; align-items: center; gap: 5px; color: var(--color-primary); font-size: 13px; font-weight: 700; }
+  .mission-cta { display: inline-flex; align-items: center; gap: 5px; color: var(--color-primary-readable); font-size: 13px; font-weight: 700; }
 
   /* "More for you" mini cards */
   .more-grid { display: grid; gap: 14px; grid-template-columns: 1fr 1fr; }
@@ -406,7 +406,7 @@
   }
   .mini-mission:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05); }
   .mini-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-  .mini-avatar { width: 36px; height: 36px; border-radius: 12px; background: #FFE5DC; color: var(--color-primary); display: flex; align-items: center; justify-content: center; }
+  .mini-avatar { width: 36px; height: 36px; border-radius: 12px; background: #FFE5DC; color: var(--color-primary-readable); display: flex; align-items: center; justify-content: center; }
   .mini-time { font-size: 11px; font-weight: 700; color: color-mix(in srgb, var(--color-text) 50%, transparent); display: inline-flex; align-items: center; gap: 4px; }
   .mini-mission h4 { font-size: 15px; font-weight: 700; margin: 0 0 4px; line-height: 1.3; }
   .mini-mission p { font-size: 12px; color: color-mix(in srgb, var(--color-text) 60%, transparent); margin: 0 0 10px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
@@ -429,7 +429,7 @@
   .empty-card {
     background: var(--color-surface);
     border-radius: 24px;
-    border: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-primary-readable) 12%, transparent);
     padding: 32px 24px;
     text-align: center;
     display: flex;

@@ -180,7 +180,7 @@
     transition: all 150ms ease;
   }
   .google-btn:hover {
-    border-color: var(--color-primary);
+    border-color: var(--color-primary-readable);
     background: var(--color-surface-variant);
     box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
   }
@@ -244,7 +244,7 @@
     transition: all 150ms ease;
   }
   input:focus {
-    border-color: var(--color-primary);
+    border-color: var(--color-primary-readable);
     background: var(--color-surface);
     box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12);
     outline: none;
@@ -256,7 +256,7 @@
   }
   .forgot-link a {
     font-size: 13px;
-    color: var(--color-primary);
+    color: var(--color-primary-readable);
     text-decoration: none;
     font-weight: 700;
   }

@@ -1,10 +1,16 @@
 :root {
-  /* Warm coral palette — matches landing page aesthetic */
-  --color-primary: #881337;
-  --color-primary-variant: #6b102f;
-  --color-primary-light: #9f1239;
-  --color-primary-readable: #881337;
-  --color-on-primary: #ffffff;
+  /* AAA semantic / coral visual policy */
+  --color-brand-coral: #FF6B6B;
+  --color-brand-hover: #E85555;
+  --color-brand-light: #FF9E5E;
+  --color-readable-coral: #9F1239;
+  --color-action-on-coral: #020617;
+  --color-focus: #0F172A;
+  --color-primary: var(--color-brand-coral);
+  --color-primary-variant: var(--color-brand-hover);
+  --color-primary-light: var(--color-brand-light);
+  --color-primary-readable: var(--color-readable-coral);
+  --color-on-primary: var(--color-action-on-coral);
   --color-secondary: #FDBA74;
   --color-secondary-variant: #fb923c;
   --color-secondary-light: #fed7aa;
@@ -15,20 +21,20 @@
   --color-outline: #cbd5e1;
   --color-outline-variant: #e2e8f0;
   --color-text: #0f172a;
-  --color-text-secondary: #334155;
-  --color-text-tertiary: #334155;
-  --color-muted: #334155;
-  --color-success: #059669;
-  --color-warning: #d97706;
-  --color-error: #dc2626;
+  --color-text-secondary: #475569;
+  --color-text-tertiary: #475569;
+  --color-muted: #475569;
+  --color-success: #064E3B;
+  --color-warning: #78350F;
+  --color-error: #7F1D1D;
 
   /* Warm accent ramp (kept under accent-blue-* names to avoid churn) */
   --color-accent-blue-50: #FFF5F0;
   --color-accent-blue-100: #FFE5DC;
   --color-accent-blue-200: #FFD1C2;
-  --color-accent-blue-500: #881337;
-  --color-accent-blue-600: #6b102f;
-  --color-accent-blue-700: #4c0b21;
+  --color-accent-blue-500: var(--color-brand-coral);
+  --color-accent-blue-600: var(--color-brand-hover);
+  --color-accent-blue-700: var(--color-readable-coral);
 
   /* Elevation — neutral shadows so cards read as warm, not blue-tinted */
   --elev-0: none;
@@ -97,8 +103,9 @@
   --color-outline: #cbd5e1;
   --color-outline-variant: #e2e8f0;
   --color-text: #0f172a;
-  --color-text-secondary: #334155;
-  --color-text-tertiary: #334155;
+  --color-text-secondary: #475569;
+  --color-text-tertiary: #475569;
+  --color-focus: #0F172A;
 }
 
 :root.dark {
@@ -112,6 +119,8 @@
   --color-text-secondary: #e2e8f0;
   --color-text-tertiary: #e2e8f0;
   --color-primary-readable: #fda4af;
+  --color-readable-coral: #FDA4AF;
+  --color-focus: #FDA4AF;
   --card-border: rgba(241, 245, 249, 0.10);
   --card-border-strong: rgba(241, 245, 249, 0.16);
 }
@@ -128,6 +137,8 @@
     --color-text-secondary: #e2e8f0;
     --color-text-tertiary: #e2e8f0;
     --color-primary-readable: #fda4af;
+    --color-readable-coral: #FDA4AF;
+    --color-focus: #FDA4AF;
     --card-border: rgba(241, 245, 249, 0.10);
     --card-border-strong: rgba(241, 245, 249, 0.16);
   }
@@ -155,8 +166,8 @@ html, body {
   background: var(--color-surface); color: var(--color-text); font: inherit; text-align: left;
   cursor: pointer; transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
 }
-.custom-select-trigger:hover, .custom-select.open .custom-select-trigger { border-color: var(--color-primary); background: var(--color-surface-variant); }
-.custom-select-trigger:focus-visible { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary) 15%, transparent); }
+.custom-select-trigger:hover, .custom-select.open .custom-select-trigger { border-color: var(--color-readable-coral); background: var(--color-surface-variant); }
+.custom-select-trigger:focus-visible { outline: none; border-color: var(--color-focus); box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-focus) 25%, transparent); }
 .custom-select.disabled { opacity: .55; pointer-events: none; }
 .custom-select-menu {
   position: absolute; z-index: 100; top: calc(100% + 8px); left: 0; width: 100%; max-height: min(360px, calc(100vh - 32px)); overflow-y: auto;
@@ -252,7 +263,7 @@ html, body {
 
 .chip-primary {
   background: linear-gradient(135deg, var(--color-accent-blue-100), var(--color-accent-blue-50));
-  color: var(--color-primary);
+  color: var(--color-readable-coral);
   border-color: var(--color-accent-blue-200);
 }
 
@@ -275,14 +286,14 @@ html, body {
 
 .chip[aria-pressed="true"] {
   background: var(--color-primary);
-  color: var(--color-on-primary);
+  color: var(--color-action-on-coral);
   box-shadow: var(--elev-2);
 }
 
 /* Enhanced button styles */
 .btn-primary {
   background: var(--color-primary);
-  color: var(--color-on-primary);
+  color: var(--color-action-on-coral);
   border: none;
   border-radius: var(--radius-md);
   padding: var(--space-3) var(--space-6);
@@ -307,8 +318,8 @@ html, body {
 
 .btn-secondary {
   background: var(--color-surface);
-  color: var(--color-primary);
-  border: 2px solid var(--color-primary);
+  color: var(--color-readable-coral);
+  border: 2px solid var(--color-readable-coral);
   border-radius: var(--radius-md);
   padding: var(--space-3) var(--space-6);
   font-weight: var(--font-medium);
@@ -375,8 +386,8 @@ html, body {
 
 /* Focus states */
 *:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
   border-radius: var(--radius-xs);
 }
 
@@ -612,7 +623,7 @@ input:focus, textarea:focus, select:focus {
   gap: 8px;
   padding: 12px 24px;
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-action-on-coral);
   font-weight: 700;
   font-size: 15px;
   font-family: inherit;
@@ -702,10 +713,10 @@ input:focus, textarea:focus, select:focus {
 .section-head .section-link {
   font-size: 14px;
   font-weight: 700;
-  color: var(--color-primary);
+  color: var(--color-readable-coral);
   text-decoration: none;
 }
-.section-head .section-link:hover { color: var(--color-primary-variant); }
+.section-head .section-link:hover { color: var(--color-readable-coral); }
 
 /* Progress ring used on dashboard hero */
 .progress-ring { width: 100%; height: 100%; transform: rotate(-90deg); }
