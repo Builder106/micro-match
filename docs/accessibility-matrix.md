@@ -41,19 +41,19 @@ The full review covers every applicable WCAG 2.2 success criterion at Levels A, 
 
 | Criterion | Level | Surface or state | Method | Evidence | Status | Reviewer | Date | Rationale or issue |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1.1.1 Non-text content | A | All routes and images | Axe plus screen reader | Pending | Needs review |  |  |  |
-| 1.2.1 to 1.2.9 Time-based media | A to AAA | Media and animation surfaces | Manual media review | Pending | Needs review |  |  |  |
-| 1.3.1 to 1.3.6 Adaptable | A to AA | All routes and responsive states | Axe plus screen reader | Pending | Needs review |  |  |  |
-| 1.4.1 to 1.4.13 Distinguishable | A to AAA | Themes, focus, text, and motion | Axe plus visual review | Pending | Needs review |  |  |  |
-| 2.1.1 to 2.1.4 Keyboard | A to AAA | All interactive states | Keyboard review | Pending | Needs review |  |  |  |
-| 2.2.1 to 2.2.6 Enough time | A to AAA | Sessions, loading, and notifications | Manual timing review | Pending | Needs review |  |  |  |
-| 2.3.1 to 2.3.3 Seizures and physical reactions | A to AAA | Animation and motion | Reduced-motion and visual review | Pending | Needs review |  |  |  |
-| 2.4.1 to 2.4.13 Navigable | A to AAA | Navigation, dialogs, focus, and headings | Axe, keyboard, and screen reader | Pending | Needs review |  |  |  |
-| 2.5.1 to 2.5.8 Input modalities | A to AA | Pointer, touch, dragging, and target size | Keyboard and touch review | Pending | Needs review |  |  |  |
-| 3.1.1 to 3.1.6 Readable | A to AAA | All content and language changes | Screen reader and content review | Pending | Needs review |  |  |  |
-| 3.2.1 to 3.2.6 Predictable | A to AAA | Navigation, forms, help, and state changes | Keyboard and interaction review | Pending | Needs review |  |  |  |
-| 3.3.1 to 3.3.9 Input assistance | A to AAA | Forms, errors, authentication, and recovery | Form and screen-reader review | Pending | Needs review |  |  |  |
-| 4.1.1 to 4.1.3 Compatible | A to AA | HTML, ARIA, status messages, and custom controls | Axe plus platform review | Pending | Needs review |  |  |  |
+| 1.1.1 Non-text content | A | All routes and images | Axe plus screen reader | Pending | Needs review | | | |
+| 1.2.1 to 1.2.9 Time-based media | A to AAA | Media and animation surfaces | Manual media review | Pending | Needs review | | | |
+| 1.3.1 to 1.3.6 Adaptable | A to AA | All routes and responsive states | Axe plus screen reader | Pending | Needs review | | | |
+| 1.4.1 to 1.4.13 Distinguishable | A to AAA | Themes, focus, text, and motion | Axe plus visual review | Pending | Needs review | | | |
+| 2.1.1 to 2.1.4 Keyboard | A to AAA | All interactive states | Keyboard review | Pending | Needs review | | | |
+| 2.2.1 to 2.2.6 Enough time | A to AAA | Sessions, loading, and notifications | Manual timing review | Pending | Needs review | | | |
+| 2.3.1 to 2.3.3 Seizures and physical reactions | A to AAA | Animation and motion | Reduced-motion and visual review | Pending | Needs review | | | |
+| 2.4.1 to 2.4.13 Navigable | A to AAA | Navigation, dialogs, focus, and headings | Axe, keyboard, and screen reader | Pending | Needs review | | | |
+| 2.5.1 to 2.5.8 Input modalities | A to AA | Pointer, touch, dragging, and target size | Keyboard and touch review | Pending | Needs review | | | |
+| 3.1.1 to 3.1.6 Readable | A to AAA | All content and language changes | Screen reader and content review | Pending | Needs review | | | |
+| 3.2.1 to 3.2.6 Predictable | A to AAA | Navigation, forms, help, and state changes | Keyboard and interaction review | Pending | Needs review | | | |
+| 3.3.1 to 3.3.9 Input assistance | A to AAA | Forms, errors, authentication, and recovery | Form and screen-reader review | Pending | Needs review | | | |
+| 4.1.1 to 4.1.3 Compatible | A to AA | HTML, ARIA, status messages, and custom controls | Axe plus platform review | Pending | Needs review | | | |
 
 The grouped rows above are an index. Before making a conformance claim, expand each group into individual WCAG 2.2 success-criterion rows and attach criterion-specific evidence.
 
@@ -61,11 +61,11 @@ The grouped rows above are an index. Before making a conformance claim, expand e
 
 | Review environment | Reviewer | Date | Status | Notes |
 | --- | --- | --- | --- | --- |
-| Keyboard only, Chromium |  |  | Needs review |  |
-| VoiceOver with Safari on macOS |  |  | Needs review |  |
-| NVDA with Firefox on Windows |  |  | Needs review |  |
-| 200% and 400% zoom, 320px reflow |  |  | Needs review |  |
-| Light, dark, reduced motion, and forced colors |  |  | Needs review |  |
+| Keyboard only, Chromium | | | Needs review | |
+| VoiceOver with Safari on macOS | | | Needs review | |
+| NVDA with Firefox on Windows | | | Needs review | |
+| 200% and 400% zoom, 320px reflow | | | Needs review | |
+| Light, dark, reduced motion, and forced colors | | | Needs review | |
 
 ## Exceptions
 
