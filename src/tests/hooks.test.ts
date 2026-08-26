@@ -19,8 +19,12 @@ import { handle } from '../hooks.server';
 function makeEvent(cookies: Record<string, string>) {
   return {
     locals: {},
-    cookies: { get: (name: string) => cookies[name] },
-    request: new Request('http://test/')
+    cookies: {
+      get: (name: string) => cookies[name],
+      set: vi.fn()
+    },
+    url: new URL('http://test/en/tasks'),
+    request: new Request('http://test/en/tasks')
   } as unknown as import("@sveltejs/kit").RequestEvent;
 }
 

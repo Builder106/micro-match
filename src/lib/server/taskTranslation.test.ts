@@ -1,7 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Task } from '$lib/types';
 
-const translateTexts = vi.fn();
+const { translateTexts } = vi.hoisted(() => ({
+  translateTexts: vi.fn()
+}));
 vi.mock('$lib/server/libretranslate', () => ({ translateTexts }));
 
 import { translateTask } from './taskTranslation';

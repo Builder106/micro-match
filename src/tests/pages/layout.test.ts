@@ -27,7 +27,8 @@ describe('+layout.server load', () => {
     expect(result).toEqual({
       userRole: 'anonymous',
       isAdmin: false,
-      origin: 'http://localhost:5173'
+      origin: 'http://localhost:5173',
+      locale: 'en'
     });
     expect(mocks.isUserAdmin).not.toHaveBeenCalled();
   });
@@ -47,7 +48,8 @@ describe('+layout.server load', () => {
     expect(result).toEqual({
       userRole: 'ngo',
       isAdmin: true,
-      origin: 'http://localhost:5173'
+      origin: 'http://localhost:5173',
+      locale: 'en'
     });
     expect(mocks.isUserAdmin).toHaveBeenCalledWith('admin-user-1');
   });
@@ -67,7 +69,8 @@ describe('+layout.server load', () => {
     expect(result).toEqual({
       userRole: 'volunteer',
       isAdmin: false,
-      origin: 'http://localhost:5173'
+      origin: 'http://localhost:5173',
+      locale: 'en'
     });
     expect(mocks.isUserAdmin).toHaveBeenCalledWith('volunteer-1');
   });
