@@ -11,14 +11,15 @@ const sampleTask: DisplayTask = {
 };
 
 describe('translateTaskBatch', () => {
-  const originalFetch = globalThis.fetch;
+  let mockFetch: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
-    globalThis.fetch = vi.fn();
+    mockFetch = vi.fn();
+    vi.stubGlobal('fetch', mockFetch);
   });
 
   afterEach(() => {
-    globalThis.fetch = originalFetch;
+    vi.unstubAllGlobals();
   });
 
   it('returns original tasks when locale is en or tasks array is empty', async () => {
@@ -26,7 +27,7 @@ describe('translateTaskBatch', () => {
     expect(await translateTaskBatch([sampleTask], 'en')).toEqual([
       { ...sampleTask, translation: { locale: 'en', status: 'original' } }
     ]);
-    expect(globalThis.fetch).not.toHaveBeenCalled();
+    expect(mockFetch).not.toHaveBeenCalled();
   });
 
   it('translates tasks successfully when API returns valid response', async () => {
@@ -35,7 +36,7 @@ describe('translateTaskBatch', () => {
       title: 'Título Traducido',
       translation: { locale: 'es', status: 'translated' }
     };
-    (globalThis.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
+    mockFetch.mockResolvedValueOnce(
       new Response(JSON.stringify({ tasks: [translatedTask] }), { status: 200 })
     );
 
@@ -44,13 +45,13 @@ describe('translateTaskBatch', () => {
   });
 
   it('falls back when API returns non-ok status or network error', async () => {
-    (globalThis.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
+    mockFetch.mockResolvedValueOnce(
       new Response('Error', { status: 500 })
     );
     const result500 = await translateTaskBatch([sampleTask], 'fr');
     expect(result500[0].translation).toEqual({ locale: 'fr', status: 'fallback' });
 
-    (globalThis.fetch as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
+    mockFetch.mockRejectedValueOnce(
       new Error('Network error')
     );
     const resultError = await translateTaskBatch([sampleTask], 'de');
@@ -58,7 +59,7 @@ describe('translateTaskBatch', () => {
   });
 
   it('falls back for individual tasks omitted in API response', async () => {
-    (globalThis.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
+    mockFetch.mockResolvedValueOnce(
       new Response(JSON.stringify({ tasks: [] }), { status: 200 })
     );
     const result = await translateTaskBatch([sampleTask], 'pt');

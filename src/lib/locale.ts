@@ -22,7 +22,7 @@ export function stripLocale(pathname: string): string {
   const locale = localeFromPath(pathname);
   if (!locale) return pathname || '/';
   const remainder = pathname.slice(locale.length + 1);
-  return remainder ? `/${remainder}` : '/';
+  return remainder.startsWith('/') ? remainder : `/${remainder}`;
 }
 
 function languageFromHeader(header: string | null): Locale | undefined {

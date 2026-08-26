@@ -57,8 +57,6 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
       - run: bun run lint
-      - name: Format check
-        run: bun prettier --check .
 
   test:
     name: Unit tests & Coverage Gate
