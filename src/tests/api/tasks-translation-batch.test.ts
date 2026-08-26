@@ -33,6 +33,8 @@ describe('POST /api/tasks/translation', () => {
 
   it.each([
     { body: {}, label: 'missing fields' },
+    { body: null, label: 'null body' },
+    { body: 'string body', label: 'non-object body' },
     { body: { taskIds: ['task-1'], locale: 'xx' }, label: 'invalid locale' },
     { body: { taskIds: [], locale: 'es' }, label: 'empty IDs' },
     { body: { taskIds: Array.from({ length: 51 }, (_, i) => `task-${i}`), locale: 'es' }, label: 'oversized batch' }
