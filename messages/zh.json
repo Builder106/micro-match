@@ -35,5 +35,10 @@
   "minutes_short": "分钟",
   "tasks_open": "{count} 个开放任务",
   "ngos_count": "{count} 个 NGO",
-  "badges_earned": "已获得 {count} 个"
+  "badges_earned": "已获得 {count} 个",
+  "error_404": "404",
+  "not_found_title": "找不到页面",
+  "not_found_body": "我们找不到这个页面。返回首页，或浏览最新的志愿任务。",
+  "back_home": "返回首页",
+  "browse_tasks": "浏览任务"
 }

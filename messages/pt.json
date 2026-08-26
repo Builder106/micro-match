@@ -35,5 +35,10 @@
   "minutes_short": "min",
   "tasks_open": "{count} tarefas abertas",
   "ngos_count": "{count} ONGs",
-  "badges_earned": "{count} obtidos"
+  "badges_earned": "{count} obtidos",
+  "error_404": "404",
+  "not_found_title": "Página não encontrada",
+  "not_found_body": "Não encontramos essa página. Volte ao início ou explore as tarefas de voluntariado.",
+  "back_home": "Voltar ao início",
+  "browse_tasks": "Explorar tarefas"
 }

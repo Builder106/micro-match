@@ -1,9 +1,10 @@
 import type { Reroute } from '@sveltejs/kit';
-import { localeFromPath, stripLocale } from '$lib/locale';
+import { deLocalizeUrl } from '$lib/paraglide/runtime';
 
 export const reroute: Reroute = ({ url }) => {
-  const canonicalPath = localeFromPath(url.pathname) ? stripLocale(url.pathname) : url.pathname;
+  const canonicalUrl = deLocalizeUrl(url);
+  const canonicalPath = canonicalUrl.pathname;
   if (canonicalPath === '/api' || canonicalPath.startsWith('/api/')) return;
   if (canonicalPath.startsWith('/_app/') || canonicalPath.includes('.')) return;
-  if (localeFromPath(url.pathname)) return canonicalPath;
+  if (canonicalPath !== url.pathname) return canonicalPath;
 };

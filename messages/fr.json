@@ -35,5 +35,10 @@
   "minutes_short": "min",
   "tasks_open": "{count} tâches ouvertes",
   "ngos_count": "{count} ONG",
-  "badges_earned": "{count} obtenus"
+  "badges_earned": "{count} obtenus",
+  "error_404": "404",
+  "not_found_title": "Page introuvable",
+  "not_found_body": "Nous n'avons pas trouvé cette page. Retournez à l'accueil ou découvrez les tâches de bénévolat.",
+  "back_home": "Retour à l'accueil",
+  "browse_tasks": "Parcourir les tâches"
 }

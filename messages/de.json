@@ -35,5 +35,10 @@
   "minutes_short": "Min.",
   "tasks_open": "{count} offene Aufgaben",
   "ngos_count": "{count} NGOs",
-  "badges_earned": "{count} verdient"
+  "badges_earned": "{count} verdient",
+  "error_404": "404",
+  "not_found_title": "Seite nicht gefunden",
+  "not_found_body": "Diese Seite wurde nicht gefunden. Gehe zurück zur Startseite oder entdecke aktuelle Freiwilligenaufgaben.",
+  "back_home": "Zur Startseite",
+  "browse_tasks": "Aufgaben ansehen"
 }

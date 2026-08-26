@@ -35,5 +35,10 @@
   "minutes_short": "دقيقة",
   "tasks_open": "{count} مهام مفتوحة",
   "ngos_count": "{count} منظمات",
-  "badges_earned": "{count} مكتسبة"
+  "badges_earned": "{count} مكتسبة",
+  "error_404": "404",
+  "not_found_title": "الصفحة غير موجودة",
+  "not_found_body": "لم نتمكن من العثور على هذه الصفحة. عد إلى الرئيسية أو تصفح مهام التطوع الحالية.",
+  "back_home": "العودة إلى الرئيسية",
+  "browse_tasks": "تصفح المهام"
 }

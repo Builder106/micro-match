@@ -35,5 +35,10 @@
   "minutes_short": "min",
   "tasks_open": "{count} open tasks",
   "ngos_count": "{count} NGOs",
-  "badges_earned": "{count} earned"
+  "badges_earned": "{count} earned",
+  "error_404": "404",
+  "not_found_title": "Page not found",
+  "not_found_body": "We couldn't find that page. Try heading back home or browse the latest volunteer tasks.",
+  "back_home": "Back home",
+  "browse_tasks": "Browse tasks"
 }

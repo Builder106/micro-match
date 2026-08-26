@@ -4,6 +4,7 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   plugins: [
+    sveltekit(),
     paraglideVitePlugin({
       project: './project.inlang',
       outdir: './src/lib/paraglide',
@@ -35,8 +36,7 @@ export default defineConfig({
           ]
         }
       ]
-    }),
-    sveltekit()
+    })
   ],
   test: {
     fileParallelism: false,
