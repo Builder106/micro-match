@@ -45,7 +45,7 @@
     "lottie-web": "5.13.0",
     "mode-watcher": "^1.1.0",
     "node-appwrite": "^28.0.0",
-    "svelte": "^5.56.9",
+    "svelte": "^5.56.10",
     "vite": "^8.2.2"
   },
   "devDependencies": {
