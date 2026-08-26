@@ -9,6 +9,9 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   secrets:
     name: Secret scan
@@ -29,6 +32,8 @@ jobs:
       - uses: actions/checkout@v7
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
+      - name: Dependency audit
+        run: bun audit
       - name: Open-source license compliance scan
         run: bunx license-checker --summary
       - name: Sync SvelteKit types
@@ -45,13 +50,15 @@ jobs:
         run: bunx tsc --noEmit
 
   lint:
-    name: Lint
+    name: Lint & Format
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
       - run: bun run lint
+      - name: Format check
+        run: bun prettier --check .
 
   test:
     name: Unit tests & Coverage Gate
@@ -64,6 +71,7 @@ jobs:
 
   build:
     name: Build & Bundle Budget
+    needs: [check, lint]
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
@@ -83,6 +91,7 @@ jobs:
 
   responsiveness:
     name: Responsiveness & WCAG 2.2 AAA-Oriented Audit
+    needs: [check, test]
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
