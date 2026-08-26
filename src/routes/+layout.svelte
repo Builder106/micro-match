@@ -171,9 +171,9 @@
       <slot />
     </div>
   {:else}
-    <div class="container" style="padding: var(--space-5) var(--space-4); flex: 1 1 auto; max-width: 1060px;">
+    <main class="container" style="padding: var(--space-5) var(--space-4); flex: 1 1 auto; max-width: 1060px;">
       <slot />
-    </div>
+    </main>
   {/if}
   {#if showAppChrome}
     <nav class="bottom-nav">

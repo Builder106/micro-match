@@ -343,13 +343,13 @@
   .vol-hero-blob-coral { bottom: -50%; left: 30%; width: 320px; height: 320px; background: rgba(255, 107, 107, 0.18); }
   .vol-hero-text { position: relative; z-index: 1; max-width: 500px; }
   .vol-hero-text h1 { font-size: clamp(1.5rem, 2.2vw + 0.5rem, 2.1rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 8px; }
-  .vol-hero-text p { color: color-mix(in srgb, var(--color-text) 70%, transparent); font-size: 14px; font-weight: 500; line-height: 1.5; margin: 0 0 18px; max-width: 440px; }
+  .vol-hero-text p { color: var(--color-text-secondary); font-size: 14px; font-weight: 500; line-height: 1.5; margin: 0 0 18px; max-width: 440px; }
   .vol-hero-actions { display: flex; flex-wrap: wrap; gap: 10px; }
   .vol-hero-ring { position: relative; width: 128px; height: 128px; flex-shrink: 0; z-index: 1; }
   @media (max-width: 768px) { .vol-hero-ring { width: 110px; height: 110px; align-self: center; } }
   .ring-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
   .ring-pct { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: 24px; font-weight: 800; letter-spacing: -0.02em; color: var(--color-text); }
-  .ring-sub { font-size: 9px; font-weight: 700; color: color-mix(in srgb, var(--color-text) 50%, transparent); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; max-width: 90px; text-align: center; line-height: 1.2; }
+  .ring-sub { font-size: 9px; font-weight: 700; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; max-width: 90px; text-align: center; line-height: 1.2; }
 
   /* Stats strip */
   .stats-strip { display: flex; align-items: stretch; padding: 8px 4px; border-radius: 20px; }
@@ -361,7 +361,7 @@
   .stat-icon-coral { background: rgba(255, 107, 107, 0.12); color: var(--color-primary-readable); }
   .stat-body { min-width: 0; }
   .stat-num { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: 19px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; color: var(--color-text); }
-  .stat-label { font-size: 11px; font-weight: 600; color: color-mix(in srgb, var(--color-text) 55%, transparent); margin-top: 2px; }
+  .stat-label { font-size: 11px; font-weight: 600; color: var(--color-text-secondary); margin-top: 2px; }
   .stat-divider { width: 1px; background: color-mix(in srgb, var(--color-text) 8%, transparent); margin: 10px 0; }
   @media (max-width: 768px) {
     .stats-strip { flex-wrap: wrap; padding: 6px; }
@@ -386,7 +386,7 @@
   .mission-avatar { width: 44px; height: 44px; border-radius: 16px; background: #FFE5DC; color: var(--color-primary-readable); display: flex; align-items: center; justify-content: center; }
   .mission-time { padding: 5px 12px; border-radius: 9999px; font-size: 12px; font-weight: 700; background: rgba(255, 107, 107, 0.1); color: var(--color-primary-readable); display: inline-flex; align-items: center; gap: 5px; }
   .mission-card h3 { font-size: 18px; font-weight: 700; line-height: 1.3; margin: 0 0 6px; }
-  .mission-card p { color: color-mix(in srgb, var(--color-text) 65%, transparent); font-size: 14px; line-height: 1.5; margin: 0 0 16px; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .mission-card p { color: var(--color-text-secondary); font-size: 14px; line-height: 1.5; margin: 0 0 16px; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .mission-card-bottom { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; }
   .mission-tags { display: flex; flex-wrap: wrap; gap: 6px; }
   .mission-cta { display: inline-flex; align-items: center; gap: 5px; color: var(--color-primary-readable); font-size: 13px; font-weight: 700; }
@@ -407,9 +407,9 @@
   .mini-mission:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05); }
   .mini-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
   .mini-avatar { width: 36px; height: 36px; border-radius: 12px; background: #FFE5DC; color: var(--color-primary-readable); display: flex; align-items: center; justify-content: center; }
-  .mini-time { font-size: 11px; font-weight: 700; color: color-mix(in srgb, var(--color-text) 50%, transparent); display: inline-flex; align-items: center; gap: 4px; }
+  .mini-time { font-size: 11px; font-weight: 700; color: var(--color-text-secondary); display: inline-flex; align-items: center; gap: 4px; }
   .mini-mission h4 { font-size: 15px; font-weight: 700; margin: 0 0 4px; line-height: 1.3; }
-  .mini-mission p { font-size: 12px; color: color-mix(in srgb, var(--color-text) 60%, transparent); margin: 0 0 10px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .mini-mission p { font-size: 12px; color: var(--color-text-secondary); margin: 0 0 10px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .mini-tags { display: flex; flex-wrap: wrap; gap: 5px; }
 
   /* Activity */
@@ -423,7 +423,7 @@
   .activity-icon[data-status="rejected"] { background: #FEE2E2; color: #DC2626; }
   .activity-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
   .activity-text strong { font-size: 13px; font-weight: 700; color: var(--color-text); }
-  .activity-text small { font-size: 11px; font-weight: 500; color: color-mix(in srgb, var(--color-text) 55%, transparent); }
+  .activity-text small { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); }
 
   /* Empty state cards */
   .empty-card {
@@ -442,7 +442,7 @@
   .empty-mascot { width: 110px; height: 110px; display: flex; align-items: center; justify-content: center; color: var(--color-primary-light); }
   .empty-mascot :global(.lottie-animation) { width: 100%; height: 100%; }
   .empty-card h3 { font-size: 18px; font-weight: 800; margin: 0; }
-  .empty-card p { color: color-mix(in srgb, var(--color-text) 60%, transparent); font-size: 13px; font-weight: 500; max-width: 340px; margin: 0; }
+  .empty-card p { color: var(--color-text-secondary); font-size: 13px; font-weight: 500; max-width: 340px; margin: 0; }
 
   /* Badge vault */
   .vault-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }

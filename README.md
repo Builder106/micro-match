@@ -33,7 +33,7 @@ Volunteers pick tasks that match their skills, submit their work, and earn verif
 - **Nonprofit dashboard**: Post tasks with deadlines and volunteer caps, review submissions, and manage organization badge awards.
 - **Charity verification**: Simple trust verification where nonprofits submit their tax or charity ID, verified against public registries with a verified badge displayed on their tasks.
 - **Custom badge awards**: Organizations define custom award badges (label, color, icon, criteria) automatically awarded upon task approval.
-- **On-demand translation**: Task titles and descriptions can be translated from the task detail page.
+- **Worldwide localization**: Paraglide provides type-safe, reviewed UI catalogs and locale-prefixed routes; self-hosted LibreTranslate handles user-created task content on the server.
 - **Email updates**: Automated email notifications keep volunteers and organizations informed of approvals and submissions.
 
 ## 🎬 In motion
@@ -134,6 +134,7 @@ sequenceDiagram
 | **Email** | [Mailgun](https://www.mailgun.com/) (HTTP API, no SDK dep) |
 | **NGO verification** | [ProPublica Nonprofit Explorer API](https://projects.propublica.org/nonprofits/api/) for US 501(c)(3) lookups |
 | **Translation** | Self-hosted [LibreTranslate](https://libretranslate.com/) on an ARM64 Oracle VM behind `translate.micromatch.app` |
+| **Static UI localization** | [Paraglide JS](https://paraglidejs.com/sveltekit) with committed catalogs for English, Spanish, French, German, Portuguese, Chinese, and Arabic |
 | **UI** | Plus Jakarta Sans + Inter, custom CSS (warm cream palette + coral accents), [Iconify](https://iconify.design/), [Lottie](https://lottiefiles.com/) |
 | **Testing** | [Vitest](https://vitest.dev/) (unit + API + components) and [Playwright](https://playwright.dev/) (e2e) |
 

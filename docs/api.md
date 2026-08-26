@@ -80,10 +80,16 @@ Creates a new micro-task listing.
 - **Response (201 Created)**: Returns the newly created task object.
 - **Error Responses**: `400 Bad Request`(missing title/description or content safety block),`401 Unauthorized`, `403 Forbidden` (non-NGO).
 
-Task detail pages support on-demand server-side translation with
-`/task/[id]?lang=<code>`. The supported target codes are `es`, `fr`, `de`,
-`pt`, `zh`, and `ar`. Translation covers the title and full description. The
-page keeps the original text when the translation service is unavailable.
+Task detail pages support on-demand server-side translation through the
+selected locale URL, such as `/fr/task/[id]`. The supported target codes are
+`en`, `es`, `fr`, `de`, `pt`, `zh`, and `ar`. LibreTranslate translates the
+title, short description, description, and tags while the page keeps the
+original text available during loading or when the translation service is
+unavailable. Static interface copy is handled separately by Paraglide JS.
+
+The bounded `POST /api/tasks/translation` endpoint accepts task IDs and a
+supported locale and returns display fields only. It is intended for feeds,
+dashboards, recommendations, and other task lists.
 
 ### `PATCH /api/tasks/[id]`
 

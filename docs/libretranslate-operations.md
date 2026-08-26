@@ -54,6 +54,6 @@ translations for fifteen minutes and does not cache failures.
 3. Set `LIBRETRANSLATE_ENDPOINT` and `LIBRETRANSLATE_API_KEY` in the production
    deployment environment.
 4. Run `bun run verify:libretranslate` from a trusted environment.
-5. Open a real task with `?lang=es` and confirm the translated title,
+5. Open a real task with the `/es/task/<id>` locale URL and confirm the translated title,
    description, and "Auto-translated" notice.
 6. Restart both services and repeat the health check to confirm recovery.

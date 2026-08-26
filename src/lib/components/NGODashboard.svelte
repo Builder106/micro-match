@@ -270,13 +270,13 @@
   .ngo-hero-blob-blue { bottom: -50%; left: 30%; width: 320px; height: 320px; background: rgba(147, 197, 253, 0.35); }
   .ngo-hero-text { position: relative; z-index: 1; max-width: 500px; }
   .ngo-hero-text h1 { font-size: clamp(1.5rem, 2.2vw + 0.5rem, 2.1rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 8px; }
-  .ngo-hero-text p { color: color-mix(in srgb, var(--color-text) 70%, transparent); font-size: 14px; font-weight: 500; line-height: 1.5; margin: 0 0 18px; max-width: 440px; }
+  .ngo-hero-text p { color: var(--color-text-secondary); font-size: 14px; font-weight: 500; line-height: 1.5; margin: 0 0 18px; max-width: 440px; }
   .ngo-hero-actions { display: flex; flex-wrap: wrap; gap: 10px; }
   .ngo-hero-ring { position: relative; width: 128px; height: 128px; flex-shrink: 0; z-index: 1; }
   @media (max-width: 768px) { .ngo-hero-ring { width: 110px; height: 110px; align-self: center; } }
   .ring-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
   .ring-pct { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: 28px; font-weight: 800; letter-spacing: -0.02em; color: var(--color-text); line-height: 1; }
-  .ring-sub { font-size: 9px; font-weight: 700; color: color-mix(in srgb, var(--color-text) 50%, transparent); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; max-width: 90px; text-align: center; line-height: 1.2; }
+  .ring-sub { font-size: 9px; font-weight: 700; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; max-width: 90px; text-align: center; line-height: 1.2; }
 
   .pipe-sep {
     display: inline-block;
@@ -286,7 +286,7 @@
   }
 
   /* Section count metadata */
-  .section-count { font-size: 13px; font-weight: 600; color: color-mix(in srgb, var(--color-text) 55%, transparent); }
+  .section-count { font-size: 13px; font-weight: 600; color: var(--color-text-secondary); }
 
   /* Reviews list */
   .reviews-list { display: flex; flex-direction: column; gap: 12px; }
@@ -294,8 +294,8 @@
   .review-card-head { display: flex; gap: 12px; align-items: flex-start; }
   .review-icon { width: 38px; height: 38px; border-radius: 12px; background: #FEF3C7; color: #D97706; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .review-meta h3 { font-size: 15px; font-weight: 700; margin: 0 0 3px; }
-  .review-meta small { font-size: 12px; font-weight: 500; color: color-mix(in srgb, var(--color-text) 55%, transparent); }
-  .review-notes { font-size: 13px; line-height: 1.5; color: color-mix(in srgb, var(--color-text) 75%, transparent); margin: 0; padding: 10px 14px; background: color-mix(in srgb, var(--color-text) 3%, transparent); border-radius: 10px; }
+  .review-meta small { font-size: 12px; font-weight: 500; color: var(--color-text-secondary); }
+  .review-notes { font-size: 13px; line-height: 1.5; color: var(--color-text); margin: 0; padding: 10px 14px; background: color-mix(in srgb, var(--color-text) 3%, transparent); border-radius: 10px; }
   .review-actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
   .review-proof { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; background: #DBEAFE; color: #2563EB; border-radius: 9999px; font-size: 12px; font-weight: 700; text-decoration: none; transition: background .2s; }
   .review-proof:hover { background: #BFDBFE; }
@@ -316,7 +316,7 @@
   .stat-icon-coral { background: rgba(255, 107, 107, 0.12); color: var(--color-primary-readable); }
   .stat-body { min-width: 0; }
   .stat-num { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: 19px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; color: var(--color-text); }
-  .stat-label { font-size: 11px; font-weight: 600; color: color-mix(in srgb, var(--color-text) 55%, transparent); margin-top: 2px; }
+  .stat-label { font-size: 11px; font-weight: 600; color: var(--color-text-secondary); margin-top: 2px; }
   .stat-divider { width: 1px; background: color-mix(in srgb, var(--color-text) 8%, transparent); margin: 10px 0; }
   @media (max-width: 768px) {
     .stats-strip { flex-wrap: wrap; padding: 6px; }
@@ -341,9 +341,9 @@
   .task-mini:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05); }
   .task-mini-top { display: flex; justify-content: space-between; align-items: center; }
   .task-mini-avatar { width: 36px; height: 36px; border-radius: 12px; background: #DBEAFE; color: #2563EB; display: flex; align-items: center; justify-content: center; }
-  .mini-time { font-size: 11px; font-weight: 700; color: color-mix(in srgb, var(--color-text) 50%, transparent); display: inline-flex; align-items: center; gap: 4px; }
+  .mini-time { font-size: 11px; font-weight: 700; color: var(--color-text-secondary); display: inline-flex; align-items: center; gap: 4px; }
   .task-mini h4 { font-size: 15px; font-weight: 700; margin: 0; line-height: 1.3; }
-  .task-mini p { font-size: 12px; color: color-mix(in srgb, var(--color-text) 60%, transparent); margin: 0; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .task-mini p { font-size: 12px; color: var(--color-text-secondary); margin: 0; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .task-mini-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-top: auto; }
   .mini-tags { display: flex; flex-wrap: wrap; gap: 5px; }
   .task-status { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 9999px; text-transform: capitalize; }
@@ -368,5 +368,5 @@
   .empty-mascot { width: 110px; height: 110px; display: flex; align-items: center; justify-content: center; color: var(--color-primary-light); }
   .empty-mascot :global(.lottie-animation) { width: 100%; height: 100%; }
   .empty-card h3 { font-size: 18px; font-weight: 800; margin: 0; }
-  .empty-card p { color: color-mix(in srgb, var(--color-text) 60%, transparent); font-size: 13px; font-weight: 500; max-width: 340px; margin: 0; }
+  .empty-card p { color: var(--color-text-secondary); font-size: 13px; font-weight: 500; max-width: 340px; margin: 0; }
 </style>

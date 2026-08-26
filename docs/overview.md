@@ -6,7 +6,7 @@ MicroMatch is a micro‑volunteering platform that pairs NGOs with bite‑sized 
 
 - Browse and claim short, well‑scoped tasks
 - Task detail and submission flow
-- Auto‑translation on demand ("Auto‑translated" chip)
+- Worldwide localization with Paraglide UI catalogs and server-side LibreTranslate task translation
 - Basic gamification: badges and level progress
 - NGO verification (ProPublica 501(c)(3) lookup) backing a "Verified" chip on tasks
 - Safety: Azure AI Content Safety checks on submissions
@@ -20,17 +20,19 @@ MicroMatch is a micro‑volunteering platform that pairs NGOs with bite‑sized 
 
 ## Core pages
 
-- `/`or`/tasks`: Task feed
-- `/task/[id]`: Task details (+ translation via `?lang=`)
-- `/task/[id]/claim`: Submit proof and notes
-- `/org`: Post a task (NGO only)
-- `/dashboard`: Badges and level progress
+- `/en/`or`/en/tasks`: English task feed
+- `/fr/task/[id]`: French task details with French task-field translation
+- `/en/task/[id]/claim`: Submit proof and notes
+- `/en/org`: Post a task (NGO only)
+- `/en/dashboard`: Badges and level progress
 
-## How translation works
+## How localization works
 
-- Add `?lang=es` (for example) to task URLs to translate the title and description server-side.
-- Supported target codes are `es`, `fr`, `de`, `pt`, `zh`, and `ar`.
-- A chip “Auto‑translated” appears when translation is applied.
+- Paraglide supplies static UI messages from committed catalogs for `en`, `es`, `fr`, `de`, `pt`, `zh`, and `ar`.
+- The locale prefix controls the page language: `/es/tasks` selects Spanish and `/ar/dashboard` selects Arabic with right-to-left document direction.
+- LibreTranslate translates user-created task display fields server-side. Feeds and dashboards translate after the original data renders; task detail pages keep the original content available while translation loads.
+- Legacy `/task/[id]?lang=<code>` links redirect to the canonical `/<locale>/task/[id]` form.
+- A chip “Auto‑translated” appears when task content is translated.
 
 ## Safety & moderation
 

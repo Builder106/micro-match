@@ -32,7 +32,7 @@ You will receive an automated email notification via Mailgun explaining the revi
 
 ### How do translations work
 
-Appending `?lang=<code>` (for example, `?lang=es`) to a task page URL requests a server-side translation of the title and description. Supported codes are `es`, `fr`, `de`, `pt`, `zh`, and `ar`. Tasks with an active translation display an "Auto-translated" badge. If the translation service is unavailable, the page shows the original text.
+The language picker changes the locale prefix, such as `/es/tasks` or `/fr/task/123`. Paraglide supplies the reviewed static UI messages. LibreTranslate translates user-created task display fields on the server for the selected locale. Tasks with an active translation display an "Auto-translated" badge. If the translation service is unavailable, the page shows the original text. Older `/task/123?lang=es` links redirect to `/es/task/123`.
 
 ### Why was my task or claim note blocked
 

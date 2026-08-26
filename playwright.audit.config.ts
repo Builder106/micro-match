@@ -7,7 +7,7 @@ export default defineConfig({
   testDir: './e2e',
   testMatch: /(?:responsiveness|accessibility)\.spec\.ts/,
   fullyParallel: false,
-  workers: 1,
+  workers: process.env.CI ? 2 : 1,
   retries: 0,
   timeout: 120_000,
   expect: { timeout: 10_000 },
@@ -32,9 +32,9 @@ export default defineConfig({
   webServer: process.env.PLAYWRIGHT_BASE_URL
     ? undefined
     : {
-      command: `bun run dev -- --port ${PORT}`,
+      command: 'bun run dev',
       url: BASE_URL,
-      reuseExistingServer: false,
+      reuseExistingServer: !process.env.CI,
       timeout: 60_000,
       env: {
         PLAYWRIGHT_A11Y_HARNESS: '1'

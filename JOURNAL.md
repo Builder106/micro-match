@@ -4,6 +4,10 @@
 > things happen — retrospectives need this raw material to land.
 > Reverse-chronological; one paragraph max per entry.
 
+## 2026-08-25 - Documented the preferred worldwide i18n boundary #decision
+
+Paraglide JS is the preferred system for reviewed static UI messages, locale-prefixed routes, and document language or direction. Self-hosted LibreTranslate remains the preferred server-only system for user-created task fields, with bounded batches and source-text fallback. The documentation now describes the two systems separately and uses canonical locale URLs instead of the legacy `?lang=` page flow.
+
 ## 2026-08-24 - Coral remains visual while semantic colors carry AAA contrast #decision
 
 Restored MicroMatch's bright coral for brand fills, decoration, progress visuals, and illustrations after the accessibility audit made the whole interface burgundy. Added separate readable coral, action foreground, status, and focus tokens so meaningful text and controls keep the AAA-oriented contrast target. Removed the audit-added opaque landing hero panel and kept the audit's semantic markup, dialog, keyboard, and reduced-motion changes. The accessibility matrix remains an evidence gate, not a formal WCAG AAA claim.

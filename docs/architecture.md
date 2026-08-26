@@ -41,6 +41,15 @@ The backend logic resides in `$lib/server/` with isolated domain modules:
 
 ---
 
+### Worldwide i18n boundary
+
+MicroMatch uses two translation systems by design:
+
+- **Paraglide JS** is the preferred system for static product UI. It compiles reviewed message catalogs, supplies typed message functions, handles locale-prefixed URLs, and sets document language and text direction. Supported locales are `en`, `es`, `fr`, `de`, `pt`, `zh`, and `ar`.
+- **LibreTranslate** is the preferred system for user-created task content. It runs server-side, keeps its API key out of client bundles, translates task display fields in bounded batches, and falls back to source text when the provider is unavailable.
+
+The locale prefix controls both UI messages and the task-content translation target. For example, `/fr/tasks` renders the French interface and requests French task fields. The locale cookie persists the choice, while `Accept-Language` is used only for the first redirect from an unlocalized request.
+
 ## 3. Data Model & Storage
 
 MicroMatch uses Appwrite TablesDB (`APPWRITE_DB_ID`):
