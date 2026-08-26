@@ -55,6 +55,13 @@ describe('task translation helper', () => {
       ...task,
       translation: { locale: 'fr', status: 'fallback' }
     });
+
+    // Test when task.description is undefined
+    const taskNoDesc: Task = { id: 'task-no-desc', title: 'T', shortDescription: 'S', tags: [] };
+    translateTexts.mockResolvedValueOnce(['T-es', 'S-es']);
+    const resNoDesc = await translateTask(taskNoDesc, 'es');
+    expect(resNoDesc.description).toBeUndefined();
+    expect(resNoDesc.translation.status).toBe('translated');
   });
 
   it('does not expose provider credentials through the helper result', async () => {
