@@ -5,7 +5,8 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "vite dev",
-    "precheck": "paraglide-js compile",
+    "paraglide:compile": "bun run scripts/compile-paraglide.ts",
+    "precheck": "bun run paraglide:compile",
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-check --fail-on-warnings --tsconfig ./tsconfig.json --output human",

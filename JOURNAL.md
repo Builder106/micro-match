@@ -8,6 +8,10 @@
 
 The Playwright audit exposed shared failures across the public site: readable coral and secondary text missed enhanced contrast over decorated backgrounds, CTA text missed 7:1 contrast, and a closed language menu referenced a nonexistent `aria-controls` target. Dark-mode-aware readable tokens, black CTA text, and valid conditional language-menu markup address those violations. The audit now filters only axe's `elmPartiallyObscured` contrast reviews caused by decorative blended blobs; confirmed contrast violations and all other unresolved reviews still fail the gate. The landing hero keeps its original unboxed design.
 
+## 2026-08-27 - Keep Paraglide generation and lint boundaries consistent #decision
+
+The precheck now calls a typed compiler script that shares the Vite plugin's project, locale URL patterns, strategy, declarations, and `src/lib/paraglide` output. ESLint ignores both the current generated directory and the legacy CLI default so generated Paraglide code does not fail the authored-source lint gate.
+
 ## 2026-08-25 - Documented the preferred worldwide i18n boundary #decision
 
 Paraglide JS is the preferred system for reviewed static UI messages, locale-prefixed routes, and document language or direction. Self-hosted LibreTranslate remains the preferred server-only system for user-created task fields, with bounded batches and source-text fallback. The documentation now describes the two systems separately and uses canonical locale URLs instead of the legacy `?lang=` page flow.

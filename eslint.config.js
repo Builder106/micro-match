@@ -6,7 +6,7 @@ import globals from 'globals';
 
 export default [
   // Ignores
-  { ignores: ['**/node_modules/**', 'build/**', 'dist/**', '.svelte-kit/**', '.vercel/**', 'coverage/**', 'src/types/**/*.d.ts', '**/*.min.js', '**/*.min.ts', 'trailer/**', 'ui-demo/**'] },
+  { ignores: ['**/node_modules/**', 'build/**', 'dist/**', '.svelte-kit/**', '.vercel/**', 'coverage/**', 'src/types/**/*.d.ts', 'src/lib/paraglide/**', 'src/paraglide/**', '**/*.min.js', '**/*.min.ts', 'trailer/**', 'ui-demo/**'] },
 
   // Core JS/TS configs
   js.configs.recommended,
