@@ -25,7 +25,7 @@ export function stripLocale(pathname: string): string {
   return remainder.startsWith('/') ? remainder : `/${remainder}`;
 }
 
-function languageFromHeader(header: string | null): Locale | undefined {
+export function localeFromAcceptLanguage(header: string | null): Locale | undefined {
   if (!header) return undefined;
   for (const item of header.split(',')) {
     const language = item.trim().split(';')[0]?.toLowerCase().split('-')[0];
@@ -36,16 +36,7 @@ function languageFromHeader(header: string | null): Locale | undefined {
 
 export function negotiateLocale(request: Request, cookieLocale?: string): Locale {
   if (isLocale(cookieLocale)) return cookieLocale;
-  return languageFromHeader(request.headers.get('accept-language')) ?? defaultLocale;
-}
-
-export function localeFromAcceptLanguage(header: string | null): Locale | undefined {
-  if (!header) return undefined;
-  for (const item of header.split(',')) {
-    const language = item.trim().split(';')[0]?.toLowerCase().split('-')[0];
-    if (isLocale(language)) return language;
-  }
-  return undefined;
+  return localeFromAcceptLanguage(request.headers.get('accept-language')) ?? defaultLocale;
 }
 
 export function localizedPath(pathname: string, locale: Locale): string {

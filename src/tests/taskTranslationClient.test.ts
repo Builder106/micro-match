@@ -64,5 +64,11 @@ describe('translateTaskBatch', () => {
     );
     const result = await translateTaskBatch([sampleTask], 'pt');
     expect(result[0].translation).toEqual({ locale: 'pt', status: 'fallback' });
+
+    mockFetch.mockResolvedValueOnce(
+      new Response(JSON.stringify({}), { status: 200 })
+    );
+    const resultNoTasks = await translateTaskBatch([sampleTask], 'pt');
+    expect(resultNoTasks[0].translation).toEqual({ locale: 'pt', status: 'fallback' });
   });
 });

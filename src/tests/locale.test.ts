@@ -53,8 +53,12 @@ describe('locale utilities', () => {
     const req = new Request('http://localhost', {
       headers: { 'accept-language': 'pt-BR, pt;q=0.9' }
     });
+    const reqUnmatched = new Request('http://localhost', {
+      headers: { 'accept-language': 'xx-YY, zz;q=0.9' }
+    });
     expect(negotiateLocale(req, 'es')).toBe('es');
     expect(negotiateLocale(req, 'invalid')).toBe('pt');
+    expect(negotiateLocale(reqUnmatched, undefined)).toBe(defaultLocale);
     expect(negotiateLocale(new Request('http://localhost'), undefined)).toBe(defaultLocale);
   });
 

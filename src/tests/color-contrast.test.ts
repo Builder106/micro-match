@@ -18,8 +18,8 @@ function contrastRatio(foreground: string, background: string): number {
 
 describe('AAA-oriented semantic color pairs', () => {
   it('keeps normal light-mode text at or above 7:1', () => {
-    expect(contrastRatio('#475569', '#FDFCF8')).toBeGreaterThanOrEqual(7);
-    expect(contrastRatio('#9F1239', '#FDFCF8')).toBeGreaterThanOrEqual(7);
+    expect(contrastRatio('#334155', '#FDFCF8')).toBeGreaterThanOrEqual(7);
+    expect(contrastRatio('#881337', '#FDFCF8')).toBeGreaterThanOrEqual(7);
     expect(contrastRatio('#7F1D1D', '#FEE2E2')).toBeGreaterThanOrEqual(7);
   });
 
