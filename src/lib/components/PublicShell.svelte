@@ -110,7 +110,7 @@
         <img src="/logo.png" alt="" width="36" height="36" />
         <span>MicroMatch</span>
       </a>
-      <nav class="header-nav" aria-label="Main navigation">
+      <nav class="header-nav" dir="ltr" aria-label="Main navigation">
         <a href={resolve('/how-it-works', {})} class:active={activeTab === 'how-it-works'}>How it Works</a>
         <a href={resolve('/tasks', {})} class:active={activeTab === 'tasks'}>Browse Tasks</a>
         <a href={resolve('/for-ngos', {})} class:active={activeTab === 'for-ngos'}>For NGOs</a>
@@ -229,7 +229,7 @@
   <footer class="site-footer">
     <div class="container">
       <div class="footer-grid">
-        <div class="footer-brand">
+        <div class="footer-brand" dir="ltr">
           <div class="footer-logo">
             <img src="/logo.png" alt="" width="36" height="36" />
             <span>MicroMatch</span>

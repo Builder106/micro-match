@@ -60,7 +60,7 @@ async function prepareState(page: Page, state: AuditState): Promise<void> {
     await expect(toggle).toBeVisible(); await toggle.click(); await expect(toggle).toHaveAttribute('aria-expanded', 'true');
     await expect(page.locator('nav').first()).toBeVisible(); await page.keyboard.press('Escape'); await expect(toggle).toHaveAttribute('aria-expanded', 'false'); await expect(toggle).toBeFocused(); return;
   }
-  if (state === 'help-faq') { const header = page.locator('.faq-header').first(); await header.click(); await expect(header).toHaveAttribute('aria-expanded', 'true'); return; }
+  if (state === 'help-faq') { const header = page.locator('.faq-header').nth(1); await header.click(); await expect(header).toHaveAttribute('aria-expanded', 'true'); return; }
   if (state === 'badge-dialog' || state === 'badge-select') {
     await page.getByRole('button', { name: /create badge/i }).first().click(); await expect(page.getByRole('dialog')).toBeVisible();
     if (state === 'badge-select') { await page.getByRole('button', { name: 'Award when' }).click(); await expect(page.getByRole('listbox')).toBeVisible(); } return;

@@ -4,6 +4,10 @@
 > things happen — retrospectives need this raw material to land.
 > Reverse-chronological; one paragraph max per entry.
 
+## 2026-08-27 - Firefox audit now handles dark themes and Arabic navigation #incident
+
+The failed CI run exposed a dark-theme count color, a mobile code block that expanded past its card, and Firefox's RTL handling of English-only shell text. The product now uses a light-on-dark count foreground, keeps API examples inside width-constrained focusable regions, and marks those English shell regions as LTR inside Arabic pages. The harness expands a closed FAQ item instead of toggling the initially open one. Chromium and Firefox route matrices pass across all seven locales, both themes, and all three viewports.
+
 ## 2026-08-27 - Restored AAA audit validity for shared public-shell colors and language control #incident
 
 The Playwright audit exposed shared failures across the public site: readable coral and secondary text missed enhanced contrast over decorated backgrounds, CTA text missed 7:1 contrast, and a closed language menu referenced a nonexistent `aria-controls` target. Dark-mode-aware readable tokens, black CTA text, and valid conditional language-menu markup address those violations. The audit now filters only axe's `elmPartiallyObscured` contrast reviews caused by decorative blended blobs; confirmed contrast violations and all other unresolved reviews still fail the gate. The landing hero keeps its original unboxed design.

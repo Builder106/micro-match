@@ -385,7 +385,7 @@
 
   .pill-btn.active .count-tag {
     background: var(--color-action-on-coral);
-    color: var(--color-surface);
+    color: #f8fafc;
   }
 
   /* Support Topics Grid */
@@ -429,6 +429,10 @@
   .rose-glow { background: #fff1f2; color: #e11d48; }
   .coral-glow { background: #fff1f1; color: var(--color-primary-readable); }
 
+  .topic-info {
+    min-width: 0;
+  }
+
   .topic-info h2 {
     font-size: 0.95rem;
     font-weight: 700;
@@ -437,9 +441,9 @@
   }
 
   .topic-info p {
-    font-size: 0.825rem !important;
-    color: var(--color-text-secondary, #64748b) !important;
-    margin: 0 !important;
+    font-size: 0.825rem;
+    color: var(--color-text-secondary, #334155);
+    margin: 0;
   }
 
   .arrow-icon-wrap {
@@ -683,6 +687,7 @@
   }
 
   @media (max-width: 640px) {
+    .help-controls { margin-bottom: 24px; }
     .help-cta-banner {
       flex-direction: column;
       align-items: flex-start;

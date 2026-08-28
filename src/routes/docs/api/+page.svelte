@@ -775,7 +775,8 @@
               {#if ep.queryParams && ep.queryParams.length > 0}
                 <div class="section-block">
                   <h3 class="section-title">Query Parameters</h3>
-                  <div class="table-wrapper">
+                  <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+                  <div class="table-wrapper" tabindex="0" role="region" aria-label={`${ep.id} query parameters`}>
                     <table class="params-table">
                       <thead>
                         <tr>
@@ -1075,7 +1076,7 @@
 
   .active .count-tag {
     background: var(--color-action-on-coral);
-    color: var(--color-surface);
+    color: #f8fafc;
   }
 
   .endpoints-list {
@@ -1085,6 +1086,7 @@
   }
 
   .endpoint-card {
+    min-width: 0;
     background: var(--color-surface, #ffffff);
     border: 1px solid var(--color-outline-variant, rgba(0, 0, 0, 0.1));
     border-radius: 16px;
@@ -1228,8 +1230,11 @@
     background: #e2e8f0;
   }
 
+  .card-grid > * { min-width: 0; }
+
   .card-grid {
     display: grid;
+    min-width: 0;
     grid-template-columns: 1fr;
     gap: 24px;
   }
@@ -1326,7 +1331,10 @@
   }
 
   .code-block {
-    background: #0f172a;
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    background-color: #0f172a;
     color: #f8fafc;
     padding: 14px 16px;
     border-radius: 10px;
@@ -1339,7 +1347,20 @@
     max-height: 420px;
   }
 
-  .code-block code { display: block; background: #0f172a; color: #f8fafc; }
+  .code-block > code {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-weight: 400;
+    border-radius: 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
 
   .note-box {
     margin-top: 16px;
