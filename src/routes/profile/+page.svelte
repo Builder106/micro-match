@@ -281,21 +281,21 @@
             <span>{avatarLetter}</span>
           {/if}
         </div>
-        <label for="avatar-input" class="avatar-edit" aria-label="Change avatar">
+        <button type="button" class="avatar-edit" aria-label="Change avatar" onclick={() => document.getElementById('avatar-input')?.click()} disabled={avatarUploading}>
           {#if avatarUploading}
             <Icon icon="lucide:loader-2" width="16" height="16" class="spin" />
           {:else}
             <Icon icon="lucide:camera" width="16" height="16" />
           {/if}
-        </label>
-        <input id="avatar-input" type="file" accept="image/*" on:change={handleAvatarChange} />
+        </button>
+        <input id="avatar-input" type="file" accept="image/*" onchange={handleAvatarChange} />
       </div>
       <small class="avatar-hint">PNG or JPG up to 2MB <span class="pipe-sep">|</span> cropped to square</small>
       {#if avatarError}
         <small class="avatar-error">{avatarError}</small>
       {/if}
       {#if avatarUrl}
-        <button type="button" class="avatar-remove" on:click={() => { avatarUrl = ''; avatarFileId = null; }}>Remove avatar</button>
+        <button type="button" class="avatar-remove" onclick={() => { avatarUrl = ''; avatarFileId = null; }}>Remove avatar</button>
       {/if}
     </div>
 
@@ -336,7 +336,7 @@
   {/if}
 
   <!-- ───── Form ───── -->
-  <form class="profile-form brand-card" method="post" on:submit|preventDefault={submitProfile}>
+  <form class="profile-form brand-card" method="post" onsubmit={(event) => { event.preventDefault(); submitProfile(event); }}>
     <header class="form-head">
       <h2>About you</h2>
       <p>Basic details visible to NGOs and volunteers.</p>
@@ -369,8 +369,8 @@
       {#if !loading}
         <fieldset class="role-picker">
           <legend>I am a&hellip;</legend>
-          <button type="button" class="role-card" class:selected={role === 'volunteer'} on:click={() => role = 'volunteer'} aria-pressed={role === 'volunteer'}>
-            <div class="role-icon" style="background: #FFEDD5; color: #EA580C;">
+          <button type="button" class="role-card" class:selected={role === 'volunteer'} onclick={() => role = 'volunteer'} aria-pressed={role === 'volunteer'}>
+            <div class="role-icon role-icon-volunteer">
               <Icon icon="lucide:hand-heart" width="28" height="28" />
             </div>
             <h3>Volunteer</h3>
@@ -379,8 +379,8 @@
               <span class="role-check"><Icon icon="lucide:check" width="14" height="14" /></span>
             {/if}
           </button>
-          <button type="button" class="role-card" class:selected={role === 'ngo'} on:click={() => role = 'ngo'} aria-pressed={role === 'ngo'}>
-            <div class="role-icon" style="background: #DBEAFE; color: #2563EB;">
+          <button type="button" class="role-card" class:selected={role === 'ngo'} onclick={() => role = 'ngo'} aria-pressed={role === 'ngo'}>
+            <div class="role-icon role-icon-ngo">
               <Icon icon="lucide:building-2" width="28" height="28" />
             </div>
             <h3>NGO</h3>
@@ -463,7 +463,7 @@
     role="dialog"
     aria-modal="true"
     aria-labelledby="dg-title"
-    on:keydown={handleModalKeydown}
+    onkeydown={handleModalKeydown}
     tabindex="-1"
   >
     <div class="dg-card">
@@ -481,8 +481,8 @@
         <p class="dg-recover">You can switch back to NGO later — verification will need to be resubmitted.</p>
       </div>
       <div class="dg-actions">
-        <button type="button" class="dg-cancel" on:click={cancelDowngrade}>Keep NGO</button>
-        <button type="button" class="dg-confirm" on:click={confirmDowngrade} bind:this={confirmBtn}>
+        <button type="button" class="dg-cancel" onclick={cancelDowngrade}>Keep NGO</button>
+        <button type="button" class="dg-confirm" onclick={confirmDowngrade} bind:this={confirmBtn}>
           <Icon icon="lucide:hand-heart" width="14" height="14" />
           Switch to Volunteer
         </button>
@@ -491,7 +491,7 @@
   </div>
 {/if}
 
-<svelte:window on:keydown={handleModalKeydown} />
+<svelte:window onkeydown={handleModalKeydown} />
 
 <style>
   .profile-page { display: flex; flex-direction: column; gap: 32px; max-width: 900px; margin: 0 auto; }
@@ -501,13 +501,13 @@
   @media (max-width: 640px) { .profile-hero { grid-template-columns: 1fr; padding: 28px; gap: 20px; text-align: center; } }
   .profile-hero-blob { position: absolute; top: -50%; right: -10%; width: 360px; height: 360px; border-radius: 50%; background: rgba(255, 107, 107, 0.18); filter: blur(80px); pointer-events: none; }
   .avatar-stack { display: flex; flex-direction: column; align-items: center; gap: 10px; position: relative; z-index: 1; }
-  .avatar-ring { position: relative; width: 120px; height: 120px; border-radius: 50%; padding: 4px; background: #FF6B6B; }
+  .avatar-ring { position: relative; width: 120px; height: 120px; border-radius: 50%; padding: 4px; background: var(--color-primary); }
   .avatar-face { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; background: var(--color-surface); display: flex; align-items: center; justify-content: center; font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: 44px; font-weight: 800; color: var(--color-primary-readable); }
   .avatar-face img { width: 100%; height: 100%; object-fit: cover; }
-  .avatar-edit { position: absolute; bottom: 0; right: 0; width: 36px; height: 36px; border-radius: 50%; background: var(--color-text); color: var(--color-surface); display: flex; align-items: center; justify-content: center; cursor: pointer; border: 3px solid var(--color-surface); transition: all .2s; }
+  .avatar-edit { position: absolute; bottom: 0; right: 0; width: 36px; height: 36px; border-radius: 50%; background: var(--color-text); color: var(--color-surface); display: flex; align-items: center; justify-content: center; cursor: pointer; border: 3px solid var(--color-surface); transition: all .2s; font: inherit; }
   .avatar-edit:hover { transform: scale(1.08); background: color-mix(in srgb, var(--color-text) 88%, black); }
-  #avatar-input { display: none; }
-  .avatar-hint { font-size: 11px; color: color-mix(in srgb, var(--color-text) 50%, transparent); font-weight: 500; }
+  #avatar-input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+  .avatar-hint { font-size: 11px; color: var(--color-text-secondary); font-weight: 500; }
   .avatar-error { font-size: 11px; color: var(--color-error); font-weight: 600; }
   .avatar-remove { background: none; border: none; padding: 0; color: var(--color-error); font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; }
   .avatar-remove:hover { text-decoration: underline; }
@@ -551,10 +551,12 @@
   .role-card:hover { border-color: color-mix(in srgb, var(--color-primary-readable) 30%, transparent); transform: translateY(-2px); }
   .role-card.selected { border-color: var(--color-primary-readable); background: color-mix(in srgb, var(--color-primary) 4%, var(--color-surface)); box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.08); }
   .role-icon { width: 52px; height: 52px; border-radius: 16px; display: flex; align-items: center; justify-content: center; }
+  .role-icon-volunteer { background: #FFEDD5; color: #9A3412; }
+  .role-icon-ngo { background: #DBEAFE; color: #172554; }
   .role-card h3 { font-size: 16px; font-weight: 700; margin: 0; }
-  .role-card p { font-size: 13px; color: color-mix(in srgb, var(--color-text) 60%, transparent); margin: 0; line-height: 1.4; }
-  .role-check { position: absolute; top: 12px; right: 12px; width: 24px; height: 24px; border-radius: 50%; background: #FF6B6B; color: #0F172A; display: flex; align-items: center; justify-content: center; }
-  .role-hint { display: inline-flex; align-items: flex-start; gap: 6px; font-size: 12px; line-height: 1.5; color: color-mix(in srgb, var(--color-text) 55%, transparent); margin: -8px 0 0; }
+  .role-card p { font-size: 13px; color: var(--color-text-secondary); margin: 0; line-height: 1.4; }
+  .role-check { position: absolute; top: 12px; right: 12px; width: 24px; height: 24px; border-radius: 50%; background: var(--color-primary); color: var(--color-brand-on-coral); display: flex; align-items: center; justify-content: center; }
+  .role-hint { display: inline-flex; align-items: flex-start; gap: 6px; font-size: 12px; line-height: 1.5; color: var(--color-text-secondary); margin: -8px 0 0; }
   .role-hint-warn { color: var(--color-warning); padding: 8px 12px; background: color-mix(in srgb, var(--color-warning) 10%, transparent); border-radius: 10px; font-weight: 600; margin: 0; }
 
   /* Form actions */

@@ -20,9 +20,9 @@
 
   function getStatusInfo(s: string | undefined) {
     switch (s) {
-      case 'completed': return { color: '#2563EB', bg: '#DBEAFE', icon: 'lucide:flag', label: 'Completed' };
-      case 'expired': return { color: '#DC2626', bg: '#FEE2E2', icon: 'lucide:alarm-clock-off', label: 'Expired' };
-      case 'moderated': return { color: '#D97706', bg: '#FEF3C7', icon: 'lucide:shield-alert', label: 'Under review' };
+      case 'completed': return { color: 'var(--color-info)', bg: 'var(--color-info-container)', icon: 'lucide:flag', label: 'Completed' };
+      case 'expired': return { color: 'var(--color-error)', bg: '#FEE2E2', icon: 'lucide:alarm-clock-off', label: 'Expired' };
+      case 'moderated': return { color: 'var(--color-warning)', bg: 'var(--color-warning-container)', icon: 'lucide:shield-alert', label: 'Under review' };
       default: return null;
     }
   }
@@ -73,7 +73,7 @@
     {#if language}
       <p class="tc-ngo"><Icon icon="lucide:globe" width="12" height="12" /> {language}</p>
     {/if}
-    <h2><a href={resolve(href, {})}>{title}</a></h2>
+    <h2>{title}</h2>
     <p class="tc-desc">{shortDescription}</p>
   </div>
 
@@ -177,12 +177,6 @@
     line-height: 1.3;
     margin: 0;
   }
-  .tc-body h2 a {
-    color: inherit;
-    text-decoration: none;
-    transition: color .2s;
-  }
-  .tc-body h2 a:hover { color: var(--color-primary-readable); }
   .tc-desc {
     color: var(--color-text-secondary);
     font-size: 14px;

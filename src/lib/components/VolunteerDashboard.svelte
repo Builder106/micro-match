@@ -258,7 +258,7 @@
                 <span class="mini-time"><Icon icon="lucide:clock" width="12" height="12" /> {task.estimatedMinutes} min</span>
               {/if}
             </div>
-            <h4>{task.title}</h4>
+            <h3>{task.title}</h3>
             <p>{task.shortDescription}</p>
             <div class="mini-tags">
               {#each (task.tags ?? []).slice(0, 2) as tag (tag)}
@@ -355,9 +355,9 @@
   .stats-strip { display: flex; align-items: stretch; padding: 8px 4px; border-radius: 20px; }
   .stat { flex: 1; padding: 12px 10px; display: flex; align-items: center; gap: 12px; min-width: 0; }
   .stat-icon { width: 36px; height: 36px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .stat-icon-green { background: #D1FAE5; color: #059669; }
-  .stat-icon-blue { background: #DBEAFE; color: #2563EB; }
-  .stat-icon-amber { background: #FEF3C7; color: #D97706; }
+  .stat-icon-green { background: var(--color-success-container); color: var(--color-success); }
+  .stat-icon-blue { background: var(--color-info-container); color: var(--color-info); }
+  .stat-icon-amber { background: var(--color-warning-container); color: var(--color-warning); }
   .stat-icon-coral { background: rgba(255, 107, 107, 0.12); color: var(--color-primary-readable); }
   .stat-body { min-width: 0; }
   .stat-num { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: 19px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; color: var(--color-text); }
@@ -408,7 +408,7 @@
   .mini-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
   .mini-avatar { width: 36px; height: 36px; border-radius: 12px; background: #FFE5DC; color: var(--color-primary-readable); display: flex; align-items: center; justify-content: center; }
   .mini-time { font-size: 11px; font-weight: 700; color: var(--color-text-secondary); display: inline-flex; align-items: center; gap: 4px; }
-  .mini-mission h4 { font-size: 15px; font-weight: 700; margin: 0 0 4px; line-height: 1.3; }
+  .mini-mission h3 { font-size: 15px; font-weight: 700; margin: 0 0 4px; line-height: 1.3; }
   .mini-mission p { font-size: 12px; color: var(--color-text-secondary); margin: 0 0 10px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .mini-tags { display: flex; flex-wrap: wrap; gap: 5px; }
 

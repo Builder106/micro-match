@@ -284,7 +284,7 @@
     padding: 3px 10px;
     border-radius: 16px;
     background: var(--color-primary, #ff6b6b);
-    color: #ffffff;
+    color: var(--color-brand-on-coral);
     letter-spacing: 0.02em;
   }
 
@@ -372,7 +372,7 @@
 
   .pill-btn.active {
     background: var(--color-primary, #ff6b6b);
-    color: #ffffff;
+    color: var(--color-brand-on-coral);
     border-color: var(--color-primary, #ff6b6b);
   }
 
@@ -384,7 +384,8 @@
   }
 
   .pill-btn.active .count-tag {
-    background: rgba(0, 0, 0, 0.35);
+    background: var(--color-action-on-coral);
+    color: var(--color-surface);
   }
 
   /* Support Topics Grid */
@@ -451,7 +452,7 @@
 
   .topic-card:hover .arrow-icon-wrap {
     transform: translateX(3px);
-    color: var(--color-primary, #ff6b6b);
+    color: var(--color-primary-readable);
   }
 
   /* FAQ Section */
@@ -561,7 +562,7 @@
     gap: 6px;
     font-size: 0.85rem;
     font-weight: 700;
-    color: var(--color-primary, #ff6b6b);
+    color: var(--color-primary-readable);
     text-decoration: none !important;
   }
 
@@ -645,8 +646,8 @@
     gap: 8px;
     padding: 10px 22px;
     border-radius: 9999px;
-    background: #FF6B6B;
-    color: #0F172A !important;
+    background: var(--color-primary);
+    color: var(--color-brand-on-coral) !important;
     font-weight: 700 !important;
     font-size: 0.9rem;
     text-decoration: none !important;
@@ -654,7 +655,7 @@
   }
 
   .btn-coral:hover {
-    background: #ff5252;
+    background: var(--color-primary);
     transform: translateY(-2px);
     box-shadow: 0 10px 24px rgba(255, 107, 107, 0.35);
   }

@@ -1,0 +1,63 @@
+name: Accessibility release evidence
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+jobs:
+  automated-audit:
+    name: Automated accessibility audit
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bunx playwright install --with-deps chromium firefox
+      - name: Run accessibility audit
+        run: bun run test:accessibility
+        env:
+          PUBLIC_APPWRITE_ENDPOINT: https://placeholder.example.com
+          PUBLIC_APPWRITE_PROJECT_ID: placeholder
+          PLAYWRIGHT_A11Y_HARNESS: '1'
+      - name: Run responsiveness audit
+        run: bun run test:responsiveness
+        env:
+          PUBLIC_APPWRITE_ENDPOINT: https://placeholder.example.com
+          PUBLIC_APPWRITE_PROJECT_ID: placeholder
+          PLAYWRIGHT_A11Y_HARNESS: '1'
+      - name: Upload automated evidence
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: accessibility-release-automated-${{ github.run_id }}
+          path: |
+            test-results/
+            audit-output/
+          retention-days: 90
+          if-no-files-found: error
+
+  matrix-evidence:
+    name: Accessibility matrix evidence
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - name: Validate release evidence
+        run: bun run verify:a11y-matrix -- --mode=release
+
+  release-evidence-gate:
+    name: Release accessibility evidence gate
+    if: ${{ always() }}
+    needs: [automated-audit, matrix-evidence]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Require automated audit and matrix evidence
+        if: ${{ needs.automated-audit.result != 'success' || needs.matrix-evidence.result != 'success' }}
+        run: exit 1
+      - name: Confirm release evidence
+        run: echo "Automated audit and manual evidence matrix passed."

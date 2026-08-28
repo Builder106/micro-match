@@ -247,10 +247,10 @@
           </div>
           <div class="link-col">
           <h2>Resources</h2>
-            <a href={resolve('/how-it-works', {})}>How It Works</a>
-            <a href={resolve('/for-ngos', {})}>For NGOs</a>
-            <a href={resolve('/for-volunteers', {})}>For Volunteers</a>
-            <a href={resolve('/impact', {})}>Impact</a>
+          <a href={resolve('/how-it-works', {})} aria-label="Footer: How It Works">How It Works</a>
+          <a href={resolve('/for-ngos', {})} aria-label="Footer: For NGOs">For NGOs</a>
+          <a href={resolve('/for-volunteers', {})} aria-label="Footer: For Volunteers">For Volunteers</a>
+          <a href={resolve('/impact', {})} aria-label="Footer: Impact">Impact</a>
             <a href={resolve('/docs/api', {})}>API Docs</a>
             <a href={resolve('/about', {})}>About Us</a>
             <a href={resolve('/help', {})}>Help Center</a>
@@ -285,8 +285,8 @@
   .container, :global(.container) { max-width: 1200px !important; margin: 0 auto !important; padding: 0 24px !important; box-sizing: border-box !important; }
 
   /* Buttons */
-  .btn-coral { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #FF6B6B; color: #000000; font-weight: 700; border: none; border-radius: 9999px; cursor: pointer; text-decoration: none; transition: all .3s; }
-  .btn-coral:hover { background: var(--color-primary-variant); transform: translateY(-2px); box-shadow: 0 16px 40px rgba(136,19,55,0.35); }
+  .btn-coral { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--color-primary); color: var(--color-brand-on-coral); font-weight: 700; border: none; border-radius: 9999px; cursor: pointer; text-decoration: none; transition: all .3s; }
+  .btn-coral:hover { background: var(--color-primary); transform: translateY(-2px); box-shadow: 0 16px 40px rgba(136,19,55,0.35); }
   .btn-coral:active { transform: scale(0.97); }
   .btn-sm { padding: 10px 24px; font-size: 14px; }
 

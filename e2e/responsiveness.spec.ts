@@ -1,153 +1,36 @@
-import { test, expect, type Page } from '@playwright/test';
-import * as fs from 'fs';
-import * as path from 'path';
+import { expect, test, type Page } from '@playwright/test';
 
-const OUTPUT_DIR = path.resolve(process.cwd(), 'audit-output');
-const SCREENSHOT_DIR = path.join(OUTPUT_DIR, 'screenshots');
+const PAGES = ['/', '/tasks', '/how-it-works', '/for-ngos', '/for-volunteers', '/impact', '/login', '/signup', '/contact', '/help', '/docs/api'];
+const VIEWPORTS = [{ name: 'narrow', width: 320, height: 800 }, { name: 'mobile', width: 375, height: 812 }, { name: 'tablet', width: 768, height: 1024 }, { name: 'desktop', width: 1440, height: 900 }] as const;
 
-// Ensure output directories exist
-['mobile', 'tablet', 'desktop'].forEach((vp) => {
-  fs.mkdirSync(path.join(SCREENSHOT_DIR, vp), { recursive: true });
-});
-fs.mkdirSync(path.join(OUTPUT_DIR, 'videos'), { recursive: true });
-
-const pagesToAudit = [
-  { name: 'home', path: '/' },
-  { name: 'tasks', path: '/tasks' },
-  { name: 'how-it-works', path: '/how-it-works' },
-  { name: 'for-ngos', path: '/for-ngos' },
-  { name: 'for-volunteers', path: '/for-volunteers' },
-  { name: 'impact', path: '/impact' },
-  { name: 'login', path: '/login' },
-  { name: 'signup', path: '/signup' },
-  { name: 'contact', path: '/contact' },
-  { name: 'help', path: '/help' },
-  { name: 'docs-api', path: '/docs/api' },
-];
-
-const viewports = [
-  { name: 'mobile', width: 375, height: 812 },
-  { name: 'tablet', width: 768, height: 1024 },
-  { name: 'desktop', width: 1440, height: 900 }
-];
-
-async function checkNoHorizontalOverflow(page: Page): Promise<boolean> {
-  return await page.evaluate(() => {
-    return document.documentElement.scrollWidth <= window.innerWidth + 1; // 1px rounding margin
-  });
+async function expectNoOverflow(page: Page, route: string, width: number): Promise<void> {
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), { message: `${route} overflows at ${width}px` }).toBe(true);
 }
 
-test.describe('Responsiveness Audit - Screenshots & Layout Checks', () => {
-  for (const vp of viewports) {
-    test.describe(`Viewport: ${vp.name} (${vp.width}x${vp.height})`, () => {
-      test.use({ viewport: { width: vp.width, height: vp.height } });
+async function expectFocusableControl(page: Page): Promise<void> {
+  const control = page.locator('a, button, input, select, textarea').first();
+  if (await control.count()) { await control.focus(); await expect(control).toBeFocused(); }
+}
 
-      for (const p of pagesToAudit) {
-        test(`Audit page layout: ${p.name}`, async ({ page }) => {
-          await page.goto(p.path, { waitUntil: 'networkidle' });
-          await page.waitForTimeout(300);
-
-          // Verify no horizontal overflow
-          const noOverflow = await checkNoHorizontalOverflow(page);
-          expect(noOverflow, `Page ${p.path} has horizontal scroll overflow at ${vp.width}px`).toBe(true);
-
-          // Capture full-page screenshot
-          const screenshotPath = path.join(SCREENSHOT_DIR, vp.name, `${p.name}.png`);
-          await page.screenshot({ path: screenshotPath, fullPage: true });
-        });
-      }
-    });
-  }
+test.describe.configure({ mode: 'serial' });
+for (const viewport of VIEWPORTS) test.describe(`Responsive layout: ${viewport.name}`, () => {
+  test.use({ viewport: { width: viewport.width, height: viewport.height } });
+  for (const route of PAGES) test(`${route} has no overflow and keyboard focus`, async ({ page }) => {
+    await page.goto(`/en${route === '/' ? '' : route}`, { waitUntil: 'networkidle' }); await expectNoOverflow(page, route, viewport.width); await expectFocusableControl(page);
+  });
 });
 
-test.describe('Responsiveness Audit - Interactive Flow Videos', () => {
-  test('Mobile User Flow Video', async ({ page }) => {
-    test.setTimeout(60000);
-    await page.setViewportSize({ width: 375, height: 812 });
+test('reduced motion disables active animation', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' }); await page.goto('/en', { waitUntil: 'networkidle' });
+  const animated = await page.locator('*').evaluateAll((elements) => elements.filter((element) => { const style = getComputedStyle(element); return style.animationName !== 'none' || style.transitionDuration !== '0s'; }).length);
+  expect(animated, 'Reduced-motion pages must not retain active CSS animation or transition declarations.').toBe(0);
+});
 
-    // Step 1: Home page
-    await page.goto('/', { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(800);
+test('forced colors keeps the page usable', async ({ page }) => {
+  await page.emulateMedia({ forcedColors: 'active' }); await page.goto('/en/tasks', { waitUntil: 'networkidle' }); await expect(page.locator('main')).toBeVisible(); await expectNoOverflow(page, '/tasks', 1440); await expectFocusableControl(page);
+});
 
-    // Step 2: Open Mobile Menu
-    const menuBtn = page.locator('.menu-toggle');
-    if (await menuBtn.isVisible()) {
-      await menuBtn.click();
-      await page.waitForTimeout(1000);
-      // Close menu
-      await menuBtn.click();
-      await page.waitForTimeout(600);
-    }
-
-    // Step 3: Browse Tasks
-    await page.goto('/tasks', { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(1000);
-    await page.mouse.wheel(0, 400);
-    await page.waitForTimeout(800);
-
-    // Step 4: Signup Flow
-    await page.goto('/signup', { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(800);
-    const volunteerBtn = page.getByRole('button', { name: /I'm a Volunteer/i });
-    if (await volunteerBtn.isVisible()) {
-      await volunteerBtn.click();
-      await page.waitForTimeout(1000);
-    }
-
-    // Step 5: How it Works
-    await page.goto('/how-it-works', { waitUntil: 'domcontentloaded' });
-    await page.mouse.wheel(0, 600);
-    await page.waitForTimeout(1000);
-  });
-
-  test('Tablet User Flow Video', async ({ page }) => {
-    test.setTimeout(60000);
-    await page.setViewportSize({ width: 768, height: 1024 });
-
-    // Step 1: Home page
-    await page.goto('/', { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(800);
-    await page.mouse.wheel(0, 500);
-    await page.waitForTimeout(800);
-
-    // Step 2: For NGOs
-    await page.goto('/for-ngos', { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(800);
-    await page.mouse.wheel(0, 600);
-    await page.waitForTimeout(800);
-
-    // Step 3: Browse Tasks with filter
-    await page.goto('/tasks', { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(800);
-    const chip15 = page.getByRole('button', { name: /≤ 15 min/ });
-    if (await chip15.isVisible()) {
-      await chip15.click();
-      await page.waitForTimeout(1000);
-    }
-  });
-
-  test('Desktop User Flow Video', async ({ page }) => {
-    test.setTimeout(60000);
-    await page.setViewportSize({ width: 1440, height: 900 });
-
-    // Step 1: Home page full scroll
-    await page.goto('/', { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(800);
-    await page.mouse.wheel(0, 600);
-    await page.waitForTimeout(800);
-    await page.mouse.wheel(0, 600);
-    await page.waitForTimeout(800);
-
-    // Step 2: Impact page
-    await page.goto('/impact', { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(800);
-    await page.mouse.wheel(0, 500);
-    await page.waitForTimeout(800);
-
-    // Step 3: API Docs page
-    await page.goto('/docs/api', { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(800);
-    await page.mouse.wheel(0, 500);
-    await page.waitForTimeout(800);
-  });
+test('mobile menu opens, closes, and restores focus', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 800 }); await page.goto('/en', { waitUntil: 'networkidle' }); const toggle = page.locator('.menu-toggle'); await expect(toggle).toBeVisible();
+  await toggle.click(); await expect(toggle).toHaveAttribute('aria-expanded', 'true'); await page.keyboard.press('Escape'); await expect(toggle).toHaveAttribute('aria-expanded', 'false'); await expect(toggle).toBeFocused();
 });

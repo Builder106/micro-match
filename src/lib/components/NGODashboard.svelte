@@ -225,7 +225,7 @@
                 <span class="mini-time"><Icon icon="lucide:clock" width="12" height="12" /> {task.estimatedMinutes} min</span>
               {/if}
             </div>
-            <h4>{task.title}</h4>
+            <h3>{task.title}</h3>
             <p>{task.shortDescription}</p>
             <div class="task-mini-foot">
               <div class="mini-tags">
@@ -292,27 +292,27 @@
   .reviews-list { display: flex; flex-direction: column; gap: 12px; }
   .review-card { background: var(--color-surface); border-radius: 18px; padding: 18px 20px; border: 1px solid var(--card-border); box-shadow: 0 10px 24px rgba(15, 23, 42, 0.03); display: flex; flex-direction: column; gap: 12px; }
   .review-card-head { display: flex; gap: 12px; align-items: flex-start; }
-  .review-icon { width: 38px; height: 38px; border-radius: 12px; background: #FEF3C7; color: #D97706; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .review-icon { width: 38px; height: 38px; border-radius: 12px; background: var(--color-warning-container); color: var(--color-warning); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .review-meta h3 { font-size: 15px; font-weight: 700; margin: 0 0 3px; }
   .review-meta small { font-size: 12px; font-weight: 500; color: var(--color-text-secondary); }
   .review-notes { font-size: 13px; line-height: 1.5; color: var(--color-text); margin: 0; padding: 10px 14px; background: color-mix(in srgb, var(--color-text) 3%, transparent); border-radius: 10px; }
   .review-actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
-  .review-proof { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; background: #DBEAFE; color: #2563EB; border-radius: 9999px; font-size: 12px; font-weight: 700; text-decoration: none; transition: background .2s; }
-  .review-proof:hover { background: #BFDBFE; }
+  .review-proof { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; background: var(--color-info-container); color: var(--color-info); border-radius: 9999px; font-size: 12px; font-weight: 700; text-decoration: none; transition: background .2s; }
+  .review-proof:hover { background: var(--color-info-container-hover); }
   .review-buttons { display: flex; gap: 8px; margin-left: auto; }
   .btn-reject, .btn-approve { display: inline-flex; align-items: center; gap: 5px; padding: 7px 14px; border-radius: 9999px; font-weight: 700; font-size: 12px; cursor: pointer; border: none; font-family: inherit; transition: all .2s; }
-  .btn-reject { background: #FEE2E2; color: #B91C1C; }
-  .btn-reject:hover { background: #FECACA; }
-  .btn-approve { background: #D1FAE5; color: #047857; }
-  .btn-approve:hover { background: #A7F3D0; }
+  .btn-reject { background: var(--color-error-container); color: var(--color-error); }
+  .btn-reject:hover { background: color-mix(in srgb, var(--color-error-container) 85%, var(--color-error)); }
+  .btn-approve { background: var(--color-success-container); color: var(--color-success); }
+  .btn-approve:hover { background: color-mix(in srgb, var(--color-success-container) 85%, var(--color-success)); }
 
   /* Stats strip */
   .stats-strip { display: flex; align-items: stretch; padding: 8px 4px; border-radius: 20px; }
   .stat { flex: 1; padding: 12px 10px; display: flex; align-items: center; gap: 12px; min-width: 0; }
   .stat-icon { width: 36px; height: 36px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .stat-icon-green { background: #D1FAE5; color: #059669; }
-  .stat-icon-blue { background: #DBEAFE; color: #2563EB; }
-  .stat-icon-amber { background: #FEF3C7; color: #D97706; }
+  .stat-icon-green { background: var(--color-success-container); color: var(--color-success); }
+  .stat-icon-blue { background: var(--color-info-container); color: var(--color-info); }
+  .stat-icon-amber { background: var(--color-warning-container); color: var(--color-warning); }
   .stat-icon-coral { background: rgba(255, 107, 107, 0.12); color: var(--color-primary-readable); }
   .stat-body { min-width: 0; }
   .stat-num { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: 19px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; color: var(--color-text); }
@@ -340,16 +340,16 @@
   }
   .task-mini:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05); }
   .task-mini-top { display: flex; justify-content: space-between; align-items: center; }
-  .task-mini-avatar { width: 36px; height: 36px; border-radius: 12px; background: #DBEAFE; color: #2563EB; display: flex; align-items: center; justify-content: center; }
+  .task-mini-avatar { width: 36px; height: 36px; border-radius: 12px; background: var(--color-info-container); color: var(--color-info); display: flex; align-items: center; justify-content: center; }
   .mini-time { font-size: 11px; font-weight: 700; color: var(--color-text-secondary); display: inline-flex; align-items: center; gap: 4px; }
-  .task-mini h4 { font-size: 15px; font-weight: 700; margin: 0; line-height: 1.3; }
+  .task-mini h3 { font-size: 15px; font-weight: 700; margin: 0; line-height: 1.3; }
   .task-mini p { font-size: 12px; color: var(--color-text-secondary); margin: 0; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .task-mini-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-top: auto; }
   .mini-tags { display: flex; flex-wrap: wrap; gap: 5px; }
   .task-status { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 9999px; text-transform: capitalize; }
-  .task-status[data-status="completed"] { background: #DBEAFE; color: #2563EB; }
-  .task-status[data-status="expired"] { background: #FEE2E2; color: #B91C1C; }
-  .task-status[data-status="moderated"] { background: #FEF3C7; color: #D97706; }
+  .task-status[data-status="completed"] { background: var(--color-info-container); color: var(--color-info); }
+  .task-status[data-status="expired"] { background: var(--color-error-container); color: var(--color-error); }
+  .task-status[data-status="moderated"] { background: var(--color-warning-container); color: var(--color-warning); }
 
   /* Empty cards */
   .empty-card {

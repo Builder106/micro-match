@@ -168,7 +168,7 @@
     padding: 3px 10px;
     border-radius: 16px;
     background: var(--color-primary, #ff6b6b);
-    color: #ffffff;
+    color: var(--color-brand-on-coral);
     letter-spacing: 0.02em;
   }
 
@@ -256,7 +256,7 @@
 
   .role-api {
     background: var(--color-primary);
-    color: #ffffff;
+    color: var(--color-brand-on-coral);
   }
 
   .role-user {
@@ -348,7 +348,7 @@
     padding: 10px 18px;
     border-radius: 9999px;
     background: var(--color-primary);
-    color: #ffffff !important;
+    color: var(--color-brand-on-coral) !important;
     font-weight: 700 !important;
     font-size: 0.9rem;
     text-decoration: none !important;
@@ -368,7 +368,7 @@
     gap: 6px;
     font-weight: 700 !important;
     font-size: 0.9rem;
-    color: var(--color-primary, #ff6b6b) !important;
+    color: var(--color-primary-readable) !important;
     text-decoration: none !important;
     transition: gap 0.15s ease;
   }

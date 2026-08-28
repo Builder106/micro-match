@@ -317,7 +317,7 @@
   .ribbon-btn:hover .ribbon-num,
   .ribbon-btn.active .ribbon-num {
     background: #FF6B6B;
-    color: #ffffff;
+    color: var(--color-brand-on-coral);
   }
 
   .ribbon-label {
@@ -651,7 +651,7 @@
   }
 
   .btn-coral:hover {
-    background: #ff5252;
+    background: var(--color-primary);
     transform: translateY(-2px);
     box-shadow: 0 8px 22px rgba(255, 107, 107, 0.35);
   }

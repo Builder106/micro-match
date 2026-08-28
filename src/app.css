@@ -5,6 +5,13 @@
   --color-brand-light: #FF9E5E;
   --color-readable-coral: #881337;
   --color-action-on-coral: #020617;
+  --color-brand-on-coral: var(--color-action-on-coral);
+  --color-info-container: #DBEAFE;
+  --color-info-container-hover: #BFDBFE;
+  --color-info: #172554;
+  --color-warning-container: #FEF3C7;
+  --color-success-container: #D1FAE5;
+  --color-error-container: #FEE2E2;
   --color-focus: #0F172A;
   --color-primary: var(--color-brand-coral);
   --color-primary-variant: var(--color-brand-hover);
@@ -121,6 +128,16 @@
   --color-primary-readable: #fda4af;
   --color-readable-coral: #FDA4AF;
   --color-focus: #FDA4AF;
+  --color-brand-on-coral: #020617;
+  --color-info: #BFDBFE;
+  --color-info-container: #1e3a5f;
+  --color-info-container-hover: #294d78;
+  --color-warning-container: #5b4514;
+  --color-warning: #FEF3C7;
+  --color-success: #A7F3D0;
+  --color-error: #FCA5A5;
+  --color-success-container: #14532d;
+  --color-error-container: #5f1d2a;
   --card-border: rgba(241, 245, 249, 0.10);
   --card-border-strong: rgba(241, 245, 249, 0.16);
 }
@@ -139,6 +156,16 @@
     --color-primary-readable: #fda4af;
     --color-readable-coral: #FDA4AF;
     --color-focus: #FDA4AF;
+    --color-brand-on-coral: #020617;
+    --color-info: #BFDBFE;
+    --color-info-container: #1e3a5f;
+    --color-info-container-hover: #294d78;
+    --color-warning-container: #5b4514;
+    --color-warning: #FEF3C7;
+    --color-success: #A7F3D0;
+    --color-error: #FCA5A5;
+    --color-success-container: #14532d;
+    --color-error-container: #5f1d2a;
     --card-border: rgba(241, 245, 249, 0.10);
     --card-border-strong: rgba(241, 245, 249, 0.16);
   }
@@ -633,7 +660,7 @@ input:focus, textarea:focus, select:focus {
   text-decoration: none;
   transition: all .25s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.btn-coral:hover { background: var(--color-primary-variant); transform: translateY(-2px); box-shadow: 0 16px 40px rgba(255,107,107,0.35); }
+.btn-coral:hover { background: var(--color-primary); transform: translateY(-2px); box-shadow: 0 16px 40px rgba(255,107,107,0.35); }
 .btn-coral:active { transform: scale(0.97); }
 .btn-coral:disabled { opacity: .5; cursor: not-allowed; transform: none; box-shadow: none; }
 

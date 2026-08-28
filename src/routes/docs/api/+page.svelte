@@ -811,7 +811,8 @@
               {#if ep.requestBody}
                 <div class="section-block">
                   <h3 class="section-title">Request Body</h3>
-                  <pre class="code-block"><code>{ep.requestBody}</code></pre>
+                  <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+                  <pre class="code-block" tabindex="0" role="region" aria-label={`${ep.id} request example`}><code>{ep.requestBody}</code></pre>
                 </div>
               {/if}
 
@@ -820,7 +821,8 @@
                   <h3 class="section-title">Response</h3>
                   <span class="status-badge">{ep.responseStatus}</span>
                 </div>
-                <pre class="code-block"><code>{ep.responseBody}</code></pre>
+                <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+                <pre class="code-block" tabindex="0" role="region" aria-label={`${ep.id} response example`}><code>{ep.responseBody}</code></pre>
               </div>
             </div>
           </div>
@@ -855,7 +857,7 @@
     padding: 3px 10px;
     border-radius: 16px;
     background: var(--color-primary, #ff6b6b);
-    color: #ffffff;
+    color: var(--color-brand-on-coral);
     letter-spacing: 0.02em;
   }
 
@@ -1033,9 +1035,10 @@
     filter: brightness(0.96);
   }
 
-  .pill-btn.active {
+  .pill-btn.active,
+  .auth-pill-btn.active {
     background: var(--color-primary, #ff6b6b);
-    color: #ffffff;
+    color: var(--color-brand-on-coral);
     border-color: var(--color-primary, #ff6b6b);
   }
 
@@ -1071,7 +1074,8 @@
   }
 
   .active .count-tag {
-    background: rgba(0, 0, 0, 0.35);
+    background: var(--color-action-on-coral);
+    color: var(--color-surface);
   }
 
   .endpoints-list {
@@ -1330,9 +1334,12 @@
     font-size: 0.825rem;
     line-height: 1.5;
     overflow-x: auto;
+    overscroll-behavior-inline: contain;
     margin: 0;
     max-height: 420px;
   }
+
+  .code-block code { display: block; background: #0f172a; color: #f8fafc; }
 
   .note-box {
     margin-top: 16px;

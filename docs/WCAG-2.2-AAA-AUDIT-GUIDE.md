@@ -41,7 +41,8 @@ entry is missing evidence.
 
 ## Status vocabulary
 
-Use these statuses consistently:
+Use these statuses consistently. Use `Not recorded` only for an evidence field;
+it is not a status.
 
 - `Pass`: the criterion passed for the recorded scope and has attached
   evidence.
@@ -133,7 +134,7 @@ or available actions.
 
 ### 4. Record evidence and disposition
 
-Each criterion row must identify the surface, method, evidence path, status,
+Each individual criterion row must identify the surface, method, evidence path, status,
 reviewer, date, and issue or rationale. Link failures to remediation issues.
 Attach screenshots or recordings for visual and interaction findings, and
 retain screen-reader notes or transcripts for auditory findings.
@@ -142,9 +143,16 @@ retain screen-reader notes or transcripts for auditory findings.
 
 Re-run automation after every remediation. Repeat affected manual checks,
 then complete a representative end-to-end pass with keyboard and assistive
-technology. The release gate remains closed while any violation, incomplete
-result, unresolved review item, unchecked matrix row, or undocumented
-exception remains.
+technology. The PR matrix check validates inventory and evidence shape while
+allowing unresolved manual review. The release gate remains closed while any
+violation, incomplete result, unresolved review item, unchecked matrix row,
+blank evidence metadata, or undocumented exception remains. Run the validator
+with `--mode=pr` in pull requests and `--mode=release` for release evidence.
+
+The matrix must use the WCAG 2.2 criterion levels. In particular, 1.3.6
+Identify Purpose and 2.5.5 Target Size (Enhanced) are AAA criteria. WCAG 2.2
+does not include the retired 4.1.1 Parsing criterion; do not record it as an
+active criterion.
 
 ## POUR review checklist
 

@@ -95,15 +95,21 @@ jobs:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
-      - run: bunx playwright install --with-deps chromium
-      - name: Run responsiveness & a11y audit
-        run: bun run test:audit
+      - run: bunx playwright install --with-deps chromium firefox
+      - name: Run accessibility audit
+        run: bun run test:accessibility
         env:
           PUBLIC_APPWRITE_ENDPOINT: https://placeholder.example.com
           PUBLIC_APPWRITE_PROJECT_ID: placeholder
           PLAYWRIGHT_A11Y_HARNESS: '1'
-      - name: Verify accessibility evidence matrix
-        run: bun run verify:a11y-matrix
+      - name: Run responsiveness audit
+        run: bun run test:responsiveness
+        env:
+          PUBLIC_APPWRITE_ENDPOINT: https://placeholder.example.com
+          PUBLIC_APPWRITE_PROJECT_ID: placeholder
+          PLAYWRIGHT_A11Y_HARNESS: '1'
+      - name: Validate PR accessibility evidence shape
+        run: bun run verify:a11y-matrix -- --mode=pr
       - name: Upload audit artifacts on failure
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
@@ -113,4 +119,4 @@ jobs:
             test-results/
             audit-output/
           retention-days: 7
-          if-no-files-found: ignore
+          if-no-files-found: error

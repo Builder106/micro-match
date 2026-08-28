@@ -367,7 +367,7 @@
     align-items: center;
     padding: 14px 32px;
     background: var(--color-primary);
-    color: #FFF;
+    color: var(--color-brand-on-coral);
     font-weight: 700;
     font-size: 15px;
     border-radius: 9999px;
@@ -615,7 +615,7 @@
   }
   .tab-btn.active {
     background: var(--color-primary);
-    color: #FFF;
+    color: var(--color-brand-on-coral);
     border-color: var(--color-primary-readable);
     box-shadow: 0 4px 14px rgba(255, 107, 107, 0.25);
   }
@@ -675,7 +675,7 @@
   .vol-cta-section { padding: 96px 0; background: var(--color-surface-variant); width: 100%; }
   .cta-box {
     background: var(--color-primary);
-    color: #FFFFFF;
+    color: var(--color-brand-on-coral);
     border-radius: 36px;
     padding: clamp(40px, 6vw, 64px);
     text-align: center;

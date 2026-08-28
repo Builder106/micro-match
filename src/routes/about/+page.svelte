@@ -161,7 +161,7 @@
     padding: 3px 10px;
     border-radius: 16px;
     background: var(--color-primary, #ff6b6b);
-    color: #ffffff;
+    color: var(--color-brand-on-coral);
     letter-spacing: 0.02em;
   }
 
@@ -437,8 +437,8 @@
     gap: 8px;
     padding: 10px 22px;
     border-radius: 9999px;
-    background: #FF6B6B;
-    color: #0F172A !important;
+    background: var(--color-primary);
+    color: var(--color-brand-on-coral) !important;
     font-weight: 700 !important;
     font-size: 0.9rem;
     text-decoration: none !important;

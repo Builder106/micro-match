@@ -177,7 +177,7 @@
     <h3>Self-Service Help & Documentation</h3>
           <p>Looking for instant answers or developer API specifications?</p>
           <div class="channel-links-row">
-            <a href={resolve('/help', {})} class="text-link">Help Center →</a>
+            <a href={resolve('/help', {})} class="text-link">Visit the Help Center →</a>
             <a href={resolve('/docs/api', {})} class="text-link">Developer API →</a>
           </div>
         </div>
@@ -204,7 +204,7 @@
     padding: 3px 10px;
     border-radius: 16px;
     background: var(--color-primary, #ff6b6b);
-    color: #ffffff;
+    color: var(--color-brand-on-coral);
     letter-spacing: 0.02em;
   }
 
@@ -314,7 +314,7 @@
 
   .topic-pill.active {
     background: var(--color-primary, #ff6b6b);
-    color: #ffffff;
+    color: var(--color-brand-on-coral);
     border-color: var(--color-primary, #ff6b6b);
   }
 
@@ -349,8 +349,8 @@
     gap: 8px;
     padding: 11px 22px;
     border-radius: 9999px;
-    background: #FF6B6B;
-    color: #0F172A !important;
+    background: var(--color-primary);
+    color: var(--color-brand-on-coral) !important;
     font-weight: 700 !important;
     font-size: 0.9rem;
     border: none;
@@ -360,7 +360,7 @@
   }
 
   .btn-coral:hover {
-    background: #ff5252;
+    background: var(--color-primary);
     transform: translateY(-2px);
     box-shadow: 0 10px 24px rgba(255, 107, 107, 0.35);
   }
@@ -469,7 +469,7 @@
     gap: 4px;
     font-size: 0.875rem;
     font-weight: 700;
-    color: var(--color-primary, #ff6b6b);
+    color: var(--color-primary-readable);
     text-decoration: none !important;
   }
 
@@ -486,7 +486,7 @@
   .text-link {
     font-size: 0.85rem;
     font-weight: 700;
-    color: var(--color-primary, #ff6b6b);
+    color: var(--color-primary-readable);
     text-decoration: none !important;
   }
 
