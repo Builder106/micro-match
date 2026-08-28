@@ -675,7 +675,7 @@
   .vol-cta-section { padding: 96px 0; background: var(--color-surface-variant); width: 100%; }
   .cta-box {
     background: var(--color-primary);
-    color: var(--color-brand-on-coral);
+    color: var(--color-action-on-coral);
     border-radius: 36px;
     padding: clamp(40px, 6vw, 64px);
     text-align: center;
@@ -686,8 +686,8 @@
     transform: translateY(-4px);
     box-shadow: 0 28px 60px rgba(255, 107, 107, 0.35);
   }
-  .cta-box h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.8rem, 3vw, 2.75rem); font-weight: 800; color: #FFFFFF; margin: 0 0 12px; }
-  .cta-box p { font-size: 18px; color: rgba(255, 255, 255, 0.9); margin: 0 0 32px; }
+  .cta-box h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.8rem, 3vw, 2.75rem); font-weight: 800; color: var(--color-action-on-coral); margin: 0 0 12px; }
+  .cta-box p { font-size: 18px; color: var(--color-action-on-coral); margin: 0 0 32px; }
   .cta-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
   .cta-actions .btn-coral {
     background: #FFFFFF;
@@ -696,19 +696,19 @@
   }
   .cta-actions .btn-coral:hover {
     background: #FFF;
-    color: #E85555;
+    color: var(--color-readable-coral-on-light);
     transform: translateY(-2px) scale(1.03);
     box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
   }
   .cta-actions .btn-outline-dark {
     background: transparent;
-    color: #FFFFFF;
-    border-color: rgba(255, 255, 255, 0.4);
+    color: var(--color-action-on-coral);
+    border-color: var(--color-action-on-coral);
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .cta-actions .btn-outline-dark:hover {
     background: rgba(255, 255, 255, 0.15);
-    border-color: #FFFFFF;
+    border-color: var(--color-action-on-coral);
     transform: translateY(-2px) scale(1.03);
   }
 </style>

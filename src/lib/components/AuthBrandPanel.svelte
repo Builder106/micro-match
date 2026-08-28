@@ -133,6 +133,9 @@
     gap: 10px;
     color: #fff;
     text-decoration: none;
+    background: #0f172a;
+    border-radius: 12px;
+    padding: 6px 10px;
     width: fit-content;
     position: relative;
     z-index: 1;

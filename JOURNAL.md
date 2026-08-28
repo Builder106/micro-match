@@ -4,6 +4,10 @@
 > things happen — retrospectives need this raw material to land.
 > Reverse-chronological; one paragraph max per entry.
 
+## 2026-08-27 - Full matrix reached volunteer and auth routes #incident
+
+The next CI pass reached the volunteer CTA and compact login brand lockup. It found the same light-on-coral treatment on the volunteer page and an animated SVG behind the compact logo text, which left Firefox without a reliable contrast background. The CTA now uses the shared action token and the lockup has an opaque dark surface; both previously failing cases pass in local Chromium and Firefox checks.
+
 ## 2026-08-27 - Follow-up matrix exposed route-specific coral contrast gaps #incident
 
 The follow-up matrix reached the NGO planner and process inspector after the shared public-shell repair. It found light text that fell below the enhanced target in dark mode, accent text that was too light on white controls, and an unnecessary positioned heading that Firefox could not evaluate reliably. Shared surface-aware tokens and simpler stacking now keep both route matrices clean across the supported locales, themes, viewports, and browsers.
