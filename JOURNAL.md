@@ -4,6 +4,10 @@
 > things happen — retrospectives need this raw material to land.
 > Reverse-chronological; one paragraph max per entry.
 
+## 2026-08-27 - Follow-up matrix exposed route-specific coral contrast gaps #incident
+
+The follow-up matrix reached the NGO planner and process inspector after the shared public-shell repair. It found light text that fell below the enhanced target in dark mode, accent text that was too light on white controls, and an unnecessary positioned heading that Firefox could not evaluate reliably. Shared surface-aware tokens and simpler stacking now keep both route matrices clean across the supported locales, themes, viewports, and browsers.
+
 ## 2026-08-27 - Firefox audit now handles dark themes and Arabic navigation #incident
 
 The failed CI run exposed a dark-theme count color, a mobile code block that expanded past its card, and Firefox's RTL handling of English-only shell text. The product now uses a light-on-dark count foreground, keeps API examples inside width-constrained focusable regions, and marks those English shell regions as LTR inside Arabic pages. The harness expands a closed FAQ item instead of toggling the initially open one. Chromium and Firefox route matrices pass across all seven locales, both themes, and all three viewports.

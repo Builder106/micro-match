@@ -349,8 +349,8 @@
   .mobile-menu a { display: block; padding: 12px 4px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 600; color: var(--color-text); text-decoration: none; border-radius: 8px; }
   .mobile-menu a:hover { color: var(--color-primary-readable); }
   .mobile-menu-divider { height: 1px; background: var(--card-border); margin: 8px 0; }
-  .mobile-menu-cta { background: #FF6B6B; color: #0F172A !important; text-align: center; border-radius: 9999px; font-weight: 700; }
-  .mobile-menu-cta:hover { background: var(--color-primary-variant); color: #fff !important; }
+  .mobile-menu-cta { background: var(--color-primary); color: var(--color-action-on-coral) !important; text-align: center; border-radius: 9999px; font-weight: 700; }
+  .mobile-menu-cta:hover { background: var(--color-primary-variant); color: var(--color-action-on-coral) !important; }
   .mobile-menu-github { display: flex !important; align-items: center; gap: 8px; color: var(--color-text-secondary) !important; }
 
   /* Footer */

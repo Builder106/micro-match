@@ -4,7 +4,8 @@
   --color-brand-hover: #E85555;
   --color-brand-light: #FF9E5E;
   --color-readable-coral: #881337;
-  --color-action-on-coral: #020617;
+  --color-action-on-coral: #000000;
+  --color-readable-coral-on-light: #881337;
   --color-brand-on-coral: var(--color-action-on-coral);
   --color-info-container: #DBEAFE;
   --color-info-container-hover: #BFDBFE;
@@ -128,7 +129,7 @@
   --color-primary-readable: #fda4af;
   --color-readable-coral: #FDA4AF;
   --color-focus: #FDA4AF;
-  --color-brand-on-coral: #020617;
+  --color-brand-on-coral: #000000;
   --color-info: #BFDBFE;
   --color-info-container: #1e3a5f;
   --color-info-container-hover: #294d78;
@@ -156,7 +157,7 @@
     --color-primary-readable: #fda4af;
     --color-readable-coral: #FDA4AF;
     --color-focus: #FDA4AF;
-    --color-brand-on-coral: #020617;
+    --color-brand-on-coral: #000000;
     --color-info: #BFDBFE;
     --color-info-container: #1e3a5f;
     --color-info-container-hover: #294d78;

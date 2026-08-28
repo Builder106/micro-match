@@ -370,7 +370,7 @@
   }
   .ribbon-step:hover:not(.active) .ribbon-num {
     background: var(--color-primary);
-    color: #FFFFFF;
+    color: var(--color-action-on-coral);
     transform: rotate(8deg);
   }
   .ribbon-step:hover:not(.active) .ribbon-label {
@@ -412,10 +412,10 @@
   }
   .ribbon-step.active .ribbon-num {
     background: #FFFFFF;
-    color: var(--color-primary-readable);
+    color: var(--color-readable-coral-on-light);
   }
   .ribbon-step.active .ribbon-label {
-    color: #FFFFFF;
+    color: var(--color-action-on-coral);
   }
   .ribbon-line {
     flex: 1;
@@ -454,7 +454,7 @@
     display: inline-block;
     padding: 4px 12px;
     background: rgba(255, 107, 107, 0.12);
-    color: var(--color-primary-readable);
+    color: var(--color-text-secondary);
     border-radius: 9999px;
     font-size: 12px;
     font-weight: 700;
@@ -466,9 +466,6 @@
     font-weight: 800;
     color: var(--color-text);
     margin: 0 0 12px;
-    background: var(--color-surface);
-    position: relative;
-    z-index: 1;
   }
   .ins-summary {
     font-size: 16px;
@@ -528,12 +525,12 @@
   }
   .btn-nav-next {
     background: var(--color-primary);
-    color: #FFF;
+    color: var(--color-action-on-coral);
     border-color: var(--color-primary-readable);
     box-shadow: 0 4px 14px rgba(255, 107, 107, 0.25);
   }
   .btn-nav-next:hover:not(:disabled) {
-    background: #ff5252;
+    background: var(--color-primary);
     transform: translateY(-2px);
     box-shadow: 0 8px 22px rgba(255, 107, 107, 0.35);
   }
@@ -616,7 +613,7 @@
     gap: 4px;
     padding: 4px 10px;
     background: rgba(255, 107, 107, 0.12);
-    color: var(--color-primary-readable);
+    color: var(--color-text-secondary);
     border-radius: 9999px;
     font-size: 12px;
     font-weight: 700;
@@ -816,7 +813,7 @@
   }
   .cta-banner {
     background: var(--color-primary);
-    color: #FFFFFF;
+    color: var(--color-action-on-coral);
     border-radius: 36px;
     padding: clamp(40px, 6vw, 64px) 24px;
     text-align: center;
@@ -831,12 +828,12 @@
     font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: clamp(1.8rem, 3vw, 2.75rem);
     font-weight: 800;
-    color: #FFFFFF;
+    color: var(--color-action-on-coral);
     margin: 0 0 12px;
   }
   .cta-banner p {
     font-size: 18px;
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--color-action-on-coral);
     margin: 0 0 32px;
   }
   .cta-btns {
@@ -847,24 +844,24 @@
   }
   .cta-btns .btn-coral {
     background: #FFFFFF;
-    color: var(--color-primary-readable);
+    color: var(--color-readable-coral-on-light);
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .cta-btns .btn-coral:hover {
     background: #FFF;
-    color: #E85555;
+    color: var(--color-readable-coral-on-light);
     transform: translateY(-2px) scale(1.03);
     box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
   }
   .cta-btns .btn-outline-dark {
     background: transparent;
-    color: #FFFFFF;
-    border-color: rgba(255, 255, 255, 0.4);
+    color: var(--color-action-on-coral);
+    border-color: var(--color-action-on-coral);
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .cta-btns .btn-outline-dark:hover {
     background: rgba(255, 255, 255, 0.15);
-    border-color: #FFFFFF;
+    border-color: var(--color-action-on-coral);
     transform: translateY(-2px) scale(1.03);
   }
 </style>
