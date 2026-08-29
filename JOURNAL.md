@@ -4,6 +4,10 @@
 > things happen — retrospectives need this raw material to land.
 > Reverse-chronological; one paragraph max per entry.
 
+## 2026-08-29: Git deployment branches restricted #decision
+
+Git-triggered Vercel deployments now run only for `main` and `staging`. The project keeps `main` as its Production Branch, so `staging` is the only Preview branch. Replaced the old `ignoreCommand`, which created canceled deployment records for blocked branches, with `git.deploymentEnabled`.
+
 ## 2026-08-27 - Full matrix reached volunteer and auth routes #incident
 
 The next CI pass reached the volunteer CTA and compact login brand lockup. It found the same light-on-coral treatment on the volunteer page and an animated SVG behind the compact logo text, which left Firefox without a reliable contrast background. The CTA now uses the shared action token and the lockup has an opaque dark surface; both previously failing cases pass in local Chromium and Firefox checks.
