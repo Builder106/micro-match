@@ -6,7 +6,7 @@
   export let animation = '/animations/collaboration.json';
 </script>
 
-<section class:compact class="brand-stage">
+<section class:compact class="brand-stage" aria-label="MicroMatch introduction">
   <div class="grain"></div>
   <div class="glow glow-coral"></div>
   <div class="glow glow-teal"></div>
@@ -103,6 +103,8 @@
     width: min(280px, 60%);
   }
   .compact .shade { background: #0f172a; }
+  .brand-stage:not(.compact) .shade { display: none; }
+  .brand-stage:not(.compact) .grain { display: none; }
   .shade {
     position: absolute;
     left: 0;
@@ -167,7 +169,6 @@
   }
 
   .logo-lockup:active .logo-mark {
-    transform: scale(0.95) rotate(0deg);
   }
 
   .compact .logo-lockup { gap: 8px; }
@@ -178,10 +179,16 @@
     left: 28px;
     right: 28px;
     top: 52%;
+    z-index: 4;
     max-width: 520px;
+    padding: 14px 16px;
+    background: #0f172a;
+    border-radius: 16px;
+    isolation: isolate;
   }
   .copy h1 {
     margin: 0;
+    background: #0f172a;
     color: #ffffff;
     font-size: clamp(2.25rem, 3.2vw, 3.25rem);
     line-height: 1.08;
@@ -196,6 +203,7 @@
   }
   .copy p {
     margin: 16px 0 0;
+    background: #0f172a;
     color: #cbd5e1;
     font-size: 1.2rem;
     line-height: 1.6;

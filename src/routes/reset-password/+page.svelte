@@ -80,7 +80,7 @@
           <Icon icon="lucide:arrow-right" width="16" height="16" />
         </a>
       {:else if linkInvalid}
-        <div class="error"><Icon icon="lucide:alert-circle" width="14" height="14" /> {error}</div>
+        <div class="error" role="alert"><Icon icon="lucide:alert-circle" width="14" height="14" /> {error}</div>
         <a href={resolve('/forgot-password', {})} class="btn-coral btn-lg auth-submit">
           Request a new link
           <Icon icon="lucide:arrow-right" width="16" height="16" />
@@ -88,7 +88,7 @@
       {:else}
         <form class="auth-form" on:submit={handleResetPassword}>
           {#if error}
-            <p class="error"><Icon icon="lucide:alert-circle" width="14" height="14" /> {error}</p>
+            <p class="error" role="alert"><Icon icon="lucide:alert-circle" width="14" height="14" /> {error}</p>
           {/if}
           <label>
             <span>New password</span>
@@ -208,7 +208,7 @@
   }
   input:focus { border-color: var(--color-primary-readable); background: var(--color-surface); box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12); outline: none; }
   .auth-submit { margin-top: 8px; width: 100%; }
-  .error { margin: 0 0 16px; padding: 10px 12px; background: #f5e5e7; color: #7f1d1d; font-size: 13px; font-weight: 600; border-radius: 10px; display: inline-flex; align-items: center; gap: 6px; }
+  .error { margin: 0 0 16px; padding: 10px 12px; background: var(--color-error-container); color: var(--color-error); font-size: 13px; font-weight: 600; border-radius: 10px; display: inline-flex; align-items: center; gap: 6px; }
 
   @media (min-width: 1024px) {
     .left-panel { display: block; }

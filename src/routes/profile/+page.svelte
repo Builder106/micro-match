@@ -270,8 +270,6 @@
 <div class="profile-page">
   <!-- ───── Hero ───── -->
   <section class="profile-hero brand-card">
-    <div class="profile-hero-blob"></div>
-
     <div class="avatar-stack">
       <div class="avatar-ring">
         <div class="avatar-face">
@@ -288,7 +286,7 @@
             <Icon icon="lucide:camera" width="16" height="16" />
           {/if}
         </button>
-        <input id="avatar-input" type="file" accept="image/*" onchange={handleAvatarChange} />
+        <input id="avatar-input" type="file" accept="image/*" aria-label="Profile avatar image" onchange={handleAvatarChange} />
       </div>
       <small class="avatar-hint">PNG or JPG up to 2MB <span class="pipe-sep">|</span> cropped to square</small>
       {#if avatarError}
@@ -499,7 +497,6 @@
   /* Hero */
   .profile-hero { position: relative; overflow: hidden; padding: 36px; display: grid; grid-template-columns: auto 1fr; gap: 32px; align-items: center; }
   @media (max-width: 640px) { .profile-hero { grid-template-columns: 1fr; padding: 28px; gap: 20px; text-align: center; } }
-  .profile-hero-blob { position: absolute; top: -50%; right: -10%; width: 360px; height: 360px; border-radius: 50%; background: rgba(255, 107, 107, 0.18); filter: blur(80px); pointer-events: none; }
   .avatar-stack { display: flex; flex-direction: column; align-items: center; gap: 10px; position: relative; z-index: 1; }
   .avatar-ring { position: relative; width: 120px; height: 120px; border-radius: 50%; padding: 4px; background: var(--color-primary); }
   .avatar-face { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; background: var(--color-surface); display: flex; align-items: center; justify-content: center; font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: 44px; font-weight: 800; color: var(--color-primary-readable); }
@@ -514,15 +511,15 @@
 
   .profile-hero-text { position: relative; z-index: 1; min-width: 0; }
   .profile-hero-text h1 { font-size: clamp(1.5rem, 2.5vw + 0.5rem, 2.25rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 10px; }
-  .profile-hero-text p { color: color-mix(in srgb, var(--color-text) 65%, transparent); font-size: 15px; line-height: 1.6; margin: 0 0 16px; }
+  .profile-hero-text p { color: var(--color-text-secondary); font-size: 15px; line-height: 1.6; margin: 0 0 16px; }
   .profile-meta { display: flex; flex-wrap: wrap; gap: 8px; }
   @media (max-width: 640px) { .profile-meta { justify-content: center; } }
-  .meta-chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: var(--card-border); color: color-mix(in srgb, var(--color-text) 75%, transparent); border-radius: 9999px; font-size: 12px; font-weight: 600; }
+  .meta-chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: var(--card-border); color: var(--color-text); border-radius: 9999px; font-size: 12px; font-weight: 600; }
 
   /* Form */
   .profile-form { padding: 32px; display: flex; flex-direction: column; gap: 24px; }
   .form-head h2 { font-size: 22px; font-weight: 700; margin: 0 0 6px; }
-  .form-head p { color: color-mix(in srgb, var(--color-text) 60%, transparent); font-size: 14px; margin: 0; }
+  .form-head p { color: var(--color-text-secondary); font-size: 14px; margin: 0; }
   .form-fields { display: flex; flex-direction: column; gap: 20px; }
   .field { display: flex; flex-direction: column; gap: 8px; }
   .field-label { font-size: 13px; font-weight: 700; color: var(--color-text); letter-spacing: -0.01em; }
@@ -539,9 +536,9 @@
   }
   .field input:focus, .field textarea:focus { outline: none; border-color: var(--color-primary-readable); box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12); }
   .field textarea { resize: vertical; min-height: 100px; line-height: 1.5; }
-  .field-hint { font-size: 12px; font-weight: 500; color: color-mix(in srgb, var(--color-text) 55%, transparent); }
+  .field-hint { font-size: 12px; font-weight: 500; color: var(--color-text-secondary); }
   .field-foot { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
-  .field-counter { font-size: 12px; font-weight: 600; color: color-mix(in srgb, var(--color-text) 50%, transparent); }
+  .field-counter { font-size: 12px; font-weight: 600; color: var(--color-text-secondary); }
 
   /* Role picker */
   .role-picker { padding: 0; margin: 4px 0 0; border: none; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -572,7 +569,7 @@
   .next-icon { width: 56px; height: 56px; border-radius: 18px; display: flex; align-items: center; justify-content: center; }
   .next-card h3 { font-size: 17px; font-weight: 700; margin: 0; }
   .next-num { color: var(--color-primary-readable); margin-right: 4px; }
-  .next-card p { font-size: 13px; color: color-mix(in srgb, var(--color-text) 60%, transparent); margin: 0; line-height: 1.5; }
+  .next-card p { font-size: 13px; color: var(--color-text-secondary); margin: 0; line-height: 1.5; }
 
   /* ───── Downgrade modal ───── */
   .dg-modal {

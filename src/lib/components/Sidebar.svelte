@@ -125,19 +125,6 @@
     border-radius: 16px;
     border: 1px solid color-mix(in srgb, var(--color-primary-readable) 20%, transparent);
   }
-  .quick-tip-container::before {
-    content: '';
-    position: absolute;
-    top: -40%;
-    right: -20%;
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    background: rgba(255, 158, 94, 0.25);
-    filter: blur(30px);
-    pointer-events: none;
-  }
-
   .quick-tip-header {
     position: relative;
     display: flex;
@@ -149,7 +136,7 @@
 
   .quick-tip-title {
     font-weight: 800;
-    color: var(--color-primary-readable);
+    color: var(--color-text);
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.08em;

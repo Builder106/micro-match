@@ -84,8 +84,8 @@
 <div class="ngo-dash">
   <!-- ───── Hero ───── -->
   <section class="ngo-hero brand-card">
-    <div class="ngo-hero-blob ngo-hero-blob-coral"></div>
-    <div class="ngo-hero-blob ngo-hero-blob-blue"></div>
+    <div class="ngo-hero-blob ngo-hero-blob-coral" aria-hidden="true"></div>
+    <div class="ngo-hero-blob ngo-hero-blob-blue" aria-hidden="true"></div>
 
     <div class="ngo-hero-text">
       <h1>Welcome back, <span class="coral-gradient">{orgName || 'team'}</span>.</h1>
@@ -101,7 +101,7 @@
           Post a task
           <Icon icon="lucide:plus" width="16" height="16" />
         </a>
-        <a href={resolve('/badges/manage', {})} class="btn-outline-dark">Manage badges</a>
+        <a href={resolve('/badges/manage', {})} class="btn-outline-dark">Manage your badges</a>
       </div>
     </div>
 

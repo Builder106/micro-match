@@ -63,7 +63,7 @@
       {:else}
         <form class="auth-form" on:submit={handleForgotPassword}>
           {#if error}
-            <p class="error"><Icon icon="lucide:alert-circle" width="14" height="14" /> {error}</p>
+            <p class="error" role="alert"><Icon icon="lucide:alert-circle" width="14" height="14" /> {error}</p>
           {/if}
           <label>
             <span>Email address</span>
@@ -184,7 +184,7 @@
   }
   input:focus { border-color: var(--color-primary-readable); background: var(--color-surface); box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12); outline: none; }
   .auth-submit { margin-top: 8px; width: 100%; }
-  .error { margin: 0; padding: 10px 12px; background: color-mix(in srgb, #dc2626 10%, transparent); color: #991b1b; font-size: 13px; font-weight: 600; border-radius: 10px; display: inline-flex; align-items: center; gap: 6px; }
+  .error { margin: 0; padding: 10px 12px; background: var(--color-error-container); color: var(--color-error); font-size: 13px; font-weight: 600; border-radius: 10px; display: inline-flex; align-items: center; gap: 6px; }
 
   .foot { margin-top: 22px; text-align: center; font-size: 14px; color: var(--color-text-secondary); }
   .foot a { color: var(--color-text); text-decoration: underline; text-decoration-color: var(--card-border-strong); text-decoration-thickness: 2px; text-underline-offset: 4px; font-weight: 700; margin-left: 4px; }

@@ -4,9 +4,57 @@
 > things happen — retrospectives need this raw material to land.
 > Reverse-chronological; one paragraph max per entry.
 
+## 2026-08-29 - Hardened profile and auth brand audit surfaces #fix
+
+The full matrix exposed real contrast failures in profile metadata, verification status, and small helper copy; those styles now use readable theme tokens, and decorative profile blobs were removed where they overlapped text geometry. The full-size auth brand copy now has an opaque stacking surface and no transformed or gradient overlay behind it; Firefox still reports the desktop heading as an exact visual review, so the disposition covers `login` alongside the existing error and reset states.
+
 ## 2026-08-29: Git deployment branches restricted #decision
 
 Git-triggered Vercel deployments now run only for `main` and `staging`. The project keeps `main` as its Production Branch, so `staging` is the only Preview branch. Replaced the old `ignoreCommand`, which created canceled deployment records for blocked branches, with `git.deploymentEnabled`.
+
+## 2026-08-29 - Scoped the Arabic mobile homepage review #fix
+
+Firefox's Arabic mobile homepage run found `elmPartiallyObscuring` reviews on the how-it-works heading and introductory copy. Both remain readable in the rendered section, so the disposition now matches only those two selectors, the homepage, Arabic locale, Firefox mobile, and that message; the raw Axe result remains available for manual review.
+
+## 2026-08-29 - Scoped the Arabic tablet homepage review #fix
+
+Firefox's Arabic tablet homepage run also reported `elmPartiallyObscuring` for the coral hero text. The visible text remains readable, so the disposition now matches only `.coral-gradient` on the Arabic homepage at the Firefox tablet viewport with that exact message; the raw Axe result remains available for manual review.
+
+## 2026-08-29 - Scoped the Arabic tablet section review #fix
+
+The same Firefox Arabic tablet run reported `elmPartiallyObscuring` for the how-it-works introduction. Its text remains readable, so the disposition now matches only that paragraph, the Arabic homepage, Firefox tablet, and the exact Axe message; the raw result remains available for manual review.
+
+## 2026-08-29 - Kept volunteer hero contrast review narrow #fix
+
+Firefox continued to classify the volunteer dashboard paragraph as partially obscured after the decorative blobs were marked `aria-hidden` and the paragraph received an opaque surface background. The text is readable in the rendered card, so the remaining review is limited to the observed English light Firefox tablet case, its exact selector, and its exact message.
+
+## 2026-08-29 - Scoped volunteer stat text reviews #fix
+
+Firefox's volunteer dashboard run classified short stat values and labels as `shortTextContent`, `bgOverlap`, or `elmPartiallyObscured` depending on the viewport. The icon and divider elements are now hidden as decoration, while the remaining review is limited to Firefox stat-number and stat-label selectors on that dashboard and those exact messages.
+
+## 2026-08-29 - Named the avatar file control and scoped the task footer review #fix
+
+The full accessibility run found an unlabeled hidden avatar file input and a Firefox-only indeterminate background result for the task-feed footer copy. The input now has an explicit accessible name, while the footer disposition matches only Firefox, `tasks`, `.footer-brand > p`, and `elmPartiallyObscuring`.
+
+## 2026-08-29 - Kept volunteer hero review at the component boundary #fix
+
+The stronger volunteer hero text token fixed the measured dark-theme 6.93:1 contrast miss, but Firefox still reports an indeterminate background when the decorative blobs overlap the paragraph. The review now matches only Firefox, the volunteer dashboard, that paragraph selector, and `elmPartiallyObscuring` across the rendered matrix.
+
+## 2026-08-29 - Covered the Arabic desktop hero review #fix
+
+The Firefox Arabic desktop homepage run reported the same no-related-node `elmPartiallyObscuring` result as the tablet run for `.coral-gradient`. The matcher and matrix entry now cover only the Arabic homepage coral selector at Firefox tablet or desktop, with the exact message preserved.
+
+## 2026-08-29 - Full audit keeps decorative dispositions exact #fix
+
+The full accessibility matrix reached the shared dashboard progress ring, Firefox responsive homepage, and desktop NGO dashboard states. Axe classified the visible ring label as short text over its related SVG, could not determine the homepage hero text background where decorative blobs overlap the gradient, and could not classify one RTL dashboard section heading. Those results are now limited to their exact target, related node where present, locale, browser, viewport, and message; raw Axe results remain in the artifacts for manual review. The quick-tip glow was removed because its decorative pseudo-element obscured the text background in Axe, the dashboard's hero blobs are marked decorative, and the hero link has a distinct descriptive name.
+
+## 2026-08-29 - Stabilized the accessibility interaction harness #fix
+
+The a11y harness now waits for the how-it-works inspector transition, clears its completed transforms, and scrolls the heading into view before Axe runs. Because Axe still reports false `elmPartiallyObscured` or `elmPartiallyObscuring` reviews on that animated heading in Chromium, the suite records a disposition for that exact selector and those message keys. The mobile-menu state now leaves `#mobile-menu` open for the Axe scan, then verifies Escape and focus restoration; the breakpoint test covers 767px and 768px. Coral exceptions use exact Axe colors or exact target styles, and remain limited to contrast checks. Other visual dispositions require exact target and message matches, or an exact target inside the homepage's hidden decorative layer.
+
+## 2026-08-29 - Auth errors announce and reset review is scoped #fix
+
+Authentication errors now use alert semantics across login, signup, password recovery, and reset flows, so an error inserted after submission is exposed to assistive technology. The auth error surfaces now use the shared error tokens, including a lighter dark-theme foreground that clears the enhanced contrast target, and the desktop brand panel has a named introduction region. Axe still cannot classify the gradient behind the desktop auth brand copy or the opaque auth-card background for the Arabic tablet login state, so both reviews are limited to their exact browser, locale, viewport, selectors, and messages. The reset-password result remains limited to its Chromium mobile/tablet paragraph selector and message; raw Axe results stay in the artifacts for all dispositions.
 
 ## 2026-08-27 - Full matrix reached volunteer and auth routes #incident
 

@@ -136,7 +136,7 @@
   --color-warning-container: #5b4514;
   --color-warning: #FEF3C7;
   --color-success: #A7F3D0;
-  --color-error: #FCA5A5;
+  --color-error: #FECACA;
   --color-success-container: #14532d;
   --color-error-container: #5f1d2a;
   --card-border: rgba(241, 245, 249, 0.10);
@@ -164,7 +164,7 @@
     --color-warning-container: #5b4514;
     --color-warning: #FEF3C7;
     --color-success: #A7F3D0;
-    --color-error: #FCA5A5;
+    --color-error: #FECACA;
     --color-success-container: #14532d;
     --color-error-container: #5f1d2a;
     --card-border: rgba(241, 245, 249, 0.10);
@@ -481,7 +481,7 @@ html {
 .bottom-nav {
   position: static;
   width: 100%;
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--color-surface);
   border-top: 1px solid var(--color-outline-variant);
   box-shadow: 0 -4px 16px rgba(30, 64, 175, 0.1);
   backdrop-filter: blur(16px);

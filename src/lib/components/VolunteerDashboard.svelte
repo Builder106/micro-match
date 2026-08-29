@@ -119,8 +119,8 @@
 <div class="vol-dash">
   <!-- ───── Hero ───── -->
   <section class="vol-hero brand-card">
-    <div class="vol-hero-blob vol-hero-blob-yellow"></div>
-    <div class="vol-hero-blob vol-hero-blob-coral"></div>
+    <div class="vol-hero-blob vol-hero-blob-yellow" aria-hidden="true"></div>
+    <div class="vol-hero-blob vol-hero-blob-coral" aria-hidden="true"></div>
 
     <div class="vol-hero-text">
       {#if data.signedIn}
@@ -158,31 +158,31 @@
   <!-- ───── Stats strip ───── -->
   <section class="stats-strip brand-card">
     <div class="stat">
-      <div class="stat-icon stat-icon-green"><Icon icon="lucide:check-circle-2" width="20" height="20" /></div>
+      <div class="stat-icon stat-icon-green" aria-hidden="true"><Icon icon="lucide:check-circle-2" width="20" height="20" /></div>
       <div class="stat-body">
         <div class="stat-num">{approvedClaimsCount}</div>
         <div class="stat-label">Tasks done</div>
       </div>
     </div>
-    <div class="stat-divider"></div>
+    <div class="stat-divider" aria-hidden="true"></div>
     <div class="stat">
-      <div class="stat-icon stat-icon-blue"><Icon icon="lucide:clock" width="20" height="20" /></div>
+      <div class="stat-icon stat-icon-blue" aria-hidden="true"><Icon icon="lucide:clock" width="20" height="20" /></div>
       <div class="stat-body">
         <div class="stat-num">{totalHours.toFixed(1)}</div>
         <div class="stat-label">Hours given</div>
       </div>
     </div>
-    <div class="stat-divider"></div>
+    <div class="stat-divider" aria-hidden="true"></div>
     <div class="stat">
-      <div class="stat-icon stat-icon-amber"><Icon icon="lucide:hourglass" width="20" height="20" /></div>
+      <div class="stat-icon stat-icon-amber" aria-hidden="true"><Icon icon="lucide:hourglass" width="20" height="20" /></div>
       <div class="stat-body">
         <div class="stat-num">{pendingCount}</div>
         <div class="stat-label">Awaiting review</div>
       </div>
     </div>
-    <div class="stat-divider"></div>
+    <div class="stat-divider" aria-hidden="true"></div>
     <div class="stat">
-      <div class="stat-icon stat-icon-coral"><Icon icon="hugeicons:trophy-01" width="20" height="20" /></div>
+      <div class="stat-icon stat-icon-coral" aria-hidden="true"><Icon icon="hugeicons:trophy-01" width="20" height="20" /></div>
       <div class="stat-body">
         <div class="stat-num">{badges.length}</div>
         <div class="stat-label">Badges earned</div>
@@ -343,7 +343,7 @@
   .vol-hero-blob-coral { bottom: -50%; left: 30%; width: 320px; height: 320px; background: rgba(255, 107, 107, 0.18); }
   .vol-hero-text { position: relative; z-index: 1; max-width: 500px; }
   .vol-hero-text h1 { font-size: clamp(1.5rem, 2.2vw + 0.5rem, 2.1rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 8px; }
-  .vol-hero-text p { color: var(--color-text-secondary); font-size: 14px; font-weight: 500; line-height: 1.5; margin: 0 0 18px; max-width: 440px; }
+  .vol-hero-text p { color: var(--color-text); font-size: 14px; font-weight: 500; line-height: 1.5; margin: 0 0 18px; max-width: 440px; }
   .vol-hero-actions { display: flex; flex-wrap: wrap; gap: 10px; }
   .vol-hero-ring { position: relative; width: 128px; height: 128px; flex-shrink: 0; z-index: 1; }
   @media (max-width: 768px) { .vol-hero-ring { width: 110px; height: 110px; align-self: center; } }

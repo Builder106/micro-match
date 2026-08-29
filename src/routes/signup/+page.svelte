@@ -91,7 +91,7 @@
 
         <form class="auth-form" onsubmit={handleSignup}>
           {#if error}
-            <p class="error"><Icon icon="lucide:alert-circle" width="14" height="14" /> {error}</p>
+            <p class="error" role="alert"><Icon icon="lucide:alert-circle" width="14" height="14" /> {error}</p>
           {/if}
           <div class="name-grid">
             <label>
@@ -326,8 +326,8 @@
   .error {
     margin: 0;
     padding: 10px 12px;
-    background: color-mix(in srgb, #dc2626 10%, transparent);
-    color: #991b1b;
+    background: var(--color-error-container);
+    color: var(--color-error);
     font-size: 13px;
     font-weight: 600;
     border-radius: 10px;

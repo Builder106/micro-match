@@ -146,7 +146,6 @@
 </script>
 
 <section class="vc brand-card">
-  <div class="vc-blob"></div>
   <header class="vc-head">
     <div>
       <h2>Verification</h2>
@@ -259,21 +258,20 @@
 
 <style>
   .vc { position: relative; overflow: hidden; padding: 28px; }
-  .vc-blob { position: absolute; top: -50%; right: -10%; width: 280px; height: 280px; border-radius: 50%; background: rgba(255, 107, 107, 0.12); filter: blur(80px); pointer-events: none; }
 
   .vc-head { position: relative; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
   .vc-head h2 { font-size: 20px; font-weight: 700; margin: 0; }
 
   .vc-status { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 9999px; font-size: 12px; font-weight: 700; }
   .status-approved { background: #D1FAE5; color: #047857; }
-  .status-pending { background: #FEF3C7; color: #92400E; }
+  .status-pending { background: #FEF3C7; color: #78350F; }
   .status-rejected { background: #FEE2E2; color: #B91C1C; }
 
-  .vc-body { position: relative; color: color-mix(in srgb, var(--color-text) 70%, transparent); font-size: 14px; line-height: 1.6; margin: 0 0 16px; }
+  .vc-body { position: relative; color: var(--color-text-secondary); font-size: 14px; line-height: 1.6; margin: 0 0 16px; }
 
   .vc-meta { position: relative; list-style: none; padding: 0; margin: 0 0 16px; display: grid; gap: 8px; font-size: 13px; }
   .vc-meta li { display: flex; gap: 12px; align-items: baseline; padding: 8px 12px; background: color-mix(in srgb, var(--color-text) 3%, transparent); border-radius: 10px; }
-  .vc-meta li span { color: color-mix(in srgb, var(--color-text) 55%, transparent); font-weight: 600; min-width: 100px; flex-shrink: 0; }
+  .vc-meta li span { color: var(--color-text-secondary); font-weight: 600; min-width: 100px; flex-shrink: 0; }
   .vc-meta li strong { color: var(--color-text); font-weight: 700; display: inline-flex; align-items: center; gap: 4px; }
 
   .vc-meta-line { position: relative; color: color-mix(in srgb, var(--color-text) 55%, transparent); font-size: 12px; margin: 0 0 16px; }
