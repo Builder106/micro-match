@@ -168,9 +168,6 @@
     text-shadow: 0 0 14px rgba(255, 255, 255, 0.45);
   }
 
-  .logo-lockup:active .logo-mark {
-  }
-
   .compact .logo-lockup { gap: 8px; }
   .compact .logo-lockup span { font-size: 1.05rem; }
   .compact .logo-mark { width: 28px; height: 28px; }
