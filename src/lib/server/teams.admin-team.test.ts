@@ -40,4 +40,22 @@ describe('isUserAdmin (ADMIN_TEAM_ID configured)', () => {
     mocks.listMemberships.mockResolvedValue({ total: 0, memberships: [] });
     expect(await isUserAdmin('user-2')).toBe(false);
   });
+
+  it('does not bypass the configured team for production or malformed harness identities', async () => {
+    const origNodeEnv = process.env.NODE_ENV;
+    const origHarness = process.env.PLAYWRIGHT_A11Y_HARNESS;
+    try {
+      process.env.NODE_ENV = 'production';
+      process.env.PLAYWRIGHT_A11Y_HARNESS = '1';
+      mocks.listMemberships.mockResolvedValue({ total: 0, memberships: [] });
+      expect(await isUserAdmin('a11y-admin-test')).toBe(false);
+
+      process.env.NODE_ENV = 'development';
+      expect(await isUserAdmin('a11y-admin')).toBe(false);
+      expect(await isUserAdmin(null)).toBe(false);
+    } finally {
+      process.env.NODE_ENV = origNodeEnv;
+      process.env.PLAYWRIGHT_A11Y_HARNESS = origHarness;
+    }
+  });
 });

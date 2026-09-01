@@ -104,6 +104,12 @@ describe('POST /api/test/a11y', () => {
     expect(body2.taskId).toBe('task-a11y-1');
     expect(mocks.createTask).not.toHaveBeenCalled();
     expect(mocks.createBadgeDefinition).not.toHaveBeenCalled();
+
+    mocks.getTaskById.mockResolvedValue(null);
+    mocks.listBadgeDefinitions.mockResolvedValue([{ id: 'existing-def' }]);
+    const existingBadgeSeed = await POST(makeEvent({ body: { action: 'seed', namespace: 'existing-badges' } }));
+    expect(existingBadgeSeed.status).toBe(200);
+    expect(mocks.createBadgeDefinition).not.toHaveBeenCalled();
   });
 
 
@@ -134,6 +140,9 @@ describe('POST /api/test/a11y', () => {
     expect(res.status).toBe(400);
     const body = await res.json();
     expect(body.error).toContain('Unsupported accessibility harness action');
+
+    const invalidSession = await POST(makeEvent({ body: { action: 'session', role: 'unknown', namespace: 'chromium-0' } }));
+    expect(invalidSession.status).toBe(400);
 
     // Invalid JSON / no body
     const eventNoBody = makeEvent({});

@@ -11,7 +11,6 @@ permissions:
 env:
   PUBLIC_APPWRITE_ENDPOINT: https://placeholder.example.com
   PUBLIC_APPWRITE_PROJECT_ID: placeholder
-  PLAYWRIGHT_A11Y_HARNESS: '1'
 
 jobs:
   build:
@@ -62,6 +61,7 @@ jobs:
       - name: Run accessibility shard
         run: bun run test:accessibility -- --project=${{ matrix.project }} --shard=${{ matrix.shard }}/4
         env:
+          PLAYWRIGHT_A11Y_HARNESS: '1'
           PLAYWRIGHT_A11Y_SCOPE: full
           PLAYWRIGHT_A11Y_WORKERS: '2'
           PLAYWRIGHT_SHARD: ${{ matrix.shard }}/4
