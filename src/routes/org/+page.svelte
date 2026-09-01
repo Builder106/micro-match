@@ -86,7 +86,7 @@
 <div class="org-page">
   <!-- ───── Hero ───── -->
   <section class="org-hero brand-card">
-    <div class="org-hero-blob"></div>
+    <div class="org-hero-blob" aria-hidden="true"></div>
     <div class="org-hero-text">
       <h1>Post a <span class="coral-gradient">task</span>.</h1>
       <p>Describe a bite-sized contribution and volunteers will pick it up. Aim for 15–30 minutes per task — it's the sweet spot for response rate.</p>
@@ -95,7 +95,7 @@
 
   <!-- ───── Verification status banner ───── -->
   {#if !isVerified}
-    <aside class="org-banner" class:org-banner-warn={!isPending} class:org-banner-info={isPending}>
+    <div class="org-banner" role="status" class:org-banner-warn={!isPending} class:org-banner-info={isPending}>
       <Icon icon={isPending ? 'lucide:hourglass' : 'lucide:shield-alert'} width="18" height="18" />
       <div>
         {#if isPending}
@@ -109,7 +109,7 @@
           <span>Posted tasks will show "Unverified" to volunteers. <a href={resolve('/profile', {})}>Verify your org →</a></span>
         {/if}
       </div>
-    </aside>
+    </div>
   {/if}
 
   <!-- ───── Form ───── -->
@@ -248,10 +248,10 @@
 
   /* Hero */
   .org-hero { position: relative; overflow: hidden; padding: 32px 36px; }
-  .org-hero-blob { position: absolute; top: -50%; right: -10%; width: 320px; height: 320px; border-radius: 50%; background: rgba(255, 107, 107, 0.18); filter: blur(80px); pointer-events: none; }
-  .org-hero-text { position: relative; z-index: 1; max-width: 600px; }
+  .org-hero-blob { position: absolute; z-index: 0; top: -50%; right: -10%; width: 320px; height: 320px; border-radius: 50%; background: rgba(255, 107, 107, 0.18); filter: blur(80px); pointer-events: none; }
+  .org-hero-text { position: relative; z-index: 1; max-width: 600px; padding: 8px 12px; border-radius: 12px; background: var(--color-surface); }
   .org-hero-text h1 { font-size: clamp(1.75rem, 3vw + 0.5rem, 2.5rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 10px; }
-  .org-hero-text p { color: color-mix(in srgb, var(--color-text) 70%, transparent); font-size: 15px; line-height: 1.6; margin: 0; }
+  .org-hero-text p { color: var(--color-text-secondary); font-size: 15px; line-height: 1.6; margin: 0; }
 
   /* Verification banner */
   .org-banner {
@@ -274,11 +274,11 @@
   /* Form */
   .org-form { padding: 32px; display: flex; flex-direction: column; gap: 28px; }
   .org-form-head h2 { font-size: 22px; font-weight: 700; margin: 0 0 6px; }
-  .org-form-head p { color: color-mix(in srgb, var(--color-text) 60%, transparent); font-size: 14px; margin: 0; }
+  .org-form-head p { color: var(--color-text-secondary); font-size: 14px; margin: 0; }
 
   .org-section { padding: 0; margin: 0; border: none; display: flex; flex-direction: column; gap: 16px; }
-  .org-section legend { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: color-mix(in srgb, var(--color-text) 55%, transparent); padding: 0; margin: 0 0 4px; }
-  .org-section-em { font-style: normal; font-weight: 600; text-transform: none; letter-spacing: 0; color: color-mix(in srgb, var(--color-text) 45%, transparent); margin-left: 6px; }
+  .org-section legend { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-secondary); padding: 0; margin: 0 0 4px; }
+  .org-section-em { font-style: normal; font-weight: 600; text-transform: none; letter-spacing: 0; color: var(--color-text-secondary); margin-left: 6px; }
 
   .org-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   @media (max-width: 540px) { .org-row { grid-template-columns: 1fr; } }
@@ -300,8 +300,8 @@
   }
   .org-field input:focus, .org-field textarea:focus { outline: none; border-color: var(--color-primary-readable); box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12); }
   .org-field textarea { resize: vertical; min-height: 120px; line-height: 1.55; }
-  .org-counter { position: absolute; right: 4px; bottom: -18px; font-size: 11px; font-weight: 600; color: color-mix(in srgb, var(--color-text) 50%, transparent); }
-  .org-hint { font-size: 12px; color: color-mix(in srgb, var(--color-text) 55%, transparent); }
+  .org-counter { position: absolute; right: 4px; bottom: -18px; font-size: 11px; font-weight: 600; color: var(--color-text-secondary); }
+  .org-hint { font-size: 12px; color: var(--color-text-secondary); }
 
   .org-presets { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
   .org-preset {
@@ -312,7 +312,7 @@
     font-family: inherit;
     font-size: 12px;
     font-weight: 700;
-    color: color-mix(in srgb, var(--color-text) 65%, transparent);
+    color: var(--color-text-secondary);
     cursor: pointer;
     transition: all .15s;
   }

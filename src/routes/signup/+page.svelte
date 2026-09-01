@@ -168,6 +168,9 @@
   }
   .auth-head {
     margin-bottom: 22px;
+    padding: 4px;
+    background: var(--color-background);
+    isolation: isolate;
   }
   .back-btn {
     border: 0;

@@ -327,7 +327,7 @@
     background: #fffbeeb0;
     border: 1px solid #fef08a;
     font-size: 0.8rem;
-    color: #713f12;
+    color: #3f2108;
   }
 
   .note-icon-wrap {

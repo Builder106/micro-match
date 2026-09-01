@@ -104,7 +104,7 @@
           <Icon icon="lucide:bar-chart-3" width="64" height="64" />
         </LottieAnimation>
       </div>
-      <h3>No data yet.</h3>
+      <h2>No data yet.</h2>
       <p>Once volunteers complete tasks and earn your badges, this is where you'll see distribution, trends, and recent activity.</p>
       <a href={resolve("/badges/manage", {})} class="btn-dark-pill">
         Create your first badge
@@ -207,7 +207,7 @@
   /* Hero */
   .ba-hero { position: relative; overflow: hidden; padding: 40px 36px; }
   .ba-hero-blob { position: absolute; top: -50%; right: -10%; width: 360px; height: 360px; border-radius: 50%; background: rgba(124, 58, 237, 0.15); filter: blur(80px); pointer-events: none; }
-  .ba-hero-text { position: relative; z-index: 1; max-width: 560px; }
+  .ba-hero-text { position: relative; z-index: 1; max-width: 560px; padding: 8px 12px; border-radius: 12px; background: var(--color-surface); }
   .ba-hero-text h1 { font-size: clamp(1.75rem, 3vw + 0.5rem, 2.75rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 12px; }
   .ba-hero-text p { color: color-mix(in srgb, var(--color-text) 70%, transparent); font-size: 16px; font-weight: 500; line-height: 1.6; margin: 0 0 24px; max-width: 480px; }
   .ba-hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
@@ -221,7 +221,7 @@
   .ba-icon-coral { background: rgba(255, 107, 107, 0.12); color: var(--color-primary-readable); }
   .ba-stat-body { min-width: 0; }
   .ba-stat-num { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: 22px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; color: var(--color-text); }
-  .ba-stat-label { font-size: 12px; font-weight: 600; color: color-mix(in srgb, var(--color-text) 55%, transparent); margin-top: 2px; }
+  .ba-stat-label { font-size: 12px; font-weight: 600; color: var(--color-text-secondary); margin-top: 2px; }
   .ba-divider { width: 1px; background: var(--card-border); margin: 12px 0; }
   @media (max-width: 768px) {
     .ba-stats { flex-wrap: wrap; padding: 8px; }
@@ -291,6 +291,6 @@
   }
   .ba-mascot { width: 140px; height: 140px; display: flex; align-items: center; justify-content: center; color: var(--color-primary-light); }
   .ba-mascot :global(.lottie-animation) { width: 100%; height: 100%; }
-  .ba-empty h3 { font-size: 22px; font-weight: 800; margin: 0; }
-  .ba-empty p { color: color-mix(in srgb, var(--color-text) 60%, transparent); font-size: 15px; font-weight: 500; max-width: 380px; margin: 0; }
+  .ba-empty h2 { font-size: 22px; font-weight: 800; margin: 0; }
+  .ba-empty p { color: var(--color-text-secondary); font-size: 15px; font-weight: 500; max-width: 380px; margin: 0; }
 </style>
