@@ -209,7 +209,7 @@
   .ba-hero-blob { position: absolute; top: -50%; right: -10%; width: 360px; height: 360px; border-radius: 50%; background: rgba(124, 58, 237, 0.15); filter: blur(80px); pointer-events: none; }
   .ba-hero-text { position: relative; z-index: 1; max-width: 560px; padding: 8px 12px; border-radius: 12px; background: var(--color-surface); }
   .ba-hero-text h1 { font-size: clamp(1.75rem, 3vw + 0.5rem, 2.75rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 12px; }
-  .ba-hero-text p { color: color-mix(in srgb, var(--color-text) 70%, transparent); font-size: 16px; font-weight: 500; line-height: 1.6; margin: 0 0 24px; max-width: 480px; }
+  .ba-hero-text p { color: var(--color-text-secondary); font-size: 16px; font-weight: 500; line-height: 1.6; margin: 0 0 24px; max-width: 480px; }
   .ba-hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
 
   /* Stats strip */
@@ -229,13 +229,13 @@
     .ba-divider { display: none; }
   }
 
-  .ba-count { font-size: 12px; font-weight: 800; color: color-mix(in srgb, var(--color-text) 60%, transparent); background: color-mix(in srgb, var(--color-text) 5%, transparent); padding: 4px 10px; border-radius: 9999px; }
+  .ba-count { font-size: 12px; font-weight: 800; color: var(--color-text-secondary); background: color-mix(in srgb, var(--color-text) 5%, transparent); padding: 4px 10px; border-radius: 9999px; }
 
   .ba-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
   @media (max-width: 768px) { .ba-grid { grid-template-columns: 1fr; } }
   .ba-card-pad { padding: 24px; }
 
-  .ba-mute { color: color-mix(in srgb, var(--color-text) 55%, transparent); font-size: 14px; margin: 0; }
+  .ba-mute { color: var(--color-text-secondary); font-size: 14px; margin: 0; }
 
   /* Distribution */
   .ba-distro { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
@@ -243,7 +243,7 @@
   .ba-distro-head { display: flex; align-items: center; gap: 10px; font-size: 14px; }
   .ba-distro-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
   .ba-distro-head strong { font-weight: 700; color: var(--color-text); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .ba-distro-count { font-size: 12px; font-weight: 600; color: color-mix(in srgb, var(--color-text) 60%, transparent); }
+  .ba-distro-count { font-size: 12px; font-weight: 600; color: var(--color-text-secondary); }
   .ba-distro-bar { height: 8px; border-radius: 9999px; overflow: hidden; }
   .ba-distro-fill { height: 100%; border-radius: 9999px; transition: width .8s cubic-bezier(0.4, 0, 0.2, 1); }
   .ba-distro-pct { font-size: 12px; font-weight: 800; color: var(--color-text); align-self: flex-end; }
@@ -261,8 +261,8 @@
   }
   .ba-trend-meta { display: flex; flex-direction: column; align-items: center; gap: 1px; text-align: center; min-width: 0; }
   .ba-trend-meta strong { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: 16px; font-weight: 800; color: var(--color-text); }
-  .ba-trend-meta small { font-size: 11px; color: color-mix(in srgb, var(--color-text) 55%, transparent); font-weight: 600; }
-  .ba-trend-meta span { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: color-mix(in srgb, var(--color-text) 50%, transparent); margin-top: 2px; }
+  .ba-trend-meta small { font-size: 11px; color: var(--color-text-secondary); font-weight: 600; }
+  .ba-trend-meta span { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-text-tertiary); margin-top: 2px; }
 
   /* Recent awards list */
   .ba-awards { padding: 8px; }
@@ -272,9 +272,9 @@
   .ba-award-icon { width: 36px; height: 36px; border-radius: 12px; background: #FDE68A; color: #D97706; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .ba-award-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
   .ba-award-text strong { font-size: 14px; font-weight: 700; color: var(--color-text); }
-  .ba-award-text small { font-size: 12px; color: color-mix(in srgb, var(--color-text) 60%, transparent); font-weight: 500; }
+  .ba-award-text small { font-size: 12px; color: var(--color-text-secondary); font-weight: 500; }
   .ba-award-text small em { font-style: normal; font-weight: 700; color: var(--color-primary-readable); }
-  .ba-award-time { font-size: 12px; font-weight: 600; color: color-mix(in srgb, var(--color-text) 50%, transparent); flex-shrink: 0; }
+  .ba-award-time { font-size: 12px; font-weight: 600; color: var(--color-text-secondary); flex-shrink: 0; }
 
   /* Empty state */
   .ba-empty {
