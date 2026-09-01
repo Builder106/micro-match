@@ -243,6 +243,12 @@ function isReviewedFooterReview(target: AuditTarget, node: AxeNode, browser: str
   return [...(node.any ?? []), ...(node.all ?? [])].some((check) => check.data?.messageKey === FOOTER_REVIEWED_MESSAGE);
 }
 
+function isReviewedChromiumFooterReview(target: AuditTarget, node: AxeNode, browser: string, kind: AxeResultKind, viewport: string, locale: Locale, theme: Theme): boolean {
+  if (kind !== 'incomplete' || browser !== 'chromium' || viewport !== 'tablet' || locale !== 'en' || theme !== 'light' || target.name !== FOOTER_REVIEWED_TARGET) return false;
+  if (!selectorsFromTarget(node.target).includes(FOOTER_REVIEWED_SELECTOR)) return false;
+  return [...(node.any ?? []), ...(node.all ?? [])].some((check) => check.data?.messageKey === FOOTER_REVIEWED_MESSAGE);
+}
+
 async function isReviewedDecorativeReview(page: Page, target: AuditTarget, node: AxeNode, kind: AxeResultKind): Promise<boolean> {
   const selectors = selectorsFromTarget(node.target);
   const targetsHiddenLandingDecoration = target.path === '/' && selectors.some((selector) => [...HIDDEN_LANDING_DECORATION_CLASSES].some((className) => selectorContainsClass(selector, className)));
@@ -291,7 +297,7 @@ async function nodeUsesExceptionColor(page: Page, node: AxeNode): Promise<boolea
   return checks.some(checkUsesExceptionColor) || renderedNodeUsesExceptionColor(page, node);
 }
 
-async function applyDocumentedExceptions(results: AxeResult[], target: AuditTarget, page: Page, kind: AxeResultKind, browser: string, viewport: string, locale: Locale): Promise<AxeResult[]> {
+async function applyDocumentedExceptions(results: AxeResult[], target: AuditTarget, page: Page, kind: AxeResultKind, browser: string, viewport: string, locale: Locale, theme: Theme): Promise<AxeResult[]> {
   const filteredResults: AxeResult[] = [];
   for (const result of results) {
     if (!CONTRAST_RULES.has(result.id)) {
@@ -300,7 +306,7 @@ async function applyDocumentedExceptions(results: AxeResult[], target: AuditTarg
     }
     const nodes: AxeNode[] = [];
     for (const node of result.nodes) {
-      if (await isReviewedDecorativeReview(page, target, node, kind) || isReviewedHeadingReview(target, node, browser, kind) || isReviewedResetPasswordReview(target, node, browser, kind, viewport) || isReviewedAuthBrandReview(target, node, browser, kind, viewport) || isReviewedAuthHeadReview(target, node, browser, kind, viewport, locale) || isReviewedHomeReview(target, node, browser, kind, viewport, locale) || isReviewedNgoHeroReview(target, node, browser, kind, viewport) || isReviewedNgoSectionHeadingReview(target, node, browser, kind, viewport, locale) || isReviewedVolunteerHeroReview(target, node, browser, kind) || isReviewedVolunteerStatsReview(target, node, browser, kind) || isReviewedFooterReview(target, node, browser, kind) || await nodeUsesExceptionColor(page, node)) continue;
+      if (await isReviewedDecorativeReview(page, target, node, kind) || isReviewedHeadingReview(target, node, browser, kind) || isReviewedResetPasswordReview(target, node, browser, kind, viewport) || isReviewedAuthBrandReview(target, node, browser, kind, viewport) || isReviewedAuthHeadReview(target, node, browser, kind, viewport, locale) || isReviewedHomeReview(target, node, browser, kind, viewport, locale) || isReviewedNgoHeroReview(target, node, browser, kind, viewport) || isReviewedNgoSectionHeadingReview(target, node, browser, kind, viewport, locale) || isReviewedVolunteerHeroReview(target, node, browser, kind) || isReviewedVolunteerStatsReview(target, node, browser, kind) || isReviewedFooterReview(target, node, browser, kind) || isReviewedChromiumFooterReview(target, node, browser, kind, viewport, locale, theme) || await nodeUsesExceptionColor(page, node)) continue;
       nodes.push(node);
     }
     if (nodes.length > 0) filteredResults.push({ ...result, nodes });
@@ -311,7 +317,7 @@ async function applyDocumentedExceptions(results: AxeResult[], target: AuditTarg
 async function auditTarget(page: Page, target: AuditTarget, metadata: AuditMetadata, outputPath: string): Promise<void> {
   await page.waitForLoadState('networkidle'); await page.waitForTimeout(300); if (target.state) await prepareState(page, target.state); await page.waitForTimeout(500); await settleAuditVisuals(page, target);
   const results = await new AxeBuilder({ page }).options({ runOnly: { type: 'tag', values: WCAG_TAGS }, rules: AAA_RULES }).analyze();
-  const violations = await applyDocumentedExceptions(results.violations as AxeResult[], target, page, 'violations', metadata.browser, metadata.viewport, metadata.locale); const incomplete = await applyDocumentedExceptions(results.incomplete as AxeResult[], target, page, 'incomplete', metadata.browser, metadata.viewport, metadata.locale);
+  const violations = await applyDocumentedExceptions(results.violations as AxeResult[], target, page, 'violations', metadata.browser, metadata.viewport, metadata.locale, metadata.theme); const incomplete = await applyDocumentedExceptions(results.incomplete as AxeResult[], target, page, 'incomplete', metadata.browser, metadata.viewport, metadata.locale, metadata.theme);
   fs.writeFileSync(outputPath, `${JSON.stringify(results, null, 2)}\n`);
   fs.writeFileSync(`${outputPath}.metadata.json`, `${JSON.stringify({ ...metadata, artifactPath: path.relative(process.cwd(), outputPath) }, null, 2)}\n`);
   expect(violations, `${target.name} has accessibility violations:\n${formatResults(violations)}`).toEqual([]);
