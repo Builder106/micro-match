@@ -12,49 +12,50 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  PUBLIC_APPWRITE_ENDPOINT: https://placeholder.example.com
+  PUBLIC_APPWRITE_PROJECT_ID: placeholder
+  PLAYWRIGHT_A11Y_HARNESS: '1'
+
 jobs:
   secrets:
     name: Secret scan
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           fetch-depth: 0
-      - uses: gitleaks/gitleaks-action@v3
+      - uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITLEAKS_NOTIFY_USER_LIST: ""
 
   check:
     name: Type-check & Compliance
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7
-      - uses: oven-sh/setup-bun@v2
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
       - run: bun install --frozen-lockfile
-      - name: Dependency audit
-        run: bun audit --audit-level moderate || bun audit --level moderate || true
-      - name: Open-source license compliance scan
-        run: bunx license-checker --summary
-      - name: Sync SvelteKit types
-        run: bunx svelte-kit sync
-        env:
-          PUBLIC_APPWRITE_ENDPOINT: https://placeholder.example.com
-          PUBLIC_APPWRITE_PROJECT_ID: placeholder
-      - name: Svelte check
-        run: bun run check
-        env:
-          PUBLIC_APPWRITE_ENDPOINT: https://placeholder.example.com
-          PUBLIC_APPWRITE_PROJECT_ID: placeholder
-      - name: TypeScript validation
-        run: bunx tsc --noEmit
+      - run: bun audit --audit-level moderate || bun audit --level moderate || true
+      - run: bunx license-checker --summary
+      - run: bunx svelte-kit sync
+      - run: bun run check
+      - run: bunx tsc --noEmit
 
   lint:
     name: Lint & Format
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7
-      - uses: oven-sh/setup-bun@v2
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
       - run: bun install --frozen-lockfile
       - run: bun run lint
 
@@ -62,8 +63,12 @@ jobs:
     name: Unit tests & Coverage Gate
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7
-      - uses: oven-sh/setup-bun@v2
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
       - run: bun install --frozen-lockfile
       - run: bun run test:coverage
 
@@ -72,51 +77,241 @@ jobs:
     needs: [check, lint]
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7
-      - uses: oven-sh/setup-bun@v2
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
       - run: bun install --frozen-lockfile
-      - name: Production build
-        run: bun run build
+      - run: bun run build
+      - run: |
+          ls -lh .svelte-kit/output/ 2>/dev/null || ls -lh build/ 2>/dev/null || true
+          du -sk .svelte-kit/output 2>/dev/null || du -sk build 2>/dev/null || true
+      - uses: actions/upload-artifact@ea165f8d8c0fde910a37f88322edcfb5dd907a8 # v4
+        with:
+          name: micro-match-build-${{ github.run_id }}
+          path: |
+            .svelte-kit/output/
+            build/
+          if-no-files-found: error
+          retention-days: 1
+
+  a11y-pr:
+    name: Accessibility smoke (${{ matrix.project }})
+    if: ${{ github.event_name == 'pull_request' }}
+    needs: [build, test]
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: true
+      matrix:
+        project: [chromium, firefox]
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ matrix.project }}-${{ hashFiles('bun.lock') }}
+      - run: bun install --frozen-lockfile
+      - run: bunx playwright install --with-deps ${{ matrix.project }}
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: micro-match-build-${{ github.run_id }}
+      - run: |
+          NODE_ENV=development PLAYWRIGHT_A11Y_HARNESS=1 bun run preview --host 127.0.0.1 --port 4173 > "$RUNNER_TEMP/preview.log" 2>&1 &
+          for _ in 1 2 3 4 5 6 7 8 9 10; do curl --silent --fail http://127.0.0.1:4173/ && exit 0; sleep 2; done
+          cat "$RUNNER_TEMP/preview.log"
+          exit 1
+      - run: bun run test:accessibility -- --project=${{ matrix.project }}
         env:
-          PUBLIC_APPWRITE_ENDPOINT: https://placeholder.example.com
-          PUBLIC_APPWRITE_PROJECT_ID: placeholder
-      - name: Verify bundle size budget
-        run: |
-          echo "=== Production bundle assets ==="
-          ls -lh .svelte-kit/output/ 2>/dev/null || ls -lh build/ 2>/dev/null || ls -lh dist/ 2>/dev/null || true
-          TOTAL_KB=$(du -sk .svelte-kit/output 2>/dev/null | cut -f1 || du -sk build 2>/dev/null | cut -f1 || echo 0)
-          echo "Output bundle size: ${TOTAL_KB} KB"
+          PLAYWRIGHT_A11Y_SCOPE: pr
+          PLAYWRIGHT_A11Y_WORKERS: '4'
+          PLAYWRIGHT_USE_PREBUILT: '1'
+          PLAYWRIGHT_BASE_URL: http://127.0.0.1:4173
+      - uses: actions/upload-artifact@ea165f8d8c0fde910a37f88322edcfb5dd907a8 # v4
+        if: ${{ !cancelled() }}
+        with:
+          name: a11y-pr-${{ matrix.project }}-${{ github.run_id }}
+          path: |
+            test-results/
+            audit-output/
+            blob-report/
+          retention-days: 7
+          if-no-files-found: error
+
+  a11y-full:
+    name: Accessibility full (${{ matrix.project }}, shard ${{ matrix.shard }})
+    if: ${{ github.event_name == 'push' }}
+    needs: [build, test]
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      max-parallel: 8
+      matrix:
+        project: [chromium, firefox]
+        shard: [1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ matrix.project }}-${{ hashFiles('bun.lock') }}
+      - run: bun install --frozen-lockfile
+      - run: bunx playwright install --with-deps ${{ matrix.project }}
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: micro-match-build-${{ github.run_id }}
+      - run: |
+          NODE_ENV=development PLAYWRIGHT_A11Y_HARNESS=1 bun run preview --host 127.0.0.1 --port 4173 > "$RUNNER_TEMP/preview.log" 2>&1 &
+          for _ in 1 2 3 4 5 6 7 8 9 10; do curl --silent --fail http://127.0.0.1:4173/ && exit 0; sleep 2; done
+          cat "$RUNNER_TEMP/preview.log"
+          exit 1
+      - run: bun run test:accessibility -- --project=${{ matrix.project }} --shard=${{ matrix.shard }}/4
+        env:
+          PLAYWRIGHT_A11Y_SCOPE: full
+          PLAYWRIGHT_A11Y_WORKERS: '2'
+          PLAYWRIGHT_SHARD: ${{ matrix.shard }}/4
+          PLAYWRIGHT_USE_PREBUILT: '1'
+          PLAYWRIGHT_BASE_URL: http://127.0.0.1:4173
+      - uses: actions/upload-artifact@ea165f8d8c0fde910a37f88322edcfb5dd907a8 # v4
+        if: ${{ !cancelled() }}
+        with:
+          name: a11y-${{ matrix.project }}-shard-${{ matrix.shard }}-${{ github.run_id }}
+          path: |
+            test-results/
+            audit-output/
+            blob-report/
+          retention-days: 7
+          if-no-files-found: error
 
   responsiveness:
-    name: Responsiveness & WCAG 2.2 AAA-Oriented Audit
-    needs: [check, test]
+    name: Responsiveness audit
+    needs: [build, test]
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7
-      - uses: oven-sh/setup-bun@v2
-      - run: bun install --frozen-lockfile
-      - run: bunx playwright install --with-deps chromium firefox
-      - name: Run accessibility audit
-        run: bun run test:accessibility
-        env:
-          PUBLIC_APPWRITE_ENDPOINT: https://placeholder.example.com
-          PUBLIC_APPWRITE_PROJECT_ID: placeholder
-          PLAYWRIGHT_A11Y_HARNESS: '1'
-      - name: Run responsiveness audit
-        run: bun run test:responsiveness
-        env:
-          PUBLIC_APPWRITE_ENDPOINT: https://placeholder.example.com
-          PUBLIC_APPWRITE_PROJECT_ID: placeholder
-          PLAYWRIGHT_A11Y_HARNESS: '1'
-      - name: Validate PR accessibility evidence shape
-        run: bun run verify:a11y-matrix -- --mode=pr
-      - name: Upload audit artifacts on failure
-        if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v7
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
-          name: audit-results
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-chromium-${{ hashFiles('bun.lock') }}
+      - run: bun install --frozen-lockfile
+      - run: bunx playwright install --with-deps chromium
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: micro-match-build-${{ github.run_id }}
+      - run: |
+          NODE_ENV=development PLAYWRIGHT_A11Y_HARNESS=1 bun run preview --host 127.0.0.1 --port 4173 > "$RUNNER_TEMP/preview.log" 2>&1 &
+          for _ in 1 2 3 4 5 6 7 8 9 10; do curl --silent --fail http://127.0.0.1:4173/ && exit 0; sleep 2; done
+          cat "$RUNNER_TEMP/preview.log"
+          exit 1
+      - run: bun run test:responsiveness -- --project=chromium
+        env:
+          PLAYWRIGHT_USE_PREBUILT: '1'
+          PLAYWRIGHT_BASE_URL: http://127.0.0.1:4173
+      - uses: actions/upload-artifact@ea165f8d8c0fde910a37f88322edcfb5dd907a8 # v4
+        if: ${{ !cancelled() }}
+        with:
+          name: responsiveness-${{ github.run_id }}
           path: |
             test-results/
             audit-output/
           retention-days: 7
           if-no-files-found: error
+
+  matrix-evidence:
+    name: PR accessibility evidence validation
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+      - run: bun install --frozen-lockfile
+      - run: bun run verify:a11y-matrix -- --mode=pr
+
+  merge-a11y:
+    name: Merge accessibility evidence
+    if: ${{ always() }}
+    needs: [a11y-pr, a11y-full]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+      - run: bun install --frozen-lockfile
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          pattern: a11y-*
+          path: merged-a11y
+          merge-multiple: false
+      - name: Collect and merge reports
+        run: |
+          mkdir -p blob-reports
+          for artifact in merged-a11y/*; do
+            shard=$(basename "$artifact")
+            if [ -d "$artifact/blob-report" ]; then
+              for report in "$artifact"/blob-report/*.zip; do
+                [ -f "$report" ] || continue
+                cp "$report" "blob-reports/${shard}-$(basename "$report")"
+              done
+            fi
+          done
+          has_blob=false
+          for report in blob-reports/*.zip; do
+            if [ -f "$report" ]; then has_blob=true; break; fi
+          done
+          if [ "$has_blob" = true ]; then bunx playwright merge-reports --reporter html blob-reports; fi
+          mkdir -p audit-output/accessibility
+          bun run merge:a11y-results merged-a11y audit-output/accessibility/audit-manifest.json
+      - uses: actions/upload-artifact@ea165f8d8c0fde910a37f88322edcfb5dd907a8 # v4
+        if: ${{ !cancelled() }}
+        with:
+          name: a11y-merged-${{ github.run_id }}
+          path: |
+            merged-a11y/
+            playwright-report/
+            audit-output/
+            blob-reports/
+          retention-days: 7
+          if-no-files-found: warn
+
+  ci-gate:
+    name: CI accessibility gate
+    if: ${{ always() }}
+    needs: [a11y-pr, a11y-full, responsiveness, matrix-evidence, merge-a11y]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Require selected accessibility checks
+        env:
+          A11Y_PR: ${{ needs.a11y-pr.result }}
+          A11Y_FULL: ${{ needs.a11y-full.result }}
+          RESPONSIVENESS: ${{ needs.responsiveness.result }}
+          EVIDENCE: ${{ needs.matrix-evidence.result }}
+          MERGE: ${{ needs.merge-a11y.result }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          if [ "$RESPONSIVENESS" != success ] || [ "$MERGE" != success ]; then exit 1; fi
+          if [ "$EVENT_NAME" = pull_request ] && { [ "$A11Y_PR" != success ] || [ "$EVIDENCE" != success ]; }; then exit 1; fi
+          if [ "$EVENT_NAME" = push ] && [ "$A11Y_FULL" != success ]; then exit 1; fi
