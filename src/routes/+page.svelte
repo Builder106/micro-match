@@ -244,7 +244,7 @@
               </div>
               <div class="tc-body">
                 <p class="tc-ngo">{task.language ?? 'Community Task'}</p>
-                <h3><a href={resolve(`/task/${task.id}`, {})}>{task.title}</a></h3>
+                <h3><a href={resolve(`/task/${task.id}`, {})} data-sveltekit-preload-data="hover">{task.title}</a></h3>
                 <p class="tc-desc">{task.shortDescription}</p>
               </div>
               <div class="tc-foot">
@@ -254,7 +254,6 @@
                     <span style="background:{s.bg};color:{s.color}">#{tag}</span>
                   {/each}
                 </div>
-                <a href={resolve(`/task/${task.id}`, {})} class="btn-dark-pill" data-sveltekit-preload-data="hover">View Task</a>
               </div>
             </article>
           {/each}
