@@ -87,7 +87,7 @@ jobs:
       - run: |
           ls -lh .svelte-kit/output/ 2>/dev/null || ls -lh build/ 2>/dev/null || true
           du -sk .svelte-kit/output 2>/dev/null || du -sk build 2>/dev/null || true
-      - uses: actions/upload-artifact@ea165f8d8c0fde910a37f88322edcfb5dd907a8 # v4
+      - uses: actions/upload-artifact@v4
         with:
           name: micro-match-build-${{ github.run_id }}
           path: |
@@ -133,7 +133,7 @@ jobs:
           PLAYWRIGHT_A11Y_WORKERS: '4'
           PLAYWRIGHT_USE_PREBUILT: '1'
           PLAYWRIGHT_BASE_URL: http://127.0.0.1:4173
-      - uses: actions/upload-artifact@ea165f8d8c0fde910a37f88322edcfb5dd907a8 # v4
+      - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
           name: a11y-pr-${{ matrix.project }}-${{ github.run_id }}
@@ -184,7 +184,7 @@ jobs:
           PLAYWRIGHT_SHARD: ${{ matrix.shard }}/4
           PLAYWRIGHT_USE_PREBUILT: '1'
           PLAYWRIGHT_BASE_URL: http://127.0.0.1:4173
-      - uses: actions/upload-artifact@ea165f8d8c0fde910a37f88322edcfb5dd907a8 # v4
+      - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
           name: a11y-${{ matrix.project }}-shard-${{ matrix.shard }}-${{ github.run_id }}
@@ -225,7 +225,7 @@ jobs:
         env:
           PLAYWRIGHT_USE_PREBUILT: '1'
           PLAYWRIGHT_BASE_URL: http://127.0.0.1:4173
-      - uses: actions/upload-artifact@ea165f8d8c0fde910a37f88322edcfb5dd907a8 # v4
+      - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
           name: responsiveness-${{ github.run_id }}
@@ -286,7 +286,7 @@ jobs:
           if [ "$has_blob" = true ]; then bunx playwright merge-reports --reporter html blob-reports; fi
           mkdir -p audit-output/accessibility
           bun run merge:a11y-results merged-a11y audit-output/accessibility/audit-manifest.json
-      - uses: actions/upload-artifact@ea165f8d8c0fde910a37f88322edcfb5dd907a8 # v4
+      - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
           name: a11y-merged-${{ github.run_id }}
