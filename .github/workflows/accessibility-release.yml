@@ -25,7 +25,7 @@ jobs:
           key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
       - run: bun install --frozen-lockfile
       - run: bun run build
-      - uses: actions/upload-artifact@ea165f8d8c0fde910a37f88322edcfb5dd907a8 # v4
+      - uses: actions/upload-artifact@v4
         with:
           name: micro-match-release-build-${{ github.run_id }}
           path: .svelte-kit/output/
@@ -66,7 +66,7 @@ jobs:
           PLAYWRIGHT_A11Y_WORKERS: '2'
           PLAYWRIGHT_SHARD: ${{ matrix.shard }}/4
           PLAYWRIGHT_USE_PREBUILT: '1'
-      - uses: actions/upload-artifact@ea165f8d8c0fde910a37f88322edcfb5dd907a8 # v4
+      - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
           name: accessibility-release-${{ matrix.project }}-shard-${{ matrix.shard }}-${{ github.run_id }}
@@ -101,7 +101,7 @@ jobs:
         run: bun run test:responsiveness -- --project=chromium
         env:
           PLAYWRIGHT_USE_PREBUILT: '1'
-      - uses: actions/upload-artifact@ea165f8d8c0fde910a37f88322edcfb5dd907a8 # v4
+      - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
           name: responsiveness-release-${{ github.run_id }}
@@ -148,7 +148,7 @@ jobs:
           if [ "$has_blob" = true ]; then bunx playwright merge-reports --reporter html blob-reports; fi
           mkdir -p audit-output/accessibility
           bun run merge:a11y-results merged-a11y audit-output/accessibility/audit-manifest.json
-      - uses: actions/upload-artifact@ea165f8d8c0fde910a37f88322edcfb5dd907a8 # v4
+      - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
           name: accessibility-release-merged-${{ github.run_id }}
