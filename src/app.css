@@ -422,6 +422,16 @@ html, body {
   border-radius: var(--radius-xs);
 }
 
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* Custom scrollbar — warm coral palette */
 html {
   scrollbar-width: thin;

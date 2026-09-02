@@ -8,7 +8,7 @@ async function expectNoOverflow(page: Page, route: string, width: number): Promi
 }
 
 async function expectFocusableControl(page: Page): Promise<void> {
-  const control = page.locator('a, button, input, select, textarea').first();
+  const control = page.locator('a:visible, button:visible, input:visible, select:visible, textarea:visible').first();
   if (await control.count()) { await control.focus(); await expect(control).toBeFocused(); }
 }
 
