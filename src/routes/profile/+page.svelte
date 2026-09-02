@@ -611,10 +611,10 @@
   }
   .dg-body { display: flex; flex-direction: column; gap: 10px; }
   .dg-card h2 { font-size: 20px; font-weight: 700; margin: 0; }
-  .dg-card p { font-size: 14px; line-height: 1.5; color: color-mix(in srgb, var(--color-text) 70%, transparent); margin: 0; }
+  .dg-card p { font-size: 14px; line-height: 1.5; color: var(--color-text-secondary); margin: 0; }
   .dg-card ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: var(--color-text); }
   .dg-card ul li { line-height: 1.5; }
-  .dg-recover { font-size: 13px !important; color: color-mix(in srgb, var(--color-text) 55%, transparent) !important; font-style: italic; }
+  .dg-recover { font-size: 13px !important; color: var(--color-text-secondary) !important; font-style: italic; }
   .dg-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
   .dg-cancel {
     padding: 10px 20px;

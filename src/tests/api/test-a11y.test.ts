@@ -80,7 +80,7 @@ describe('POST /api/test/a11y', () => {
 
   it('handles seed action by creating fixtures and returning taskId', async () => {
     process.env.PLAYWRIGHT_A11Y_HARNESS = '1';
-    const event = makeEvent({ body: { action: 'seed' } });
+    const event = makeEvent({ body: { action: 'seed', namespace: 'chromium-0' } });
 
     const res = await POST(event);
     const body = await res.json();
@@ -99,10 +99,16 @@ describe('POST /api/test/a11y', () => {
     mocks.createTask.mockClear();
     mocks.createBadgeDefinition.mockClear();
 
-    const res2 = await POST(makeEvent({ body: { action: 'seed' } }));
+    const res2 = await POST(makeEvent({ body: { action: 'seed', namespace: 'chromium-0' } }));
     const body2 = await res2.json();
     expect(body2.taskId).toBe('task-a11y-1');
     expect(mocks.createTask).not.toHaveBeenCalled();
+    expect(mocks.createBadgeDefinition).not.toHaveBeenCalled();
+
+    mocks.getTaskById.mockResolvedValue(null);
+    mocks.listBadgeDefinitions.mockResolvedValue([{ id: 'existing-def' }]);
+    const existingBadgeSeed = await POST(makeEvent({ body: { action: 'seed', namespace: 'existing-badges' } }));
+    expect(existingBadgeSeed.status).toBe(200);
     expect(mocks.createBadgeDefinition).not.toHaveBeenCalled();
   });
 
@@ -110,35 +116,61 @@ describe('POST /api/test/a11y', () => {
 
 
   it('handles session action by setting cookies and returning role and userId', async () => {
-    const event = makeEvent({ body: { action: 'session', role: 'volunteer' } });
+    const event = makeEvent({ body: { action: 'session', role: 'volunteer', namespace: 'chromium-0' } });
     const res = await POST(event);
     const body = await res.json();
 
     expect(res.status).toBe(200);
-    expect(body).toEqual({ role: 'volunteer', userId: 'a11y-volunteer' });
+    expect(body).toEqual({ namespace: 'chromium-0', role: 'volunteer', userId: 'a11y-volunteer-chromium-0' });
     expect(mocks.createSession).toHaveBeenCalled();
     expect(event.cookies.set).toHaveBeenCalledWith('mm_session', 'sess-a11y-1', expect.any(Object));
     expect(event.cookies.set).toHaveBeenCalledWith('mm_role', 'volunteer', expect.any(Object));
 
     // Admin role
-    const eventAdmin = makeEvent({ body: { action: 'session', role: 'admin' } });
+    const eventAdmin = makeEvent({ body: { action: 'session', role: 'admin', namespace: 'firefox-1' } });
     const resAdmin = await POST(eventAdmin);
     const bodyAdmin = await resAdmin.json();
     expect(resAdmin.status).toBe(200);
-    expect(bodyAdmin).toEqual({ role: 'admin', userId: 'a11y-admin' });
+    expect(bodyAdmin).toEqual({ namespace: 'firefox-1', role: 'admin', userId: 'a11y-admin-firefox-1' });
   });
 
   it('returns 400 on unsupported actions and invalid bodies', async () => {
-    const event = makeEvent({ body: { action: 'unknown' } });
+    const event = makeEvent({ body: { action: 'unknown', namespace: 'chromium-0' } });
     const res = await POST(event);
     expect(res.status).toBe(400);
     const body = await res.json();
     expect(body.error).toContain('Unsupported accessibility harness action');
 
+    const invalidSession = await POST(makeEvent({ body: { action: 'session', role: 'unknown', namespace: 'chromium-0' } }));
+    expect(invalidSession.status).toBe(400);
+
     // Invalid JSON / no body
     const eventNoBody = makeEvent({});
-    const resNoBody = await POST(eventNoBody);
-    expect(resNoBody.status).toBe(400);
+    await expect(POST(eventNoBody)).rejects.toMatchObject({ status: 400 });
+  });
+
+  it('isolates concurrent namespaces and makes repeated seeding idempotent', async () => {
+    process.env.PLAYWRIGHT_A11Y_HARNESS = '1';
+    let taskNumber = 0;
+    mocks.createTask.mockImplementation(async () => ({ id: `task-${++taskNumber}` }));
+
+    const [first, second, repeat] = await Promise.all([
+      POST(makeEvent({ body: { action: 'seed', namespace: 'chromium-0' } })),
+      POST(makeEvent({ body: { action: 'seed', namespace: 'firefox-0' } })),
+      POST(makeEvent({ body: { action: 'seed', namespace: 'chromium-0' } }))
+    ]);
+    const firstTask = (await first.json()).taskId;
+    expect((await repeat.json()).taskId).toBe(firstTask);
+    expect((await second.json()).taskId).not.toBe(firstTask);
+    expect(mocks.createTask).toHaveBeenCalledTimes(2);
+    expect(mocks.createClaim).toHaveBeenCalledWith(expect.objectContaining({ userId: 'a11y-volunteer-chromium-0' }));
+    expect(mocks.createClaim).toHaveBeenCalledWith(expect.objectContaining({ userId: 'a11y-volunteer-firefox-0' }));
+  });
+
+  it('rejects missing and malformed namespaces', async () => {
+    process.env.PLAYWRIGHT_A11Y_HARNESS = '1';
+    await expect(POST(makeEvent({ body: { action: 'seed' } }))).rejects.toMatchObject({ status: 400 });
+    await expect(POST(makeEvent({ body: { action: 'seed', namespace: '../shared' } }))).rejects.toMatchObject({ status: 400 });
   });
 
 });

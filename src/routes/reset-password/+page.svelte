@@ -159,7 +159,7 @@
     overflow-y: auto;
   }
   .mobile-stage { display: block; width: 100%; height: 300px; flex: 0 0 300px; margin-bottom: 8px; }
-  .auth-card { width: min(440px, calc(100% - 2rem)); padding: 28px 18px 30px; position: relative; z-index: 1; background: var(--color-background); }
+  .auth-card { width: min(440px, calc(100% - 2rem)); padding: 28px 18px 30px; position: relative; z-index: 1; isolation: isolate; background: var(--color-background); }
   .auth-head { margin-bottom: 22px; }
   h1 {
     font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;

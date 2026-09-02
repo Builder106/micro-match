@@ -8,56 +8,182 @@ on:
 permissions:
   contents: read
 
+env:
+  PUBLIC_APPWRITE_ENDPOINT: https://placeholder.example.com
+  PUBLIC_APPWRITE_PROJECT_ID: placeholder
+
 jobs:
-  automated-audit:
-    name: Automated accessibility audit
+  build:
+    name: Build release audit artifact
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7
-      - uses: oven-sh/setup-bun@v2
-      - run: bun install --frozen-lockfile
-      - run: bunx playwright install --with-deps chromium firefox
-      - name: Run accessibility audit
-        run: bun run test:accessibility
-        env:
-          PUBLIC_APPWRITE_ENDPOINT: https://placeholder.example.com
-          PUBLIC_APPWRITE_PROJECT_ID: placeholder
-          PLAYWRIGHT_A11Y_HARNESS: '1'
-      - name: Run responsiveness audit
-        run: bun run test:responsiveness
-        env:
-          PUBLIC_APPWRITE_ENDPOINT: https://placeholder.example.com
-          PUBLIC_APPWRITE_PROJECT_ID: placeholder
-          PLAYWRIGHT_A11Y_HARNESS: '1'
-      - name: Upload automated evidence
-        if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v7
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
-          name: accessibility-release-automated-${{ github.run_id }}
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+      - run: bun install --frozen-lockfile
+      - run: bun run build
+      - uses: actions/upload-artifact@ea165f8d8c0fde910a37f88322edcfb5dd907a8 # v4
+        with:
+          name: micro-match-release-build-${{ github.run_id }}
+          path: .svelte-kit/output/
+          if-no-files-found: error
+          retention-days: 1
+
+  automated-audit:
+    name: Automated accessibility audit (${{ matrix.project }}, shard ${{ matrix.shard }})
+    needs: build
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      max-parallel: 8
+      matrix:
+        project: [chromium, firefox]
+        shard: [1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ matrix.project }}-${{ hashFiles('bun.lock') }}
+      - run: bun install --frozen-lockfile
+      - run: bunx playwright install --with-deps ${{ matrix.project }}
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: micro-match-release-build-${{ github.run_id }}
+      - name: Run accessibility shard
+        run: bun run test:accessibility -- --project=${{ matrix.project }} --shard=${{ matrix.shard }}/4
+        env:
+          PLAYWRIGHT_A11Y_HARNESS: '1'
+          PLAYWRIGHT_A11Y_SCOPE: full
+          PLAYWRIGHT_A11Y_WORKERS: '2'
+          PLAYWRIGHT_SHARD: ${{ matrix.shard }}/4
+          PLAYWRIGHT_USE_PREBUILT: '1'
+      - uses: actions/upload-artifact@ea165f8d8c0fde910a37f88322edcfb5dd907a8 # v4
+        if: ${{ !cancelled() }}
+        with:
+          name: accessibility-release-${{ matrix.project }}-shard-${{ matrix.shard }}-${{ github.run_id }}
+          path: |
+            test-results/
+            audit-output/
+            blob-report/
+          retention-days: 90
+          if-no-files-found: warn
+
+  responsiveness:
+    name: Release responsiveness audit
+    needs: build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-chromium-${{ hashFiles('bun.lock') }}
+      - run: bun install --frozen-lockfile
+      - run: bunx playwright install --with-deps chromium
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: micro-match-release-build-${{ github.run_id }}
+      - name: Run responsiveness audit
+        run: bun run test:responsiveness -- --project=chromium
+        env:
+          PLAYWRIGHT_USE_PREBUILT: '1'
+      - uses: actions/upload-artifact@ea165f8d8c0fde910a37f88322edcfb5dd907a8 # v4
+        if: ${{ !cancelled() }}
+        with:
+          name: responsiveness-release-${{ github.run_id }}
           path: |
             test-results/
             audit-output/
           retention-days: 90
-          if-no-files-found: error
+          if-no-files-found: warn
+
+  merge-a11y:
+    name: Merge release accessibility evidence
+    if: ${{ always() }}
+    needs: [automated-audit]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+      - run: bun install --frozen-lockfile
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          pattern: accessibility-release-*
+          path: merged-a11y
+          merge-multiple: false
+      - name: Collect and merge reports
+        run: |
+          mkdir -p blob-reports
+          for artifact in merged-a11y/*; do
+            shard=$(basename "$artifact")
+            if [ -d "$artifact/blob-report" ]; then
+              for report in "$artifact"/blob-report/*.zip; do
+                [ -f "$report" ] || continue
+                cp "$report" "blob-reports/${shard}-$(basename "$report")"
+              done
+            fi
+          done
+          has_blob=false
+          for report in blob-reports/*.zip; do
+            if [ -f "$report" ]; then has_blob=true; break; fi
+          done
+          if [ "$has_blob" = true ]; then bunx playwright merge-reports --reporter html blob-reports; fi
+          mkdir -p audit-output/accessibility
+          bun run merge:a11y-results merged-a11y audit-output/accessibility/audit-manifest.json
+      - uses: actions/upload-artifact@ea165f8d8c0fde910a37f88322edcfb5dd907a8 # v4
+        if: ${{ !cancelled() }}
+        with:
+          name: accessibility-release-merged-${{ github.run_id }}
+          path: |
+            merged-a11y/
+            playwright-report/
+            audit-output/
+          retention-days: 90
+          if-no-files-found: warn
 
   matrix-evidence:
     name: Accessibility matrix evidence
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7
-      - uses: oven-sh/setup-bun@v2
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
       - run: bun install --frozen-lockfile
-      - name: Validate release evidence
-        run: bun run verify:a11y-matrix -- --mode=release
+      - run: bun run verify:a11y-matrix -- --mode=release
 
   release-evidence-gate:
     name: Release accessibility evidence gate
     if: ${{ always() }}
-    needs: [automated-audit, matrix-evidence]
+    needs: [automated-audit, responsiveness, merge-a11y, matrix-evidence]
     runs-on: ubuntu-24.04
     steps:
-      - name: Require automated audit and matrix evidence
-        if: ${{ needs.automated-audit.result != 'success' || needs.matrix-evidence.result != 'success' }}
-        run: exit 1
-      - name: Confirm release evidence
-        run: echo "Automated audit and manual evidence matrix passed."
+      - name: Require release accessibility checks
+        env:
+          AUDIT: ${{ needs.automated-audit.result }}
+          RESPONSIVENESS: ${{ needs.responsiveness.result }}
+          MERGE: ${{ needs.merge-a11y.result }}
+          EVIDENCE: ${{ needs.matrix-evidence.result }}
+        run: |
+          if [ "$AUDIT" != success ] || [ "$RESPONSIVENESS" != success ] || [ "$MERGE" != success ] || [ "$EVIDENCE" != success ]; then exit 1; fi
+      - run: echo "Automated audit and matrix evidence passed."

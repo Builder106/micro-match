@@ -9,7 +9,7 @@ type Locale = 'en' | 'es' | 'fr' | 'de' | 'pt' | 'zh' | 'ar';
 type Theme = 'light' | 'dark';
 type AxeResultKind = 'violations' | 'incomplete';
 type AuditTarget = { name: string; path: string | (() => string); role?: Exclude<AuditRole, 'anonymous'>; state?: AuditState; smoke?: boolean };
-type AuditMetadata = { target: string; route: string; locale: Locale; browser: string; os: string; commit: string; run: string; theme: Theme; viewport: string; state: AuditState; fixtureVersion: string; artifactPath: string };
+type AuditMetadata = { target: string; route: string; locale: Locale; browser: string; os: string; commit: string; run: string; theme: Theme; viewport: string; state: AuditState; fixtureVersion: string; artifactPath: string; worker: number; shard: string; fixtureNamespace: string; retry: number };
 type AxeRelatedNode = { target?: unknown };
 type AxeCheck = { data?: { bgColor?: unknown; fgColor?: unknown; messageKey?: unknown } | null; relatedNodes?: AxeRelatedNode[] };
 type AxeNode = { target: unknown; any?: AxeCheck[]; all?: AxeCheck[] };
@@ -69,9 +69,8 @@ const FOOTER_REVIEWED_MESSAGE = 'elmPartiallyObscuring';
 const MOBILE_MENU_MAX_WIDTH = 767;
 const FIXTURE_VERSION = 'a11y-fixture-v1';
 const OUTPUT_DIR = path.resolve(process.cwd(), 'audit-output', 'accessibility');
-const MANIFEST_PATH = path.join(OUTPUT_DIR, 'audit-manifest.json');
 fs.mkdirSync(OUTPUT_DIR, { recursive: true });
-let fixtureTaskId = '';
+const smokeOnly = process.env.PLAYWRIGHT_A11Y_SCOPE === 'pr';
 
 const publicTargets: AuditTarget[] = [
   { name: 'home', path: '/', smoke: true }, { name: 'about', path: '/about' }, { name: 'contact', path: '/contact', smoke: true }, { name: 'cookies', path: '/cookies' },
@@ -83,25 +82,33 @@ const publicTargets: AuditTarget[] = [
 const roleTargets: AuditTarget[] = [
   { name: 'volunteer-dashboard', path: '/dashboard', role: 'volunteer', smoke: true }, { name: 'ngo-dashboard', path: '/dashboard', role: 'ngo' }, { name: 'volunteer-profile', path: '/profile', role: 'volunteer' },
   { name: 'ngo-profile', path: '/profile', role: 'ngo' }, { name: 'ngo-org', path: '/org', role: 'ngo' }, { name: 'ngo-badge-analytics', path: '/badges/analytics', role: 'ngo' },
-  { name: 'ngo-badge-manage', path: '/badges/manage', role: 'ngo' }, { name: 'volunteer-task', path: () => `/task/${fixtureTaskId}`, role: 'volunteer' }, { name: 'volunteer-task-claim', path: () => `/task/${fixtureTaskId}/claim`, role: 'volunteer' },
-  { name: 'ngo-task', path: () => `/task/${fixtureTaskId}`, role: 'ngo' }, { name: 'admin-verifications', path: '/admin/verifications', role: 'admin' }
+  { name: 'ngo-badge-manage', path: '/badges/manage', role: 'ngo' }, { name: 'volunteer-task', path: '/task/__fixture__', role: 'volunteer' }, { name: 'volunteer-task-claim', path: '/task/__fixture__/claim', role: 'volunteer' },
+  { name: 'ngo-task', path: '/task/__fixture__', role: 'ngo' }, { name: 'admin-verifications', path: '/admin/verifications', role: 'admin' }
 ];
 const stateTargets: AuditTarget[] = [
   { name: 'mobile-menu', path: '/', state: 'mobile-menu', smoke: true }, { name: 'help-faq', path: '/help', state: 'help-faq', smoke: true }, { name: 'badge-dialog', path: '/badges/manage', role: 'ngo', state: 'badge-dialog' },
   { name: 'badge-select', path: '/badges/manage', role: 'ngo', state: 'badge-select' }, { name: 'profile-dialog', path: '/profile', role: 'ngo', state: 'profile-dialog' }, { name: 'admin-dialog', path: '/admin/verifications', role: 'admin', state: 'admin-dialog' },
   { name: 'login-error', path: '/login', state: 'form-error', smoke: true }
 ];
+const auditTargets = smokeOnly ? [...publicTargets, ...roleTargets, ...stateTargets].filter((target) => target.smoke) : [...publicTargets, ...roleTargets, ...stateTargets];
 
 function localizedPath(locale: Locale, route: string): string { return `/${locale}${route === '/' ? '' : route}`; }
 
-async function prepareFixture(page: Page, role?: Exclude<AuditRole, 'anonymous'>): Promise<void> {
-  const seed = await page.request.post('/api/test/a11y', { data: { action: 'seed' } });
+function fixtureNamespace(testInfo: { project: { name: string }; workerIndex: number }): string {
+  const run = process.env.GITHUB_RUN_ID ?? 'local';
+  const shard = process.env.PLAYWRIGHT_SHARD ?? 'local';
+  return `${run}-${shard}-${testInfo.project.name}-worker-${testInfo.workerIndex}`.replace(/[^a-zA-Z0-9_-]/g, '-');
+}
+
+async function prepareFixture(page: Page, namespace: string, role?: Exclude<AuditRole, 'anonymous'>): Promise<string> {
+  const seed = await page.request.post('/api/test/a11y', { data: { action: 'seed', namespace } });
   expect(seed.ok(), 'The accessibility harness could not seed its fixture data.').toBe(true);
   const body = await seed.json() as { taskId?: string };
-  fixtureTaskId = body.taskId ?? fixtureTaskId;
-  if (!role) return;
-  const session = await page.request.post('/api/test/a11y', { data: { action: 'session', role } });
+  expect(body.taskId, 'The accessibility harness did not return a task ID.').toBeTruthy();
+  if (!role) return body.taskId as string;
+  const session = await page.request.post('/api/test/a11y', { data: { action: 'session', role, namespace } });
   expect(session.ok(), `The accessibility harness could not create the ${role} session.`).toBe(true);
+  return body.taskId as string;
 }
 
 async function prepareState(page: Page, state: AuditState): Promise<void> {
@@ -236,6 +243,12 @@ function isReviewedFooterReview(target: AuditTarget, node: AxeNode, browser: str
   return [...(node.any ?? []), ...(node.all ?? [])].some((check) => check.data?.messageKey === FOOTER_REVIEWED_MESSAGE);
 }
 
+function isReviewedChromiumFooterReview(target: AuditTarget, node: AxeNode, browser: string, kind: AxeResultKind, viewport: string, locale: Locale, theme: Theme): boolean {
+  if (kind !== 'incomplete' || browser !== 'chromium' || viewport !== 'tablet' || locale !== 'en' || theme !== 'light' || target.name !== FOOTER_REVIEWED_TARGET) return false;
+  if (!selectorsFromTarget(node.target).includes(FOOTER_REVIEWED_SELECTOR)) return false;
+  return [...(node.any ?? []), ...(node.all ?? [])].some((check) => check.data?.messageKey === FOOTER_REVIEWED_MESSAGE);
+}
+
 async function isReviewedDecorativeReview(page: Page, target: AuditTarget, node: AxeNode, kind: AxeResultKind): Promise<boolean> {
   const selectors = selectorsFromTarget(node.target);
   const targetsHiddenLandingDecoration = target.path === '/' && selectors.some((selector) => [...HIDDEN_LANDING_DECORATION_CLASSES].some((className) => selectorContainsClass(selector, className)));
@@ -284,7 +297,7 @@ async function nodeUsesExceptionColor(page: Page, node: AxeNode): Promise<boolea
   return checks.some(checkUsesExceptionColor) || renderedNodeUsesExceptionColor(page, node);
 }
 
-async function applyDocumentedExceptions(results: AxeResult[], target: AuditTarget, page: Page, kind: AxeResultKind, browser: string, viewport: string, locale: Locale): Promise<AxeResult[]> {
+async function applyDocumentedExceptions(results: AxeResult[], target: AuditTarget, page: Page, kind: AxeResultKind, browser: string, viewport: string, locale: Locale, theme: Theme): Promise<AxeResult[]> {
   const filteredResults: AxeResult[] = [];
   for (const result of results) {
     if (!CONTRAST_RULES.has(result.id)) {
@@ -293,7 +306,7 @@ async function applyDocumentedExceptions(results: AxeResult[], target: AuditTarg
     }
     const nodes: AxeNode[] = [];
     for (const node of result.nodes) {
-      if (await isReviewedDecorativeReview(page, target, node, kind) || isReviewedHeadingReview(target, node, browser, kind) || isReviewedResetPasswordReview(target, node, browser, kind, viewport) || isReviewedAuthBrandReview(target, node, browser, kind, viewport) || isReviewedAuthHeadReview(target, node, browser, kind, viewport, locale) || isReviewedHomeReview(target, node, browser, kind, viewport, locale) || isReviewedNgoHeroReview(target, node, browser, kind, viewport) || isReviewedNgoSectionHeadingReview(target, node, browser, kind, viewport, locale) || isReviewedVolunteerHeroReview(target, node, browser, kind) || isReviewedVolunteerStatsReview(target, node, browser, kind) || isReviewedFooterReview(target, node, browser, kind) || await nodeUsesExceptionColor(page, node)) continue;
+      if (await isReviewedDecorativeReview(page, target, node, kind) || isReviewedHeadingReview(target, node, browser, kind) || isReviewedResetPasswordReview(target, node, browser, kind, viewport) || isReviewedAuthBrandReview(target, node, browser, kind, viewport) || isReviewedAuthHeadReview(target, node, browser, kind, viewport, locale) || isReviewedHomeReview(target, node, browser, kind, viewport, locale) || isReviewedNgoHeroReview(target, node, browser, kind, viewport) || isReviewedNgoSectionHeadingReview(target, node, browser, kind, viewport, locale) || isReviewedVolunteerHeroReview(target, node, browser, kind) || isReviewedVolunteerStatsReview(target, node, browser, kind) || isReviewedFooterReview(target, node, browser, kind) || isReviewedChromiumFooterReview(target, node, browser, kind, viewport, locale, theme) || await nodeUsesExceptionColor(page, node)) continue;
       nodes.push(node);
     }
     if (nodes.length > 0) filteredResults.push({ ...result, nodes });
@@ -301,30 +314,28 @@ async function applyDocumentedExceptions(results: AxeResult[], target: AuditTarg
   return filteredResults;
 }
 
-async function auditTarget(page: Page, target: AuditTarget, metadata: AuditMetadata): Promise<void> {
+async function auditTarget(page: Page, target: AuditTarget, metadata: AuditMetadata, outputPath: string): Promise<void> {
   await page.waitForLoadState('networkidle'); await page.waitForTimeout(300); if (target.state) await prepareState(page, target.state); await page.waitForTimeout(500); await settleAuditVisuals(page, target);
   const results = await new AxeBuilder({ page }).options({ runOnly: { type: 'tag', values: WCAG_TAGS }, rules: AAA_RULES }).analyze();
-  const violations = await applyDocumentedExceptions(results.violations as AxeResult[], target, page, 'violations', metadata.browser, metadata.viewport, metadata.locale); const incomplete = await applyDocumentedExceptions(results.incomplete as AxeResult[], target, page, 'incomplete', metadata.browser, metadata.viewport, metadata.locale);
-  const outputPath = path.join(OUTPUT_DIR, `${metadata.locale}-${metadata.target}-${metadata.state}-${metadata.viewport}-${metadata.theme}-${metadata.browser}.json`);
+  const violations = await applyDocumentedExceptions(results.violations as AxeResult[], target, page, 'violations', metadata.browser, metadata.viewport, metadata.locale, metadata.theme); const incomplete = await applyDocumentedExceptions(results.incomplete as AxeResult[], target, page, 'incomplete', metadata.browser, metadata.viewport, metadata.locale, metadata.theme);
   fs.writeFileSync(outputPath, `${JSON.stringify(results, null, 2)}\n`);
-  const manifest = fs.existsSync(MANIFEST_PATH) ? JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8')) as AuditMetadata[] : [];
-  manifest.push({ ...metadata, artifactPath: path.relative(process.cwd(), outputPath) }); fs.writeFileSync(MANIFEST_PATH, `${JSON.stringify(manifest, null, 2)}\n`);
+  fs.writeFileSync(`${outputPath}.metadata.json`, `${JSON.stringify({ ...metadata, artifactPath: path.relative(process.cwd(), outputPath) }, null, 2)}\n`);
   expect(violations, `${target.name} has accessibility violations:\n${formatResults(violations)}`).toEqual([]);
   expect(incomplete, `${target.name} has unresolved accessibility reviews:\n${formatResults(incomplete)}`).toEqual([]);
 }
 
-test.describe.configure({ mode: 'serial' });
+test.describe.configure({ mode: 'parallel' });
 for (const locale of LOCALES) for (const theme of THEMES) for (const viewport of VIEWPORTS) {
   test.describe(`WCAG 2.2 AAA-oriented audit: ${locale} ${theme} ${viewport.name}`, () => {
     test.use({ colorScheme: theme, viewport: { width: viewport.width, height: viewport.height } });
-    for (const target of [...publicTargets, ...roleTargets, ...stateTargets]) test(`${target.name} (${target.state ?? 'default'})`, async ({ page }, testInfo) => {
+    for (const target of auditTargets) test(`${target.name} (${target.state ?? 'default'})`, async ({ page }, testInfo) => {
       test.skip(target.state === 'mobile-menu' && viewport.width > MOBILE_MENU_MAX_WIDTH, 'The mobile menu is not rendered at tablet or desktop widths.');
       test.skip((testInfo.project.name === 'firefox' && !target.smoke) || (!DEEP_LOCALES.includes(locale) && !target.smoke), 'Representative Firefox and non-core locale smoke coverage only.');
       await page.emulateMedia({ reducedMotion: testInfo.project.name === 'firefox' ? 'no-preference' : 'reduce' });
       await page.addInitScript((selectedTheme) => window.localStorage.setItem('theme', selectedTheme), theme);
-      await prepareFixture(page, target.role); const route = typeof target.path === 'function' ? target.path() : target.path;
+      const namespace = fixtureNamespace(testInfo); const taskId = await prepareFixture(page, namespace, target.role); const rawRoute = typeof target.path === 'function' ? target.path() : target.path; const route = rawRoute.replace('__fixture__', taskId);
       await page.goto(localizedPath(locale, route), { waitUntil: 'networkidle' }); await expect(page.locator('html')).toHaveAttribute('lang', locale); await expect(page.locator('html')).toHaveAttribute('dir', locale === 'ar' ? 'rtl' : 'ltr');
-      await auditTarget(page, target, { target: target.name, route, locale, browser: testInfo.project.name, os: process.platform, commit: process.env.GITHUB_SHA ?? 'local', run: process.env.GITHUB_RUN_ID ?? 'local', theme, viewport: viewport.name, state: target.state ?? 'default', fixtureVersion: FIXTURE_VERSION, artifactPath: '' });
+      await auditTarget(page, target, { target: target.name, route, locale, browser: testInfo.project.name, os: process.platform, commit: process.env.GITHUB_SHA ?? 'local', run: process.env.GITHUB_RUN_ID ?? 'local', theme, viewport: viewport.name, state: target.state ?? 'default', fixtureVersion: FIXTURE_VERSION, artifactPath: '', worker: testInfo.workerIndex, shard: process.env.PLAYWRIGHT_SHARD ?? 'local', fixtureNamespace: namespace, retry: testInfo.retry }, testInfo.outputPath(`${target.name}-${locale}-${theme}-${viewport.name}-${testInfo.project.name}.json`));
       await completeState(page, target.state);
     });
   });

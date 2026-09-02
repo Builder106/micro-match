@@ -94,7 +94,7 @@
         </span>
       {/if}
     </div>
-    <a href={resolve(href, {})} class="btn-dark-pill btn-sm" aria-label={`View ${title}`}>
+    <a href={resolve(href, {})} class="btn-dark-pill btn-sm" aria-label={`View task: ${title} (${id})`}>
       View task
       <Icon icon="lucide:arrow-right" width="14" height="14" />
     </a>

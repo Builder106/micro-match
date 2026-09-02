@@ -168,9 +168,6 @@
     text-shadow: 0 0 14px rgba(255, 255, 255, 0.45);
   }
 
-  .logo-lockup:active .logo-mark {
-  }
-
   .compact .logo-lockup { gap: 8px; }
   .compact .logo-lockup span { font-size: 1.05rem; }
   .compact .logo-mark { width: 28px; height: 28px; }
@@ -188,7 +185,7 @@
   }
   .copy h1 {
     margin: 0;
-    background: #0f172a;
+    background: transparent;
     color: #ffffff;
     font-size: clamp(2.25rem, 3.2vw, 3.25rem);
     line-height: 1.08;
@@ -199,6 +196,7 @@
     font-family: Georgia, "Times New Roman", serif;
     font-size: 1.05em;
     font-weight: 500;
+    background: transparent;
     color: #ff8b8b;
   }
   .copy p {

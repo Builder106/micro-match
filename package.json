@@ -20,6 +20,7 @@
     "test:accessibility": "playwright test --config=playwright.accessibility.config.ts",
     "test:responsiveness": "playwright test --config=playwright.responsiveness.config.ts",
     "verify:a11y-matrix": "bun run scripts/verify-a11y-matrix.ts",
+    "merge:a11y-results": "bun run scripts/merge-a11y-results.ts",
     "test:demo": "DEMO=1 playwright test --config=playwright.demo.config.ts",
     "demo:gif": "bun run scripts/demos-to-gif.ts",
     "demo": "bun run seed && bun run test:demo && bun run demo:gif",

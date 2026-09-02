@@ -351,7 +351,7 @@
   .mobile-menu-divider { height: 1px; background: var(--card-border); margin: 8px 0; }
   .mobile-menu-cta { background: var(--color-primary); color: var(--color-action-on-coral) !important; text-align: center; border-radius: 9999px; font-weight: 700; }
   .mobile-menu-cta:hover { background: var(--color-primary-variant); color: var(--color-action-on-coral) !important; }
-  .mobile-menu-github { display: flex !important; align-items: center; gap: 8px; color: var(--color-text-secondary) !important; }
+  .mobile-menu-github { display: flex !important; align-items: center; gap: 8px; color: var(--color-text) !important; }
 
   /* Footer */
   .site-footer { background: var(--color-surface); color: var(--color-text); padding: 80px 0 32px; margin-top: auto; border-top: 1px solid var(--card-border); }

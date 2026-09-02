@@ -58,7 +58,7 @@ export const VOLUNTEER_TEAM_ID = env.APPWRITE_VOLUNTEER_TEAM_ID;
 export const ADMIN_TEAM_ID = env.APPWRITE_ADMIN_TEAM_ID;
 
 export async function isUserAdmin(userId?: string | null): Promise<boolean> {
-  if (process.env.NODE_ENV !== 'production' && process.env.PLAYWRIGHT_A11Y_HARNESS === '1' && userId === 'a11y-admin') return true;
+  if (process.env.NODE_ENV !== 'production' && process.env.PLAYWRIGHT_A11Y_HARNESS === '1' && /^a11y-admin-[a-z0-9][a-z0-9_-]{0,63}$/.test(userId ?? '')) return true;
   if (!userId || !ADMIN_TEAM_ID) return false;
   return isUserInTeam(userId, ADMIN_TEAM_ID);
 }

@@ -154,9 +154,26 @@ describe('isUserAdmin', () => {
     try {
       process.env.NODE_ENV = 'development';
       process.env.PLAYWRIGHT_A11Y_HARNESS = '1';
-      expect(await isUserAdmin('a11y-admin')).toBe(true);
+      expect(await isUserAdmin('a11y-admin-test')).toBe(true);
     } finally {
       process.env.NODE_ENV = origEnv;
+      process.env.PLAYWRIGHT_A11Y_HARNESS = origHarness;
+    }
+  });
+
+  it('rejects harness admin identities in production and rejects malformed identities', async () => {
+    const origNodeEnv = process.env.NODE_ENV;
+    const origHarness = process.env.PLAYWRIGHT_A11Y_HARNESS;
+    try {
+      process.env.NODE_ENV = 'production';
+      process.env.PLAYWRIGHT_A11Y_HARNESS = '1';
+      expect(await isUserAdmin('a11y-admin-test')).toBe(false);
+
+      process.env.NODE_ENV = 'development';
+      expect(await isUserAdmin('a11y-admin')).toBe(false);
+      expect(await isUserAdmin(null)).toBe(false);
+    } finally {
+      process.env.NODE_ENV = origNodeEnv;
       process.env.PLAYWRIGHT_A11Y_HARNESS = origHarness;
     }
   });
