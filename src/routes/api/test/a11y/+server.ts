@@ -50,7 +50,7 @@ async function seedFixtures(namespace: string): Promise<{ taskId: string }> {
     };
     const task = await createTask({
       orgId: namespaceIdentities.ngo.userId,
-      title: 'Accessibility fixture task',
+      title: `Accessibility fixture task (${namespace})`,
       shortDescription: 'A deterministic task for accessibility checks.',
       description: 'Review a short public document and submit a clear proof note.',
       language: 'English',
