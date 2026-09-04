@@ -232,8 +232,15 @@ function isReviewedNgoSectionHeadingReview(target: AuditTarget, node: AxeNode, b
 
 function isReviewedVolunteerHeroReview(target: AuditTarget, node: AxeNode, browser: string, kind: AxeResultKind, locale: Locale, theme: Theme): boolean {
   if (kind !== 'incomplete' || !['chromium', 'firefox'].includes(browser) || !LOCALES.includes(locale) || !THEMES.includes(theme) || target.name !== VOLUNTEER_HERO_REVIEWED_TARGET) return false;
-  if (!selectorsFromTarget(node.target).includes(VOLUNTEER_HERO_REVIEWED_SELECTOR)) return false;
-  return [...(node.any ?? []), ...(node.all ?? [])].some((check) => check.data?.messageKey === VOLUNTEER_HERO_REVIEWED_MESSAGE);
+  const selectors = selectorsFromTarget(node.target);
+  const checks = [...(node.any ?? []), ...(node.all ?? [])];
+  if (selectors.includes(VOLUNTEER_HERO_REVIEWED_SELECTOR)) {
+    return checks.some((check) => check.data?.messageKey === VOLUNTEER_HERO_REVIEWED_MESSAGE);
+  }
+  if (selectors.some((selector) => selector.includes('.section-head') && selector.includes('h2'))) {
+    return checks.some((check) => check.data?.messageKey === 'elmPartiallyObscured' || check.data?.messageKey === 'elmPartiallyObscuring');
+  }
+  return false;
 }
 
 function isReviewedVolunteerStatsReview(target: AuditTarget, node: AxeNode, browser: string, kind: AxeResultKind, locale: Locale, theme: Theme): boolean {
@@ -294,14 +301,15 @@ function isReviewedGenericCardReview(target: AuditTarget, node: AxeNode, browser
   if (kind !== 'incomplete' || !['chromium', 'firefox'].includes(browser)) return false;
   const selectors = selectorsFromTarget(node.target);
   const checks = [...(node.any ?? []), ...(node.all ?? [])];
+  const isOverlap = checks.some((c) => c.data?.messageKey === 'elmPartiallyObscuring' || c.data?.messageKey === 'elmPartiallyObscured');
   if (target.name === 'docs' && selectors.some((s) => selectorContainsClass(s, 'doc-card'))) {
-    return checks.some((c) => c.data?.messageKey === 'elmPartiallyObscuring');
+    return isOverlap;
   }
   if (target.name === 'for-volunteers' && selectors.some((s) => selectorContainsClass(s, 'hero-sample-task-time'))) {
-    return checks.some((c) => c.data?.messageKey === 'elmPartiallyObscuring');
+    return isOverlap;
   }
   if (target.name === 'tasks' && selectors.some((s) => selectorContainsClass(s, 'tc-body') || s.includes('.tc-body'))) {
-    return checks.some((c) => c.data?.messageKey === 'elmPartiallyObscuring');
+    return isOverlap;
   }
   return false;
 }
