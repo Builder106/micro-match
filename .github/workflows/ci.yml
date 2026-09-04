@@ -251,7 +251,7 @@ jobs:
 
   merge-a11y:
     name: Merge accessibility evidence
-    if: ${{ always() }}
+    if: ${{ always() && ((github.event_name == 'pull_request' && needs.a11y-pr.result != 'skipped') || (github.event_name == 'push' && needs.a11y-full.result != 'skipped')) }}
     needs: [a11y-pr, a11y-full]
     runs-on: ubuntu-24.04
     steps:
@@ -313,6 +313,6 @@ jobs:
           MERGE: ${{ needs.merge-a11y.result }}
           EVENT_NAME: ${{ github.event_name }}
         run: |
-          if [ "$RESPONSIVENESS" != success ] || [ "$MERGE" != success ]; then exit 1; fi
-          if [ "$EVENT_NAME" = pull_request ] && { [ "$A11Y_PR" != success ] || [ "$EVIDENCE" != success ]; }; then exit 1; fi
-          if [ "$EVENT_NAME" = push ] && [ "$A11Y_FULL" != success ]; then exit 1; fi
+          if [ "$RESPONSIVENESS" != success ]; then exit 1; fi
+          if [ "$EVENT_NAME" = pull_request ] && { [ "$A11Y_PR" != success ] || [ "$EVIDENCE" != success ] || [ "$MERGE" != success ]; }; then exit 1; fi
+          if [ "$EVENT_NAME" = push ] && { [ "$A11Y_FULL" != success ] || [ "$MERGE" != success ]; }; then exit 1; fi
