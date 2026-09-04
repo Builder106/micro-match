@@ -7,6 +7,7 @@
   import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
   import { resolve } from '$app/paths';
+  import { reducedMotion } from '$lib/utils/reducedMotion';
   export let data;
 
   let visible = false;
@@ -94,7 +95,7 @@
 
     <div class="hero-inner">
       {#if visible}
-      <div class="hero-copy" in:fly={{ y: 30, duration: 700 }}>
+      <div class="hero-copy" in:fly={{ y: 30, duration: $reducedMotion ? 0 : 700 }}>
         <h1>Make a big impact in <br /><span class="coral-gradient">a few minutes.</span></h1>
         <p>MicroMatch connects you with bite-sized volunteer tasks from global NGOs. Complete them anytime, anywhere, and help drive change one small step at a time.</p>
         <div class="hero-buttons">
@@ -244,7 +245,7 @@
               </div>
               <div class="tc-body">
                 <p class="tc-ngo">{task.language ?? 'Community Task'}</p>
-                <h3><a href={resolve(`/task/${task.id}`, {})}>{task.title}</a></h3>
+                <h3>{task.title}</h3>
                 <p class="tc-desc">{task.shortDescription}</p>
               </div>
               <div class="tc-foot">
@@ -254,7 +255,12 @@
                     <span style="background:{s.bg};color:{s.color}">#{tag}</span>
                   {/each}
                 </div>
-                <a href={resolve(`/task/${task.id}`, {})} class="btn-dark-pill" data-sveltekit-preload-data="hover">View Task</a>
+                <a
+                  href={resolve(`/task/${task.id}`, {})}
+                  class="btn-dark-pill"
+                  aria-label={`View task: ${task.title} (${task.id})`}
+                  data-sveltekit-preload-data="hover"
+                >View Task</a>
               </div>
             </article>
           {/each}
@@ -268,7 +274,9 @@
             <div class="empty-mascot">
               <div class="empty-mascot-bg"></div>
               <div class="empty-mascot-icon">
-            <LottieAnimation src="/animations/empty_state_mascot.json" />
+            <LottieAnimation src="/animations/empty_state_mascot.json">
+              <Icon icon="lucide:inbox" width="64" height="64" aria-hidden="true" />
+            </LottieAnimation>
               </div>
               <div class="empty-sparkle">
                 <Icon icon="lucide:sparkles" width="28" height="28" />
@@ -319,7 +327,9 @@
               <div class="badge-card" data-badge-index={i} bind:this={badgeCardEls[i]}>
                 <div class="badge-sparkle" aria-hidden="true">
                   {#if badgeSeen[i]}
-                    <LottieAnimation src="/animations/badge_burst.json" loop={false} />
+                    <LottieAnimation src="/animations/badge_burst.json" loop={false}>
+                      <Icon icon="lucide:sparkles" width="28" height="28" aria-hidden="true" />
+                    </LottieAnimation>
                   {/if}
                 </div>
                 <div class="badge-icon" style="background:{badge.gradient};box-shadow:{badge.shadow}">
@@ -653,8 +663,6 @@
   .tc-body { flex: 1; margin-bottom: 20px; }
   .tc-ngo { font-size: 13px; font-weight: 600; color: var(--color-text-secondary); margin: 0 0 8px; }
   .tc-body h3 { font-size: 22px; font-weight: 700; line-height: 1.3; margin: 0 0 8px; color: var(--color-text); }
-  .tc-body h3 a { color: inherit; text-decoration: none; }
-  .tc-body h3 a:hover { color: var(--color-primary-readable); }
   .tc-desc { color: var(--color-text-secondary); font-size: 15px; line-height: 1.6; margin: 0; display: -webkit-box; line-clamp: 2; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .tc-foot { display: flex; flex-direction: column; gap: 16px; }
   .tc-tags { display: flex; flex-wrap: wrap; gap: 8px; }

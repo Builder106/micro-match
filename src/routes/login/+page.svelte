@@ -148,6 +148,9 @@
   .auth-head {
     margin-bottom: 20px;
   }
+  .auth-head > p {
+    color: var(--color-text);
+  }
   h1 {
     font-size: clamp(2.35rem, 3.5vw, 3.4rem);
     font-weight: 800;

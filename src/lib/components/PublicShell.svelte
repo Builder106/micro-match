@@ -6,6 +6,7 @@
   import { fly, fade } from 'svelte/transition';
   import ThemeToggle from '$lib/components/ThemeToggle.svelte';
   import { localizedHref, locales, type Locale } from '$lib/locale';
+  import { reducedMotion } from '$lib/utils/reducedMotion';
 
   export let activeTab: 'home' | 'how-it-works' | 'for-ngos' | 'for-volunteers' | 'tasks' | 'impact' | undefined = undefined;
 
@@ -189,13 +190,13 @@
       class="mobile-menu-backdrop"
       role="presentation"
       onclick={closeMenu}
-      transition:fade={{ duration: 150 }}
+      transition:fade={{ duration: $reducedMotion ? 0 : 150 }}
     ></div>
     <nav
       id="mobile-menu"
       class="mobile-menu"
       aria-label="Mobile"
-      transition:fly={{ y: -12, duration: 200 }}
+      transition:fly={{ y: -12, duration: $reducedMotion ? 0 : 200 }}
     >
       <a href={resolve('/how-it-works', {})} bind:this={firstMenuLinkEl} onclick={closeMenu}>How it Works</a>
       <a href={resolve('/tasks', {})} onclick={closeMenu}>Browse Tasks</a>

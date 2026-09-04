@@ -4,6 +4,7 @@
   import PublicShell from '$lib/components/PublicShell.svelte';
   import { fly, fade } from 'svelte/transition';
   import { resolve } from '$app/paths';
+  import { reducedMotion } from '$lib/utils/reducedMotion';
 
   let selectedDuration: '5' | '15' | '30' = '15';
 
@@ -263,7 +264,7 @@
 
       <!-- Filtered Mission Cards Grid -->
       {#key selectedDuration}
-        <div class="sample-grid" in:fly={{ y: 14, duration: 300 }} out:fade={{ duration: 150 }}>
+        <div class="sample-grid" in:fly={{ y: 14, duration: $reducedMotion ? 0 : 300 }} out:fade={{ duration: $reducedMotion ? 0 : 150 }}>
           {#each activeMissions as task (task.id)}
             <div class="sample-task-card">
               <div class="st-top">

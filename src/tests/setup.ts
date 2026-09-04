@@ -36,6 +36,22 @@ if (typeof window !== 'undefined') {
     writable: true,
     configurable: true,
   });
+
+  if (typeof window.matchMedia !== 'function') {
+    Object.defineProperty(window, 'matchMedia', {
+      configurable: true,
+      value: () => ({
+        matches: false,
+        media: '',
+        onchange: null,
+        addListener: () => { },
+        removeListener: () => { },
+        addEventListener: () => { },
+        removeEventListener: () => { },
+        dispatchEvent: () => false,
+      }),
+    });
+  }
 }
 if (typeof globalThis !== 'undefined') {
   Object.defineProperty(globalThis, 'localStorage', {
@@ -67,4 +83,3 @@ if (typeof document !== 'undefined') {
   const { cleanup } = await import('@testing-library/svelte');
   afterEach(() => cleanup());
 }
-

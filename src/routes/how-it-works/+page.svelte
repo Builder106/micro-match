@@ -3,6 +3,7 @@
   import PublicShell from '$lib/components/PublicShell.svelte';
   import { fly, fade, slide } from 'svelte/transition';
   import { resolve } from '$app/paths';
+  import { reducedMotion } from '$lib/utils/reducedMotion';
 
   let activeStep = 0;
 
@@ -166,7 +167,7 @@
     <div class="container">
       <div class="inspector-card">
         {#key activeStep}
-          <div class="inspector-left" in:fly={{ y: 16, duration: 350, delay: 50 }} out:fade={{ duration: 150 }}>
+          <div class="inspector-left" in:fly={{ y: 16, duration: $reducedMotion ? 0 : 350, delay: $reducedMotion ? 0 : 50 }} out:fade={{ duration: $reducedMotion ? 0 : 150 }}>
             <div class="ins-badge">Step {steps[activeStep].num} of 05</div>
             <h2>{steps[activeStep].title}</h2>
             <p class="ins-summary">{steps[activeStep].summary}</p>
@@ -200,7 +201,7 @@
             </div>
           </div>
 
-          <div class="inspector-right" in:fly={{ x: 20, duration: 350, delay: 100 }} out:fade={{ duration: 150 }}>
+          <div class="inspector-right" in:fly={{ x: 20, duration: $reducedMotion ? 0 : 350, delay: $reducedMotion ? 0 : 100 }} out:fade={{ duration: $reducedMotion ? 0 : 150 }}>
             <div class="ins-mockup-frame">
               <div class="im-topbar">
                 <span class="im-dot"></span>
@@ -284,7 +285,7 @@
               <Icon icon={openFaq === i ? "lucide:chevron-up" : "lucide:chevron-down"} width="20" height="20" class="faq-chevron" />
             </button>
             {#if openFaq === i}
-              <div class="faq-answer" transition:slide={{ duration: 250 }}>
+              <div class="faq-answer" transition:slide={{ duration: $reducedMotion ? 0 : 250 }}>
                 <p>{faq.a}</p>
               </div>
             {/if}
