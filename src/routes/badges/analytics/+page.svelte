@@ -1,7 +1,9 @@
 <script lang="ts">
+  /* eslint-disable svelte/no-navigation-without-resolve -- resolve() below preserves locale prefixes. */
   import Icon from '@iconify/svelte';
+  import { page } from '$app/state';
   import LottieAnimation from '$lib/components/LottieAnimation.svelte';
-  import { resolve } from '$app/paths';
+  import { localizedHref, type Locale } from '$lib/locale';
 
   export let data: {
     userRole: 'anonymous' | 'user' | 'ngo' | 'volunteer';
@@ -18,6 +20,11 @@
   };
 
   const { analytics } = data;
+  const currentLocale = (page.data?.locale as Locale | undefined) ?? 'en';
+
+  function resolve(pathname: string, _options?: unknown): string {
+    return localizedHref(pathname, currentLocale);
+  }
 
   // Cycle through warm/cool tones for the distribution rows so they read at a glance.
   const distroPalette = [
@@ -54,7 +61,7 @@
 <div class="ba-page">
   <!-- ───── Hero ───── -->
   <section class="ba-hero brand-card">
-    <div class="ba-hero-blob"></div>
+    <div class="ba-hero-blob" aria-hidden="true"></div>
     <div class="ba-hero-text">
       <h1>The story your <span class="coral-gradient">badges</span> tell.</h1>
       <p>See how volunteers are engaging with your work — which badges land, who's earning them, and how engagement is trending.</p>
@@ -207,6 +214,8 @@
   /* Hero */
   .ba-hero { position: relative; overflow: hidden; padding: 40px 36px; }
   .ba-hero-blob { position: absolute; top: -50%; right: -10%; width: 360px; height: 360px; border-radius: 50%; background: rgba(124, 58, 237, 0.15); filter: blur(80px); pointer-events: none; }
+  @media (max-width: 768px) { .ba-hero-blob { display: none; } }
+  :global(html[dir='rtl']) .ba-hero-blob { display: none; }
   .ba-hero-text { position: relative; z-index: 1; max-width: 560px; padding: 8px 12px; border-radius: 12px; background: var(--color-surface); }
   .ba-hero-text h1 { font-size: clamp(1.75rem, 3vw + 0.5rem, 2.75rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 12px; }
   .ba-hero-text p { color: var(--color-text-secondary); font-size: 16px; font-weight: 500; line-height: 1.6; margin: 0 0 24px; max-width: 480px; }

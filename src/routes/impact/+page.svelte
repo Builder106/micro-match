@@ -510,20 +510,26 @@
   .volunteer-cta {
     background: #FFF5F0;
     border-color: rgba(255, 107, 107, 0.2);
+    background: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface));
+    border-color: var(--card-border-strong);
   }
 
   .ngo-cta {
     background: #FAF7F0;
     border-color: rgba(251, 146, 60, 0.2);
+    background: var(--color-surface-variant);
+    border-color: var(--card-border-strong);
   }
 
   .cta-icon-header {
     color: #881337;
+    color: var(--color-primary-readable);
     margin-bottom: 4px;
   }
 
   .ngo-cta .cta-icon-header {
     color: #9A3412;
+    color: var(--color-warning);
   }
 
   .cta-card h3 {
@@ -532,11 +538,13 @@
     font-weight: 700;
     margin: 0;
     color: var(--color-text, #0F172A);
+    color: var(--color-text);
   }
 
   .cta-card p {
     font-size: 0.95rem;
     color: var(--color-text-secondary, #475569);
+    color: var(--color-text-secondary);
     line-height: 1.5;
     margin: 0;
   }
@@ -557,10 +565,12 @@
     font-size: 0.9rem;
     font-weight: 500;
     color: var(--color-text, #0F172A);
+    color: var(--color-text);
   }
 
   .cta-bullets li :global(svg) {
     color: #059669;
+    color: var(--color-success);
     flex-shrink: 0;
   }
 

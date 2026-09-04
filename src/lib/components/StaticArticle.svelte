@@ -1,8 +1,9 @@
 <script lang="ts">
+  /* eslint-disable svelte/no-navigation-without-resolve -- resolve() below preserves locale prefixes. */
   import { page } from '$app/state';
   import PublicShell from '$lib/components/PublicShell.svelte';
   import Icon from '@iconify/svelte';
-  import { resolve } from '$app/paths';
+  import { localizedHref, type Locale } from '$lib/locale';
 
   export let title: string;
   export let titleHighlight: string | undefined = undefined;
@@ -35,6 +36,9 @@
 
   /* eslint-disable-next-line svelte/no-immutable-reactive-statements */
   $: pathname = page.url.pathname;
+  /* eslint-disable-next-line svelte/no-immutable-reactive-statements */
+  $: currentLocale = (page.data?.locale as Locale | undefined) ?? 'en';
+  function resolve(targetPath: string, _options?: unknown) { return localizedHref(targetPath, currentLocale); }
 
   let activeSection = '';
 
@@ -427,6 +431,7 @@
     font-weight: 700;
   }
 
+  .static-body :global(a),
   .static-body :global(.legal-card a) {
     color: var(--color-primary-readable);
     font-weight: 600;
@@ -434,8 +439,10 @@
     text-underline-offset: 2px;
   }
 
+  .static-body :global(a:hover),
   .static-body :global(.legal-card a:hover) {
     color: #ff5252;
+    color: var(--color-primary-readable);
   }
 
   .static-body :global(code) {
@@ -519,6 +526,7 @@
     font-size: 13px;
     line-height: 1.55;
     margin: 0;
+    color: var(--color-text-secondary);
   }
 
   .static-body :global(.vendor-link) {

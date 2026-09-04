@@ -130,9 +130,9 @@
     {/if}
   </header>
 
-  <nav class="admin-tabs">
+  <nav class="admin-tabs" aria-label="Verification queue filters">
     {#each [['pending', 'Pending', counts.pending], ['approved', 'Approved', counts.approved], ['rejected', 'Rejected', counts.rejected], ['all', 'All', allRows.length]] as [tab, label, count] (tab)}
-      <button class="tab" class:active={activeTab === tab} onclick={() => (activeTab = tab as 'pending' | 'approved' | 'rejected' | 'all')}>
+      <button class="tab" class:active={activeTab === tab} on:click={() => (activeTab = tab as 'pending' | 'approved' | 'rejected' | 'all')}>
         {label}
         <span class="tab-count">{count}</span>
       </button>
@@ -149,7 +149,7 @@
         <article class="admin-card">
           <div class="admin-card-head">
             <div>
-              <h3>{v.orgName}</h3>
+              <h2>{v.orgName}</h2>
               <p class="admin-meta">
                 <span>{COUNTRY_FLAGS[v.country] ?? '🌍'} {v.country}</span>
                 <span class="pipe-sep">|</span>
@@ -192,8 +192,8 @@
 
           {#if v.status === 'pending'}
             <div class="admin-actions">
-              <button class="btn-reject" onclick={() => openReject(v.userId)} disabled={working}>Reject…</button>
-              <button class="btn-approve" onclick={() => approve(v.userId)} disabled={working}>Approve</button>
+              <button class="btn-reject" on:click={() => openReject(v.userId)} disabled={working}>Reject…</button>
+              <button class="btn-approve" on:click={() => approve(v.userId)} disabled={working}>Approve</button>
             </div>
           {/if}
         </article>
@@ -210,8 +210,8 @@
       <p>This becomes the user-facing message in their REJECTED state. Be specific so they know how to fix it.</p>
       <textarea bind:value={rejectReason} rows="4" placeholder="Document doesn't show tax-exempt status. Please upload your IRS Form 990 or determination letter." maxlength="1000"></textarea>
       <div class="modal-actions">
-        <button onclick={() => (rejectingUserId = null)} disabled={working}>Cancel</button>
-        <button class="btn-reject" onclick={confirmReject} disabled={working || !rejectReason.trim()}>Send rejection</button>
+        <button on:click={() => (rejectingUserId = null)} disabled={working}>Cancel</button>
+        <button class="btn-reject" on:click={confirmReject} disabled={working || !rejectReason.trim()}>Send rejection</button>
       </div>
     </div>
   </div>
@@ -225,8 +225,8 @@
   .admin-page { display: flex; flex-direction: column; gap: 24px; max-width: 960px; margin: 0 auto; }
   .admin-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
   .admin-head h1 { font-size: clamp(1.5rem, 2.5vw + 0.25rem, 2.25rem); font-weight: 800; letter-spacing: -0.02em; margin: 0 0 6px; }
-  .admin-head p { color: color-mix(in srgb, var(--color-text) 65%, transparent); font-size: 14px; line-height: 1.5; margin: 0; max-width: 560px; }
-  .admin-pending { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: #FEF3C7; color: #92400E; border-radius: 9999px; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+  .admin-head p { color: var(--color-text-secondary); font-size: 14px; line-height: 1.5; margin: 0; max-width: 560px; }
+  .admin-pending { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: var(--color-warning-container); color: var(--color-warning); border-radius: 9999px; font-size: 12px; font-weight: 700; flex-shrink: 0; }
 
   .admin-tabs { display: flex; gap: 8px; flex-wrap: wrap; padding-bottom: 4px; }
   .tab {
@@ -240,7 +240,7 @@
     font-family: inherit;
     font-size: 13px;
     font-weight: 700;
-    color: color-mix(in srgb, var(--color-text) 70%, transparent);
+    color: var(--color-text-secondary);
     cursor: pointer;
     transition: all .15s;
   }
@@ -248,17 +248,17 @@
   .tab.active { background: var(--color-text); color: var(--color-surface); border-color: var(--color-text); }
   .tab-count { font-size: 11px; padding: 2px 7px; background: color-mix(in srgb, currentColor 15%, transparent); border-radius: 9999px; }
 
-  .admin-empty { color: color-mix(in srgb, var(--color-text) 55%, transparent); font-size: 14px; padding: 32px 16px; text-align: center; }
+  .admin-empty { color: var(--color-text-secondary); font-size: 14px; padding: 32px 16px; text-align: center; }
 
   .admin-grid { display: flex; flex-direction: column; gap: 16px; }
   .admin-card { background: var(--color-surface); border-radius: 24px; padding: 24px; border: 1px solid var(--card-border); box-shadow: 0 12px 28px rgba(15, 23, 42, 0.04); display: flex; flex-direction: column; gap: 14px; }
   .admin-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-  .admin-card h3 { font-size: 18px; font-weight: 700; margin: 0; }
-  .admin-meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 13px; color: color-mix(in srgb, var(--color-text) 60%, transparent); margin: 4px 0 0; }
+  .admin-card h2 { font-size: 18px; font-weight: 700; margin: 0; }
+  .admin-meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 13px; color: var(--color-text-secondary); margin: 4px 0 0; }
   .admin-status { font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 9999px; flex-shrink: 0; text-transform: uppercase; letter-spacing: 0.06em; }
 
-  .propublica { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 12px; background: #DBEAFE; color: #1E40AF; font-size: 13px; font-weight: 600; }
-  .propublica.bad { background: #FEE2E2; color: #B91C1C; }
+  .propublica { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 12px; background: var(--color-info-container); color: var(--color-info); font-size: 13px; font-weight: 600; }
+  .propublica.bad { background: var(--color-error-container); color: var(--color-error); }
 
   .admin-doc {
     display: inline-flex;
@@ -284,7 +284,7 @@
     border-radius: 8px;
     font-size: 13px;
     font-style: italic;
-    color: color-mix(in srgb, var(--color-text) 85%, transparent);
+    color: var(--color-text);
   }
 
   .admin-actions { display: flex; justify-content: flex-end; gap: 8px; }
@@ -301,22 +301,22 @@
     cursor: pointer;
     transition: all .15s;
   }
-  .btn-reject { background: #FEE2E2; color: #B91C1C; }
-  .btn-reject:hover { background: #FECACA; }
-  .btn-approve { background: #D1FAE5; color: #047857; }
-  .btn-approve:hover { background: #A7F3D0; }
+  .btn-reject { background: var(--color-error-container); color: var(--color-error); }
+  .btn-reject:hover { filter: brightness(0.95); }
+  .btn-approve { background: var(--color-success-container); color: var(--color-success); }
+  .btn-approve:hover { filter: brightness(0.95); }
   .btn-reject:disabled, .btn-approve:disabled { opacity: 0.5; cursor: not-allowed; }
 
   /* Status chip colors */
-  .status-pending { background: #FEF3C7; color: #92400E; }
-  .status-approved { background: #D1FAE5; color: #047857; }
-  .status-rejected { background: #FEE2E2; color: #B91C1C; }
+  .status-pending { background: var(--color-warning-container); color: var(--color-warning); }
+  .status-approved { background: var(--color-success-container); color: var(--color-success); }
+  .status-rejected { background: var(--color-error-container); color: var(--color-error); }
 
   /* Modal */
   .modal { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.45); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 80; backdrop-filter: blur(4px); }
-  .modal-card { background: var(--color-surface); border-radius: 24px; padding: 28px; max-width: 480px; width: 100%; box-shadow: 0 32px 80px rgba(0, 0, 0, 0.25); display: flex; flex-direction: column; gap: 16px; }
+  .modal-card { position: relative; z-index: 1; isolation: isolate; background: var(--color-surface); border-radius: 24px; padding: 28px; max-width: 480px; width: 100%; box-shadow: 0 32px 80px rgba(0, 0, 0, 0.25); display: flex; flex-direction: column; gap: 16px; }
   .modal-card h2 { font-size: 20px; font-weight: 700; margin: 0; }
-  .modal-card p { font-size: 14px; line-height: 1.5; color: color-mix(in srgb, var(--color-text) 65%, transparent); margin: 0; }
+  .modal-card p { font-size: 14px; line-height: 1.5; color: var(--color-text-secondary); margin: 0; }
   .modal-card textarea {
     width: 100%;
     box-sizing: border-box;
@@ -341,7 +341,7 @@
     font-family: inherit;
     font-size: 13px;
     font-weight: 600;
-    color: color-mix(in srgb, var(--color-text) 65%, transparent);
+    color: var(--color-text-secondary);
   }
   .modal-actions button:not(.btn-reject):hover { color: var(--color-text); }
 

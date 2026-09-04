@@ -644,11 +644,13 @@
   .st-top { display: flex; justify-content: space-between; align-items: center; }
   .st-ngo { font-size: 13px; font-weight: 700; color: var(--color-text-tertiary); }
   .st-time { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; background: var(--color-surface-variant); color: var(--color-primary-readable); border-radius: 9999px; font-size: 12px; font-weight: 700; }
+  .st-time { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; background: var(--color-surface-variant); color: var(--color-text); border-radius: 9999px; font-size: 12px; font-weight: 700; }
   .sample-task-card h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; font-weight: 700; margin: 0; color: var(--color-text); }
   .st-foot { display: flex; justify-content: space-between; align-items: center; }
   .st-tags { display: flex; gap: 6px; }
   .st-tags span { padding: 3px 10px; border-radius: 9999px; font-size: 11px; font-weight: 700; }
   .st-xp { font-size: 13px; font-weight: 800; color: #064E3B; }
+  .st-xp { font-size: 13px; font-weight: 800; color: var(--color-success); }
 
   .btn-dark-pill {
     display: inline-flex;

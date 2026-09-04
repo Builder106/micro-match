@@ -554,7 +554,7 @@
   .role-card p { font-size: 13px; color: var(--color-text-secondary); margin: 0; line-height: 1.4; }
   .role-check { position: absolute; top: 12px; right: 12px; width: 24px; height: 24px; border-radius: 50%; background: var(--color-primary); color: var(--color-brand-on-coral); display: flex; align-items: center; justify-content: center; }
   .role-hint { display: inline-flex; align-items: flex-start; gap: 6px; font-size: 12px; line-height: 1.5; color: var(--color-text-secondary); margin: -8px 0 0; }
-  .role-hint-warn { color: var(--color-warning); padding: 8px 12px; background: color-mix(in srgb, var(--color-warning) 10%, transparent); border-radius: 10px; font-weight: 600; margin: 0; }
+  .role-hint-warn { color: var(--color-warning); padding: 8px 12px; background: var(--color-warning-container); border-radius: 10px; font-weight: 600; margin: 0; }
 
   /* Form actions */
   .form-error { display: inline-flex; align-items: center; gap: 8px; padding: 12px 14px; background: color-mix(in srgb, var(--color-error) 10%, transparent); color: var(--color-error); border-radius: 12px; font-size: 14px; font-weight: 600; }
@@ -636,15 +636,15 @@
     padding: 10px 20px;
     border-radius: 9999px;
     border: none;
-    background: var(--color-error);
-    color: #fff;
+    background: var(--color-error-container);
+    color: var(--color-error);
     cursor: pointer;
     font-family: inherit;
     font-size: 14px;
     font-weight: 700;
     transition: all .15s;
   }
-  .dg-confirm:hover { background: color-mix(in srgb, var(--color-error) 88%, black); transform: translateY(-1px); }
+  .dg-confirm:hover { filter: brightness(0.95); transform: translateY(-1px); }
 
   .session-warning {
     display: flex;

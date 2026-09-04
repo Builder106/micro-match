@@ -115,7 +115,7 @@
 
   <!-- ───── Hero ───── -->
   <section class="td-hero brand-card">
-    <div class="td-hero-blob"></div>
+    <div class="td-hero-blob" aria-hidden="true"></div>
 
     <div class="td-hero-top">
       <div class="td-avatar"><Icon icon="lucide:heart-handshake" width="28" height="28" /></div>
@@ -282,7 +282,8 @@
     align-items: center;
     gap: 6px;
     align-self: flex-start;
-    color: color-mix(in srgb, var(--color-text) 60%, transparent);
+    background: var(--color-background);
+    color: var(--color-text-secondary);
     text-decoration: none;
     font-size: 13px;
     font-weight: 700;
@@ -295,15 +296,17 @@
   /* Hero */
   .td-hero { position: relative; overflow: hidden; padding: 32px 36px; display: flex; flex-direction: column; gap: 16px; }
   .td-hero-blob { position: absolute; top: -50%; right: -10%; width: 320px; height: 320px; border-radius: 50%; background: rgba(255, 107, 107, 0.16); filter: blur(80px); pointer-events: none; }
+  @media (max-width: 768px) { .td-hero-blob { display: none; } }
+  :global(html[dir='rtl']) .td-hero-blob { display: none; }
 
   .td-hero-top { position: relative; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
   .td-avatar { width: 56px; height: 56px; border-radius: 18px; background: #FFE5DC; color: var(--color-primary-readable); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .td-org { display: flex; flex-direction: column; flex: 1; min-width: 0; }
-  .td-org small { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: color-mix(in srgb, var(--color-text) 50%, transparent); }
+  .td-org small { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-secondary); }
   .td-org strong { font-size: 16px; font-weight: 700; color: var(--color-text); }
   .td-verified, .td-unverified { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 9999px; font-size: 11px; font-weight: 700; align-self: flex-start; margin-top: 4px; }
-  .td-verified { background: #D1FAE5; color: #047857; }
-  .td-unverified { background: #FEE2E2; color: #B91C1C; }
+  .td-verified { background: var(--color-success-container); color: var(--color-success); }
+  .td-unverified { background: var(--color-error-container); color: var(--color-error); }
   .td-status { display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: 700; flex-shrink: 0; }
 
   .td-hero h1 { position: relative; font-size: clamp(1.5rem, 2.5vw + 0.5rem, 2.25rem); font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; margin: 0; }
@@ -332,8 +335,8 @@
     color: color-mix(in srgb, var(--color-text) 70%, transparent);
   }
   .td-chip-time { background: rgba(255, 107, 107, 0.12); color: var(--color-primary-readable); }
-  .td-chip-lang { background: #DBEAFE; color: #2563EB; }
-  .td-chip-cap { background: #F1F5F9; color: #475569; }
+  .td-chip-lang { background: var(--color-info-container); color: var(--color-info); }
+  .td-chip-cap { background: var(--color-surface-variant); color: var(--color-text-secondary); }
   .td-chip.tone-soon { background: #FEF3C7; color: #D97706; }
   .td-chip.tone-late { background: #FEE2E2; color: #DC2626; }
   .td-chip.tone-normal { background: #F1F5F9; color: #475569; }
@@ -350,7 +353,7 @@
     padding: 6px 12px;
     border-radius: 9999px;
     background: color-mix(in srgb, var(--color-text) 5%, transparent);
-    color: color-mix(in srgb, var(--color-text) 65%, transparent);
+    color: var(--color-text-secondary);
     font-size: 13px;
     font-weight: 600;
     transition: background .15s;
@@ -392,7 +395,7 @@
     gap: 6px;
     font-size: 14px;
     font-weight: 600;
-    color: color-mix(in srgb, var(--color-text) 65%, transparent);
+    color: var(--color-text-secondary);
   }
   .td-not-claimable { color: var(--color-warning); }
   .td-action-buttons { display: flex; gap: 10px; }

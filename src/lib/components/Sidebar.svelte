@@ -31,7 +31,7 @@
   }
 </script>
 
-<aside class="sidebar">
+<aside class="sidebar" aria-label="Sidebar">
   <div style="margin-bottom: var(--space-8);">
     <div class="micromatch-header-container">
       <div class="micromatch-logo-container">

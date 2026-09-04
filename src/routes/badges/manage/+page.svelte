@@ -1,9 +1,11 @@
 <script lang="ts">
+  /* eslint-disable svelte/no-navigation-without-resolve -- resolve() below preserves locale prefixes. */
   import Icon from '@iconify/svelte';
+  import { page } from '$app/state';
   import CustomSelect from '$lib/components/CustomSelect.svelte';
   import LottieAnimation from '$lib/components/LottieAnimation.svelte';
   import { invalidateAll } from '$app/navigation';
-  import { resolve } from '$app/paths';
+  import { localizedHref, type Locale } from '$lib/locale';
   import type { BadgeDefinition } from '$lib/types';
   export let data: {
     userRole: 'anonymous' | 'user' | 'ngo' | 'volunteer';
@@ -11,6 +13,12 @@
     tasks: Array<{ id: string; title: string; shortDescription: string; tags: string[]; estimatedMinutes?: number }>;
     badges: BadgeDefinition[];
   };
+
+  const currentLocale = (page.data?.locale as Locale | undefined) ?? 'en';
+
+  function resolve(pathname: string, _options?: unknown): string {
+    return localizedHref(pathname, currentLocale);
+  }
 
   let showCreateModal = false;
   let editingBadge: BadgeDefinition | null = null;
@@ -154,7 +162,7 @@
 <div class="bm-page">
   <!-- ───── Hero ───── -->
   <section class="bm-hero brand-card">
-    <div class="bm-hero-blob"></div>
+    <div class="bm-hero-blob" aria-hidden="true"></div>
     <div class="bm-hero-text">
       <h1>Reward what <span class="coral-gradient">matters</span>.</h1>
       <p>Design custom badges to celebrate the moments that move your mission. Pick from a template, or build from scratch.</p>
@@ -216,7 +224,7 @@
               <Icon icon={badge.icon || 'lucide:trophy'} width="28" height="28" />
             </div>
             <div class="bm-badge-meta">
-              <h4>{badge.label}</h4>
+              <h3>{badge.label}</h3>
               <small>
                 {#if badge.criteria === 'task-completion'}Awarded for any task{:else if badge.criteria === 'task-specific'}Awarded for a specific task{:else if badge.criteria === 'time-based'}Time-based{:else if badge.criteria === 'milestone'}Milestone{:else}Custom rule{/if}
                 {#if badge.createdAt} <span class="pipe-sep">|</span> created {relativeDate(badge.createdAt)}{/if}
@@ -263,25 +271,25 @@
           <input bind:this={firstInputBtn} bind:value={newBadge.customLabel} placeholder="e.g. Translation Hero" />
         </label>
 
-        <label class="bm-field">
+        <div class="bm-field">
           <span>Color</span>
           <div class="bm-color-row">
-            <input type="color" bind:value={newBadge.customColor} class="bm-color-swatch" />
+            <input type="color" bind:value={newBadge.customColor} class="bm-color-swatch" aria-label="Badge color" />
             <code>{newBadge.customColor}</code>
           </div>
-        </label>
+        </div>
 
-        <label class="bm-field">
+        <div class="bm-field">
           <span>Award when</span>
           <CustomSelect bind:value={newBadge.criteria} ariaLabel="Award when" options={[{ value: 'task-completion', label: 'Any of your tasks is completed' }, { value: 'task-specific', label: 'A specific task is completed' }]} />
           <small class="bm-hint">More criteria types (time-based, milestones) coming soon.</small>
-        </label>
+        </div>
 
         {#if newBadge.criteria === 'task-specific'}
-          <label class="bm-field">
+          <div class="bm-field">
             <span>Which task</span>
             <CustomSelect bind:value={newBadge.taskId} ariaLabel="Which task" options={[{ value: '', label: 'Pick a task…' }, ...data.tasks.map((task) => ({ value: task.id, label: task.title }))]} />
-          </label>
+          </div>
         {/if}
 
         <label class="bm-field">
@@ -321,7 +329,9 @@
   /* Hero */
   .bm-hero { position: relative; overflow: hidden; padding: 40px 36px; }
   .bm-hero-blob { position: absolute; top: -50%; right: -10%; width: 360px; height: 360px; border-radius: 50%; background: rgba(255, 107, 107, 0.18); filter: blur(80px); pointer-events: none; }
-  .bm-hero-text { position: relative; z-index: 1; max-width: 560px; }
+  @media (max-width: 768px) { .bm-hero-blob { display: none; } }
+  :global(html[dir='rtl']) .bm-hero-blob { display: none; }
+  .bm-hero-text { position: relative; z-index: 1; max-width: 560px; padding: 8px 12px; border-radius: 12px; background: var(--color-surface); }
   .bm-hero-text h1 { font-size: clamp(1.75rem, 3vw + 0.5rem, 2.75rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 12px; }
   .bm-hero-text p { color: var(--color-text-secondary); font-size: 16px; font-weight: 500; line-height: 1.6; margin: 0 0 24px; max-width: 480px; }
   .bm-hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
@@ -365,7 +375,7 @@
   .bm-badge:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04); }
   .bm-badge-icon { width: 56px; height: 56px; border-radius: 18px; display: flex; align-items: center; justify-content: center; color: #fff; flex-shrink: 0; }
   .bm-badge-meta { flex: 1; min-width: 0; }
-  .bm-badge-meta h4 { font-size: 16px; font-weight: 700; margin: 0 0 4px; }
+  .bm-badge-meta h3 { font-size: 16px; font-weight: 700; margin: 0 0 4px; }
   .bm-badge-meta small { font-size: 12px; color: var(--color-text-secondary); font-weight: 500; }
   .bm-badge-actions { display: flex; gap: 6px; }
 

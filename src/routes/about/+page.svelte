@@ -51,8 +51,7 @@
   <!-- Lifecycle Section -->
   <div class="lifecycle-section">
     <div class="lifecycle-head">
-      <span class="subhead-pill">Platform Lifecycle</span>
-      <h2>How Every Micro-Task Works</h2>
+      <h2>Platform lifecycle: how every micro-task works</h2>
       <p>Every contribution follows a simple, transparent 4-step workflow from post to proof.</p>
     </div>
 
@@ -240,18 +239,6 @@
     text-align: center;
     max-width: 580px;
     margin: 0 auto 36px auto;
-  }
-
-  .subhead-pill {
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--color-primary-readable);
-    background: var(--color-surface-variant);
-    padding: 5px 14px;
-    border-radius: 20px;
-    margin-bottom: 12px;
   }
 
   .lifecycle-head h2 {
