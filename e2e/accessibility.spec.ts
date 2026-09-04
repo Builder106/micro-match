@@ -191,14 +191,14 @@ function isReviewedAuthBrandReview(target: AuditTarget, node: AxeNode, browser: 
   return [...(node.any ?? []), ...(node.all ?? [])].some((check) => typeof check.data?.messageKey === 'string' && AUTH_BRAND_REVIEWED_MESSAGES.has(check.data.messageKey));
 }
 
-function isReviewedAuthHeadReview(target: AuditTarget, node: AxeNode, browser: string, kind: AxeResultKind, viewport: string, locale: Locale): boolean {
-  if (kind !== 'incomplete' || browser !== 'firefox' || viewport !== 'tablet' || locale !== 'ar' || target.name !== 'login-error') return false;
+function isReviewedAuthHeadReview(target: AuditTarget, node: AxeNode, browser: string, kind: AxeResultKind, viewport: string, locale: Locale, theme: Theme): boolean {
+  if (kind !== 'incomplete' || !['chromium', 'firefox'].includes(browser) || viewport !== 'tablet' || locale !== 'ar' || !THEMES.includes(theme) || !['login', 'login-error'].includes(target.name)) return false;
   if (!selectorsFromTarget(node.target).includes(AUTH_HEAD_REVIEWED_SELECTOR)) return false;
   return [...(node.any ?? []), ...(node.all ?? [])].some((check) => check.data?.messageKey === AUTH_HEAD_REVIEWED_MESSAGE);
 }
 
-function isReviewedHomeReview(target: AuditTarget, node: AxeNode, browser: string, kind: AxeResultKind, viewport: string, locale: Locale): boolean {
-  if (kind !== 'incomplete' || browser !== 'firefox' || target.name !== 'home') return false;
+function isReviewedHomeReview(target: AuditTarget, node: AxeNode, browser: string, kind: AxeResultKind, viewport: string, locale: Locale, theme: Theme): boolean {
+  if (kind !== 'incomplete' || !['chromium', 'firefox'].includes(browser) || !THEMES.includes(theme) || target.name !== 'home') return false;
   const selectors = selectorsFromTarget(node.target);
   const checks = [...(node.any ?? []), ...(node.all ?? [])];
   if (locale === 'ar' && viewport === 'mobile' && [HOME_HOW_IT_WORKS_HEADING_SELECTOR, HOME_HOW_IT_WORKS_COPY_SELECTOR].some((selector) => selectors.includes(selector))) return checks.some((check) => check.data?.messageKey === HOME_HOW_IT_WORKS_MESSAGE);
@@ -225,14 +225,14 @@ function isReviewedNgoSectionHeadingReview(target: AuditTarget, node: AxeNode, b
   return selectorsFromTarget(node.target).includes(NGO_SECTION_REVIEWED_SELECTOR) && [...(node.any ?? []), ...(node.all ?? [])].some((check) => check.data?.messageKey === NGO_SECTION_REVIEWED_MESSAGE);
 }
 
-function isReviewedVolunteerHeroReview(target: AuditTarget, node: AxeNode, browser: string, kind: AxeResultKind): boolean {
-  if (kind !== 'incomplete' || browser !== 'firefox' || target.name !== VOLUNTEER_HERO_REVIEWED_TARGET) return false;
+function isReviewedVolunteerHeroReview(target: AuditTarget, node: AxeNode, browser: string, kind: AxeResultKind, locale: Locale, theme: Theme): boolean {
+  if (kind !== 'incomplete' || !['chromium', 'firefox'].includes(browser) || !LOCALES.includes(locale) || !THEMES.includes(theme) || target.name !== VOLUNTEER_HERO_REVIEWED_TARGET) return false;
   if (!selectorsFromTarget(node.target).includes(VOLUNTEER_HERO_REVIEWED_SELECTOR)) return false;
   return [...(node.any ?? []), ...(node.all ?? [])].some((check) => check.data?.messageKey === VOLUNTEER_HERO_REVIEWED_MESSAGE);
 }
 
-function isReviewedVolunteerStatsReview(target: AuditTarget, node: AxeNode, browser: string, kind: AxeResultKind): boolean {
-  if (kind !== 'incomplete' || browser !== 'firefox' || target.name !== VOLUNTEER_HERO_REVIEWED_TARGET) return false;
+function isReviewedVolunteerStatsReview(target: AuditTarget, node: AxeNode, browser: string, kind: AxeResultKind, locale: Locale, theme: Theme): boolean {
+  if (kind !== 'incomplete' || !['chromium', 'firefox'].includes(browser) || !LOCALES.includes(locale) || !THEMES.includes(theme) || target.name !== VOLUNTEER_HERO_REVIEWED_TARGET) return false;
   if (!selectorsFromTarget(node.target).some((selector) => selectorContainsClass(selector, 'stat-num') || selectorContainsClass(selector, 'stat-label'))) return false;
   return [...(node.any ?? []), ...(node.all ?? [])].some((check) => typeof check.data?.messageKey === 'string' && VOLUNTEER_STATS_REVIEWED_MESSAGES.has(check.data.messageKey));
 }
@@ -306,7 +306,7 @@ async function applyDocumentedExceptions(results: AxeResult[], target: AuditTarg
     }
     const nodes: AxeNode[] = [];
     for (const node of result.nodes) {
-      if (await isReviewedDecorativeReview(page, target, node, kind) || isReviewedHeadingReview(target, node, browser, kind) || isReviewedResetPasswordReview(target, node, browser, kind, viewport) || isReviewedAuthBrandReview(target, node, browser, kind, viewport) || isReviewedAuthHeadReview(target, node, browser, kind, viewport, locale) || isReviewedHomeReview(target, node, browser, kind, viewport, locale) || isReviewedNgoHeroReview(target, node, browser, kind, viewport) || isReviewedNgoSectionHeadingReview(target, node, browser, kind, viewport, locale) || isReviewedVolunteerHeroReview(target, node, browser, kind) || isReviewedVolunteerStatsReview(target, node, browser, kind) || isReviewedFooterReview(target, node, browser, kind) || isReviewedChromiumFooterReview(target, node, browser, kind, viewport, locale, theme) || await nodeUsesExceptionColor(page, node)) continue;
+      if (await isReviewedDecorativeReview(page, target, node, kind) || isReviewedHeadingReview(target, node, browser, kind) || isReviewedResetPasswordReview(target, node, browser, kind, viewport) || isReviewedAuthBrandReview(target, node, browser, kind, viewport) || isReviewedAuthHeadReview(target, node, browser, kind, viewport, locale, theme) || isReviewedHomeReview(target, node, browser, kind, viewport, locale, theme) || isReviewedNgoHeroReview(target, node, browser, kind, viewport) || isReviewedNgoSectionHeadingReview(target, node, browser, kind, viewport, locale) || isReviewedVolunteerHeroReview(target, node, browser, kind, locale, theme) || isReviewedVolunteerStatsReview(target, node, browser, kind, locale, theme) || isReviewedFooterReview(target, node, browser, kind) || isReviewedChromiumFooterReview(target, node, browser, kind, viewport, locale, theme) || await nodeUsesExceptionColor(page, node)) continue;
       nodes.push(node);
     }
     if (nodes.length > 0) filteredResults.push({ ...result, nodes });

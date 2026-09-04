@@ -13,6 +13,19 @@ test.describe('public pages', () => {
     await expect(page.locator('[data-motion-scene="community-impact"]')).toBeAttached();
   });
 
+  test('homepage Lottie scene uses its static fallback for reduced motion', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/en', { waitUntil: 'networkidle' });
+    const scene = page.locator('[data-motion-scene="community-impact"]');
+    await expect(scene.locator('.static-fallback')).toBeVisible();
+    await expect(scene.locator('.lottie-animation[data-lottie-ready="true"]')).toHaveCount(0);
+  });
+
+  test('homepage Lottie scene keeps normal-motion behavior', async ({ page }) => {
+    await page.goto('/en', { waitUntil: 'networkidle' });
+    await expect(page.locator('[data-motion-scene="community-impact"] .lottie-animation[data-lottie-ready="true"]')).toBeVisible();
+  });
+
   test('feed page renders the search + filter chips', async ({ page }) => {
     await page.goto('/tasks');
     await expect(page.getByPlaceholder(/Search tasks/i)).toBeVisible();
