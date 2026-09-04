@@ -380,7 +380,7 @@ async function applyDocumentedExceptions(results: AxeResult[], target: AuditTarg
 }
 
 async function auditTarget(page: Page, target: AuditTarget, metadata: AuditMetadata, outputPath: string): Promise<void> {
-  await page.waitForLoadState('networkidle'); await page.waitForTimeout(300); if (target.state) await prepareState(page, target.state); await page.waitForTimeout(500); await settleAuditVisuals(page, target);
+  await page.waitForLoadState('domcontentloaded'); await page.waitForTimeout(300); if (target.state) await prepareState(page, target.state); await page.waitForTimeout(500); await settleAuditVisuals(page, target);
   const results = await new AxeBuilder({ page }).options({ runOnly: { type: 'tag', values: WCAG_TAGS }, rules: AAA_RULES }).analyze();
   const violations = await applyDocumentedExceptions(results.violations as AxeResult[], target, page, 'violations', metadata.browser, metadata.viewport, metadata.locale, metadata.theme); const incomplete = await applyDocumentedExceptions(results.incomplete as AxeResult[], target, page, 'incomplete', metadata.browser, metadata.viewport, metadata.locale, metadata.theme);
   fs.writeFileSync(outputPath, `${JSON.stringify(results, null, 2)}\n`);

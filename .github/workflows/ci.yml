@@ -102,7 +102,7 @@ jobs:
     needs: [build, test]
     runs-on: ubuntu-24.04
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         project: [chromium, firefox]
     steps:
@@ -130,7 +130,7 @@ jobs:
         env:
           PLAYWRIGHT_A11Y_HARNESS: '1'
           PLAYWRIGHT_A11Y_SCOPE: pr
-          PLAYWRIGHT_A11Y_WORKERS: '4'
+          PLAYWRIGHT_A11Y_WORKERS: '2'
           PLAYWRIGHT_USE_PREBUILT: '1'
           PLAYWRIGHT_BASE_URL: http://127.0.0.1:4173
       - uses: actions/upload-artifact@v4
