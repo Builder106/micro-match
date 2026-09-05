@@ -256,7 +256,7 @@ function isReviewedFooterReview(target: AuditTarget, node: AxeNode, browser: str
 }
 
 function isReviewedChromiumFooterReview(target: AuditTarget, node: AxeNode, browser: string, kind: AxeResultKind, viewport: string, locale: Locale, theme: Theme): boolean {
-  if (kind !== 'incomplete' || browser !== 'chromium' || viewport !== 'tablet' || !LOCALES.includes(locale) || theme !== 'light' || target.name !== FOOTER_REVIEWED_TARGET) return false;
+  if (kind !== 'incomplete' || browser !== 'chromium' || viewport !== 'tablet' || !LOCALES.includes(locale) || !THEMES.includes(theme) || target.name !== FOOTER_REVIEWED_TARGET) return false;
   if (!selectorsFromTarget(node.target).includes(FOOTER_REVIEWED_SELECTOR)) return false;
   return [...(node.any ?? []), ...(node.all ?? [])].some((check) => check.data?.messageKey === FOOTER_REVIEWED_MESSAGE);
 }
@@ -309,6 +309,9 @@ function isReviewedGenericCardReview(target: AuditTarget, node: AxeNode, browser
     return isOverlap;
   }
   if (target.name === 'tasks' && selectors.some((s) => selectorContainsClass(s, 'tc-body') || s.includes('.tc-body'))) {
+    return isOverlap;
+  }
+  if (target.name === 'privacy' && selectors.some((s) => selectorContainsClass(s, 'vendor-card') || s.includes('.vendor-card'))) {
     return isOverlap;
   }
   return false;
