@@ -28,6 +28,8 @@ audit-output/
 
 # Demo MP4 sources (regenerable; only the static/demos/*.gif outputs are committed)
 e2e/demo/output/
+static/demos/*.mp4
+static/demos/*.webm
 
 # Cache/temp
 .cache/
