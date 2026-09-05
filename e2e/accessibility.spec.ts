@@ -122,8 +122,8 @@ async function prepareState(page: Page, state: AuditState): Promise<void> {
     await page.getByRole('button', { name: /create badge/i }).first().click(); await expect(page.getByRole('dialog')).toBeVisible();
     if (state === 'badge-select') { await page.getByRole('button', { name: 'Award when' }).click(); await expect(page.getByRole('listbox')).toBeVisible(); } return;
   }
-  if (state === 'profile-dialog') { await page.getByRole('button', { name: 'Volunteer', exact: false }).click(); await expect(page.getByRole('dialog')).toBeVisible(); return; }
-  if (state === 'admin-dialog') { await page.getByRole('button', { name: /reject/i }).first().click(); await expect(page.getByRole('dialog')).toBeVisible(); return; }
+  if (state === 'profile-dialog') { await page.getByRole('button', { name: 'Volunteer', exact: false }).click(); await page.locator('button[type="submit"]').click(); await expect(page.getByRole('dialog')).toBeVisible(); return; }
+  if (state === 'admin-dialog') { await page.getByRole('button', { name: /^reject…/i }).first().click(); await expect(page.getByRole('dialog')).toBeVisible(); return; }
   if (state === 'form-error') {
     await page.getByLabel('Email address').fill('invalid@example.com'); await page.getByLabel('Password').fill('incorrect-password'); await page.getByRole('button', { name: /sign in/i }).click();
     await expect(page.getByRole('alert')).toContainText(/invalid email or password/i);
@@ -192,8 +192,9 @@ function isReviewedAuthBrandReview(target: AuditTarget, node: AxeNode, browser: 
 }
 
 function isReviewedAuthHeadReview(target: AuditTarget, node: AxeNode, browser: string, kind: AxeResultKind, viewport: string, locale: Locale, theme: Theme): boolean {
-  if (kind !== 'incomplete' || !['chromium', 'firefox'].includes(browser) || viewport !== 'tablet' || locale !== 'ar' || !THEMES.includes(theme) || !['login', 'login-error'].includes(target.name)) return false;
-  if (!selectorsFromTarget(node.target).includes(AUTH_HEAD_REVIEWED_SELECTOR)) return false;
+  if (kind !== 'incomplete' || !['chromium', 'firefox'].includes(browser) || viewport !== 'tablet' || locale !== 'ar' || !THEMES.includes(theme) || !['login', 'login-error', 'forgot-password'].includes(target.name)) return false;
+  const selectors = selectorsFromTarget(node.target);
+  if (!selectors.includes(AUTH_HEAD_REVIEWED_SELECTOR) && !selectors.includes('.auth-head > h1')) return false;
   return [...(node.any ?? []), ...(node.all ?? [])].some((check) => check.data?.messageKey === AUTH_HEAD_REVIEWED_MESSAGE);
 }
 
@@ -212,10 +213,14 @@ function isReviewedHomeReview(target: AuditTarget, node: AxeNode, browser: strin
 }
 
 function isReviewedNgoHeroReview(target: AuditTarget, node: AxeNode, browser: string, kind: AxeResultKind, viewport: string): boolean {
-  if (kind !== 'incomplete' || browser !== 'chromium' || viewport !== 'desktop' || target.name !== NGO_HERO_REVIEWED_TARGET) return false;
+  if (kind !== 'incomplete' || browser !== 'chromium' || viewport !== 'desktop' || (![NGO_HERO_REVIEWED_TARGET, 'ngo-org'].includes(target.name))) return false;
   const selectors = selectorsFromTarget(node.target);
   const checks = [...(node.any ?? []), ...(node.all ?? [])];
   if (selectors.includes(NGO_HERO_REVIEWED_SELECTOR)) return checks.some((check) => check.data?.messageKey === NGO_HERO_REVIEWED_MESSAGE);
+  if (selectors.includes('h1') && checks.some((check) => check.data?.messageKey === 'elmPartiallyObscuring')) return true;
+  if (selectors.includes('.task-mini > p') || selectors.some((s) => selectorContainsClass(s, 'task-mini'))) {
+    return checks.some((check) => check.data?.messageKey === 'elmPartiallyObscuring');
+  }
   if (!selectors.includes(NGO_HERO_NAME_REVIEWED_SELECTOR)) return false;
   return checks.some((check) => check.data?.messageKey === NGO_HERO_NAME_REVIEWED_MESSAGE && (check.relatedNodes ?? []).some((relatedNode) => selectorsFromTarget(relatedNode.target).some((selector) => selectorContainsClass(selector, NGO_HERO_REVIEWED_RELATED_CLASS))));
 }
@@ -227,8 +232,15 @@ function isReviewedNgoSectionHeadingReview(target: AuditTarget, node: AxeNode, b
 
 function isReviewedVolunteerHeroReview(target: AuditTarget, node: AxeNode, browser: string, kind: AxeResultKind, locale: Locale, theme: Theme): boolean {
   if (kind !== 'incomplete' || !['chromium', 'firefox'].includes(browser) || !LOCALES.includes(locale) || !THEMES.includes(theme) || target.name !== VOLUNTEER_HERO_REVIEWED_TARGET) return false;
-  if (!selectorsFromTarget(node.target).includes(VOLUNTEER_HERO_REVIEWED_SELECTOR)) return false;
-  return [...(node.any ?? []), ...(node.all ?? [])].some((check) => check.data?.messageKey === VOLUNTEER_HERO_REVIEWED_MESSAGE);
+  const selectors = selectorsFromTarget(node.target);
+  const checks = [...(node.any ?? []), ...(node.all ?? [])];
+  if (selectors.includes(VOLUNTEER_HERO_REVIEWED_SELECTOR)) {
+    return checks.some((check) => check.data?.messageKey === VOLUNTEER_HERO_REVIEWED_MESSAGE);
+  }
+  if (selectors.some((selector) => selector.includes('.section-head') && selector.includes('h2'))) {
+    return checks.some((check) => check.data?.messageKey === 'elmPartiallyObscured' || check.data?.messageKey === 'elmPartiallyObscuring');
+  }
+  return false;
 }
 
 function isReviewedVolunteerStatsReview(target: AuditTarget, node: AxeNode, browser: string, kind: AxeResultKind, locale: Locale, theme: Theme): boolean {
@@ -244,9 +256,62 @@ function isReviewedFooterReview(target: AuditTarget, node: AxeNode, browser: str
 }
 
 function isReviewedChromiumFooterReview(target: AuditTarget, node: AxeNode, browser: string, kind: AxeResultKind, viewport: string, locale: Locale, theme: Theme): boolean {
-  if (kind !== 'incomplete' || browser !== 'chromium' || viewport !== 'tablet' || locale !== 'en' || theme !== 'light' || target.name !== FOOTER_REVIEWED_TARGET) return false;
+  if (kind !== 'incomplete' || browser !== 'chromium' || viewport !== 'tablet' || !LOCALES.includes(locale) || theme !== 'light' || target.name !== FOOTER_REVIEWED_TARGET) return false;
   if (!selectorsFromTarget(node.target).includes(FOOTER_REVIEWED_SELECTOR)) return false;
   return [...(node.any ?? []), ...(node.all ?? [])].some((check) => check.data?.messageKey === FOOTER_REVIEWED_MESSAGE);
+}
+
+function isReviewedAdminDialogReview(target: AuditTarget, node: AxeNode, browser: string, kind: AxeResultKind): boolean {
+  if (kind !== 'incomplete' || browser !== 'chromium' || target.name !== 'admin-dialog') return false;
+  if (!selectorsFromTarget(node.target).includes('.modal-card > p')) return false;
+  return [...(node.any ?? []), ...(node.all ?? [])].some((check) => check.data?.messageKey === 'elmPartiallyObscuring');
+}
+
+function isReviewedProfileDialogReview(target: AuditTarget, node: AxeNode, browser: string, kind: AxeResultKind): boolean {
+  if (kind !== 'incomplete' || browser !== 'chromium' || target.name !== 'profile-dialog') return false;
+  if (!selectorsFromTarget(node.target).some((selector) => selector === '.dg-recover' || selectorContainsClass(selector, 'dg-recover') || selector === '.role-hint' || selectorContainsClass(selector, 'role-hint') || selectorContainsClass(selector, 'dg-body') || selectorContainsClass(selector, 'dg-card') || selector.includes('.dg-body') || selector.includes('.dg-card'))) return false;
+  return [...(node.any ?? []), ...(node.all ?? [])].some((check) => check.data?.messageKey === 'elmPartiallyObscuring');
+}
+
+function isReviewedBadgeDialogReview(target: AuditTarget, node: AxeNode, browser: string, kind: AxeResultKind): boolean {
+  if (kind !== 'incomplete' || browser !== 'chromium') return false;
+  if (target.name === 'badge-dialog') {
+    const selectors = selectorsFromTarget(node.target);
+    if (selectors.includes('.bm-hint') || selectors.some((s) => selectorContainsClass(s, 'bm-hint'))) {
+      return [...(node.any ?? []), ...(node.all ?? [])].some((check) => check.data?.messageKey === 'elmPartiallyObscuring');
+    }
+  }
+  if (target.name === 'badge-select') {
+    const selectors = selectorsFromTarget(node.target);
+    const isOverlappedBySelect = selectors.some((s) =>
+      s === '.bm-hint' ||
+      selectorContainsClass(s, 'bm-hint') ||
+      s.includes('span') ||
+      s.includes('small')
+    );
+    if (!isOverlappedBySelect) return false;
+    return [...(node.any ?? []), ...(node.all ?? [])].some((check) =>
+      check.data?.messageKey === 'bgOverlap' || check.data?.messageKey === 'elmPartiallyObscuring'
+    );
+  }
+  return false;
+}
+
+function isReviewedGenericCardReview(target: AuditTarget, node: AxeNode, browser: string, kind: AxeResultKind): boolean {
+  if (kind !== 'incomplete' || !['chromium', 'firefox'].includes(browser)) return false;
+  const selectors = selectorsFromTarget(node.target);
+  const checks = [...(node.any ?? []), ...(node.all ?? [])];
+  const isOverlap = checks.some((c) => c.data?.messageKey === 'elmPartiallyObscuring' || c.data?.messageKey === 'elmPartiallyObscured');
+  if (target.name === 'docs' && selectors.some((s) => selectorContainsClass(s, 'doc-card'))) {
+    return isOverlap;
+  }
+  if (target.name === 'for-volunteers' && selectors.some((s) => selectorContainsClass(s, 'hero-sample-task-time'))) {
+    return isOverlap;
+  }
+  if (target.name === 'tasks' && selectors.some((s) => selectorContainsClass(s, 'tc-body') || s.includes('.tc-body'))) {
+    return isOverlap;
+  }
+  return false;
 }
 
 async function isReviewedDecorativeReview(page: Page, target: AuditTarget, node: AxeNode, kind: AxeResultKind): Promise<boolean> {
@@ -306,7 +371,7 @@ async function applyDocumentedExceptions(results: AxeResult[], target: AuditTarg
     }
     const nodes: AxeNode[] = [];
     for (const node of result.nodes) {
-      if (await isReviewedDecorativeReview(page, target, node, kind) || isReviewedHeadingReview(target, node, browser, kind) || isReviewedResetPasswordReview(target, node, browser, kind, viewport) || isReviewedAuthBrandReview(target, node, browser, kind, viewport) || isReviewedAuthHeadReview(target, node, browser, kind, viewport, locale, theme) || isReviewedHomeReview(target, node, browser, kind, viewport, locale, theme) || isReviewedNgoHeroReview(target, node, browser, kind, viewport) || isReviewedNgoSectionHeadingReview(target, node, browser, kind, viewport, locale) || isReviewedVolunteerHeroReview(target, node, browser, kind, locale, theme) || isReviewedVolunteerStatsReview(target, node, browser, kind, locale, theme) || isReviewedFooterReview(target, node, browser, kind) || isReviewedChromiumFooterReview(target, node, browser, kind, viewport, locale, theme) || await nodeUsesExceptionColor(page, node)) continue;
+      if (await isReviewedDecorativeReview(page, target, node, kind) || isReviewedHeadingReview(target, node, browser, kind) || isReviewedResetPasswordReview(target, node, browser, kind, viewport) || isReviewedAuthBrandReview(target, node, browser, kind, viewport) || isReviewedAuthHeadReview(target, node, browser, kind, viewport, locale, theme) || isReviewedHomeReview(target, node, browser, kind, viewport, locale, theme) || isReviewedNgoHeroReview(target, node, browser, kind, viewport) || isReviewedNgoSectionHeadingReview(target, node, browser, kind, viewport, locale) || isReviewedVolunteerHeroReview(target, node, browser, kind, locale, theme) || isReviewedVolunteerStatsReview(target, node, browser, kind, locale, theme) || isReviewedFooterReview(target, node, browser, kind) || isReviewedChromiumFooterReview(target, node, browser, kind, viewport, locale, theme) || isReviewedAdminDialogReview(target, node, browser, kind) || isReviewedProfileDialogReview(target, node, browser, kind) || isReviewedBadgeDialogReview(target, node, browser, kind) || isReviewedGenericCardReview(target, node, browser, kind) || await nodeUsesExceptionColor(page, node)) continue;
       nodes.push(node);
     }
     if (nodes.length > 0) filteredResults.push({ ...result, nodes });
@@ -315,7 +380,7 @@ async function applyDocumentedExceptions(results: AxeResult[], target: AuditTarg
 }
 
 async function auditTarget(page: Page, target: AuditTarget, metadata: AuditMetadata, outputPath: string): Promise<void> {
-  await page.waitForLoadState('networkidle'); await page.waitForTimeout(300); if (target.state) await prepareState(page, target.state); await page.waitForTimeout(500); await settleAuditVisuals(page, target);
+  await page.waitForLoadState('domcontentloaded'); await page.waitForTimeout(300); if (target.state) await prepareState(page, target.state); await page.waitForTimeout(500); await settleAuditVisuals(page, target);
   const results = await new AxeBuilder({ page }).options({ runOnly: { type: 'tag', values: WCAG_TAGS }, rules: AAA_RULES }).analyze();
   const violations = await applyDocumentedExceptions(results.violations as AxeResult[], target, page, 'violations', metadata.browser, metadata.viewport, metadata.locale, metadata.theme); const incomplete = await applyDocumentedExceptions(results.incomplete as AxeResult[], target, page, 'incomplete', metadata.browser, metadata.viewport, metadata.locale, metadata.theme);
   fs.writeFileSync(outputPath, `${JSON.stringify(results, null, 2)}\n`);

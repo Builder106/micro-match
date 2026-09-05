@@ -1,10 +1,12 @@
 <script lang="ts">
+  /* eslint-disable svelte/no-navigation-without-resolve -- resolve() below preserves locale prefixes. */
   import Icon from "@iconify/svelte";
+  import { page } from '$app/state';
   import { onMount } from 'svelte';
   import LottieAnimation from '$lib/components/LottieAnimation.svelte';
   import { account } from '$lib/appwrite.client';
   import { getTagStyle } from '$lib/utils/tagColors';
-  import { resolve } from '$app/paths';
+  import { localizedHref, type Locale } from '$lib/locale';
 
   export let data: {
     signedIn: boolean;
@@ -19,6 +21,12 @@
       [key: string]: unknown;
     } | null;
   };
+
+  const currentLocale = (page.data?.locale as Locale | undefined) ?? 'en';
+
+  function resolve(pathname: string, _options?: unknown): string {
+    return localizedHref(pathname, currentLocale);
+  }
 
   let orgName = '';
 

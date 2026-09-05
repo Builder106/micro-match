@@ -286,6 +286,7 @@
   .org-field { display: flex; flex-direction: column; gap: 6px; position: relative; }
   .org-label { font-size: 13px; font-weight: 700; color: var(--color-text); display: inline-flex; align-items: center; gap: 6px; }
   .org-label em { font-style: normal; font-size: 11px; font-weight: 600; padding: 2px 6px; background: color-mix(in srgb, var(--color-primary) 12%, transparent); color: var(--color-primary-readable); border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .org-label em { font-style: normal; font-size: 12px; font-weight: 500; color: var(--color-text-secondary); text-transform: lowercase; }
 
   .org-field input, .org-field textarea {
     padding: 12px 14px;

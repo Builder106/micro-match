@@ -102,7 +102,7 @@ jobs:
     needs: [build, test]
     runs-on: ubuntu-24.04
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         project: [chromium, firefox]
     steps:
@@ -130,7 +130,7 @@ jobs:
         env:
           PLAYWRIGHT_A11Y_HARNESS: '1'
           PLAYWRIGHT_A11Y_SCOPE: pr
-          PLAYWRIGHT_A11Y_WORKERS: '4'
+          PLAYWRIGHT_A11Y_WORKERS: '2'
           PLAYWRIGHT_USE_PREBUILT: '1'
           PLAYWRIGHT_BASE_URL: http://127.0.0.1:4173
       - uses: actions/upload-artifact@v4
@@ -251,7 +251,7 @@ jobs:
 
   merge-a11y:
     name: Merge accessibility evidence
-    if: ${{ always() }}
+    if: ${{ always() && ((github.event_name == 'pull_request' && needs.a11y-pr.result != 'skipped') || (github.event_name == 'push' && needs.a11y-full.result != 'skipped')) }}
     needs: [a11y-pr, a11y-full]
     runs-on: ubuntu-24.04
     steps:
@@ -313,6 +313,6 @@ jobs:
           MERGE: ${{ needs.merge-a11y.result }}
           EVENT_NAME: ${{ github.event_name }}
         run: |
-          if [ "$RESPONSIVENESS" != success ] || [ "$MERGE" != success ]; then exit 1; fi
-          if [ "$EVENT_NAME" = pull_request ] && { [ "$A11Y_PR" != success ] || [ "$EVIDENCE" != success ]; }; then exit 1; fi
-          if [ "$EVENT_NAME" = push ] && [ "$A11Y_FULL" != success ]; then exit 1; fi
+          if [ "$RESPONSIVENESS" != success ]; then exit 1; fi
+          if [ "$EVENT_NAME" = pull_request ] && { [ "$A11Y_PR" != success ] || [ "$EVIDENCE" != success ] || [ "$MERGE" != success ]; }; then exit 1; fi
+          if [ "$EVENT_NAME" = push ] && { [ "$A11Y_FULL" != success ] || [ "$MERGE" != success ]; }; then exit 1; fi
