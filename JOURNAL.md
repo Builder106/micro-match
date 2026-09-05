@@ -84,6 +84,10 @@ Paraglide JS is the preferred system for reviewed static UI messages, locale-pre
 
 Restored MicroMatch's bright coral for brand fills, decoration, progress visuals, and illustrations after the accessibility audit made the whole interface burgundy. Added separate readable coral, action foreground, status, and focus tokens so meaningful text and controls keep the AAA-oriented contrast target. Removed the audit-added opaque landing hero panel and kept the audit's semantic markup, dialog, keyboard, and reduced-motion changes. The accessibility matrix remains an evidence gate, not a formal WCAG AAA claim.
 
+## 2026-08-24 — Added locale-prefixed routing and hybrid localization #decision
+
+Static interface copy now uses Paraglide catalogs for English, Spanish, French, German, Portuguese, Chinese, and Arabic. Locale-prefixed URLs control document language, text direction, cookies, and task translation targets; bare routes negotiate once and redirect canonically. User-created task fields remain server-translated through the existing LibreTranslate service, with bounded display-only batch responses and original-content fallback on provider errors.
+
 ## 2026-08-23 - Coverage gate exercises every runtime branch #decision
 
 The coverage gate now requires 100% statements, branches, functions, and lines across runtime library code and server routes. Focused tests cover normal and failure paths for API handlers, Appwrite mapping, authentication, verification, email, and translation. The coverage suite runs files serially on ampere-dev because concurrent JSDOM workers intermittently timed out there; the assertions and threshold stay the same.
@@ -227,7 +231,3 @@ Picked MicroMatch back up after roughly eight dormant months and immediately reb
 ## 2025-08-14 — MVP in a week: browse → pick → learn → complete → earn #milestone
 
 Shipped the first working MVP three days after the initial commit, framed around a five-verb loop: Browse → Pick → Learn → Complete → Earn. The original pitch leaned hard on just-in-time learning — each task was meant to carry DataCamp and Educative "learning cards" so a volunteer new to a skill could still contribute — plus auto-translation of task copy to the viewer's language and a gamified XP-bar-plus-badges dashboard. The planned deployment was Heroku for the SvelteKit SSR app and DigitalOcean for Appwrite. Most of that early scope (Heroku, DigitalOcean, the learning cards) didn't survive the 2026 revival; the closed claim/approve/badge loop and Appwrite backend did.
-
-## 2026-08-24 — Added locale-prefixed routing and hybrid localization #decision
-
-Static interface copy now uses Paraglide catalogs for English, Spanish, French, German, Portuguese, Chinese, and Arabic. Locale-prefixed URLs control document language, text direction, cookies, and task translation targets; bare routes negotiate once and redirect canonically. User-created task fields remain server-translated through the existing LibreTranslate service, with bounded display-only batch responses and original-content fallback on provider errors.
