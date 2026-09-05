@@ -104,10 +104,42 @@ Custom badge templates defined by NGOs.
 
 ## Automated Provisioning
 
-Run the automated provisioning script using Bun:
+### 1. Production Project Provisioning
+
+Ensure `APPWRITE_PROJECT_ID=micromatch-prod` and `APPWRITE_API_KEY` are exported in your environment:
 
 ```bash
 bun scripts/setup-appwrite.ts
 ```
 
-Ensure `APPWRITE_PROJECT_ID`and`APPWRITE_API_KEY` are exported in your environment.
+### 2. Staging Project Provisioning
+
+To provision a fresh isolated staging project (`micromatch-staging`):
+
+1. Create `micromatch-staging` in [Appwrite Cloud Console](https://cloud.appwrite.io) (Region: San Francisco).
+2. Generate an API Key with `databases.*`, `collections.*`, `documents.*`, `tables.*`, `files.*`, `buckets.*`, `users.*`, and `teams.*` scopes.
+3. Provision databases, tables, buckets, and teams:
+
+```bash
+APPWRITE_PROJECT_ID=micromatch-staging APPWRITE_API_KEY=<staging_key> bun scripts/setup-appwrite.ts
+```
+
+Or push the complete schema directly using the Appwrite CLI:
+
+```bash
+appwrite client --endpoint https://sfo.cloud.appwrite.io/v1 --project-id micromatch-staging --key <staging_key>
+appwrite push all
+```
+
+4. Verify staging readiness:
+
+```bash
+APPWRITE_PROJECT_ID=micromatch-staging APPWRITE_API_KEY=<staging_key> bun run verify:staging
+```
+
+5. Seed demo fixtures for staging QA:
+
+```bash
+APPWRITE_PROJECT_ID=micromatch-staging APPWRITE_API_KEY=<staging_key> bun run seed
+```
+

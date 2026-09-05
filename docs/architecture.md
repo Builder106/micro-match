@@ -27,6 +27,21 @@ MicroMatch is built as a SvelteKit full-stack application backed by Appwrite for
 
 ---
 
+### Environment Topology & Staging Isolation
+
+MicroMatch operates a two-tier environment topology separating production traffic from release candidate testing:
+
+| Environment | Branch | Appwrite Project ID | Frontend Deployment | Purpose |
+| :--- | :--- | :--- | :--- | :--- |
+| **Production** | `main` | `micromatch-prod` | `micromatch.app` | Live production service |
+| **Staging** | `staging` | `micromatch-staging` | Vercel Preview (`staging` branch alias) | Dedicated QA, schema validation, and seed testing |
+
+- **Data Isolation**: Production and staging maintain isolated Appwrite projects. Staging uses `micromatch-staging` in SFO (`https://sfo.cloud.appwrite.io/v1`), keeping dummy volunteer proofs, test NGO accounts, and automated seeding fixtures separated from real user records.
+- **Automated Deployment**: Pushes to `staging` run full CI checks and trigger Vercel deployment via `VERCEL_DEPLOY_HOOK_STAGING`.
+- **Environment Scoping**: Vercel injects staging environment variables for preview deployments triggered by the `staging` branch (see [`.env.staging.example`](file:///Users/yinkavaughan/My%20Drive%20%28yvaughan@wesleyan.edu%29/CS/projects/swe/micro-match/.env.staging.example)).
+
+---
+
 ## 2. Server Architecture & Modules
 
 The backend logic resides in `$lib/server/` with isolated domain modules:

@@ -4,7 +4,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { Client, Databases, Storage, Teams, type Compression } from 'node-appwrite';
+import { Client, Databases, Storage, Teams, TablesDB, type Compression } from 'node-appwrite';
 
 interface AppwriteDatabaseConfig {
   $id: string;
@@ -30,12 +30,23 @@ interface AppwriteTeamConfig {
   name: string;
 }
 
+interface AppwriteTableConfig {
+  $id: string;
+  name: string;
+  databaseId: string;
+  enabled?: boolean;
+  rowSecurity?: boolean;
+  columns?: Array<Record<string, unknown>>;
+  indexes?: Array<Record<string, unknown>>;
+}
+
 interface AppwriteConfig {
   endpoint?: string;
   projectId?: string;
   databases?: AppwriteDatabaseConfig[];
   buckets?: AppwriteBucketConfig[];
   teams?: AppwriteTeamConfig[];
+  tables?: AppwriteTableConfig[];
 }
 
 const configPath = path.resolve(process.cwd(), 'appwrite.config.json');
@@ -49,12 +60,14 @@ if (fs.existsSync(configPath)) {
   }
 }
 
-const endpoint = process.env.APPWRITE_ENDPOINT || config.endpoint || 'https://cloud.appwrite.io/v1';
+const endpoint = process.env.APPWRITE_ENDPOINT || config.endpoint || 'https://sfo.cloud.appwrite.io/v1';
 const projectId = process.env.APPWRITE_PROJECT_ID || config.projectId;
 const apiKey = process.env.APPWRITE_API_KEY;
 
 if (!projectId || !apiKey) {
   console.error('Error: APPWRITE_PROJECT_ID and APPWRITE_API_KEY must be set in environment.');
+  console.error('Example for staging:');
+  console.error('  APPWRITE_PROJECT_ID=micromatch-staging APPWRITE_API_KEY=your_key bun scripts/setup-appwrite.ts');
   process.exit(1);
 }
 
@@ -66,6 +79,7 @@ const client = new Client()
 const databases = new Databases(client);
 const storage = new Storage(client);
 const teams = new Teams(client);
+const tables = new TablesDB(client);
 
 async function setupAppwrite() {
   console.log(`Setting up Appwrite project: ${projectId} at ${endpoint}...`);
@@ -111,6 +125,25 @@ async function setupAppwrite() {
     } catch {
       console.log(`Creating team "${team.name}" (${team.$id})...`);
       await teams.create(team.$id, team.name);
+    }
+  }
+
+  // 4. Setup Tables
+  for (const table of config.tables || []) {
+    const dbId = table.databaseId || 'micromatch';
+    try {
+      await tables.getTable(dbId, table.$id);
+      console.log(`Table "${table.name}" (${table.$id}) already exists.`);
+    } catch {
+      try {
+        console.log(`Creating table "${table.name}" (${table.$id}) in database "${dbId}"...`);
+        await tables.createTable(dbId, table.$id, table.name, [], table.enabled ?? true);
+      } catch (err) {
+        console.warn(`Note: Could not automatically create table "${table.$id}" via SDK:`, (err as Error).message);
+        console.warn(`Tip: You can push full schema including columns and indexes via Appwrite CLI:`);
+        console.warn(`  appwrite client --endpoint ${endpoint} --project-id ${projectId} --key ${apiKey}`);
+        console.warn(`  appwrite push tables`);
+      }
     }
   }
 

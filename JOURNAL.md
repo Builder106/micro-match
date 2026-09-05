@@ -4,6 +4,10 @@
 > things happen — retrospectives need this raw material to land.
 > Reverse-chronological; one paragraph max per entry.
 
+## 2026-09-05 - Dedicated staging environment established on Appwrite #decision
+
+Stood up an isolated staging backend configuration (`micromatch-staging`) in Appwrite Cloud to separate staging previews and automated seed testing from live user accounts. Added `.env.staging.example` and `verify:staging` tooling so release candidate checkouts test against dedicated tables and storage buckets before changes land on `main`. Git deployment hooks on `staging` now map cleanly to isolated staging variables in Vercel, satisfying fleet branching policy for persistent release candidate branches.
+
 ## 2026-08-29 - Hardened profile and auth brand audit surfaces #fix
 
 The full matrix exposed real contrast failures in profile metadata, verification status, and small helper copy; those styles now use readable theme tokens, and decorative profile blobs were removed where they overlapped text geometry. The full-size auth brand copy now has an opaque stacking surface and no transformed or gradient overlay behind it; Firefox still reports the desktop heading as an exact visual review, so the disposition covers `login` alongside the existing error and reset states.
