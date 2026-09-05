@@ -4,6 +4,7 @@ on:
   push:
     branches: [main, staging]
   pull_request:
+    branches: [main]
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -21,10 +22,10 @@ jobs:
     name: Secret scan
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7 # v5.0.0
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - uses: gitleaks/gitleaks-action@v3 # v2.3.9
+      - uses: gitleaks/gitleaks-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -32,9 +33,9 @@ jobs:
     name: Type-check & Compliance
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7 # v5.0.0
-      - uses: oven-sh/setup-bun@v2 # v2
-      - uses: actions/cache@v6 # v4
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/cache@v6
         with:
           path: ~/.bun/install/cache
           key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
@@ -49,9 +50,9 @@ jobs:
     name: Lint & Format
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7 # v5.0.0
-      - uses: oven-sh/setup-bun@v2 # v2
-      - uses: actions/cache@v6 # v4
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/cache@v6
         with:
           path: ~/.bun/install/cache
           key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
@@ -62,9 +63,9 @@ jobs:
     name: Unit tests & Coverage Gate
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7 # v5.0.0
-      - uses: oven-sh/setup-bun@v2 # v2
-      - uses: actions/cache@v6 # v4
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/cache@v6
         with:
           path: ~/.bun/install/cache
           key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
@@ -76,9 +77,9 @@ jobs:
     needs: [check, lint]
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7 # v5.0.0
-      - uses: oven-sh/setup-bun@v2 # v2
-      - uses: actions/cache@v6 # v4
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/cache@v6
         with:
           path: ~/.bun/install/cache
           key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
@@ -106,19 +107,19 @@ jobs:
       matrix:
         project: [chromium, firefox]
     steps:
-      - uses: actions/checkout@v7 # v5.0.0
-      - uses: oven-sh/setup-bun@v2 # v2
-      - uses: actions/cache@v6 # v4
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/cache@v6
         with:
           path: ~/.bun/install/cache
           key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
-      - uses: actions/cache@v6 # v4
+      - uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ matrix.project }}-${{ hashFiles('bun.lock') }}
       - run: bun install --frozen-lockfile
       - run: bunx playwright install --with-deps ${{ matrix.project }}
-      - uses: actions/download-artifact@v8 # v4
+      - uses: actions/download-artifact@v8
         with:
           name: micro-match-build-${{ github.run_id }}
       - run: |
@@ -156,19 +157,19 @@ jobs:
         project: [chromium, firefox]
         shard: [1, 2, 3, 4]
     steps:
-      - uses: actions/checkout@v7 # v5.0.0
-      - uses: oven-sh/setup-bun@v2 # v2
-      - uses: actions/cache@v6 # v4
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/cache@v6
         with:
           path: ~/.bun/install/cache
           key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
-      - uses: actions/cache@v6 # v4
+      - uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ matrix.project }}-${{ hashFiles('bun.lock') }}
       - run: bun install --frozen-lockfile
       - run: bunx playwright install --with-deps ${{ matrix.project }}
-      - uses: actions/download-artifact@v8 # v4
+      - uses: actions/download-artifact@v8
         with:
           name: micro-match-build-${{ github.run_id }}
       - run: |
@@ -201,19 +202,19 @@ jobs:
     if: ${{ !cancelled() }}
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7 # v5.0.0
-      - uses: oven-sh/setup-bun@v2 # v2
-      - uses: actions/cache@v6 # v4
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/cache@v6
         with:
           path: ~/.bun/install/cache
           key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
-      - uses: actions/cache@v6 # v4
+      - uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-chromium-${{ hashFiles('bun.lock') }}
       - run: bun install --frozen-lockfile
       - run: bunx playwright install --with-deps chromium
-      - uses: actions/download-artifact@v8 # v4
+      - uses: actions/download-artifact@v8
         with:
           name: micro-match-build-${{ github.run_id }}
       - run: |
@@ -240,9 +241,9 @@ jobs:
     if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7 # v5.0.0
-      - uses: oven-sh/setup-bun@v2 # v2
-      - uses: actions/cache@v6 # v4
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/cache@v6
         with:
           path: ~/.bun/install/cache
           key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
@@ -255,14 +256,14 @@ jobs:
     needs: [a11y-pr, a11y-full]
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7 # v5.0.0
-      - uses: oven-sh/setup-bun@v2 # v2
-      - uses: actions/cache@v6 # v4
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/cache@v6
         with:
           path: ~/.bun/install/cache
           key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
       - run: bun install --frozen-lockfile
-      - uses: actions/download-artifact@v8 # v4
+      - uses: actions/download-artifact@v8
         with:
           pattern: a11y-*
           path: merged-a11y
