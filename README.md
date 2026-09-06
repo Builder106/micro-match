@@ -99,7 +99,7 @@ sequenceDiagram
   actor N as NGO
   participant App as MicroMatch
   participant DB as Appwrite
-  participant Mail as Mailgun
+  participant Mail as Plunk
 
   N->>App: Post task
   App->>DB: tasks.create (isVerified ← NGO's verification status)
@@ -131,7 +131,7 @@ sequenceDiagram
 | **Framework** | [SvelteKit](https://kit.svelte.dev/) on [Vercel](https://vercel.com/) (`adapter-vercel`, `nodejs22.x` runtime) |
 | **Runtime + package manager** | [Bun](https://bun.sh/) |
 | **Backend** | [Appwrite Cloud](https://appwrite.io/) — Database (TablesDB), Auth, Storage, Teams |
-| **Email** | [Mailgun](https://www.mailgun.com/) (HTTP API, no SDK dep) |
+| **Email** | [Plunk](https://useplunk.com/) as the transactional email provider (server-side HTTP API migration) |
 | **NGO verification** | [ProPublica Nonprofit Explorer API](https://projects.propublica.org/nonprofits/api/) for US 501(c)(3) lookups |
 | **Translation** | Self-hosted [LibreTranslate](https://libretranslate.com/) on an ARM64 Oracle VM behind `translate.micromatch.app` |
 | **Static UI localization** | [Paraglide JS](https://paraglidejs.com/sveltekit) with committed catalogs for English, Spanish, French, German, Portuguese, Chinese, and Arabic |
@@ -148,7 +148,7 @@ cd MicroMatch
 bun install
 cp .env.example .env
 
-# Fill in Appwrite + Mailgun + ProPublica + LibreTranslate keys
+# Fill in Appwrite + Plunk + ProPublica + LibreTranslate values
 
 bun run dev
 ```
@@ -194,7 +194,7 @@ Stored in Appwrite TablesDB (see [docs/appwrite-schema.md](docs/appwrite-schema.
 | `badgeDefinitions` | Org-owned badge templates (orgId, label, criteria, taskId for task-specific) |
 | `ngoVerifications` | Verification queue (orgName, country, taxId, docFileId, status, reason) |
 
-Plus three Appwrite Teams (`volunteers`, `ngos`, `admins`) for role + moderation gating. Storage is one bucket with file-level permissions for both avatars and verification docs. To automatically provision the database tables, attributes, and storage buckets:
+Plus three Appwrite Teams (`volunteers`, `ngos`, `admins`) for role + moderation gating. Storage uses separate `avatars` and `verifications` buckets with file-level permissions. To automatically provision the database tables, attributes, and storage buckets:
 
 ```sh
 bun scripts/setup-appwrite.ts

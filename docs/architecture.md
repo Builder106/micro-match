@@ -21,7 +21,8 @@ MicroMatch is built as a SvelteKit full-stack application backed by Appwrite for
             │  - Auth & Sessions   │  │  - ProPublica API│
             │  - TablesDB          │  │  - Azure Safety  │
             │  - Storage Buckets   │  │  - LibreTranslate│
-            │  - Teams (RBAC)      │  │  - Mailgun Email │
+            │  - Teams (RBAC)      │  │  - Plunk Email   │
+                                    │  - Hail SMS/Voice │
             └──────────────────────┘  └──────────────────┘
 ```
 
@@ -39,6 +40,7 @@ MicroMatch operates a two-tier environment topology separating production traffi
 - **Data Isolation**: Production and staging maintain isolated Appwrite projects. Staging uses `micromatch-staging` in SFO (`https://sfo.cloud.appwrite.io/v1`), keeping dummy volunteer proofs, test NGO accounts, and automated seeding fixtures separated from real user records.
 - **Automated Deployment**: Pushes to `staging` run full CI checks and trigger Vercel deployment via `VERCEL_DEPLOY_HOOK_STAGING`.
 - **Environment Scoping**: Vercel injects staging environment variables for preview deployments triggered by the `staging` branch (see [`.env.staging.example`](file:///Users/yinkavaughan/My%20Drive%20%28yvaughan@wesleyan.edu%29/CS/projects/swe/micro-match/.env.staging.example)).
+- **Configuration Contract**: Both scopes require matching Appwrite resource IDs, public Appwrite settings, and `PUBLIC_APP_URL`. Plunk requires server-only `PLUNK_SECRET_KEY` and `PLUNK_FROM_ADDRESS`; `PLUNK_API_URL` and `PLUNK_FROM_NAME` are optional. LibreTranslate requires its endpoint and API key. These requirements do not imply that deployment dashboards have been configured.
 
 ---
 
@@ -51,7 +53,7 @@ The backend logic resides in `$lib/server/` with isolated domain modules:
 - **[`propublica.ts`](file:///Users/yinkavaughan/My%20Drive%20%28yvaughan@wesleyan.edu%29/CS/projects/swe/micro-match/src/lib/server/propublica.ts)**: Lookup helper for ProPublica Nonprofit Explorer (US 501(c)(3) EIN validation).
 - **[`badgeAwarder.ts`](file:///Users/yinkavaughan/My%20Drive%20%28yvaughan@wesleyan.edu%29/CS/projects/swe/micro-match/src/lib/server/badgeAwarder.ts)**: Event-driven badge evaluator that mints badges on claim approval.
 - **[`contentsafety.ts`](file:///Users/yinkavaughan/My%20Drive%20%28yvaughan@wesleyan.edu%29/CS/projects/swe/micro-match/src/lib/server/contentsafety.ts)**: Azure AI Content Safety moderation scanner.
-- **[`email.ts`](file:///Users/yinkavaughan/My%20Drive%20%28yvaughan@wesleyan.edu%29/CS/projects/swe/micro-match/src/lib/server/email.ts)**: Mailgun transactional email engine.
+- **[`email.ts`](file:///Users/yinkavaughan/My%20Drive%20%28yvaughan@wesleyan.edu%29/CS/projects/swe/micro-match/src/lib/server/email.ts)**: Server-only transactional email module being migrated to Plunk for verification notices. Appwrite-managed password recovery remains separate.
 - **[`libretranslate.ts`](file:///Users/yinkavaughan/My%20Drive%20%28yvaughan@wesleyan.edu%29/CS/projects/swe/micro-match/src/lib/server/libretranslate.ts)**: Server-only LibreTranslate client with a bounded in-memory cache, timeout, API-key authentication, and graceful fallback. The service runs on the Oracle ARM VM behind the named `translate.micromatch.app` Cloudflare Tunnel.
 
 ---
@@ -94,7 +96,7 @@ MicroMatch uses Appwrite TablesDB (`APPWRITE_DB_ID`):
   - Status: approved                                   - Status: rejected
   - User Prefs: verificationStatus='approved'          - User Prefs: verificationStatus='rejected'
   - Backfill: isVerified=true on tasks                 - Backfill: isVerified=false on tasks
-  - Email: Mailgun approval notice                     - Email: Mailgun rejection reason
+  - Email: Plunk approval notice                        - Email: Plunk rejection reason
 
 ```
 
@@ -124,4 +126,4 @@ To support scaling as the user base and international footprint grow:
 
 1. **Asynchronous Background Processing**:
 
-- Move badge evaluation and Mailgun transactional emails to background Appwrite Functions or event queues, decoupling side effects from synchronous HTTP response paths.
+- Move badge evaluation and Plunk transactional emails to background Appwrite Functions or event queues, decoupling side effects from synchronous HTTP response paths. Hail is reserved for a future SMS/voice workflow and is not part of the current notification path.

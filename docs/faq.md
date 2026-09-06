@@ -24,7 +24,11 @@ Once an admin approves an NGO's verification application, MicroMatch automatical
 
 ### What happens if my NGO verification is rejected
 
-You will receive an automated email notification via Mailgun explaining the reviewer's reason. You can update your tax ID or upload supplementary registration documents at `/org` and resubmit.
+After the provider migration is deployed, you will receive an automated transactional email via Plunk explaining the reviewer's reason. You can update your tax ID or upload supplementary registration documents at `/org` and resubmit. Email delivery is a best-effort notification; the review result is stored independently.
+
+### How does password recovery work
+
+Password recovery is managed separately by Appwrite through its configured recovery flow. It does not use MicroMatch's Plunk notification transport.
 
 ---
 

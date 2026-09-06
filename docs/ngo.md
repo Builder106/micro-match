@@ -27,7 +27,9 @@ MicroMatch uses a soft-gate trust system to assign a **Verified NGO** chip to ta
 - **US Organizations**: Submissions with a 9-digit EIN are automatically cross-checked against the **ProPublica Nonprofit Explorer API** (IRS Form 990 database) for admin verification.
 - **International Organizations**: ProPublica coverage is strictly US-only. For international NGOs, platform admins review the uploaded registration document.
 - **Approval & Backfilling**: When an admin approves an application, your organization's tasks receive the **Verified** chip automatically across the feed and task detail pages.
-- **Rejection & Feedback**: If rejected, an email is sent via Mailgun with specific feedback notes so you can update and resubmit.
+- **Rejection & Feedback**: If rejected, a transactional email is sent via Plunk with specific feedback notes so you can update and resubmit. Delivery is best-effort; the decision is stored in Appwrite.
+
+Appwrite manages password-recovery emails separately from MicroMatch's Plunk notification flow.
 
 ---
 

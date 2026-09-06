@@ -12,7 +12,7 @@ from a pull request.
   verifications, auth, and avatar/doc storage. A free Appwrite Cloud project
   is enough for local development.
 
-- **[Mailgun](https://www.mailgun.com)** account — only needed if you're working
+- **[Plunk](https://useplunk.com)** account — only needed if you're working
 
   on the verification approval/rejection flow. Without an API key the email
   pipeline silently no-ops in development; everything else still works.
@@ -35,12 +35,22 @@ cd MicroMatch
 bun install
 cp .env.example .env
 
-# Fill in the Appwrite + Mailgun + LibreTranslate values (see .env.example)
+# Fill in the Appwrite + Plunk + LibreTranslate values (see .env.example)
 
 bun run dev
 ```
 
 The dev server listens on `http://localhost:5173`.
+
+For deployed environments, `main` uses Production variables and
+`micromatch-prod`; the `staging` branch uses the Vercel Preview scope and
+`micromatch-staging`. Each scope requires matching Appwrite endpoint, project,
+API key, database, table, bucket, and team IDs, plus public Appwrite settings
+and `PUBLIC_APP_URL`. Transactional email requires server-only
+`PLUNK_SECRET_KEY` and `PLUNK_FROM_ADDRESS`; `PLUNK_API_URL` and
+`PLUNK_FROM_NAME` are optional. LibreTranslate uses
+`LIBRETRANSLATE_ENDPOINT` and `LIBRETRANSLATE_API_KEY`. These are repository
+requirements; this guide does not change provider or deployment dashboards.
 
 ## Appwrite resources
 
@@ -55,7 +65,8 @@ through the Console):
 | `badges` table       | `APPWRITE_BADGES_TABLE_ID`                                              | Awarded-badge instances                                     |
 | `badgeDefinitions`   | `APPWRITE_BADGE_DEFS_TABLE_ID`                                          | Org-owned templates                                         |
 | `ngoVerifications`   | `APPWRITE_VERIFICATIONS_TABLE_ID`                                       | NGO verification queue                                      |
-| Storage bucket       | `APPWRITE_AVATARS_BUCKET_ID` and `APPWRITE_VERIFICATIONS_BUCKET_ID`     | Can be the same bucket if `fileSecurity` is enabled         |
+| Avatars bucket       | `APPWRITE_AVATARS_BUCKET_ID`, `PUBLIC_APPWRITE_AVATARS_BUCKET_ID`       | File previews use the public variable in client code        |
+| Verification bucket | `APPWRITE_VERIFICATIONS_BUCKET_ID`                                     | File-level permissions; accepts PDF, PNG, and JPEG          |
 | `volunteers` team    | `APPWRITE_VOLUNTEER_TEAM_ID`                                            | Created on first profile save                               |
 | `ngos` team          | `APPWRITE_NGO_TEAM_ID`                                                  | Same                                                        |
 | `admins` team        | `APPWRITE_ADMIN_TEAM_ID`                                                | Manually add yourself to access `/admin/verifications`      |
@@ -167,7 +178,7 @@ src/
 │   │   ├── badgeAwarder.ts       # claim approval → badge award pipeline
 │   │   ├── badgeCriteria.ts      # DB-backed BadgeDefinition matcher
 │   │   ├── badgeDefs.ts          # org-owned badge template CRUD
-│   │   ├── email.ts              # Mailgun transport (HTTP, no SDK)
+│   │   ├── email.ts              # Plunk transactional email transport
 │   │   ├── propublica.ts         # US 501(c)(3) lookup by EIN
 │   │   ├── teams.ts              # ngo / volunteer / admin team helpers
 │   │   └── verifications.ts      # ngoVerifications CRUD + prefs sync

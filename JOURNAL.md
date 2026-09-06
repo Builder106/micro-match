@@ -8,6 +8,10 @@
 
 Stood up an isolated staging backend configuration (`micromatch-staging`) in Appwrite Cloud to separate staging previews and automated seed testing from live user accounts. Added `.env.staging.example` and `verify:staging` tooling so release candidate checkouts test against dedicated tables and storage buckets before changes land on `main`. Git deployment hooks on `staging` now map cleanly to isolated staging variables in Vercel, satisfying fleet branching policy for persistent release candidate branches.
 
+## 2026-09-06 - Provider migration configuration documented #decision
+
+Transactional email is moving to Plunk. Production uses `main` with `micromatch-prod`; the `staging` branch uses the Vercel Preview scope with `micromatch-staging`. Each scope requires matching Appwrite resource IDs, public Appwrite settings, `PUBLIC_APP_URL`, and Plunk's server-only `PLUNK_SECRET_KEY` plus sender address. Hail is reserved for future SMS/voice infrastructure, and Appwrite-managed password recovery remains separate. This entry records documentation only; no provider or deployment dashboard changes are implied.
+
 ## 2026-08-29 - Hardened profile and auth brand audit surfaces #fix
 
 The full matrix exposed real contrast failures in profile metadata, verification status, and small helper copy; those styles now use readable theme tokens, and decorative profile blobs were removed where they overlapped text geometry. The full-size auth brand copy now has an opaque stacking surface and no transformed or gradient overlay behind it; Firefox still reports the desktop heading as an exact visual review, so the disposition covers `login` alongside the existing error and reset states.
@@ -218,7 +222,7 @@ Bootstrapped Vitest and wrote coverage for everything shipped over the prior wee
 
 ## 2026-05-08 — Verification is a soft gate, and clients can't claim it anymore #decision
 
-Built the NGO verification flow as a *soft*gate: NGOs submit org name, country, tax ID, and an optional doc; admins (gated by Appwrite Teams membership) review a queue enriched with ProPublica 501(c)(3) lookups so they can eyeball the EIN against the claimed org name. The non-obvious call: tasks now derive `isVerified` server-side from the verification record, so a client can no longer mark its own tasks verified. Approval back-fills the Verified chip onto every existing task the NGO owns; rejection clears it; both email the NGO via Mailgun's HTTP API (no SDK dependency). Same batch moved badge definitions out of a hardcoded array into an org-owned Appwrite table, and shifted badge awarding from claim*creation*to claim*approval* — because that's when the work is actually verified done — deduped by label so the same badge can't be minted twice.
+Built the NGO verification flow as a *soft*gate: NGOs submit org name, country, tax ID, and an optional doc; admins (gated by Appwrite Teams membership) review a queue enriched with ProPublica 501(c)(3) lookups so they can eyeball the EIN against the claimed org name. The non-obvious call: tasks now derive `isVerified` server-side from the verification record, so a client can no longer mark its own tasks verified. Approval back-fills the Verified chip onto every existing task the NGO owns; rejection clears it; both email the NGO through the transactional email provider's HTTP API (no SDK dependency). Same batch moved badge definitions out of a hardcoded array into an org-owned Appwrite table, and shifted badge awarding from claim*creation*to claim*approval* — because that's when the work is actually verified done — deduped by label so the same badge can't be minted twice.
 
 ## 2026-05-08 — Ripped out the Azure HelpBot; it was scaffolding that never earned its slot #pivot
 
