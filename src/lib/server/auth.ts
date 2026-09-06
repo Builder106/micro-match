@@ -33,8 +33,7 @@ function roleFromUser(user: { prefs?: UserPreferences } | null | undefined): Use
 }
 
 /**
- * Preferred: Appwrite JWT in Authorization header → derive role from user.prefs.role
- * Fallback (MVP): NGO_API_TOKEN / USER_API_TOKEN shared secrets.
+ * Appwrite JWT in Authorization header → derive role from user.prefs.role.
  */
 export async function getUserRole(event: RequestEvent): Promise<UserRole> {
   // Prefer locals set by our session
@@ -62,12 +61,5 @@ export async function getUserRole(event: RequestEvent): Promise<UserRole> {
     }
   }
 
-  // Fallback to temporary shared tokens
-  const token = jwt ?? '';
-  const ngoToken = env.NGO_API_TOKEN ?? '';
-  const userToken = env.USER_API_TOKEN ?? '';
-  if (ngoToken && token === ngoToken) return 'ngo';
-  if (userToken && token === userToken) return 'user';
   return 'anonymous';
 }
-
