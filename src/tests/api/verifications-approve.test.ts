@@ -56,7 +56,7 @@ describe('POST /api/verifications/[userId]/approve', () => {
     mocks.setVerificationStatus.mockResolvedValue({ ...happyVerification, status: 'approved', reviewedBy: 'admin-1' });
     mocks.setTasksVerifiedForOrg.mockResolvedValue(3);
     mocks.getUserEmail.mockResolvedValue('jane@example.com');
-    mocks.sendVerificationApproved.mockResolvedValue({ ok: true, id: 'mailgun-1' });
+    mocks.sendVerificationApproved.mockResolvedValue({ ok: true, id: 'plunk-1' });
     mocks.setUserVerificationPref.mockResolvedValue(undefined);
   });
 
@@ -143,7 +143,7 @@ describe('POST /api/verifications/[userId]/reject', () => {
     mocks.setVerificationStatus.mockResolvedValue({ ...happyVerification, status: 'rejected', reason: 'docs unclear' });
     mocks.setTasksVerifiedForOrg.mockResolvedValue(2);
     mocks.getUserEmail.mockResolvedValue('jane@example.com');
-    mocks.sendVerificationRejected.mockResolvedValue({ ok: true, id: 'mailgun-2' });
+    mocks.sendVerificationRejected.mockResolvedValue({ ok: true, id: 'plunk-2' });
   });
 
   it('returns 403 for non-admin', async () => {

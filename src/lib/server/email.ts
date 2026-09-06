@@ -3,54 +3,69 @@ import { env } from '$env/dynamic/private';
 export type SendArgs = {
   to: string;
   subject: string;
-  html: string;
+  html?: string;
   text?: string;
 };
 
-function mailgunBaseUrl(): string {
-  // Mailgun has two regions; default to US.
-  const region = (env.MAILGUN_REGION || 'us').toLowerCase();
-  return region === 'eu' ? 'https://api.eu.mailgun.net' : 'https://api.mailgun.net';
+const DEFAULT_API_URL = 'https://next-api.useplunk.com';
+const DEFAULT_FROM_NAME = 'MicroMatch';
+const SEND_TIMEOUT_MS = 10_000;
+
+type PlunkResponse = { success?: boolean; data?: { emails?: Array<{ email?: string }> }; error?: unknown };
+
+function textToHtml(text: string): string {
+  return text
+    .split(/\n{2,}/)
+    .map((paragraph) => `<p>${escapeHtml(paragraph).replace(/\n/g, '<br />')}</p>`)
+    .join('');
+}
+
+function responseError(data: PlunkResponse | null, status: number): string {
+  const error = typeof data?.error === 'string' ? data.error : 'Request failed';
+  return `Plunk ${status}: ${error}`;
 }
 
 export async function sendEmail(args: SendArgs): Promise<{ ok: boolean; id?: string; error?: string }> {
-  const apiKey = env.MAILGUN_API_KEY;
-  const domain = env.MAILGUN_DOMAIN;
-  const from = env.MAILGUN_FROM_EMAIL || (domain ? `MicroMatch <noreply@${domain}>` : '');
+  const apiKey = env.PLUNK_SECRET_KEY?.trim();
+  const fromAddress = env.PLUNK_FROM_ADDRESS?.trim();
 
-  if (!apiKey || !domain || !from) {
+  if (!apiKey || !fromAddress) {
     if (env.NODE_ENV !== 'production') {
-      console.log(`[email:dev] would send to ${args.to} — ${args.subject} (Mailgun not configured)`);
+      console.log(`[email:dev] would send to ${args.to} — ${args.subject} (Plunk not configured)`);
     }
-    return { ok: false, error: 'Mailgun not configured (set MAILGUN_API_KEY, MAILGUN_DOMAIN, MAILGUN_FROM_EMAIL)' };
+    return { ok: false, error: 'Plunk not configured (set PLUNK_SECRET_KEY, PLUNK_FROM_ADDRESS)' };
   }
 
-  // Mailgun expects HTTP Basic auth with username "api".
-  const auth = Buffer.from(`api:${apiKey}`).toString('base64');
-  const body = new URLSearchParams();
-  body.set('from', from);
-  body.set('to', args.to);
-  body.set('subject', args.subject);
-  body.set('html', args.html);
-  if (args.text) body.set('text', args.text);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), SEND_TIMEOUT_MS);
+  const apiUrl = (env.PLUNK_API_URL?.trim() || DEFAULT_API_URL).replace(/\/+$/, '');
+  const body = args.html === undefined || args.html === null
+    ? textToHtml(args.text ?? '')
+    : args.html;
+  const payload = {
+    to: args.to,
+    subject: args.subject,
+    body,
+    from: { name: env.PLUNK_FROM_NAME?.trim() || DEFAULT_FROM_NAME, email: fromAddress }
+  };
 
   try {
-    const res = await fetch(`${mailgunBaseUrl()}/v3/${domain}/messages`, {
+    const res = await fetch(`${apiUrl}/v1/send`, {
       method: 'POST',
       headers: {
-        Authorization: `Basic ${auth}`,
-        'Content-Type': 'application/x-www-form-urlencoded'
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
       },
-      body
+      body: JSON.stringify(payload),
+      signal: controller.signal
     });
-    if (!res.ok) {
-      const detail = await res.text().catch(() => '');
-      return { ok: false, error: `Mailgun ${res.status}: ${detail.slice(0, 200)}` };
-    }
-    const data = (await res.json().catch(() => ({}))) as { id?: string; message?: string };
-    return { ok: true, id: data.id };
+    const data = (await res.json().catch(() => null)) as PlunkResponse | null;
+    if (!res.ok || data?.success !== true) return { ok: false, error: responseError(data, res.status) };
+    return { ok: true, id: data.data?.emails?.[0]?.email };
   } catch (err) {
-    return { ok: false, error: (err as Error).message };
+    return { ok: false, error: err instanceof Error ? err.message : 'network error' };
+  } finally {
+    clearTimeout(timeout);
   }
 }
 
