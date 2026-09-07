@@ -1,6 +1,5 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
-  import DecorativeLottie from '$lib/components/DecorativeLottie.svelte';
   import LottieAnimation from '$lib/components/LottieAnimation.svelte';
   import PublicShell from '$lib/components/PublicShell.svelte';
   import { page } from '$app/state';
@@ -300,13 +299,6 @@
       </div>
       <div class="impact-grid">
         <div class="progress-card">
-          <div class="progress-community">
-            <DecorativeLottie
-              scene="community-impact"
-          src="/animations/community-impact.json"
-              aspectRatio="1 / 1"
-            />
-          </div>
           <div class="progress-ring-wrap">
             <svg viewBox="0 0 100 100" class="progress-ring" aria-hidden="true" focusable="false">
               <circle cx="50" cy="50" r="40" class="ring-bg" />
@@ -688,7 +680,6 @@
   .impact-grid { display: grid; grid-template-columns: 1fr; gap: 32px; align-items: center; justify-items: center; max-width: 960px; margin: 0 auto; }
   @media (min-width: 768px) { .impact-grid { grid-template-columns: auto 1fr; gap: 48px; } }
   .progress-card { position: relative; overflow: hidden; background: var(--color-surface); border-radius: 32px; padding: 40px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 24px 60px rgba(0,0,0,0.05); border: 1px solid var(--card-border); width: 100%; max-width: 360px; }
-  .progress-community { position: absolute; inset: 12px 12px auto auto; width: 92px; pointer-events: none; opacity: 0.28; }
   .progress-ring-wrap { position: relative; width: 192px; height: 192px; margin-bottom: 24px; }
   .progress-ring { width: 100%; height: 100%; transform: rotate(-90deg); }
   .ring-bg { fill: transparent; stroke: var(--card-border-strong); stroke-width: 8; }
