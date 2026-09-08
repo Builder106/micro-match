@@ -16,9 +16,9 @@
     "e2e/**/*",
     "svelte.config.js",
     "vite.config.ts",
-    "playwright.config.ts",
+    "playwright*.config.ts",
     ".svelte-kit/ambient.d.ts"
   ],
   "exclude": ["node_modules", "dist"],
-  "extends":  "./.svelte-kit/tsconfig.json"
+  "extends": "./.svelte-kit/tsconfig.json"
 }

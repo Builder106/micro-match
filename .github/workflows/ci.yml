@@ -72,6 +72,32 @@ jobs:
       - run: bun install --frozen-lockfile
       - run: bun run test:coverage
 
+  functional:
+    name: Functional smoke
+    if: ${{ github.event_name == 'pull_request' }}
+    needs: [build, test]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/cache@v6
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+      - uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-chromium-${{ hashFiles('bun.lock') }}
+      - run: bun install --frozen-lockfile
+      - run: bunx playwright install --with-deps chromium
+      - uses: actions/download-artifact@v8
+        with:
+          name: micro-match-build-${{ github.run_id }}
+      - run: bun run test:functional -- --project=chromium
+        env:
+          PLAYWRIGHT_FUNCTIONAL_FIXTURES: '1'
+          PLAYWRIGHT_USE_PREBUILT: '1'
+
   build:
     name: Build & Bundle Budget
     needs: [check, lint]
@@ -302,13 +328,14 @@ jobs:
           if-no-files-found: warn
 
   ci-gate:
-    name: CI accessibility gate
+    name: CI required gate
     if: ${{ always() }}
-    needs: [a11y-pr, a11y-full, responsiveness, matrix-evidence, merge-a11y]
+    needs: [functional, a11y-pr, a11y-full, responsiveness, matrix-evidence, merge-a11y]
     runs-on: ubuntu-24.04
     steps:
-      - name: Require selected accessibility checks
+      - name: Require selected CI checks
         env:
+          FUNCTIONAL: ${{ needs.functional.result }}
           A11Y_PR: ${{ needs.a11y-pr.result }}
           A11Y_FULL: ${{ needs.a11y-full.result }}
           RESPONSIVENESS: ${{ needs.responsiveness.result }}
@@ -317,7 +344,7 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
         run: |
           if [ "$RESPONSIVENESS" != success ]; then exit 1; fi
-          if [ "$EVENT_NAME" = pull_request ] && { [ "$A11Y_PR" != success ] || [ "$EVIDENCE" != success ] || [ "$MERGE" != success ]; }; then exit 1; fi
+          if [ "$EVENT_NAME" = pull_request ] && { [ "$FUNCTIONAL" != success ] || [ "$A11Y_PR" != success ] || [ "$EVIDENCE" != success ] || [ "$MERGE" != success ]; }; then exit 1; fi
           if [ "$EVENT_NAME" = push ] && { [ "$A11Y_FULL" != success ] || [ "$MERGE" != success ]; }; then exit 1; fi
 
   deploy:
