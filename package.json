@@ -75,7 +75,7 @@
     "autoprefixer": "^10.5.4",
     "csstype": "^3.2.3",
     "dotenv": "^17.4.2",
-    "eslint": "^10.9.1",
+    "eslint": "^10.10.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-svelte": "^3.23.0",
     "jsdom": "^30.0.1",
