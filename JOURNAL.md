@@ -4,6 +4,10 @@
 > things happen — retrospectives need this raw material to land.
 > Reverse-chronological; one paragraph max per entry.
 
+## 2026-09-12 — Sharded pull request accessibility smoke tests #decision #optimization
+
+Divided the PR accessibility smoke workflow across two shards per browser (`shard: [1, 2]`), cutting PR feedback turnaround from ~25 minutes down to ~12 minutes. The previous single-runner execution left headless Firefox as the critical-path bottleneck in CI because all 12 smoke targets were evaluated across three locales, desktop/mobile viewports, and light/dark themes sequentially on one machine. Downstream report aggregation in `merge-a11y` already accepts arbitrary Playwright blob report patterns and metadata records, so the four shard runs merge into the standard audit manifest and status gate without schema adjustments.
+
 ## 2026-09-12 - Hardened auth brand panel styling and scoped signup audit review #fix
 
 Confined decorative visual layers in AuthBrandPanel with explicit low stacking, aria-hidden attributes, and overflow clipping on the Lottie scene wrap to prevent SVG and blurred glow bleed. Switched the brand copy card to CSS logical inline positioning and removed redundant paragraph background styling to eliminate sub-pixel box clipping in Firefox. Extended the desktop auth brand copy review disposition to include the signup route across Chromium and Firefox audits.

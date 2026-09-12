@@ -98,7 +98,7 @@ jobs:
           retention-days: 1
 
   a11y-pr:
-    name: Accessibility smoke (${{ matrix.project }})
+    name: Accessibility smoke (${{ matrix.project }}, shard ${{ matrix.shard }})
     if: ${{ github.event_name == 'pull_request' }}
     needs: [build, test]
     runs-on: ubuntu-24.04
@@ -106,6 +106,7 @@ jobs:
       fail-fast: false
       matrix:
         project: [chromium, firefox]
+        shard: [1, 2]
     steps:
       - uses: actions/checkout@v7
       - uses: oven-sh/setup-bun@v2
@@ -127,17 +128,18 @@ jobs:
           for _ in 1 2 3 4 5 6 7 8 9 10; do curl --silent --fail http://127.0.0.1:4173/ && exit 0; sleep 2; done
           cat "$RUNNER_TEMP/preview.log"
           exit 1
-      - run: bun run test:accessibility -- --project=${{ matrix.project }}
+      - run: bun run test:accessibility -- --project=${{ matrix.project }} --shard=${{ matrix.shard }}/2
         env:
           PLAYWRIGHT_A11Y_HARNESS: '1'
           PLAYWRIGHT_A11Y_SCOPE: pr
           PLAYWRIGHT_A11Y_WORKERS: '2'
+          PLAYWRIGHT_SHARD: ${{ matrix.shard }}/2
           PLAYWRIGHT_USE_PREBUILT: '1'
           PLAYWRIGHT_BASE_URL: http://127.0.0.1:4173
       - uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:
-          name: a11y-pr-${{ matrix.project }}-${{ github.run_id }}
+          name: a11y-pr-${{ matrix.project }}-shard-${{ matrix.shard }}-${{ github.run_id }}
           path: |
             test-results/
             audit-output/
