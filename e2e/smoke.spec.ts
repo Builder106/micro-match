@@ -1,8 +1,8 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './functional-fixtures';
 
-// Smoke tests: pages a logged-out visitor can reach. These run against the
-// dev server (or a deployed env via PLAYWRIGHT_BASE_URL) and don't touch the
-// Appwrite-backed parts of the app, so they need no test fixtures.
+// Smoke tests: pages and interactions a logged-out visitor can reach. The
+// functional config provides local Appwrite fallbacks and browser fixtures so
+// this gate does not depend on credentials or third-party network resources.
 
 test.describe('public pages', () => {
   test('landing page renders the hero', async ({ page }) => {
@@ -10,20 +10,29 @@ test.describe('public pages', () => {
     await expect(page).toHaveTitle(/MicroMatch/);
     await expect(page.getByRole('heading', { name: /Make a big impact/i })).toBeVisible();
     await expect(page.getByRole('link', { name: /Find a Task/i }).first()).toBeVisible();
-    await expect(page.locator('[data-motion-scene="community-impact"]')).toBeAttached();
   });
 
-  test('homepage Lottie scene uses its static fallback for reduced motion', async ({ page }) => {
+  test('homepage Lottie fallback stays static when reduced motion is preferred', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/en', { waitUntil: 'networkidle' });
-    const scene = page.locator('[data-motion-scene="community-impact"]');
-    await expect(scene.locator('.static-fallback')).toBeVisible();
-    await expect(scene.locator('.lottie-animation[data-lottie-ready="true"]')).toHaveCount(0);
+    const animation = page.locator('.empty-mascot-icon .lottie-animation');
+    await expect(animation).toBeVisible();
+    await expect(animation).toHaveAttribute('data-lottie-ready', 'false');
   });
 
-  test('homepage Lottie scene keeps normal-motion behavior', async ({ page }) => {
+  test('homepage Lottie uses the local player in normal motion', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
     await page.goto('/en', { waitUntil: 'networkidle' });
-    await expect(page.locator('[data-motion-scene="community-impact"] .lottie-animation[data-lottie-ready="true"]')).toBeVisible();
+    await expect(
+      page.locator('.empty-mascot-icon .lottie-animation[data-lottie-ready="true"]'),
+    ).toBeVisible();
+  });
+
+  test('landing page renders its impact progress section', async ({ page }) => {
+    await page.goto('/en');
+    await expect(page.getByRole('heading', { name: 'Track Your Impact' })).toBeVisible();
+    await expect(page.locator('.progress-ring')).toBeVisible();
+    await expect(page.getByText('Level 12 Volunteer', { exact: true })).toBeVisible();
   });
 
   test('feed page renders the search + filter chips', async ({ page }) => {
@@ -76,7 +85,9 @@ test.describe('public pages', () => {
     await expect(page.getByRole('button', { name: /Send reset link/i })).toBeVisible();
   });
 
-  test('protected /admin/verifications redirects to login when unauthenticated', async ({ page }) => {
+  test('protected /admin/verifications redirects to login when unauthenticated', async ({
+    page,
+  }) => {
     const response = await page.goto('/admin/verifications');
     // Either redirects to /login (303) or returns the login page
     expect(response?.status()).toBeLessThan(500);
@@ -91,7 +102,10 @@ test.describe('public pages', () => {
 
   test('feed → click "Find a Task" CTA navigates to feed', async ({ page }) => {
     await page.goto('/');
-    await page.getByRole('link', { name: /Find a Task/i }).first().click();
+    await page
+      .getByRole('link', { name: /Find a Task/i })
+      .first()
+      .click();
     await expect(page).toHaveURL(/\/tasks/);
   });
 
@@ -100,10 +114,14 @@ test.describe('public pages', () => {
     const toggleBtn = page.getByRole('button', { name: /Toggle color theme/i });
     await expect(toggleBtn).toBeVisible();
 
-    const isDarkBefore = await page.evaluate(() => document.documentElement.classList.contains('dark'));
+    const isDarkBefore = await page.evaluate(() =>
+      document.documentElement.classList.contains('dark'),
+    );
     await toggleBtn.click();
     await page.waitForTimeout(300);
-    const isDarkAfter = await page.evaluate(() => document.documentElement.classList.contains('dark'));
+    const isDarkAfter = await page.evaluate(() =>
+      document.documentElement.classList.contains('dark'),
+    );
     expect(isDarkAfter).not.toBe(isDarkBefore);
   });
 
@@ -111,17 +129,23 @@ test.describe('public pages', () => {
     await page.goto('/for-ngos');
     await expect(page.getByRole('heading', { level: 1, name: /Post tasks/i })).toBeVisible();
     await expect(page.locator('[data-motion-scene="ngo-document-review"]')).toBeAttached();
-    await expect(page.locator('[data-motion-scene="ngo-document-review"] .lottie-animation')).toBeAttached();
+    await expect(
+      page.locator('[data-motion-scene="ngo-document-review"] .lottie-animation'),
+    ).toBeAttached();
     await expect(page.getByText('Task brief')).toBeVisible();
     await expect(page.getByText('Volunteer submission')).toBeVisible();
     await expect(page.getByText('NGO review')).toBeVisible();
   });
 
-  test('for-ngos mission planner turns backlog into a transparent posting plan', async ({ page }) => {
+  test('for-ngos mission planner turns backlog into a transparent posting plan', async ({
+    page,
+  }) => {
     await page.goto('/for-ngos', { waitUntil: 'networkidle' });
     const plan = page.locator('.mission-plan');
 
-    await expect(page.getByRole('heading', { name: /Plan a batch that volunteers can finish/i })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: /Plan a batch that volunteers can finish/i }),
+    ).toBeVisible();
     await expect(plan.getByText('48', { exact: true })).toBeVisible();
     await expect(plan.getByText('12 on your busiest day', { exact: true })).toBeVisible();
     await expect(plan.getByText('2 hr 24 min to review', { exact: true })).toBeVisible();
@@ -135,7 +159,9 @@ test.describe('public pages', () => {
     await page.getByRole('radio', { name: '2 days' }).check();
     await expect(plan.getByText('12 on your busiest day', { exact: true })).toBeVisible();
     await expect(plan.getByText('Day 2', { exact: true })).toBeVisible();
-    await expect(page.getByText('Based on 3 minutes for each completed mission.', { exact: true })).toBeVisible();
+    await expect(
+      page.getByText('Based on 3 minutes for each completed mission.', { exact: true }),
+    ).toBeVisible();
   });
 
   test('for-ngos mission planner stays within narrow viewports', async ({ page }) => {
@@ -144,7 +170,9 @@ test.describe('public pages', () => {
     for (const width of [320, 375, 414, 768]) {
       await page.setViewportSize({ width, height: 900 });
       await expect(page.locator('.mission-plan')).toBeVisible();
-      expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+        width,
+      );
     }
   });
 
@@ -152,20 +180,46 @@ test.describe('public pages', () => {
     await page.goto('/for-volunteers');
     await expect(page.getByRole('heading', { level: 1, name: /Real impact/i })).toBeVisible();
     await expect(page.locator('[data-motion-scene="volunteer-helping"]')).toBeAttached();
-    await expect(page.locator('[data-motion-scene="volunteer-helping"] .lottie-animation')).toBeAttached();
+    await expect(
+      page.locator('[data-motion-scene="volunteer-helping"] .lottie-animation'),
+    ).toBeAttached();
     await expect(page.getByText('Sample task', { exact: true })).toBeVisible();
   });
 
   test('campaign Lottie scenes stay static when reduced motion is preferred', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
-    await page.goto('/for-volunteers');
-    await expect(page.locator('[data-motion-scene="volunteer-helping"]')).toBeAttached();
-    await expect(page.locator('[data-motion-scene="volunteer-helping"] .lottie-animation')).toHaveCount(0);
+    await page.goto('/for-volunteers', { waitUntil: 'networkidle' });
+    const scene = page.locator('[data-motion-scene="volunteer-helping"]');
+    await expect(scene.locator('.static-fallback')).toBeVisible();
+    await expect(scene.locator('.lottie-animation')).toHaveCount(0);
+  });
+
+  test('campaign Lottie scenes use the local player in normal motion', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.goto('/for-volunteers', { waitUntil: 'networkidle' });
+    await expect(
+      page.locator(
+        '[data-motion-scene="volunteer-helping"] .lottie-animation[data-lottie-ready="true"]',
+      ),
+    ).toBeVisible();
+  });
+
+  test('for-volunteers time-cap tabs switch the local sample tasks', async ({ page }) => {
+    await page.goto('/for-volunteers', { waitUntil: 'networkidle' });
+    await page.getByRole('button', { name: /5-Minute Quickies/i }).click();
+    await expect(
+      page.getByText('Tag 10 historical photos for digital archive', { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText('Translate medical dosage flyer to Spanish', { exact: true }),
+    ).toHaveCount(0);
   });
 
   test('how-it-works page renders process ribbon', async ({ page }) => {
     await page.goto('/how-it-works');
-    await expect(page.getByRole('heading', { level: 1, name: /How Micro-Volunteering/i })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { level: 1, name: /How Micro-Volunteering/i }),
+    ).toBeVisible();
     await expect(page.getByRole('button', { name: /1\. Browse/i })).toBeVisible();
   });
 

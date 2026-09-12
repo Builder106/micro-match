@@ -12,6 +12,10 @@ Divided the PR accessibility smoke workflow across two shards per browser (`shar
 
 Confined decorative visual layers in AuthBrandPanel with explicit low stacking, aria-hidden attributes, and overflow clipping on the Lottie scene wrap to prevent SVG and blurred glow bleed. Switched the brand copy card to CSS logical inline positioning and removed redundant paragraph background styling to eliminate sub-pixel box clipping in Firefox. Extended the desktop auth brand copy review disposition to include the signup route across Chromium and Firefox audits.
 
+## 2026-09-07 - Separated Wave 1 functional smoke coverage from audit matrices #decision
+
+Wave 1 now has a dedicated `test:functional` Playwright config that runs only the logged-out smoke suite with empty private Appwrite settings, valid public placeholders, and browser-local placeholders for third-party assets. The PR workflow runs it as its own required check and keeps `test:accessibility` and `test:responsiveness` as separate gates. The old homepage `community-impact` smoke checks were replaced with the current impact-progress and `empty_state_mascot` assertions because `main` no longer renders that illustration; the NGO and volunteer hero-scene assertions and the planner visibility check remain in functional smoke, while reduced-motion and route-wide narrow-layout coverage stay in the dedicated responsiveness matrix.
+
 ## 2026-09-07 - Kept Azure AI Content Safety optional #decision
 
 Kept Azure AI Content Safety optional for the MVP. The F0 tier allows 5,000 free text or image transactions per month and 5 requests per second; Microsoft stops free-tier requests at the monthly limit rather than charging overages ([pricing](https://azure.microsoft.com/en-us/pricing/details/content-safety/)). The app remains fail-open when the variables are absent or the service fails, so Vercel will receive `AZURE_CONTENT_SAFETY_ENDPOINT` and `AZURE_CONTENT_SAFETY_KEY` only after the Azure for Students subscription, resource region, and F0 availability are confirmed.
