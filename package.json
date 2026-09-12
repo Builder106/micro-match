@@ -72,7 +72,7 @@
     "@types/howler": "^2.2.13",
     "@types/node": "^26.4.1",
     "@vitest/coverage-v8": "^4.1.11",
-    "autoprefixer": "^10.5.4",
+    "autoprefixer": "^10.5.5",
     "csstype": "^3.2.3",
     "dotenv": "^17.4.2",
     "eslint": "^10.10.0",
