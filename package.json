@@ -61,6 +61,7 @@
     "@eslint/js": "^10.0.1",
     "@lottiefiles/lottie-types": "^1.5.0",
     "@playwright/test": "^1.63.0",
+    "playwright-core": "1.63.0",
     "@sveltejs/adapter-vercel": "^6.3.4",
     "@sveltejs/vite-plugin-svelte": "^7.3.0",
     "@tailwindcss/vite": "^4.3.3",
