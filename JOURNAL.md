@@ -4,6 +4,18 @@
 > things happen — retrospectives need this raw material to land.
 > Reverse-chronological; one paragraph max per entry.
 
+## 2026-09-12 - Aligned Playwright Core dependency resolutions #fix
+
+Added an explicit `playwright-core` 1.63.0 development dependency and regenerated `bun.lock`, replacing the stale root 1.62.1 peer entry and removing the duplicate nested lock entry. The repaired `bun run check`, lint, full coverage test suite, and production build all pass in the Linux ARM64 verification environment.
+
+## 2026-09-12 - Diagnosed Playwright type-check regression #incident
+
+`bun run check` fails deterministically because the lockfile contains two Playwright Core versions: `@playwright/test` 1.63.0 brings `playwright-core` 1.63.0 beneath `playwright`, while `@axe-core/playwright` resolves the stale root `playwright-core` 1.62.1 peer. The mismatch makes the `Page` produced by the test fixture incompatible with `AxeBuilder` at `e2e/accessibility.spec.ts:387`. Dependabot commit `53aaec3` updated the test package and nested Core entry but left the root peer entry unchanged; the likely repair is to regenerate the lockfile or otherwise align both Core resolutions.
+
+## 2026-09-12 - Enabled Azure AI Content Safety in Vercel #milestone
+
+Reused the existing succeeded F0 `micromatch-content-safety` resource in the Azure for Students subscription and configured its endpoint plus server-only key in both Vercel Preview and Production. A direct API smoke test returned HTTP 200 with zero severity for all four moderation categories, and both redeployed targets reached Ready. The focused moderation unit tests, lint, and production build passed; a subsequent type-check exposed a separate Playwright dependency mismatch, which the following entries diagnose and resolve.
+
 ## 2026-09-12 — Sharded pull request accessibility smoke tests #decision #optimization
 
 Divided the PR accessibility smoke workflow across two shards per browser (`shard: [1, 2]`), cutting PR feedback turnaround from ~25 minutes down to ~12 minutes. The previous single-runner execution left headless Firefox as the critical-path bottleneck in CI because all 12 smoke targets were evaluated across three locales, desktop/mobile viewports, and light/dark themes sequentially on one machine. Downstream report aggregation in `merge-a11y` already accepts arbitrary Playwright blob report patterns and metadata records, so the four shard runs merge into the standard audit manifest and status gate without schema adjustments.
