@@ -27,6 +27,7 @@ const RESET_PASSWORD_REVIEWED_MESSAGE = 'elmPartiallyObscuring';
 const RESET_PASSWORD_REVIEWED_SELECTOR = '.auth-head > p';
 const RESET_PASSWORD_REVIEWED_VIEWPORTS = new Set(['mobile', 'tablet']);
 const AUTH_BRAND_REVIEWED_TARGETS = new Set(['login', 'login-error', 'reset-password']);
+const AUTH_BRAND_REVIEWED_TARGETS = new Set(['login', 'login-error', 'reset-password', 'signup']);
 const AUTH_BRAND_REVIEWED_MESSAGES = new Set(['bgGradient', 'elmPartiallyObscured', 'elmPartiallyObscuring']);
 const AUTH_HEAD_REVIEWED_MESSAGE = 'elmPartiallyObscuring';
 const AUTH_HEAD_REVIEWED_SELECTOR = '.auth-head > p';

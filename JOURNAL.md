@@ -4,6 +4,14 @@
 > things happen — retrospectives need this raw material to land.
 > Reverse-chronological; one paragraph max per entry.
 
+## 2026-09-12 - Hardened auth brand panel styling and scoped signup audit review #fix
+
+Confined decorative visual layers in AuthBrandPanel with explicit low stacking, aria-hidden attributes, and overflow clipping on the Lottie scene wrap to prevent SVG and blurred glow bleed. Switched the brand copy card to CSS logical inline positioning and removed redundant paragraph background styling to eliminate sub-pixel box clipping in Firefox. Extended the desktop auth brand copy review disposition to include the signup route across Chromium and Firefox audits.
+
+## 2026-09-07 - Kept Azure AI Content Safety optional #decision
+
+Kept Azure AI Content Safety optional for the MVP. The F0 tier allows 5,000 free text or image transactions per month and 5 requests per second; Microsoft stops free-tier requests at the monthly limit rather than charging overages ([pricing](https://azure.microsoft.com/en-us/pricing/details/content-safety/)). The app remains fail-open when the variables are absent or the service fails, so Vercel will receive `AZURE_CONTENT_SAFETY_ENDPOINT` and `AZURE_CONTENT_SAFETY_KEY` only after the Azure for Students subscription, resource region, and F0 availability are confirmed.
+
 ## 2026-09-05 - Dedicated staging environment established on Appwrite #decision
 
 Stood up an isolated staging backend configuration (`micromatch-staging`) in Appwrite Cloud to separate staging previews and automated seed testing from live user accounts. Added `.env.staging.example` and `verify:staging` tooling so release candidate checkouts test against dedicated tables and storage buckets before changes land on `main`. Git deployment hooks on `staging` now map cleanly to isolated staging variables in Vercel, satisfying fleet branching policy for persistent release candidate branches.

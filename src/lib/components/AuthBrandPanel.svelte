@@ -10,6 +10,9 @@
   <div class="grain"></div>
   <div class="glow glow-coral"></div>
   <div class="glow glow-teal"></div>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="glow glow-coral" aria-hidden="true"></div>
+  <div class="glow glow-teal" aria-hidden="true"></div>
 
   <div class="scene-wrap" aria-hidden="true">
     {#key animation}
@@ -61,6 +64,7 @@
     background-image: radial-gradient(circle at 1px 1px, #ffffff 1px, transparent 0);
     background-size: 4px 4px;
     pointer-events: none;
+    z-index: 0;
   }
   .glow {
     position: absolute;
@@ -69,6 +73,7 @@
     border-radius: 999px;
     filter: blur(100px);
     pointer-events: none;
+    z-index: 0;
   }
   .glow-coral {
     background: rgba(255, 107, 107, 0.16);
@@ -89,6 +94,8 @@
     display: grid;
     place-items: center;
     pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
   }
   .compact .scene-wrap {
     top: 12%;
@@ -98,6 +105,7 @@
     width: min(460px, 70%);
     height: 100%;
     display: block;
+    overflow: hidden;
   }
   .compact .scene-wrap :global(.auth-brand-animation) {
     width: min(280px, 60%);
@@ -175,6 +183,8 @@
     position: absolute;
     left: 28px;
     right: 28px;
+    inset-inline-start: 28px;
+    width: min(520px, calc(100% - 56px));
     top: 52%;
     z-index: 4;
     max-width: 520px;
@@ -182,6 +192,7 @@
     background: #0f172a;
     border-radius: 16px;
     isolation: isolate;
+    box-sizing: border-box;
   }
   .copy h1 {
     margin: 0;
@@ -202,6 +213,7 @@
   .copy p {
     margin: 16px 0 0;
     background: #0f172a;
+    background: transparent;
     color: #cbd5e1;
     font-size: 1.2rem;
     line-height: 1.6;
