@@ -104,7 +104,6 @@ async function seedFixtures(namespace: string): Promise<{ taskId: string }> {
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
   requireHarness();
-  const body = await request.json().catch(() => ({})) as { action?: string; role?: string; namespace?: unknown };
   const body = (await request.json().catch(() => ({}))) as { action?: string; role?: string; namespace?: string };
   const namespace = requireNamespace(body.namespace);
 
