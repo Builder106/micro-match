@@ -4,6 +4,14 @@
 > things happen — retrospectives need this raw material to land.
 > Reverse-chronological; one paragraph max per entry.
 
+## 2026-09-13 - Wired Paraglide into rendered public UI #fix
+
+Locale-prefixed routing and middleware were already active, but the public shell, homepage, and app chrome still rendered literal English strings, so `/fr` changed the URL without changing the visible UI. Added locale-aware Paraglide calls with the URL locale passed explicitly for deterministic SSR and hydration, expanded all seven catalogs for the rendered shell and homepage, kept dynamic task content separate, and verified French output in a real browser plus check, lint, build, and full tests.
+
+## 2026-09-13 - Localized public route bodies #fix
+
+Completed the Paraglide pass for `/how-it-works`, `/for-ngos`, and `/for-volunteers`, including the interactive step inspector, FAQ copy, comparison tables, sample mission filters, and NGO mission planner. Static copy now resolves from the URL locale while organization names and task data remain data-driven; browser smoke checks passed for all six non-English locales alongside the full verifier gates.
+
 ## 2026-09-12 - Aligned Playwright Core dependency resolutions #fix
 
 Added an explicit `playwright-core` 1.63.0 development dependency and regenerated `bun.lock`, replacing the stale root 1.62.1 peer entry and removing the duplicate nested lock entry. The repaired `bun run check`, lint, full coverage test suite, and production build all pass in the Linux ARM64 verification environment.
