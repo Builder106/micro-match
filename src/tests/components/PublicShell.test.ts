@@ -40,6 +40,19 @@ describe('PublicShell', () => {
     expect(screen.queryByRole('link', { name: 'Join Now' })).toBeNull();
   });
 
+  it('renders the public shell from the active URL locale', async () => {
+    pageState.url = new URL('http://test/fr');
+    pageState.data = { locale: 'fr', userRole: 'anonymous' };
+    const { container } = render(PublicShell, {});
+
+    expect(container.querySelector('.header-nav a')?.textContent?.trim()).toBe('Comment ça marche');
+    expect(screen.getByRole('link', { name: 'Nous rejoindre' })).toBeInTheDocument();
+
+    await fireEvent.click(screen.getByRole('button', { name: 'Langue' }));
+    expect(screen.getByRole('listbox', { name: 'Choisir la langue' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: /Anglais/ })).toBeInTheDocument();
+  });
+
   it('opens mobile drawer on menu button click and closes on backdrop click', async () => {
     const { container } = render(PublicShell, {});
 

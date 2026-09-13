@@ -7,6 +7,7 @@
   import ThemeToggle from '$lib/components/ThemeToggle.svelte';
   import { localizedHref, locales, type Locale } from '$lib/locale';
   import { reducedMotion } from '$lib/utils/reducedMotion';
+  import * as m from '$lib/paraglide/messages.js';
 
   export let activeTab: 'home' | 'how-it-works' | 'for-ngos' | 'for-volunteers' | 'tasks' | 'impact' | undefined = undefined;
 
@@ -16,14 +17,14 @@
   let languageOpen = false;
   let languageTriggerEl: HTMLButtonElement | null = null;
 
-  const languageNames: Record<Locale, string> = {
-    en: 'English',
-    es: 'Español',
-    fr: 'Français',
-    de: 'Deutsch',
-    pt: 'Português',
-    zh: '中文',
-    ar: 'العربية'
+  const languageNames: Record<Locale, () => string> = {
+    en: () => t(m.language_english),
+    es: () => t(m.language_spanish),
+    fr: () => t(m.language_french),
+    de: () => t(m.language_german),
+    pt: () => t(m.language_portuguese),
+    zh: () => t(m.language_chinese),
+    ar: () => t(m.language_arabic)
   };
 
   async function toggleMenu() {
@@ -58,6 +59,8 @@
   $: isSignedIn = userRole !== 'anonymous';
   /* eslint-disable-next-line svelte/no-immutable-reactive-statements */
   $: currentLocale = (page.data?.locale as Locale | undefined) ?? 'en';
+  type StaticMessage = (inputs?: Record<string, never>, options?: { locale?: Locale }) => string;
+  function t(message: StaticMessage) { return message({}, { locale: currentLocale }); }
   function resolve(pathname: string, _options?: unknown) { return localizedHref(pathname, currentLocale); }
   async function toggleLanguageMenu() {
     languageOpen = !languageOpen;
@@ -109,13 +112,13 @@
     <div class="header-inner">
       <a href={resolve('/', {})} class="header-brand">
         <img src="/logo.png" alt="" width="36" height="36" />
-        <span>MicroMatch</span>
+        <span>{t(m.app_name)}</span>
       </a>
-      <nav class="header-nav" dir="ltr" aria-label="Main navigation">
-        <a href={resolve('/how-it-works', {})} class:active={activeTab === 'how-it-works'}>How it Works</a>
-        <a href={resolve('/tasks', {})} class:active={activeTab === 'tasks'}>Browse Tasks</a>
-        <a href={resolve('/for-ngos', {})} class:active={activeTab === 'for-ngos'}>For NGOs</a>
-        <a href={resolve('/for-volunteers', {})} class:active={activeTab === 'for-volunteers'}>For Volunteers</a>
+      <nav class="header-nav" dir={currentLocale === 'ar' ? 'rtl' : 'ltr'} aria-label="Main navigation">
+        <a href={resolve('/how-it-works', {})} class:active={activeTab === 'how-it-works'}>{t(m.how_it_works)}</a>
+        <a href={resolve('/tasks', {})} class:active={activeTab === 'tasks'}>{t(m.browse_tasks)}</a>
+        <a href={resolve('/for-ngos', {})} class:active={activeTab === 'for-ngos'}>{t(m.for_ngos)}</a>
+        <a href={resolve('/for-volunteers', {})} class:active={activeTab === 'for-volunteers'}>{t(m.for_volunteers)}</a>
       </nav>
       <div class="header-actions">
         <ThemeToggle compact={true} />
@@ -123,7 +126,7 @@
           <button
             type="button"
             class="locale-trigger"
-            aria-label="Language"
+            aria-label={t(m.language)}
             aria-haspopup="listbox"
             aria-expanded={languageOpen}
             bind:this={languageTriggerEl}
@@ -135,7 +138,7 @@
             <Icon icon={languageOpen ? 'lucide:chevron-up' : 'lucide:chevron-down'} width="15" height="15" aria-hidden="true" />
           </button>
           {#if languageOpen}
-            <div id="language-menu" class="locale-menu" role="listbox" tabindex="0" aria-label="Choose language" onkeydown={handleLanguageKeydown}>
+            <div id="language-menu" class="locale-menu" role="listbox" tabindex="0" aria-label={t(m.choose_language)} onkeydown={handleLanguageKeydown}>
             {#each locales as locale (locale)}
               <button
                 type="button"
@@ -146,7 +149,7 @@
                 onclick={() => selectLocale(locale)}
               >
                 <span class="locale-code">{locale.toUpperCase()}</span>
-                <span class="locale-name">{languageNames[locale]}</span>
+                <span class="locale-name">{languageNames[locale]()}</span>
                 {#if locale === currentLocale}<Icon icon="lucide:check" width="16" height="16" aria-hidden="true" />{/if}
               </button>
             {/each}
@@ -156,7 +159,7 @@
         <button
           type="button"
           class="menu-toggle"
-          aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+          aria-label={mobileMenuOpen ? t(m.close_menu) : t(m.open_menu)}
           aria-expanded={mobileMenuOpen}
           aria-controls="mobile-menu"
           bind:this={menuToggleEl}
@@ -169,17 +172,17 @@
           class="header-github"
           target="_blank"
           rel="noopener noreferrer"
-          aria-label="View MicroMatch on GitHub"
+          aria-label={t(m.view_on_github)}
         >
           <Icon icon="mdi:github" width="18" height="18" />
-          <span>GitHub</span>
+          <span>{t(m.github)}</span>
         </a>
         {#if isSignedIn}
-          <a href={resolve('/tasks', {})} class="header-signin">Browse tasks</a>
-          <a href={resolve('/dashboard', {})} class="btn-coral btn-sm" data-sveltekit-preload-data="hover">Go to dashboard</a>
+          <a href={resolve('/tasks', {})} class="header-signin">{t(m.browse_tasks)}</a>
+          <a href={resolve('/dashboard', {})} class="btn-coral btn-sm" data-sveltekit-preload-data="hover">{t(m.go_dashboard)}</a>
         {:else}
-          <a href={resolve('/login', {})} class="header-signin">Sign In</a>
-          <a href={resolve('/signup', {})} class="btn-coral btn-sm">Join Now</a>
+          <a href={resolve('/login', {})} class="header-signin">{t(m.nav_sign_in)}</a>
+          <a href={resolve('/signup', {})} class="btn-coral btn-sm">{t(m.join_now)}</a>
         {/if}
       </div>
     </div>
@@ -198,17 +201,17 @@
       aria-label="Mobile"
       transition:fly={{ y: -12, duration: $reducedMotion ? 0 : 200 }}
     >
-      <a href={resolve('/how-it-works', {})} bind:this={firstMenuLinkEl} onclick={closeMenu}>How it Works</a>
-      <a href={resolve('/tasks', {})} onclick={closeMenu}>Browse Tasks</a>
-      <a href={resolve('/for-ngos', {})} onclick={closeMenu}>For NGOs</a>
-      <a href={resolve('/for-volunteers', {})} onclick={closeMenu}>For Volunteers</a>
+      <a href={resolve('/how-it-works', {})} bind:this={firstMenuLinkEl} onclick={closeMenu}>{t(m.how_it_works)}</a>
+      <a href={resolve('/tasks', {})} onclick={closeMenu}>{t(m.browse_tasks)}</a>
+      <a href={resolve('/for-ngos', {})} onclick={closeMenu}>{t(m.for_ngos)}</a>
+      <a href={resolve('/for-volunteers', {})} onclick={closeMenu}>{t(m.for_volunteers)}</a>
       <div class="mobile-menu-divider"></div>
       {#if isSignedIn}
-        <a href={resolve('/tasks', {})} onclick={closeMenu}>Browse tasks</a>
-        <a href={resolve('/dashboard', {})} class="mobile-menu-cta" onclick={closeMenu}>Go to dashboard</a>
+        <a href={resolve('/tasks', {})} onclick={closeMenu}>{t(m.browse_tasks)}</a>
+        <a href={resolve('/dashboard', {})} class="mobile-menu-cta" onclick={closeMenu}>{t(m.go_dashboard)}</a>
       {:else}
-        <a href={resolve('/login', {})} onclick={closeMenu}>Sign In</a>
-        <a href={resolve('/signup', {})} class="mobile-menu-cta" onclick={closeMenu}>Join Now</a>
+        <a href={resolve('/login', {})} onclick={closeMenu}>{t(m.nav_sign_in)}</a>
+        <a href={resolve('/signup', {})} class="mobile-menu-cta" onclick={closeMenu}>{t(m.join_now)}</a>
       {/if}
       <a
         href="https://github.com/Builder106/micro-match"
@@ -217,7 +220,7 @@
         rel="noopener noreferrer"
         onclick={closeMenu}
       >
-        <Icon icon="mdi:github" width="18" height="18" /> View on GitHub
+        <Icon icon="mdi:github" width="18" height="18" /> {t(m.view_on_github)}
       </a>
     </nav>
   {/if}
@@ -233,36 +236,36 @@
         <div class="footer-brand" dir="ltr">
           <div class="footer-logo">
             <img src="/logo.png" alt="" width="36" height="36" />
-            <span>MicroMatch</span>
+            <span>{t(m.app_name)}</span>
           </div>
-          <p>Connecting volunteers with bite-sized tasks for maximum impact. Small efforts, big changes.</p>
+          <p>{t(m.footer_tagline)}</p>
         </div>
         <div class="footer-links">
           <div class="link-col">
-          <h2>Platform</h2>
-            <a href={resolve('/tasks', {})}>Browse Tasks</a>
-            <a href={resolve('/dashboard', {})}>Dashboard</a>
+          <h2>{t(m.footer_platform)}</h2>
+            <a href={resolve('/tasks', {})}>{t(m.browse_tasks)}</a>
+            <a href={resolve('/dashboard', {})}>{t(m.nav_dashboard)}</a>
             {#if !isSignedIn}
-              <a href={resolve('/login', {})}>Sign In</a>
+              <a href={resolve('/login', {})}>{t(m.nav_sign_in)}</a>
             {/if}
           </div>
           <div class="link-col">
-          <h2>Resources</h2>
-          <a href={resolve('/how-it-works', {})} aria-label="Footer: How It Works">How It Works</a>
-          <a href={resolve('/for-ngos', {})} aria-label="Footer: For NGOs">For NGOs</a>
-          <a href={resolve('/for-volunteers', {})} aria-label="Footer: For Volunteers">For Volunteers</a>
-          <a href={resolve('/impact', {})} aria-label="Footer: Impact">Impact</a>
-            <a href={resolve('/docs/api', {})}>API Docs</a>
-            <a href={resolve('/about', {})}>About Us</a>
-            <a href={resolve('/help', {})}>Help Center</a>
+          <h2>{t(m.footer_resources)}</h2>
+          <a href={resolve('/how-it-works', {})} aria-label={`Footer: ${t(m.how_it_works)}`}>{t(m.how_it_works)}</a>
+          <a href={resolve('/for-ngos', {})} aria-label={`Footer: ${t(m.for_ngos)}`}>{t(m.for_ngos)}</a>
+          <a href={resolve('/for-volunteers', {})} aria-label={`Footer: ${t(m.for_volunteers)}`}>{t(m.for_volunteers)}</a>
+          <a href={resolve('/impact', {})} aria-label={`Footer: ${t(m.footer_impact)}`}>{t(m.footer_impact)}</a>
+            <a href={resolve('/docs/api', {})}>{t(m.footer_api_docs)}</a>
+            <a href={resolve('/about', {})}>{t(m.footer_about)}</a>
+            <a href={resolve('/help', {})}>{t(m.footer_help)}</a>
           </div>
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2026 MicroMatch. All rights reserved.</p>
+        <p>&copy; 2026 {t(m.app_name)}. {t(m.footer_all_rights)}</p>
         <div class="footer-legal">
-          <a href={resolve('/privacy', {})}>Privacy Policy</a>
-          <a href={resolve('/terms', {})}>Terms of Service</a>
+          <a href={resolve('/privacy', {})}>{t(m.footer_privacy)}</a>
+          <a href={resolve('/terms', {})}>{t(m.footer_terms)}</a>
         </div>
       </div>
     </div>

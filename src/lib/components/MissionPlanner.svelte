@@ -1,24 +1,34 @@
 <script lang="ts">
   import Icon from '@iconify/svelte';
+  import { page } from '$app/state';
   import { resolve } from '$app/paths';
+  import { type Locale } from '$lib/locale';
+  import * as m from '$lib/paraglide/messages.js';
   import { createCapacityPlan, formatReviewTime, type TaskDuration } from '$lib/capacityPlan';
 
   const minimumBacklogHours = 2;
   const maximumBacklogHours = 40;
   const deliveryDayOptions = [2, 4, 7];
-  const durationOptions: Array<{ value: TaskDuration; label: string; description: string }> = [
-    { value: 5, label: '5 minutes', description: 'Quick check' },
-    { value: 15, label: '15 minutes', description: 'Focused task' },
-    { value: 30, label: '30 minutes', description: 'Deeper pass' }
+  type StaticMessage = (inputs?: Record<string, never>, options?: { locale?: Locale }) => string;
+  const durationOptions: Array<{ value: TaskDuration; label: StaticMessage; description: StaticMessage }> = [
+    { value: 5, label: m.mp_mission_size_5, description: m.mp_mission_size_5_description },
+    { value: 15, label: m.mp_mission_size_15, description: m.mp_mission_size_15_description },
+    { value: 30, label: m.mp_mission_size_30, description: m.mp_mission_size_30_description }
   ];
 
   let backlogHours = 12;
   let taskMinutes: TaskDuration = 15;
   let deliveryDays = 4;
-  let backlogMessage = `Choose between ${minimumBacklogHours} and ${maximumBacklogHours} hours.`;
+  let backlogMessage = '';
   let backlogHasError = false;
 
+  /* eslint-disable-next-line svelte/no-immutable-reactive-statements */
+  $: currentLocale = (page.data?.locale as Locale | undefined) ?? 'en';
   $: capacityPlan = createCapacityPlan({ backlogHours, taskMinutes, deliveryDays });
+  $: reviewDuration = formatReviewTime(capacityPlan.reviewMinutes)
+    .replace(' hr', ` ${t(m.mp_review_hour_short)}`)
+    .replace(' min', ` ${t(m.mp_review_minute_short)}`);
+  function t(message: StaticMessage) { return message({}, { locale: currentLocale }); }
 
   function normalizeBacklogHours() {
     const parsedHours = Math.round(Number(backlogHours));
@@ -26,8 +36,8 @@
     backlogHasError = nextBacklogHours !== parsedHours;
     backlogHours = nextBacklogHours;
     backlogMessage = backlogHasError
-      ? `Use a whole number between ${minimumBacklogHours} and ${maximumBacklogHours} hours. We set this plan to ${nextBacklogHours} hours.`
-      : `Choose between ${minimumBacklogHours} and ${maximumBacklogHours} hours.`;
+      ? m.mp_invalid_hours({ hours: nextBacklogHours }, { locale: currentLocale })
+      : '';
   }
 </script>
 
@@ -35,18 +45,18 @@
   <div class="planner-heading">
     <div class="planner-kicker">
       <Icon icon="lucide:layout-list" width="15" height="15" aria-hidden="true" />
-      <span>Mission planner</span>
+      <span>{t(m.mp_kicker)}</span>
     </div>
-    <h2 id="mission-planner-title">Plan a batch that volunteers can finish</h2>
-    <p>Package work that can be completed independently, then release it at a pace your team can review.</p>
+    <h2 id="mission-planner-title">{t(m.mp_title)}</h2>
+    <p>{t(m.mp_description)}</p>
   </div>
 
   <div class="planner-workbench">
-    <form class="planner-inputs" aria-label="Mission plan inputs" onsubmit={(event) => event.preventDefault()}>
+    <form class="planner-inputs" aria-label={t(m.mp_aria_inputs)} onsubmit={(event) => event.preventDefault()}>
       <fieldset class="planner-step">
-        <legend><span>1</span> Work to package</legend>
+        <legend><span>1</span> {t(m.mp_work_to_package)}</legend>
         <div class="field-heading">
-          <label for="backlog-hours">Backlog hours</label>
+          <label for="backlog-hours">{t(m.mp_backlog_hours)}</label>
           <div class:has-error={backlogHasError} class="hours-field">
             <input
               id="backlog-hours"
@@ -61,7 +71,7 @@
               bind:value={backlogHours}
               onblur={normalizeBacklogHours}
             />
-            <span>hours</span>
+            <span>{t(m.mp_hours)}</span>
           </div>
         </div>
         <input
@@ -72,39 +82,39 @@
           min={minimumBacklogHours}
           max={maximumBacklogHours}
           step="1"
-          aria-label="Backlog hours to package"
-          aria-valuetext={`${backlogHours} hours`}
+          aria-label={t(m.mp_backlog_hours_to_package)}
+          aria-valuetext={backlogHours + ' ' + t(m.mp_hours)}
           bind:value={backlogHours}
           oninput={() => {
             backlogHasError = false;
-            backlogMessage = `Choose between ${minimumBacklogHours} and ${maximumBacklogHours} hours.`;
+            backlogMessage = '';
           }}
         />
-        <div class="range-scale" aria-hidden="true"><span>2 hours</span><span>20 hours</span><span>40 hours</span></div>
-        <p id="backlog-help" class:error={backlogHasError} class="field-help">{backlogMessage}</p>
+        <div class="range-scale" aria-hidden="true"><span>{t(m.mp_hours_2)}</span><span>{t(m.mp_hours_20)}</span><span>{t(m.mp_hours_40)}</span></div>
+        <p id="backlog-help" class:error={backlogHasError} class="field-help">{backlogHasError ? backlogMessage : t(m.mp_choose_between_hours)}</p>
       </fieldset>
 
       <fieldset class="planner-step">
-        <legend><span>2</span> Mission size</legend>
-        <p class="step-copy">Keep each mission focused on one deliverable and a short review path.</p>
-        <div class="choice-grid" role="radiogroup" aria-label="Mission size">
+        <legend><span>2</span> {t(m.mp_mission_size)}</legend>
+        <p class="step-copy">{t(m.mp_mission_size_copy)}</p>
+        <div class="choice-grid" role="radiogroup" aria-label={t(m.mp_mission_size)}>
           {#each durationOptions as option (option.value)}
             <label class:selected={taskMinutes === option.value} class="choice-card">
               <input type="radio" name="task-minutes" value={option.value} bind:group={taskMinutes} />
-              <strong>{option.label}</strong>
-              <span>{option.description}</span>
+              <strong>{t(option.label)}</strong>
+              <span>{t(option.description)}</span>
             </label>
           {/each}
         </div>
       </fieldset>
 
       <fieldset class="planner-step">
-        <legend><span>3</span> Release window</legend>
-        <div class="release-options" role="radiogroup" aria-label="Release window">
+        <legend><span>3</span> {t(m.mp_release_window)}</legend>
+        <div class="release-options" role="radiogroup" aria-label={t(m.mp_release_window_aria)}>
           {#each deliveryDayOptions as days (days)}
             <label class:selected={deliveryDays === days} class="release-option">
               <input type="radio" name="delivery-days" value={days} bind:group={deliveryDays} />
-              <span>{days} days</span>
+              <span>{m.mp_days({ days }, { locale: currentLocale })}</span>
             </label>
           {/each}
         </div>
@@ -112,29 +122,29 @@
     </form>
 
     <aside class="mission-plan" aria-labelledby="posting-plan-title">
-      <p class="plan-label">Your posting plan</p>
+      <p class="plan-label">{t(m.mp_plan_label)}</p>
       <div class="plan-total" aria-live="polite" aria-atomic="true">
         <strong>{capacityPlan.missionCount}</strong>
         <div>
-          <h3 id="posting-plan-title">missions to prepare</h3>
-          <p>{taskMinutes} minutes each across {deliveryDays} days.</p>
+          <h3 id="posting-plan-title">{t(m.mp_missions_to_prepare)}</h3>
+          <p>{m.mp_minutes_each_across({ minutes: taskMinutes, days: deliveryDays }, { locale: currentLocale })}</p>
         </div>
       </div>
 
       <div class="schedule-summary">
         <div class="summary-icon"><Icon icon="lucide:calendar-days" width="19" height="19" aria-hidden="true" /></div>
         <div>
-          <strong>{capacityPlan.missionsPerDay} on your busiest day</strong>
-          <span>Release the batch in manageable daily groups.</span>
+          <strong>{m.mp_busiest_day({ count: capacityPlan.missionsPerDay }, { locale: currentLocale })}</strong>
+          <span>{t(m.mp_release_summary)}</span>
         </div>
       </div>
 
-      <ol class="release-schedule" aria-label="Daily release schedule">
+      <ol class="release-schedule" aria-label={t(m.mp_daily_schedule)}>
         {#each capacityPlan.dailyMissionCounts as missionCount, index (index)}
           <li>
-            <span>Day {index + 1}</span>
+            <span>{m.mp_day({ day: index + 1 }, { locale: currentLocale })}</span>
             <strong>{missionCount}</strong>
-            <small>missions</small>
+            <small>{t(m.mp_missions)}</small>
           </li>
         {/each}
       </ol>
@@ -142,18 +152,18 @@
       <div class="review-note">
         <Icon icon="lucide:clipboard-check" width="19" height="19" aria-hidden="true" />
         <div>
-          <strong>{formatReviewTime(capacityPlan.reviewMinutes)} to review</strong>
-          <span>Based on 3 minutes for each completed mission.</span>
+          <strong>{m.mp_review_time({ duration: reviewDuration }, { locale: currentLocale })}</strong>
+          <span>{t(m.mp_review_basis)}</span>
         </div>
       </div>
 
       <details class="plan-assumptions">
-        <summary>How the schedule works</summary>
-        <p>We round up so every piece of work has a mission, then distribute the missions as evenly as possible across the selected days.</p>
+        <summary>{t(m.mp_schedule_works)}</summary>
+        <p>{t(m.mp_schedule_explanation)}</p>
       </details>
 
-      <a href={resolve("/signup", {})} class="plan-cta" aria-label={`Create an NGO profile to post ${capacityPlan.missionCount} missions`}>
-        Create profile to post this plan
+      <a href={resolve("/signup", {})} class="plan-cta" aria-label={m.mp_create_profile_aria({ count: capacityPlan.missionCount }, { locale: currentLocale })}>
+        {t(m.mp_create_profile)}
         <Icon icon="lucide:arrow-right" width="17" height="17" aria-hidden="true" />
       </a>
     </aside>

@@ -5,18 +5,21 @@
   import ThemeToggle from '$lib/components/ThemeToggle.svelte';
   import { signOut } from '$lib/appwrite.client';
   import { localizedHref, stripLocale, type Locale } from '$lib/locale';
+  import * as m from '$lib/paraglide/messages.js';
 
   // Resilient role hint from cookie so NGO items render even if SSR local session is missing
   let roleHint = '';
   if (typeof document !== 'undefined') {
     try {
-      const m = (document.cookie || '').match(/(?:^|;\s*)mm_role=([^;]+)/);
-      roleHint = m ? decodeURIComponent(m[1]) : '';
+      const roleCookieMatch = (document.cookie || '').match(/(?:^|;\s*)mm_role=([^;]+)/);
+      roleHint = roleCookieMatch ? decodeURIComponent(roleCookieMatch[1]) : '';
     } catch {}
   }
   const isNGO = page.data.userRole === 'ngo' || roleHint === 'ngo';
   const isAdmin = page.data.isAdmin === true;
   $: currentLocale = (page.data?.locale as Locale | undefined) ?? 'en';
+  type StaticMessage = (inputs?: Record<string, never>, options?: { locale?: Locale }) => string;
+  function t(message: StaticMessage) { return message({}, { locale: currentLocale }); }
   function resolve(pathname: string, _options?: unknown) { return localizedHref(pathname, currentLocale); }
   function isPath(pathname: string) {
     const current = stripLocale(page.url.pathname);
@@ -37,52 +40,52 @@
       <div class="micromatch-logo-container">
         <img src="/logo.png" alt="MicroMatch Logo" width="24" height="24" />
       </div>
-      <a href={resolve('/', {})} class="micromatch-header-link">MicroMatch</a>
+      <a href={resolve('/', {})} class="micromatch-header-link">{t(m.app_name)}</a>
     </div>
   </div>
   
   <nav class="nav-container">
     <a href={resolve('/tasks')} class="nav-link" class:active={isPath('/tasks')} >
       <Icon icon="mdi:view-dashboard-outline" width="22" height="22"/>
-      <span class="font-semibold">Feed</span>
+      <span class="font-semibold">{t(m.nav_feed)}</span>
     </a>
           <a href={resolve('/dashboard', {})} class="nav-link" class:active={isPath('/dashboard')}>
         <Icon icon="mdi:seal-variant" width="22" height="22"/>
-        <span class="font-medium">Dashboard</span>
+        <span class="font-medium">{t(m.nav_dashboard)}</span>
       </a>
       {#if isNGO}
         <a href={resolve('/org', {})} class="nav-link" class:active={isPath('/org')}>
           <Icon icon="mdi:plus-circle-outline" width="22" height="22"/>
-          <span class="font-medium">Create Task</span>
+          <span class="font-medium">{t(m.create_task)}</span>
         </a>
         <a href={resolve('/badges/manage', {})} class="nav-link" class:active={isPath('/badges/manage')}>
           <Icon icon="mdi:shield-edit" width="22" height="22"/>
-          <span class="font-medium">Manage Badges</span>
+          <span class="font-medium">{t(m.nav_manage_badges)}</span>
         </a>
         <a href={resolve('/badges/analytics', {})} class="nav-link" class:active={isPath('/badges/analytics')}>
           <Icon icon="mdi:chart-line" width="22" height="22"/>
-          <span class="font-medium">Analytics</span>
+          <span class="font-medium">{t(m.nav_analytics)}</span>
         </a>
       {/if}
     {#if isAdmin}
         <a href={resolve('/admin/verifications', {})} class="nav-link" class:active={isPath('/admin/')}>
           <Icon icon="mdi:shield-check-outline" width="22" height="22"/>
-          <span class="font-medium">Verifications</span>
+          <span class="font-medium">{t(m.nav_verifications)}</span>
         </a>
       {/if}
     {#if page.data.userRole && page.data.userRole !== 'anonymous'}
       <a href={resolve('/profile', {})} class="nav-link" class:active={isPath('/profile')}>
         <Icon icon="mdi:account-circle-outline" width="22" height="22"/>
-        <span class="font-medium">Profile</span>
+        <span class="font-medium">{t(m.nav_profile)}</span>
       </a>
       <a href={resolve('/logout', {})} class="nav-link" onclick={handleSignOut}>
         <Icon icon="mdi:logout" width="22" height="22"/>
-        <span class="font-medium">Sign out</span>
+        <span class="font-medium">{t(m.nav_sign_out)}</span>
       </a>
     {:else}
       <a href={resolve('/login', {})} class="nav-link" class:active={isPath('/login') || isPath('/signup')}>
         <Icon icon="mdi:login-variant" width="22" height="22"/>
-        <span class="font-medium">Sign in</span>
+        <span class="font-medium">{t(m.nav_sign_in)}</span>
       </a>
     {/if}
   </nav>
@@ -90,9 +93,9 @@
   <div class="quick-tip-container">
     <div class="quick-tip-header">
       <Icon icon="mdi:lightbulb-outline" width="16" height="16" class="quick-tip-icon"/>
-      <span class="quick-tip-title">Quick Tip</span>
+      <span class="quick-tip-title">{t(m.quick_tip)}</span>
     </div>
-    <p class="quick-tip-text">Complete tasks in 15-30 minutes to maximize your impact and earn badges faster!</p>
+    <p class="quick-tip-text">{t(m.quick_tip_body)}</p>
   </div>
 
   <div style="margin-top: var(--space-4);">

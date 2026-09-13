@@ -15,19 +15,22 @@
    import { account, getJWT } from '$lib/appwrite.client';
    import { dev } from '$app/environment';
    import { localizedHref, stripLocale, type Locale } from '$lib/locale';
+   import * as m from '$lib/paraglide/messages.js';
    import { inject } from '@vercel/analytics';
   const authPaths = ['/login', '/signup', '/forgot-password', '/reset-password'];
   const publicPaths = ['/about', '/contact', '/cookies', '/docs', '/help', '/privacy', '/terms', '/how-it-works', '/for-ngos', '/for-volunteers', '/tasks', '/impact'];
 
-  const ogTitle = 'MicroMatch — Make a big impact in a few minutes';
-  const ogDescription = 'Pair with NGOs on 5–30 minute volunteer tasks. Claim what fits your skills, submit your work, and earn badges that build a verified track record.';
-  const ogImageAlt = 'MicroMatch — Make a big impact in a few minutes.';
+  $: ogTitle = m.site_meta_title({}, { locale: currentLocale });
+  $: ogDescription = m.site_meta_description({}, { locale: currentLocale });
+  $: ogImageAlt = m.site_meta_title({}, { locale: currentLocale });
   $: origin = $page.data.origin ?? $page.url.origin;
   $: ogUrl = origin + $page.url.pathname;
   $: ogImage = origin + '/social-preview.png';
   $: pathname = $page.url.pathname;
   $: currentPath = stripLocale(pathname);
   $: currentLocale = ($page.data.locale as Locale | undefined) ?? 'en';
+  type StaticMessage = (inputs?: Record<string, never>, options?: { locale?: Locale }) => string;
+  function t(message: StaticMessage) { return message({}, { locale: currentLocale }); }
   $: isLanding = currentPath === '/';
   $: isAuthPath = authPaths.includes(currentPath);
   $: isPublicPath = publicPaths.some((p) => currentPath === p || currentPath.startsWith(p + '/'));
@@ -140,7 +143,7 @@
 {#if showAppChrome}
 <TopAppBar style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(16px); box-shadow: var(--elev-1); z-index: 10; border-bottom: 1px solid var(--color-outline-variant);">
    <svelte:fragment slot="navigation">
-     <Button variant="text" href={resolve('/tasks', {})} aria-label="Home" style="color: var(--color-primary-readable); font-weight: var(--font-medium);">
+       <Button variant="text" href={resolve('/tasks', {})} aria-label={t(m.nav_feed)} style="color: var(--color-primary-readable); font-weight: var(--font-medium);">
        <Icon icon="mdi:home" width="24" height="24"/>
      </Button>
    </svelte:fragment>
@@ -155,7 +158,7 @@
     {#if $page.data.userRole === 'ngo'}
       <Button variant="text" href={resolve('/org', {})} aria-label="Post task" class="btn-primary" style="padding: var(--space-2) var(--space-4); font-size: var(--text-sm);">
         <Icon icon="mdi:plus-circle-outline" width="24" height="24"/>
-        <span style="margin-left: var(--space-1);">Post</span>
+        <span style="margin-left: var(--space-1);">{t(m.nav_post_task)}</span>
       </Button>
     {/if}
    </svelte:fragment>
@@ -182,26 +185,26 @@
         <div class:card-elevated={$page.url.pathname === '/tasks'} class:animate-scale-in={$page.url.pathname === '/tasks'} style="display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 40px; border-radius: var(--radius-xl); background: var(--color-primary); color: var(--color-on-primary); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);">
           <Icon icon="mdi:view-dashboard-outline" width="20" height="20"/>
         </div>
-        <small style="display: block; color: var(--color-primary-readable); margin-top: var(--space-2); font-weight: var(--font-medium); font-size: var(--text-xs);">Feed</small>
+        <small style="display: block; color: var(--color-primary-readable); margin-top: var(--space-2); font-weight: var(--font-medium); font-size: var(--text-xs);">{t(m.nav_feed)}</small>
       </a>
       <a href={resolve('/dashboard', {})} style="text-align:center;text-decoration:none;color:inherit">
         <div class="hover-lift" style="width: 56px; height: 40px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--radius-xl); background: var(--color-surface-variant); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);">
           <Icon icon="mdi:seal-variant" width="20" height="20" style="color: var(--color-text-secondary);"/>
         </div>
-        <small style="display: block; color: var(--color-text-secondary); margin-top: var(--space-2); font-weight: var(--font-medium); font-size: var(--text-xs);">Badges</small>
+        <small style="display: block; color: var(--color-text-secondary); margin-top: var(--space-2); font-weight: var(--font-medium); font-size: var(--text-xs);">{t(m.nav_dashboard)}</small>
       </a>
       {#if $page.data.userRole === 'ngo'}
         <a href={resolve('/badges/manage', {})} style="text-align:center;text-decoration:none;color:inherit">
           <div class="hover-lift" style="width: 56px; height: 40px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--radius-xl); background: var(--color-surface-variant); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);">
             <Icon icon="mdi:shield-edit" width="20" height="20" style="color: var(--color-text-secondary);"/>
           </div>
-          <small style="display: block; color: var(--color-text-secondary); margin-top: var(--space-2); font-weight: var(--font-medium); font-size: var(--text-xs);">Manage</small>
+          <small style="display: block; color: var(--color-text-secondary); margin-top: var(--space-2); font-weight: var(--font-medium); font-size: var(--text-xs);">{t(m.nav_manage_badges)}</small>
         </a>
         <a href={resolve('/badges/analytics', {})} style="text-align:center;text-decoration:none;color:inherit">
           <div class="hover-lift" style="width: 56px; height: 40px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--radius-xl); background: var(--color-surface-variant); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);">
             <Icon icon="mdi:chart-line" width="20" height="20" style="color: var(--color-text-secondary);"/>
           </div>
-          <small style="display: block; color: var(--color-text-secondary); margin-top: var(--space-2); font-weight: var(--font-medium); font-size: var(--text-xs);">Stats</small>
+          <small style="display: block; color: var(--color-text-secondary); margin-top: var(--space-2); font-weight: var(--font-medium); font-size: var(--text-xs);">{t(m.nav_analytics)}</small>
         </a>
       {/if}
       {#if $page.data.userRole === 'ngo'}
@@ -209,7 +212,7 @@
           <div class="hover-lift" style="width: 56px; height: 40px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--radius-xl); background: var(--color-surface-variant); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);">
             <Icon icon="mdi:plus-circle-outline" width="20" height="20" style="color: var(--color-text-secondary);"/>
           </div>
-          <small style="display: block; color: var(--color-text-secondary); margin-top: var(--space-2); font-weight: var(--font-medium); font-size: var(--text-xs);">Post</small>
+          <small style="display: block; color: var(--color-text-secondary); margin-top: var(--space-2); font-weight: var(--font-medium); font-size: var(--text-xs);">{t(m.nav_post_task)}</small>
         </a>
       {/if}
     </div>

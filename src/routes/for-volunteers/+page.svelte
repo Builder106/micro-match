@@ -2,9 +2,12 @@
   import Icon from "@iconify/svelte";
   import DecorativeLottie from '$lib/components/DecorativeLottie.svelte';
   import PublicShell from '$lib/components/PublicShell.svelte';
+  import { page } from '$app/state';
   import { fly, fade } from 'svelte/transition';
   import { resolve } from '$app/paths';
+  import { type Locale } from '$lib/locale';
   import { reducedMotion } from '$lib/utils/reducedMotion';
+  import * as m from '$lib/paraglide/messages.js';
 
   let selectedDuration: '5' | '15' | '30' = '15';
 
@@ -12,115 +15,120 @@
     {
       id: 1,
       duration: '5',
-      timeLabel: '5 min',
-      title: 'Tag 10 historical photos for digital archive',
+      minutes: 5,
+      title: m.vol_mission_1_title,
       ngo: 'National Historical Trust',
       xp: '+25 XP',
-      tags: [{ name: '#history', bg: '#DBEAFE', color: '#172554' }, { name: '#data', bg: '#FEF3C7', color: '#78350F' }]
+      tags: [{ name: m.vol_mission_1_tag_1, bg: '#DBEAFE', color: '#172554' }, { name: m.vol_mission_1_tag_2, bg: '#FEF3C7', color: '#78350F' }]
     },
     {
       id: 2,
       duration: '5',
-      timeLabel: '5 min',
-      title: 'Proofread 3 social media announcement captions',
+      minutes: 5,
+      title: m.vol_mission_2_title,
       ngo: 'Ocean Conservation Alliance',
       xp: '+25 XP',
-      tags: [{ name: '#writing', bg: '#FCE7F3', color: '#831843' }, { name: '#environment', bg: '#D1FAE5', color: '#064E3B' }]
+      tags: [{ name: m.vol_mission_2_tag_1, bg: '#FCE7F3', color: '#831843' }, { name: m.vol_mission_2_tag_2, bg: '#D1FAE5', color: '#064E3B' }]
     },
     {
       id: 3,
       duration: '15',
-      timeLabel: '15 min',
-      title: 'Translate medical dosage flyer to Spanish',
+      minutes: 15,
+      title: m.vol_mission_3_title,
       ngo: 'Doctors Without Borders',
       xp: '+50 XP',
-      tags: [{ name: '#spanish', bg: '#F3E8FF', color: '#581C87' }, { name: '#health', bg: '#D1FAE5', color: '#064E3B' }]
+      tags: [{ name: m.vol_mission_3_tag_1, bg: '#F3E8FF', color: '#581C87' }, { name: m.vol_mission_3_tag_2, bg: '#D1FAE5', color: '#064E3B' }]
     },
     {
       id: 4,
       duration: '15',
-      timeLabel: '15 min',
-      title: 'Audit Excel spreadsheet for missing donor ZIP codes',
+      minutes: 15,
+      title: m.vol_mission_4_title,
       ngo: 'Global Literacy Fund',
       xp: '+50 XP',
-      tags: [{ name: '#excel', bg: '#D1FAE5', color: '#064E3B' }, { name: '#data', bg: '#FEF3C7', color: '#78350F' }]
+      tags: [{ name: m.vol_mission_4_tag_1, bg: '#D1FAE5', color: '#064E3B' }, { name: m.vol_mission_4_tag_2, bg: '#FEF3C7', color: '#78350F' }]
     },
     {
       id: 5,
       duration: '30',
-      timeLabel: '30 min',
-      title: 'Design 2 Canva Instagram graphics for cleanup drive',
+      minutes: 30,
+      title: m.vol_mission_5_title,
       ngo: 'Clean City Project',
       xp: '+100 XP',
-      tags: [{ name: '#design', bg: '#FCE7F3', color: '#831843' }, { name: '#media', bg: '#DBEAFE', color: '#172554' }]
+      tags: [{ name: m.vol_mission_5_tag_1, bg: '#FCE7F3', color: '#831843' }, { name: m.vol_mission_5_tag_2, bg: '#DBEAFE', color: '#172554' }]
     },
     {
       id: 6,
       duration: '30',
-      timeLabel: '30 min',
-      title: 'Research top 5 youth literacy non-profit statistics',
+      minutes: 30,
+      title: m.vol_mission_6_title,
       ngo: 'Reading for All',
       xp: '+100 XP',
-      tags: [{ name: '#research', bg: '#FEF3C7', color: '#78350F' }, { name: '#education', bg: '#F3E8FF', color: '#581C87' }]
+      tags: [{ name: m.vol_mission_6_tag_1, bg: '#FEF3C7', color: '#78350F' }, { name: m.vol_mission_6_tag_2, bg: '#F3E8FF', color: '#581C87' }]
     }
   ];
 
-  $: activeMissions = sampleMissions.filter(m => m.duration === selectedDuration);
+  $: activeMissions = sampleMissions.filter((mission) => mission.duration === selectedDuration);
 
   const volunteerPillars = [
     {
       icon: 'lucide:clock',
       bg: '#D1FAE5',
       color: '#064E3B',
-      tag: '5–30 Minute Caps',
-      title: 'Bite-sized missions',
-      desc: 'Every task is scoped to 5, 15, or 30 minutes with clear time estimates upfront. Fit impact into spare study gaps, commutes, or coffee breaks.'
+      tag: m.vol_pillar_1_tag,
+      title: m.vol_pillar_1_title,
+      desc: m.vol_pillar_1_description
     },
     {
       icon: 'lucide:zap',
       bg: '#DBEAFE',
       color: '#172554',
-      tag: 'Zero Onboarding',
-      title: 'Claim, learn, and submit',
-      desc: 'No interviews or background checks required. Claim a task, read embedded contextual guides, and submit link or document proof straight from your device.'
+      tag: m.vol_pillar_2_tag,
+      title: m.vol_pillar_2_title,
+      desc: m.vol_pillar_2_description
     },
     {
       icon: 'lucide:trophy',
       bg: '#FFEDD5',
       color: '#7C2D12',
-      tag: 'Gamified Growth',
-      title: 'Badges and XP vault',
-      desc: 'Approved work awards XP level-ups and mints custom NGO achievement badges into your public portfolio, proving your real-world contribution history.'
+      tag: m.vol_pillar_3_tag,
+      title: m.vol_pillar_3_title,
+      desc: m.vol_pillar_3_description
     }
   ];
 
   const comparison = [
     {
-      feature: 'Commitment Level',
-      traditional: 'Fixed weekly hours (5–10 hrs/week for months)',
-      micromatch: 'Bite-sized 5 to 30-minute self-contained tasks'
+      feature: m.vol_comparison_1_feature,
+      traditional: m.vol_comparison_1_traditional,
+      micromatch: m.vol_comparison_1_micromatch
     },
     {
-      feature: 'Getting Started',
-      traditional: 'Long background checks, interviews & orientation',
-      micromatch: 'Instant access to task feed with zero onboarding drag'
+      feature: m.vol_comparison_2_feature,
+      traditional: m.vol_comparison_2_traditional,
+      micromatch: m.vol_comparison_2_micromatch
     },
     {
-      feature: 'Skill Prerequisites',
-      traditional: 'Requires pre-existing specialized experience',
-      micromatch: 'Embedded just-in-time reference guides & glossaries'
+      feature: m.vol_comparison_3_feature,
+      traditional: m.vol_comparison_3_traditional,
+      micromatch: m.vol_comparison_3_micromatch
     },
     {
-      feature: 'Proof of Impact',
-      traditional: 'Unverified resume bullet points',
-      micromatch: 'Public digital portfolio with verified badges & XP'
+      feature: m.vol_comparison_4_feature,
+      traditional: m.vol_comparison_4_traditional,
+      micromatch: m.vol_comparison_4_micromatch
     }
   ];
+
+  /* eslint-disable-next-line svelte/no-immutable-reactive-statements */
+  $: currentLocale = (page.data?.locale as Locale | undefined) ?? 'en';
+  type StaticMessage = (inputs?: Record<string, never>, options?: { locale?: Locale }) => string;
+  function t(message: StaticMessage) { return message({}, { locale: currentLocale }); }
 </script>
 
 <svelte:head>
-  <title>For Volunteers | MicroMatch</title>
-  <meta name="description" content="Find short volunteer tasks and submit finished work for NGO review." />
+  <title>{t(m.vol_meta_title)}</title>
+  <meta name="description" content={t(m.vol_meta_description)} />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -133,16 +141,14 @@
       <div class="vol-hero-text">
         <div class="vol-pill">
           <Icon icon="lucide:heart-handshake" width="14" height="14" />
-          <span>For Volunteers</span>
+          <span>{t(m.vol_pill)}</span>
         </div>
-        <h1>Real impact in a <br /><span class="coral-gradient">coffee break.</span></h1>
-        <p>
-          Claim a task with a clear time estimate, complete it when you have a few spare minutes, and submit the finished work for NGO review.
-        </p>
+        <h1>{t(m.vol_hero_title_lead)} <br /><span class="coral-gradient">{t(m.vol_hero_title_accent)}</span></h1>
+        <p>{t(m.vol_hero_description)}</p>
 
         <div class="vol-hero-btns">
-          <a href={resolve('/tasks', {})} class="btn-coral btn-lg">Browse Micro-Missions</a>
-          <a href="#interactive-feed" class="btn-outline-dark btn-lg">Explore Time Caps ↓</a>
+          <a href={resolve('/tasks', {})} class="btn-coral btn-lg">{t(m.vol_browse_missions)}</a>
+          <a href="#interactive-feed" class="btn-outline-dark btn-lg">{t(m.vol_explore_caps)}</a>
         </div>
       </div>
 
@@ -154,12 +160,12 @@
         />
         <div class="hero-sample-task">
           <div class="hero-sample-task-head">
-            <span>Sample task</span>
-            <span class="hero-sample-task-time"><Icon icon="lucide:clock-3" width="14" height="14" />15 min</span>
+            <span>{t(m.vol_sample_task)}</span>
+            <span class="hero-sample-task-time"><Icon icon="lucide:clock-3" width="14" height="14" />15 {t(m.minutes_short)}</span>
           </div>
           <p class="hero-sample-task-ngo">Doctors Without Borders</p>
-          <h2>Translate a medical dosage flyer to Spanish</h2>
-          <p class="hero-sample-task-output">Submit the translated flyer copy for NGO review.</p>
+          <h2>{t(m.vol_sample_task_title)}</h2>
+          <p class="hero-sample-task-output">{t(m.vol_sample_task_output)}</p>
         </div>
       </div>
     </div>
@@ -169,8 +175,8 @@
   <section class="section-pillars">
     <div class="container">
       <div class="section-title">
-        <h2>Volunteering Designed for Busy Lives</h2>
-        <p>Three pillars that make contributing friction-free and rewarding.</p>
+        <h2>{t(m.vol_section_title)}</h2>
+        <p>{t(m.vol_section_description)}</p>
       </div>
 
       <div class="pillars-grid">
@@ -179,9 +185,9 @@
             <div class="pillar-icon" style="background: {p.bg}; color: {p.color};">
               <Icon icon={p.icon} width="28" height="28" />
             </div>
-            <span class="pillar-tag" style="color: {p.color}; background: {p.bg};">{p.tag}</span>
-            <h3>{p.title}</h3>
-            <p>{p.desc}</p>
+            <span class="pillar-tag" style="color: {p.color}; background: {p.bg};">{t(p.tag)}</span>
+            <h3>{t(p.title)}</h3>
+            <p>{t(p.desc)}</p>
           </div>
         {/each}
       </div>
@@ -192,30 +198,30 @@
   <section class="section-comparison">
     <div class="container">
       <div class="section-title">
-        <h2>Traditional Volunteering vs. MicroMatch</h2>
-        <p>Compare how micro-missions fit into your daily schedule.</p>
+        <h2>{t(m.vol_comparison_title)}</h2>
+        <p>{t(m.vol_comparison_description)}</p>
       </div>
 
       <div class="comp-table">
         <div class="comp-header">
-          <div class="comp-cell feature">Feature</div>
-          <div class="comp-cell old">Traditional Volunteering</div>
+          <div class="comp-cell feature">{t(m.comparison_feature)}</div>
+          <div class="comp-cell old">{t(m.comparison_traditional)}</div>
           <div class="comp-cell new">
-            <img src="/logo.png" alt="MicroMatch" class="comp-header-logo" width="22" height="22" />
-            <span>MicroMatch</span>
+            <img src="/logo.png" alt={t(m.app_name)} class="comp-header-logo" width="22" height="22" />
+            <span>{t(m.comparison_micromatch)}</span>
           </div>
         </div>
 
         {#each comparison as row (row.feature)}
           <div class="comp-row">
-            <div class="comp-cell feature"><strong>{row.feature}</strong></div>
+            <div class="comp-cell feature"><strong>{t(row.feature)}</strong></div>
             <div class="comp-cell old">
               <Icon icon="lucide:x-circle" width="16" height="16" class="icon-bad" />
-              <span>{row.traditional}</span>
+              <span>{t(row.traditional)}</span>
             </div>
             <div class="comp-cell new">
               <Icon icon="lucide:check-circle-2" width="16" height="16" class="icon-good" />
-              <span>{row.micromatch}</span>
+              <span>{t(row.micromatch)}</span>
             </div>
           </div>
         {/each}
@@ -227,8 +233,8 @@
   <section class="section-missions-filter" id="interactive-feed">
     <div class="container">
       <div class="section-title">
-        <h2>Pick Something That Fits Your Schedule</h2>
-        <p>Filter active sample tasks by duration cap.</p>
+        <h2>{t(m.vol_filter_title)}</h2>
+        <p>{t(m.vol_filter_description)}</p>
       </div>
 
       <!-- Time Filter Selector Tabs -->
@@ -240,7 +246,7 @@
           on:click={() => (selectedDuration = '5')}
         >
           <Icon icon="lucide:clock" width="16" height="16" />
-          <span>5-Minute Quickies</span>
+          <span>{t(m.vol_filter_5)}</span>
         </button>
         <button
           type="button"
@@ -249,7 +255,7 @@
           on:click={() => (selectedDuration = '15')}
         >
           <Icon icon="lucide:clock" width="16" height="16" />
-          <span>15-Minute Missions</span>
+          <span>{t(m.vol_filter_15)}</span>
         </button>
         <button
           type="button"
@@ -258,7 +264,7 @@
           on:click={() => (selectedDuration = '30')}
         >
           <Icon icon="lucide:clock" width="16" height="16" />
-          <span>30-Minute Deep Impact</span>
+          <span>{t(m.vol_filter_30)}</span>
         </button>
       </div>
 
@@ -269,18 +275,18 @@
             <div class="sample-task-card">
               <div class="st-top">
                 <span class="st-ngo">{task.ngo}</span>
-                <span class="st-time"><Icon icon="lucide:clock" width="14" height="14" /> {task.timeLabel}</span>
+                <span class="st-time"><Icon icon="lucide:clock" width="14" height="14" /> {task.minutes} {t(m.minutes_short)}</span>
               </div>
-              <h3>{task.title}</h3>
+              <h3>{t(task.title)}</h3>
               <div class="st-foot">
                 <div class="st-tags">
                   {#each task.tags as tag (tag.name)}
-                    <span style="background:{tag.bg};color:{tag.color}">{tag.name}</span>
+                    <span style="background:{tag.bg};color:{tag.color}">{t(tag.name)}</span>
                   {/each}
                 </div>
                 <span class="st-xp">{task.xp}</span>
               </div>
-              <a href={resolve('/tasks', {})} class="btn-dark-pill">Claim Task</a>
+              <a href={resolve('/tasks', {})} class="btn-dark-pill">{t(m.vol_claim_task)}</a>
             </div>
           {/each}
         </div>
@@ -292,11 +298,11 @@
   <section class="vol-cta-section">
     <div class="container">
       <div class="cta-box">
-        <h2>Start your micro-volunteering streak today.</h2>
-        <p>Create your volunteer profile and claim your first 5-minute task in minutes.</p>
+        <h2>{t(m.vol_cta_title)}</h2>
+        <p>{t(m.vol_cta_description)}</p>
         <div class="cta-actions">
-          <a href={resolve('/signup', {})} class="btn-coral btn-lg">Join as Volunteer</a>
-          <a href={resolve('/tasks', {})} class="btn-outline-dark btn-lg">Browse Active Feed</a>
+          <a href={resolve('/signup', {})} class="btn-coral btn-lg">{t(m.vol_join)}</a>
+          <a href={resolve('/tasks', {})} class="btn-outline-dark btn-lg">{t(m.browse_active_feed)}</a>
         </div>
       </div>
     </div>

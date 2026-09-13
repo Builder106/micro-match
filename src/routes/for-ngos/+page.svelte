@@ -3,62 +3,70 @@
   import DecorativeLottie from '$lib/components/DecorativeLottie.svelte';
   import MissionPlanner from '$lib/components/MissionPlanner.svelte';
   import PublicShell from '$lib/components/PublicShell.svelte';
+  import { page } from '$app/state';
   import { resolve } from '$app/paths';
+  import { type Locale } from '$lib/locale';
+  import * as m from '$lib/paraglide/messages.js';
 
   const ngoPillars = [
     {
       icon: 'lucide:layers',
       bg: '#FFF5F0',
       color: '#881337',
-      tag: 'Micro-Scoped Work',
-      title: 'Post tasks, not job openings',
-      desc: 'Break down your backlog into 5 to 30-minute units — translation, photo tagging, data audits — getting reviewable work done without recruitment drag.'
+      tag: m.ngo_pillar_1_tag,
+      title: m.ngo_pillar_1_title,
+      desc: m.ngo_pillar_1_description
     },
     {
       icon: 'lucide:shield-check',
       bg: '#D1FAE5',
       color: '#064E3B',
-      tag: 'IRS Trust Signal',
-      title: 'ProPublica NGO verification',
-      desc: 'Submit your tax/charity EIN to earn soft-gated NGO verification. Verified status back-fills a prominent trust badge across all your posted tasks.'
+      tag: m.ngo_pillar_2_tag,
+      title: m.ngo_pillar_2_title,
+      desc: m.ngo_pillar_2_description
     },
     {
       icon: 'lucide:user-check',
       bg: '#FEF3C7',
       color: '#78350F',
-      tag: 'Quality Control',
-      title: 'Human-in-the-loop review',
-      desc: 'Maintain 100% control over quality. Every submission is routed to your moderation queue before approval, badge minting, or public recognition.'
+      tag: m.ngo_pillar_3_tag,
+      title: m.ngo_pillar_3_title,
+      desc: m.ngo_pillar_3_description
     }
   ];
 
   const comparison = [
     {
-      feature: 'Onboarding & Setup',
-      traditional: '2–4 weeks of background checks & interviews',
-      micromatch: 'Instant task posting with zero volunteer onboarding drag'
+      feature: m.ngo_comparison_1_feature,
+      traditional: m.ngo_comparison_1_traditional,
+      micromatch: m.ngo_comparison_1_micromatch
     },
     {
-      feature: 'Task Scope',
-      traditional: 'Ongoing weekly commitments (5–10 hrs/week)',
-      micromatch: 'Bite-sized 5 to 30-minute self-contained missions'
+      feature: m.ngo_comparison_2_feature,
+      traditional: m.ngo_comparison_2_traditional,
+      micromatch: m.ngo_comparison_2_micromatch
     },
     {
-      feature: 'Quality Control',
-      traditional: 'Unstructured email attachments & manual tracking',
-      micromatch: 'Moderation dashboard with single-click approve/reject'
+      feature: m.ngo_comparison_3_feature,
+      traditional: m.ngo_comparison_3_traditional,
+      micromatch: m.ngo_comparison_3_micromatch
     },
     {
-      feature: 'Volunteer Retention',
-      traditional: 'High drop-off rate after 1–2 months',
-      micromatch: 'Gamified XP & custom badges keep volunteers returning'
+      feature: m.ngo_comparison_4_feature,
+      traditional: m.ngo_comparison_4_traditional,
+      micromatch: m.ngo_comparison_4_micromatch
     }
   ];
+
+  /* eslint-disable-next-line svelte/no-immutable-reactive-statements */
+  $: currentLocale = (page.data?.locale as Locale | undefined) ?? 'en';
+  type StaticMessage = (inputs?: Record<string, never>, options?: { locale?: Locale }) => string;
+  function t(message: StaticMessage) { return message({}, { locale: currentLocale }); }
 </script>
 
 <svelte:head>
-  <title>For NGOs | MicroMatch</title>
-  <meta name="description" content="Turn small pieces of your backlog into tasks and review volunteer submissions." />
+  <title>{t(m.ngo_meta_title)}</title>
+  <meta name="description" content={t(m.ngo_meta_description)} />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -71,16 +79,14 @@
       <div class="ngo-hero-text">
         <div class="ngo-pill">
           <Icon icon="lucide:building-2" width="14" height="14" />
-          <span>For Non-Profits & NGOs</span>
+          <span>{t(m.ngo_pill)}</span>
         </div>
-        <h1>Post tasks, <br /><span class="coral-gradient">not job openings.</span></h1>
-        <p>
-          Turn a defined piece of backlog into a task volunteers can claim. Review each submission before approving it for your organization.
-        </p>
+        <h1>{t(m.ngo_hero_title_lead)} <br /><span class="coral-gradient">{t(m.ngo_hero_title_accent)}</span></h1>
+        <p>{t(m.ngo_hero_description)}</p>
 
         <div class="ngo-hero-btns">
-          <a href={resolve('/signup', {})} class="btn-coral btn-lg">Create NGO Profile</a>
-          <a href="#backlog-calculator" class="btn-outline-dark btn-lg">Calculate Capacity ↓</a>
+          <a href={resolve('/signup', {})} class="btn-coral btn-lg">{t(m.ngo_create_profile)}</a>
+          <a href="#backlog-calculator" class="btn-outline-dark btn-lg">{t(m.ngo_calculate_capacity)}</a>
         </div>
       </div>
 
@@ -92,11 +98,11 @@
           loop={true}
         />
         <div class="hero-workflow">
-          <span>Task brief</span>
+          <span>{t(m.ngo_task_brief)}</span>
           <Icon icon="lucide:arrow-right" width="16" height="16" aria-hidden="true" />
-          <span>Volunteer submission</span>
+          <span>{t(m.ngo_volunteer_submission)}</span>
           <Icon icon="lucide:arrow-right" width="16" height="16" aria-hidden="true" />
-          <span>NGO review</span>
+          <span>{t(m.ngo_review)}</span>
         </div>
       </div>
     </div>
@@ -106,8 +112,8 @@
   <section class="section-pillars">
     <div class="container">
       <div class="section-title">
-        <h2>Built for Non-Profit Agility</h2>
-        <p>Three pillars designed to clear your backlog with trust and human quality control.</p>
+        <h2>{t(m.ngo_section_title)}</h2>
+        <p>{t(m.ngo_section_description)}</p>
       </div>
 
       <div class="pillars-grid">
@@ -116,9 +122,9 @@
             <div class="pillar-icon" style="background: {p.bg}; color: {p.color};">
               <Icon icon={p.icon} width="28" height="28" />
             </div>
-            <span class="pillar-tag" style="color: {p.color}; background: {p.bg};">{p.tag}</span>
-            <h3>{p.title}</h3>
-            <p>{p.desc}</p>
+            <span class="pillar-tag" style="color: {p.color}; background: {p.bg};">{t(p.tag)}</span>
+            <h3>{t(p.title)}</h3>
+            <p>{t(p.desc)}</p>
           </div>
         {/each}
       </div>
@@ -129,30 +135,30 @@
   <section class="section-comparison">
     <div class="container">
       <div class="section-title">
-        <h2>Traditional Volunteering vs. MicroMatch</h2>
-        <p>See why micro-tasks yield faster turnaround and zero recruitment overhead.</p>
+        <h2>{t(m.comparison_traditional)} vs. {t(m.comparison_micromatch)}</h2>
+        <p>{t(m.ngo_comparison_description)}</p>
       </div>
 
       <div class="comp-table">
         <div class="comp-header">
-          <div class="comp-cell feature">Feature</div>
-          <div class="comp-cell old">Traditional Volunteering</div>
+          <div class="comp-cell feature">{t(m.comparison_feature)}</div>
+          <div class="comp-cell old">{t(m.comparison_traditional)}</div>
           <div class="comp-cell new">
-            <img src="/logo.png" alt="MicroMatch" class="comp-header-logo" width="22" height="22" />
-            <span>MicroMatch</span>
+            <img src="/logo.png" alt={t(m.app_name)} class="comp-header-logo" width="22" height="22" />
+            <span>{t(m.comparison_micromatch)}</span>
           </div>
         </div>
 
         {#each comparison as row (row.feature)}
           <div class="comp-row">
-            <div class="comp-cell feature"><strong>{row.feature}</strong></div>
+            <div class="comp-cell feature"><strong>{t(row.feature)}</strong></div>
             <div class="comp-cell old">
               <Icon icon="lucide:x-circle" width="16" height="16" class="icon-bad" />
-              <span>{row.traditional}</span>
+              <span>{t(row.traditional)}</span>
             </div>
             <div class="comp-cell new">
               <Icon icon="lucide:check-circle-2" width="16" height="16" class="icon-good" />
-              <span>{row.micromatch}</span>
+              <span>{t(row.micromatch)}</span>
             </div>
           </div>
         {/each}
@@ -171,11 +177,11 @@
   <section class="ngo-cta-section">
     <div class="container">
       <div class="cta-box">
-        <h2>Start clearing your non-profit backlog today.</h2>
-        <p>Register your NGO, complete soft-gated verification, and post your first task in minutes.</p>
+        <h2>{t(m.ngo_cta_title)}</h2>
+        <p>{t(m.ngo_cta_description)}</p>
         <div class="cta-actions">
-          <a href={resolve('/signup', {})} class="btn-coral btn-lg">Register Organization</a>
-          <a href={resolve('/tasks', {})} class="btn-outline-dark btn-lg">Browse Platform Tasks</a>
+          <a href={resolve('/signup', {})} class="btn-coral btn-lg">{t(m.ngo_register)}</a>
+          <a href={resolve('/tasks', {})} class="btn-outline-dark btn-lg">{t(m.browse_platform_tasks)}</a>
         </div>
       </div>
     </div>

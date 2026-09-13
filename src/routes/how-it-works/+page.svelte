@@ -1,131 +1,138 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
   import PublicShell from '$lib/components/PublicShell.svelte';
+  import { page } from '$app/state';
   import { fly, fade, slide } from 'svelte/transition';
   import { resolve } from '$app/paths';
+  import { type Locale } from '$lib/locale';
   import { reducedMotion } from '$lib/utils/reducedMotion';
+  import * as m from '$lib/paraglide/messages.js';
 
   let activeStep = 0;
 
   const steps = [
     {
       num: '01',
-      title: 'Browse Scoped Tasks',
-      shortTag: '1. Browse',
+      title: m.hiw_step_1_title,
+      shortTag: m.hiw_step_1_short,
       icon: 'lucide:search',
-      summary: 'NGOs post bite-sized missions estimated from 5 to 30 minutes. Filter by time caps or skill hashtags.',
+      summary: m.hiw_step_1_summary,
       bullets: [
-        'Filter by time: ≤15 min, ≤20 min, ≤30 min',
-        'Search by interest tags (#translation, #health, #design)',
-        'Check estimated time and NGO verification badge up front'
+        m.hiw_step_1_bullet_1,
+        m.hiw_step_1_bullet_2,
+        m.hiw_step_1_bullet_3
       ],
-      demoTitle: 'Translate a Medical Flyer into Spanish',
-      demoNgo: 'Doctors Without Borders',
-      demoTime: '15 min',
+      demoTitle: m.hiw_step_1_demo_title,
+      demoNgo: m.hiw_step_1_demo_ngo,
+      demoTime: m.hiw_step_1_demo_time,
       demoTags: [
-        { label: '#Spanish', bg: '#F3E8FF', color: '#581C87' },
-        { label: '#Health', bg: '#D1FAE5', color: '#064E3B' }
+        { label: m.hiw_step_1_tag_1, bg: '#F3E8FF', color: '#581C87' },
+        { label: m.hiw_step_1_tag_2, bg: '#D1FAE5', color: '#064E3B' }
       ]
     },
     {
       num: '02',
-      title: 'Claim & Reserve',
-      shortTag: '2. Claim',
+      title: m.hiw_step_2_title,
+      shortTag: m.hiw_step_2_short,
       icon: 'lucide:check-circle-2',
-      summary: 'Claim a task only when you have available time right now. An anti-ghosting timer keeps task availability fresh.',
+      summary: m.hiw_step_2_summary,
       bullets: [
-        'Prevents multiple volunteers from duplicating the same task',
-        'Reservation timer ensures tasks do not get stuck indefinitely',
-        'Direct access to submission instructions and context'
+        m.hiw_step_2_bullet_1,
+        m.hiw_step_2_bullet_2,
+        m.hiw_step_2_bullet_3
       ],
-      demoTitle: 'Task Claimed — Reservation Active',
-      demoNgo: 'Timer: 45:00 remaining',
-      demoTime: 'Active',
+      demoTitle: m.hiw_step_2_demo_title,
+      demoNgo: m.hiw_step_2_demo_ngo,
+      demoTime: m.hiw_step_2_demo_time,
       demoTags: [
-        { label: 'Reserved', bg: '#FEF3C7', color: '#D97706' }
+        { label: m.hiw_step_2_tag_1, bg: '#FEF3C7', color: '#D97706' }
       ]
     },
     {
       num: '03',
-      title: 'Just-in-Time Learning',
-      shortTag: '3. Learn',
+      title: m.hiw_step_3_title,
+      shortTag: m.hiw_step_3_short,
       icon: 'lucide:book-open',
-      summary: 'Access quick guides, glossaries, and references embedded directly on the task page so you can start right away.',
+      summary: m.hiw_step_3_summary,
       bullets: [
-        'Zero prior onboarding drag or mandatory long training courses',
-        'Concise reference sheets and style guides provided in-context',
-        'On-demand LibreTranslate support for multi-lingual tasks'
+        m.hiw_step_3_bullet_1,
+        m.hiw_step_3_bullet_2,
+        m.hiw_step_3_bullet_3
       ],
-      demoTitle: 'Quick Reference Guide Embedded',
-      demoNgo: 'Dosage terms: "dosificación" → "dosage"',
-      demoTime: 'Guide',
+      demoTitle: m.hiw_step_3_demo_title,
+      demoNgo: m.hiw_step_3_demo_ngo,
+      demoTime: m.hiw_step_3_demo_time,
       demoTags: [
-        { label: 'Resource Ready', bg: '#D1FAE5', color: '#064E3B' }
+        { label: m.hiw_step_3_tag_1, bg: '#D1FAE5', color: '#064E3B' }
       ]
     },
     {
       num: '04',
-      title: 'Submit Verified Proof',
-      shortTag: '4. Submit',
+      title: m.hiw_step_4_title,
+      shortTag: m.hiw_step_4_short,
       icon: 'lucide:send',
-      summary: 'Upload your finished document or paste a link. NGO administrators review every submission.',
+      summary: m.hiw_step_4_summary,
       bullets: [
-        'Upload PDF, PNG, DOCX, or paste Google Docs / GitHub link',
-        'Include optional notes or comments for the NGO team',
-        'Human-in-the-loop review ensures quality and trust'
+        m.hiw_step_4_bullet_1,
+        m.hiw_step_4_bullet_2,
+        m.hiw_step_4_bullet_3
       ],
-      demoTitle: 'Proof Submitted for Review',
-      demoNgo: 'URL: https://docs.google.com/document/...',
-      demoTime: 'Pending',
+      demoTitle: m.hiw_step_4_demo_title,
+      demoNgo: m.hiw_step_4_demo_ngo,
+      demoTime: m.hiw_step_4_demo_time,
       demoTags: [
-        { label: 'Under Review', bg: '#FCE7F3', color: '#831843' }
+        { label: m.hiw_step_4_tag_1, bg: '#FCE7F3', color: '#831843' }
       ]
     },
     {
       num: '05',
-      title: 'Earn Recognition & Badges',
-      shortTag: '5. Earn',
+      title: m.hiw_step_5_title,
+      shortTag: m.hiw_step_5_short,
       icon: 'lucide:award',
-      summary: 'Approved work awards XP level-ups and mints custom NGO achievement badges into your public vault.',
+      summary: m.hiw_step_5_summary,
       bullets: [
-        'Custom org-owned badges auto-mint on claim approval',
-        'Cumulative XP points level up your volunteer rank',
-        'Build a public, verified digital volunteer portfolio'
+        m.hiw_step_5_bullet_1,
+        m.hiw_step_5_bullet_2,
+        m.hiw_step_5_bullet_3
       ],
-      demoTitle: 'Badge Minted: First Translation',
-      demoNgo: '+50 XP Awarded to Elena Vance',
-      demoTime: 'Earned',
+      demoTitle: m.hiw_step_5_demo_title,
+      demoNgo: m.hiw_step_5_demo_ngo,
+      demoTime: m.hiw_step_5_demo_time,
       demoTags: [
-        { label: 'In Vault', bg: '#FFEDD5', color: '#7C2D12' }
+        { label: m.hiw_step_5_tag_1, bg: '#FFEDD5', color: '#7C2D12' }
       ]
     }
   ];
 
   const faqs = [
     {
-      q: 'Do I need prior experience to volunteer on MicroMatch?',
-      a: 'No! Many tasks include embedded just-in-time reference guides and style tips on the task page so you can contribute immediately with zero prior training.'
+      q: m.hiw_faq_1_question,
+      a: m.hiw_faq_1_answer
     },
     {
-      q: 'What happens if I cannot finish a claimed task in time?',
-      a: 'Tasks have reservation timers. If a task expires before submission, it returns to the feed automatically so another volunteer can claim it without hurting your account.'
+      q: m.hiw_faq_2_question,
+      a: m.hiw_faq_2_answer
     },
     {
-      q: 'How do NGOs review submissions?',
-      a: 'NGO administrators manage a moderation queue. Once an NGO approves your submitted URL or file, your badge is minted and XP is credited automatically.'
+      q: m.hiw_faq_3_question,
+      a: m.hiw_faq_3_answer
     },
     {
-      q: 'How does NGO verification work?',
-      a: 'NGOs submit their tax/charity ID (e.g. IRS EIN). Admins review the submission enriched by ProPublica data to grant a Verified NGO badge on all their tasks.'
+      q: m.hiw_faq_4_question,
+      a: m.hiw_faq_4_answer
     }
   ];
 
   let openFaq = 0;
+  /* eslint-disable-next-line svelte/no-immutable-reactive-statements */
+  $: currentLocale = (page.data?.locale as Locale | undefined) ?? 'en';
+  type StaticMessage = (inputs?: Record<string, never>, options?: { locale?: Locale }) => string;
+  function t(message: StaticMessage) { return message({}, { locale: currentLocale }); }
 </script>
 
 <svelte:head>
-  <title>How It Works | MicroMatch</title>
-  <meta name="description" content="Discover the 5-step lifecycle of micro-volunteering on MicroMatch." />
+  <title>{t(m.hiw_meta_title)}</title>
+  <meta name="description" content={t(m.hiw_meta_description)} />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -136,10 +143,8 @@
   <section class="hiw-hero">
     <div class="container">
       <div class="hiw-hero-head">
-        <h1>How Micro-Volunteering <br /><span class="coral-gradient">Works</span></h1>
-        <p>
-          From task discovery to verified badge minting — explore how MicroMatch connects volunteers and NGOs in a 5-step closed loop.
-        </p>
+        <h1>{t(m.hiw_hero_title_lead)} <br /><span class="coral-gradient">{t(m.hiw_hero_title_accent)}</span></h1>
+        <p>{t(m.hiw_hero_description)}</p>
       </div>
 
       <!-- 5-Step Interactive Navigation Ribbon -->
@@ -152,7 +157,7 @@
             on:click={() => (activeStep = i)}
           >
             <div class="ribbon-num">{s.num}</div>
-            <span class="ribbon-label">{s.shortTag}</span>
+            <span class="ribbon-label">{t(s.shortTag)}</span>
           </button>
           {#if i < steps.length - 1}
             <div class="ribbon-line"></div>
@@ -168,15 +173,15 @@
       <div class="inspector-card">
         {#key activeStep}
           <div class="inspector-left" in:fly={{ y: 16, duration: $reducedMotion ? 0 : 350, delay: $reducedMotion ? 0 : 50 }} out:fade={{ duration: $reducedMotion ? 0 : 150 }}>
-            <div class="ins-badge">Step {steps[activeStep].num} of 05</div>
-            <h2>{steps[activeStep].title}</h2>
-            <p class="ins-summary">{steps[activeStep].summary}</p>
+            <div class="ins-badge">{t(m.hiw_step)} {steps[activeStep].num} {t(m.hiw_of)} 05</div>
+            <h2>{t(steps[activeStep].title)}</h2>
+            <p class="ins-summary">{t(steps[activeStep].summary)}</p>
 
             <ul class="ins-bullets">
               {#each steps[activeStep].bullets as bullet (bullet)}
                 <li>
                   <Icon icon="lucide:check-circle-2" width="18" height="18" class="ins-icon" />
-                  <span>{bullet}</span>
+                  <span>{t(bullet)}</span>
                 </li>
               {/each}
             </ul>
@@ -188,7 +193,7 @@
                 disabled={activeStep === 0}
                 on:click={() => activeStep--}
               >
-                ← Previous Step
+                ← {t(m.hiw_previous_step)}
               </button>
               <button
                 type="button"
@@ -196,7 +201,7 @@
                 disabled={activeStep === steps.length - 1}
                 on:click={() => activeStep++}
               >
-                Next Step →
+                {t(m.hiw_next_step)} →
               </button>
             </div>
           </div>
@@ -207,21 +212,21 @@
                 <span class="im-dot"></span>
                 <span class="im-dot"></span>
                 <span class="im-dot"></span>
-                <span class="im-title">Interactive Simulator | Step {steps[activeStep].num}</span>
+                <span class="im-title">{t(m.hiw_simulator)} | {t(m.hiw_step)} {steps[activeStep].num}</span>
               </div>
 
               <div class="im-content">
                 <div class="im-card">
                   <div class="im-card-top">
-                    <span class="im-ngo">{steps[activeStep].demoNgo}</span>
-                    <span class="im-time"><Icon icon="lucide:clock" width="12" height="12" /> {steps[activeStep].demoTime}</span>
+                    <span class="im-ngo">{t(steps[activeStep].demoNgo)}</span>
+                    <span class="im-time"><Icon icon="lucide:clock" width="12" height="12" /> {t(steps[activeStep].demoTime)}</span>
                   </div>
 
-                  <h3>{steps[activeStep].demoTitle}</h3>
+                  <h3>{t(steps[activeStep].demoTitle)}</h3>
 
                   <div class="im-tags">
-                    {#each steps[activeStep].demoTags as t (t.label)}
-                      <span style="background:{t.bg}; color:{t.color}">{t.label}</span>
+                    {#each steps[activeStep].demoTags as tag (tag.label)}
+                      <span style="background:{tag.bg}; color:{tag.color}">{t(tag.label)}</span>
                     {/each}
                   </div>
                 </div>
@@ -237,33 +242,33 @@
   <section class="hiw-diagram-section">
     <div class="container">
       <div class="section-head">
-        <h2>The Closed Loop Workflow</h2>
-        <p>Unlike directories that stop at email contact, MicroMatch completes the full loop on-platform.</p>
+        <h2>{t(m.hiw_loop_title)}</h2>
+        <p>{t(m.hiw_loop_description)}</p>
       </div>
 
       <div class="diagram-grid">
         <div class="diag-box">
           <div class="diag-icon"><Icon icon="lucide:building-2" width="24" height="24" /></div>
-          <h3>1. NGO Posts Task</h3>
-          <p>NGO scopes 15-minute mission & sets volunteer limits.</p>
+          <h3>{t(m.hiw_loop_1_title)}</h3>
+          <p>{t(m.hiw_loop_1_description)}</p>
         </div>
         <div class="diag-arrow" aria-hidden="true"><Icon icon="lucide:arrow-right" width="18" height="18" /></div>
         <div class="diag-box">
           <div class="diag-icon"><Icon icon="lucide:user-check" width="24" height="24" /></div>
-          <h3>2. Volunteer Claims</h3>
-          <p>Volunteer reserves mission & reviews embedded guide.</p>
+          <h3>{t(m.hiw_loop_2_title)}</h3>
+          <p>{t(m.hiw_loop_2_description)}</p>
         </div>
         <div class="diag-arrow" aria-hidden="true"><Icon icon="lucide:arrow-right" width="18" height="18" /></div>
         <div class="diag-box">
           <div class="diag-icon"><Icon icon="lucide:upload-cloud" width="24" height="24" /></div>
-          <h3>3. Proof Submitted</h3>
-          <p>Volunteer submits work output via link or file upload.</p>
+          <h3>{t(m.hiw_loop_3_title)}</h3>
+          <p>{t(m.hiw_loop_3_description)}</p>
         </div>
         <div class="diag-arrow" aria-hidden="true"><Icon icon="lucide:arrow-right" width="18" height="18" /></div>
         <div class="diag-box highlight">
           <div class="diag-icon"><Icon icon="lucide:award" width="24" height="24" /></div>
-          <h3>4. NGO Approves</h3>
-          <p>Claim approved, badge minted, XP awarded automatically.</p>
+          <h3>{t(m.hiw_loop_4_title)}</h3>
+          <p>{t(m.hiw_loop_4_description)}</p>
         </div>
       </div>
     </div>
@@ -273,20 +278,20 @@
   <section class="hiw-faq-section">
     <div class="container">
       <div class="section-head">
-        <h2>Frequently Asked Questions</h2>
-        <p>Everything you need to know about how MicroMatch works.</p>
+        <h2>{t(m.hiw_faq_title)}</h2>
+        <p>{t(m.hiw_faq_description)}</p>
       </div>
 
       <div class="faq-list">
         {#each faqs as faq, i (faq.q)}
           <div class="faq-item" class:open={openFaq === i}>
             <button type="button" class="faq-question" on:click={() => (openFaq = openFaq === i ? -1 : i)}>
-              <span>{faq.q}</span>
+              <span>{t(faq.q)}</span>
               <Icon icon={openFaq === i ? "lucide:chevron-up" : "lucide:chevron-down"} width="20" height="20" class="faq-chevron" />
             </button>
             {#if openFaq === i}
               <div class="faq-answer" transition:slide={{ duration: $reducedMotion ? 0 : 250 }}>
-                <p>{faq.a}</p>
+                <p>{t(faq.a)}</p>
               </div>
             {/if}
           </div>
@@ -299,11 +304,11 @@
   <section class="hiw-cta-section">
     <div class="container">
       <div class="cta-banner">
-        <h2>Ready to start your micro-volunteering journey?</h2>
-        <p>Join thousands of helpers and non-profits driving impact in minutes.</p>
+        <h2>{t(m.hiw_cta_title)}</h2>
+        <p>{t(m.hiw_cta_description)}</p>
         <div class="cta-btns">
-          <a href={resolve('/signup', {})} class="btn-coral btn-lg">Get Started Free</a>
-          <a href={resolve('/tasks', {})} class="btn-outline-dark btn-lg">Browse Active Feed</a>
+          <a href={resolve('/signup', {})} class="btn-coral btn-lg">{t(m.hiw_get_started)}</a>
+          <a href={resolve('/tasks', {})} class="btn-outline-dark btn-lg">{t(m.browse_active_feed)}</a>
         </div>
       </div>
     </div>

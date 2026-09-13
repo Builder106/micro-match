@@ -6,12 +6,18 @@
   import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
   import { resolve } from '$app/paths';
+  import { type Locale } from '$lib/locale';
   import { reducedMotion } from '$lib/utils/reducedMotion';
+  import * as m from '$lib/paraglide/messages.js';
   export let data;
 
   let visible = false;
   let badgeSeen: boolean[] = [];
   let badgeCardEls: Array<HTMLElement | null> = [];
+  /* eslint-disable-next-line svelte/no-immutable-reactive-statements */
+  $: currentLocale = (page.data?.locale as Locale | undefined) ?? 'en';
+  type StaticMessage = (inputs?: Record<string, never>, options?: { locale?: Locale }) => string;
+  function t(message: StaticMessage) { return message({}, { locale: currentLocale }); }
 
   onMount(() => {
     let disposed = false;
@@ -46,16 +52,16 @@
   });
 
   const steps = [
-    { icon: 'lucide:search', title: 'Find a Task', description: 'Browse our feed of bite-sized tasks and find one that matches your skills and interests.', bg: '#DBEAFE', color: '#172554' },
-    { icon: 'lucide:pen-tool', title: 'Learn & Complete', description: 'Access just-in-time learning resources and complete the task successfully in minutes.', bg: '#D1FAE5', color: '#064E3B' },
-    { icon: 'lucide:award', title: 'Earn Recognition', description: 'Submit your work, get it approved by the NGO, and earn a badge for your contribution.', bg: '#FFEDD5', color: '#EA580C' },
+    { icon: 'lucide:search', title: m.home_step_find, description: m.home_step_find_description, bg: '#DBEAFE', color: '#172554' },
+    { icon: 'lucide:pen-tool', title: m.home_step_learn, description: m.home_step_learn_description, bg: '#D1FAE5', color: '#064E3B' },
+    { icon: 'lucide:award', title: m.home_step_earn, description: m.home_step_earn_description, bg: '#FFEDD5', color: '#EA580C' },
   ];
 
   const demoBadges = [
-    { title: 'First Translation', level: '3', gradient: 'linear-gradient(135deg, #FDE68A, #F59E0B)', icon: 'lucide:trophy', shadow: '0 8px 24px rgba(245,158,11,0.4)' },
-    { title: 'Speed Demon', level: '10', gradient: 'linear-gradient(135deg, #FCA5A5, #E11D48)', icon: 'lucide:flame', shadow: '0 8px 24px rgba(225,29,72,0.4)' },
-    { title: 'Global Citizen', level: '5', gradient: 'linear-gradient(135deg, #93C5FD, #4F46E5)', icon: 'lucide:globe', shadow: '0 8px 24px rgba(79,70,229,0.4)' },
-    { title: 'Perfect Week', level: '1', gradient: 'linear-gradient(135deg, #6EE7B7, #059669)', icon: 'lucide:sparkles', shadow: '0 8px 24px rgba(5,150,105,0.4)' },
+    { title: m.home_badge_first_translation, level: '3', gradient: 'linear-gradient(135deg, #FDE68A, #F59E0B)', icon: 'lucide:trophy', shadow: '0 8px 24px rgba(245,158,11,0.4)' },
+    { title: m.home_badge_speed_demon, level: '10', gradient: 'linear-gradient(135deg, #FCA5A5, #E11D48)', icon: 'lucide:flame', shadow: '0 8px 24px rgba(225,29,72,0.4)' },
+    { title: m.home_badge_global_citizen, level: '5', gradient: 'linear-gradient(135deg, #93C5FD, #4F46E5)', icon: 'lucide:globe', shadow: '0 8px 24px rgba(79,70,229,0.4)' },
+    { title: m.home_badge_perfect_week, level: '1', gradient: 'linear-gradient(135deg, #6EE7B7, #059669)', icon: 'lucide:sparkles', shadow: '0 8px 24px rgba(5,150,105,0.4)' },
   ];
   badgeSeen = Array(demoBadges.length).fill(false);
 
@@ -77,8 +83,8 @@
 </script>
 
 <svelte:head>
-  <title>MicroMatch — Micro-volunteering for maximum impact</title>
-  <meta name="description" content="Join MicroMatch to find micro-volunteering tasks from NGOs. Learn new skills and make a difference in just a few minutes." />
+  <title>{t(m.home_meta_title)}</title>
+  <meta name="description" content={t(m.home_meta_description)} />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -95,16 +101,16 @@
     <div class="hero-inner">
       {#if visible}
       <div class="hero-copy" in:fly={{ y: 30, duration: $reducedMotion ? 0 : 700 }}>
-        <h1>Make a big impact in <br /><span class="coral-gradient">a few minutes.</span></h1>
-        <p>MicroMatch connects you with bite-sized volunteer tasks from global NGOs. Complete them anytime, anywhere, and help drive change one small step at a time.</p>
+        <h1>{t(m.home_title_lead)} <br /><span class="coral-gradient">{t(m.home_title_accent)}</span></h1>
+        <p>{t(m.home_description)}</p>
         <div class="hero-buttons">
-          <a href={resolve('/tasks', {})} class="btn-coral btn-lg" data-sveltekit-preload-data="hover">Find a Task</a>
+          <a href={resolve('/tasks', {})} class="btn-coral btn-lg" data-sveltekit-preload-data="hover">{t(m.home_find_task)}</a>
           {#if page.data.userRole === 'ngo'}
-            <a href={resolve('/org', {})} class="btn-outline btn-lg" data-sveltekit-preload-data="hover">Post a Task</a>
+            <a href={resolve('/org', {})} class="btn-outline btn-lg" data-sveltekit-preload-data="hover">{t(m.home_post_task)}</a>
           {:else if page.data.userRole === 'volunteer' || page.data.userRole === 'user'}
-            <a href={resolve('/dashboard', {})} class="btn-outline btn-lg" data-sveltekit-preload-data="hover">View your impact</a>
+            <a href={resolve('/dashboard', {})} class="btn-outline btn-lg" data-sveltekit-preload-data="hover">{t(m.home_view_impact)}</a>
           {:else}
-            <a href={resolve('/signup', {})} class="btn-outline btn-lg" data-sveltekit-preload-data="hover">Post a Task</a>
+            <a href={resolve('/signup', {})} class="btn-outline btn-lg" data-sveltekit-preload-data="hover">{t(m.home_post_task)}</a>
           {/if}
         </div>
       </div>
@@ -119,17 +125,17 @@
           <div class="mc-sheen"></div>
           <div class="mc-top">
             <img src="https://images.unsplash.com/photo-1638897212550-b0f4c5d8eb3d?w=150&h=150&fit=crop" alt="Volunteer avatar" class="mc-avatar" />
-            <span class="mc-time"><Icon icon="lucide:clock" width="14" height="14" /> 15 mins</span>
+            <span class="mc-time"><Icon icon="lucide:clock" width="14" height="14" /> 15 {t(m.minutes_short)}</span>
           </div>
-        <h2>Translate a medical flyer</h2>
+        <h2>{t(m.home_card_translate_flyer)}</h2>
           <p class="mc-ngo">Doctors Without Borders <Icon icon="lucide:badge-check" width="14" height="14" class="mc-verified" /></p>
           <div class="mc-bottom">
             <div class="mc-tags">
-              <span style="background:#F3E8FF;color:#581C87">#Spanish</span>
-              <span style="background:#D1FAE5;color:#064E3B">#Health</span>
+              <span style="background:#F3E8FF;color:#581C87">#{t(m.home_tag_spanish)}</span>
+              <span style="background:#D1FAE5;color:#064E3B">#{t(m.home_tag_health)}</span>
             </div>
             <span class="mc-claim-btn">
-              Claim <Icon icon="lucide:arrow-right" width="12" height="12" />
+              {t(m.home_claim)} <Icon icon="lucide:arrow-right" width="12" height="12" />
             </span>
           </div>
         </div>
@@ -139,16 +145,16 @@
           <div class="mc-sheen"></div>
           <div class="mc-top">
             <img src="https://images.unsplash.com/photo-1614807536394-cd67bd4a634b?w=150&h=150&fit=crop" alt="Volunteer avatar" class="mc-avatar" />
-            <span class="mc-time"><Icon icon="lucide:clock" width="14" height="14" /> 5 mins</span>
+            <span class="mc-time"><Icon icon="lucide:clock" width="14" height="14" /> 5 {t(m.minutes_short)}</span>
           </div>
-        <h2>Tag historical photos</h2>
+        <h2>{t(m.home_card_tag_photos)}</h2>
           <p class="mc-ngo">Smithsonian Archives <Icon icon="lucide:badge-check" width="14" height="14" class="mc-verified" /></p>
           <div class="mc-bottom">
             <div class="mc-tags">
-              <span style="background:#DBEAFE;color:#172554">#History</span>
+              <span style="background:#DBEAFE;color:#172554">#{t(m.home_tag_history)}</span>
             </div>
             <span class="mc-claim-btn">
-              Claim <Icon icon="lucide:arrow-right" width="12" height="12" />
+              {t(m.home_claim)} <Icon icon="lucide:arrow-right" width="12" height="12" />
             </span>
           </div>
         </div>
@@ -158,17 +164,17 @@
           <div class="mc-sheen"></div>
           <div class="mc-top">
             <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop" alt="Volunteer avatar" class="mc-avatar" />
-            <span class="mc-time"><Icon icon="lucide:clock" width="14" height="14" /> 10 mins</span>
+            <span class="mc-time"><Icon icon="lucide:clock" width="14" height="14" /> 10 {t(m.minutes_short)}</span>
           </div>
-        <h2>Verify water pump data</h2>
+        <h2>{t(m.home_card_verify_data)}</h2>
           <p class="mc-ngo">Charity: Water <Icon icon="lucide:badge-check" width="14" height="14" class="mc-verified" /></p>
           <div class="mc-bottom">
             <div class="mc-tags">
-              <span style="background:#FEF3C7;color:#78350F">#Data</span>
-              <span style="background:#E0F2FE;color:#075985">#Water</span>
+              <span style="background:#FEF3C7;color:#78350F">#{t(m.home_tag_data)}</span>
+              <span style="background:#E0F2FE;color:#075985">#{t(m.home_tag_water)}</span>
             </div>
             <span class="mc-claim-btn">
-              Claim <Icon icon="lucide:arrow-right" width="12" height="12" />
+              {t(m.home_claim)} <Icon icon="lucide:arrow-right" width="12" height="12" />
             </span>
           </div>
         </div>
@@ -178,16 +184,16 @@
           <div class="mc-sheen"></div>
           <div class="mc-top">
             <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop" alt="Volunteer avatar" class="mc-avatar" />
-            <span class="mc-time"><Icon icon="lucide:clock" width="14" height="14" /> 8 mins</span>
+            <span class="mc-time"><Icon icon="lucide:clock" width="14" height="14" /> 8 {t(m.minutes_short)}</span>
           </div>
-        <h2>Proofread storybook</h2>
+        <h2>{t(m.home_card_proofread)}</h2>
           <p class="mc-ngo">Room to Read <Icon icon="lucide:badge-check" width="14" height="14" class="mc-verified" /></p>
           <div class="mc-bottom">
             <div class="mc-tags">
-              <span style="background:#FCE7F3;color:#831843">#Education</span>
+              <span style="background:#FCE7F3;color:#831843">#{t(m.home_tag_education)}</span>
             </div>
             <span class="mc-claim-btn">
-              Claim <Icon icon="lucide:arrow-right" width="12" height="12" />
+              {t(m.home_claim)} <Icon icon="lucide:arrow-right" width="12" height="12" />
             </span>
           </div>
         </div>
@@ -200,8 +206,8 @@
   <section id="how-it-works" class="section-white">
     <div class="container">
       <div class="section-head">
-        <h2>How It Works</h2>
-        <p>A simple, effective way to make a difference.</p>
+        <h2>{t(m.home_how_it_works)}</h2>
+        <p>{t(m.home_how_it_works_subtitle)}</p>
       </div>
       <div class="steps">
         {#each steps as step, i (step.title)}
@@ -209,8 +215,8 @@
             <div class="step-icon" style="background:{step.bg};color:{step.color}">
               <Icon icon={step.icon} width="32" height="32" />
             </div>
-            <h3>{i + 1}. {step.title}</h3>
-            <p>{step.description}</p>
+            <h3>{i + 1}. {t(step.title)}</h3>
+            <p>{t(step.description)}</p>
           </div>
         {/each}
       </div>
@@ -222,10 +228,10 @@
     <div class="container">
       <div class="tasks-header">
         <div>
-          <h2>Featured Tasks</h2>
-          <p>Start making a difference today. Pick a quick task and help an NGO right now.</p>
+          <h2>{t(m.home_featured_tasks)}</h2>
+          <p>{t(m.home_featured_tasks_subtitle)}</p>
         </div>
-        <a href={resolve('/tasks', {})} class="btn-outline-dark" data-sveltekit-preload-data="hover">View All Tasks</a>
+        <a href={resolve('/tasks', {})} class="btn-outline-dark" data-sveltekit-preload-data="hover">{t(m.home_view_all_tasks)}</a>
       </div>
 
       {#if data.tasks && data.tasks.length > 0}
@@ -239,11 +245,11 @@
                   </div>
                 </div>
                 {#if typeof task.estimatedMinutes === 'number'}
-                  <span class="tc-time"><Icon icon="lucide:clock" width="14" height="14" /> {task.estimatedMinutes} min</span>
+                <span class="tc-time"><Icon icon="lucide:clock" width="14" height="14" /> {task.estimatedMinutes} {t(m.minutes_short)}</span>
                 {/if}
               </div>
               <div class="tc-body">
-                <p class="tc-ngo">{task.language ?? 'Community Task'}</p>
+              <p class="tc-ngo">{task.language ?? t(m.home_community_task)}</p>
                 <h3>{task.title}</h3>
                 <p class="tc-desc">{task.shortDescription}</p>
               </div>
@@ -257,9 +263,9 @@
                 <a
                   href={resolve(`/task/${task.id}`, {})}
                   class="btn-dark-pill"
-                  aria-label={`View task: ${task.title} (${task.id})`}
+                  aria-label={`${t(m.home_view_task)}: ${task.title} (${task.id})`}
                   data-sveltekit-preload-data="hover"
-                >View Task</a>
+                >{t(m.home_view_task)}</a>
               </div>
             </article>
           {/each}
@@ -281,9 +287,9 @@
                 <Icon icon="lucide:sparkles" width="28" height="28" />
               </div>
             </div>
-            <h2>You're too fast!</h2>
-            <p>Our NGOs are busy preparing more bite-sized tasks. Check back soon, or browse the full task feed!</p>
-            <a href={resolve('/tasks', {})} class="btn-dark-pill btn-lg" data-sveltekit-preload-data="hover">Browse All Tasks</a>
+            <h2>{t(m.home_empty_title)}</h2>
+            <p>{t(m.home_empty_body)}</p>
+            <a href={resolve('/tasks', {})} class="btn-dark-pill btn-lg" data-sveltekit-preload-data="hover">{t(m.home_browse_all_tasks)}</a>
           </div>
         </div>
       {/if}
@@ -294,8 +300,8 @@
   <section id="impact" class="section-white">
     <div class="container">
       <div class="section-head">
-        <h2>Track Your Impact</h2>
-        <p>Earn experience, unlock tactile badges, and see your real-world contribution grow.</p>
+        <h2>{t(m.home_track_impact)}</h2>
+        <p>{t(m.home_track_impact_subtitle)}</p>
       </div>
       <div class="impact-grid">
         <div class="progress-card">
@@ -306,14 +312,14 @@
             </svg>
             <div class="ring-label">
               <span class="ring-pct">75%</span>
-              <span class="ring-sub">To Next Level</span>
+              <span class="ring-sub">{t(m.home_to_next_level)}</span>
             </div>
           </div>
-          <h3>Level 12 Volunteer</h3>
-          <p>150 XP earned this week</p>
+          <h3>{t(m.home_level_volunteer)}</h3>
+          <p>{t(m.home_xp_this_week)}</p>
         </div>
         <div class="badges-section">
-          <h4>Recent Awards</h4>
+          <h4>{t(m.home_recent_awards)}</h4>
           <div class="badges-grid">
             {#each demoBadges as badge, i (badge.title)}
               <div class="badge-card" data-badge-index={i} bind:this={badgeCardEls[i]}>
@@ -328,7 +334,7 @@
                   <Icon icon={badge.icon} width="36" height="36" />
                   <div class="badge-level">{badge.level}</div>
                 </div>
-                <span class="badge-title">{badge.title}</span>
+                <span class="badge-title">{t(badge.title)}</span>
               </div>
             {/each}
           </div>
