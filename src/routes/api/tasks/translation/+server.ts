@@ -19,6 +19,7 @@ export const POST: RequestHandler = async ({ request }) => {
     return json({ error: 'taskIds and locale are required' }, { status: 400 });
   }
   const { taskIds, locale } = body as { taskIds?: unknown; locale?: unknown };
+  const { taskIds, locale } = body as { taskIds?: string[]; locale?: string };
   if (!isSupportedTaskLocale(locale)) {
     return json({ error: 'Unsupported translation language' }, { status: 400 });
   }
