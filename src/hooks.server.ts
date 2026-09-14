@@ -18,7 +18,27 @@ if (typeof globalThis.atob === 'undefined') {
   globalThis.atob = (str: string) => Buffer.from(str, 'base64').toString('binary');
 }
 if (typeof globalThis.sessionStorage === 'undefined') {
-  globalThis.sessionStorage = new Map<string, string>() as unknown as Storage;
+  const memory = new Map<string, string>();
+  globalThis.sessionStorage = {
+    get length(): number {
+      return memory.size;
+    },
+    clear(): void {
+      memory.clear();
+    },
+    getItem(key: string): string | null {
+      return memory.has(String(key)) ? (memory.get(String(key)) as string) : null;
+    },
+    key(index: number): string | null {
+      return Array.from(memory.keys())[index] ?? null;
+    },
+    removeItem(key: string): void {
+      memory.delete(String(key));
+    },
+    setItem(key: string, value: string): void {
+      memory.set(String(key), String(value));
+    }
+  };
 }
 
 export const handle: Handle = async ({ event, resolve }) => {

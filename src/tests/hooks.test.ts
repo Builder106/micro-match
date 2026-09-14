@@ -84,3 +84,35 @@ describe('hooks.server handle — role authorization', () => {
     expect(event.locals.userRole).toBe('anonymous');
   });
 });
+
+describe('SSR sessionStorage polyfill in node environment', () => {
+  it('ensures sessionStorage methods (getItem, setItem, removeItem, clear) work without error', () => {
+    expect(globalThis.sessionStorage).toBeDefined();
+
+    globalThis.sessionStorage.clear();
+    expect(globalThis.sessionStorage.length).toBe(0);
+
+    globalThis.sessionStorage.setItem('test_key', 'test_val');
+    expect(globalThis.sessionStorage.getItem('test_key')).toBe('test_val');
+    expect(globalThis.sessionStorage.length).toBe(1);
+
+    expect(globalThis.sessionStorage.key(0)).toBe('test_key');
+    expect(globalThis.sessionStorage.key(1)).toBeNull();
+
+    expect(globalThis.sessionStorage.getItem('missing_key')).toBeNull();
+
+    globalThis.sessionStorage.removeItem('test_key');
+    expect(globalThis.sessionStorage.getItem('test_key')).toBeNull();
+    expect(globalThis.sessionStorage.length).toBe(0);
+
+    globalThis.sessionStorage.setItem('k1', 'v1');
+    globalThis.sessionStorage.setItem('k2', 'v2');
+    expect(globalThis.sessionStorage.length).toBe(2);
+
+    globalThis.sessionStorage.clear();
+    expect(globalThis.sessionStorage.length).toBe(0);
+    expect(globalThis.sessionStorage.getItem('k1')).toBeNull();
+    expect(globalThis.sessionStorage.getItem('k2')).toBeNull();
+  });
+});
+
