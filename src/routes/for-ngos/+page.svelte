@@ -81,7 +81,7 @@
           <Icon icon="lucide:building-2" width="14" height="14" />
           <span>{t(m.ngo_pill)}</span>
         </div>
-        <h1>{t(m.ngo_hero_title_lead)} <br /><span class="coral-gradient">{t(m.ngo_hero_title_accent)}</span></h1>
+        <h1><span class="ngo-hero-title-lead">{t(m.ngo_hero_title_lead)}</span> <span class="coral-gradient ngo-hero-title-accent">{t(m.ngo_hero_title_accent)}</span></h1>
         <p>{t(m.ngo_hero_description)}</p>
 
         <div class="ngo-hero-btns">
@@ -224,7 +224,11 @@
     line-height: 1.1;
     color: var(--color-text);
     margin: 0 0 16px;
+    text-wrap: balance;
+    overflow-wrap: anywhere;
   }
+  .ngo-hero-title-lead,
+  .ngo-hero-title-accent { display: block; }
   .coral-gradient {
     color: var(--color-primary-readable);
   }

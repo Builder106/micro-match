@@ -97,7 +97,7 @@
     <div class="hero-inner">
       {#if visible}
       <div class="hero-copy" in:fly={{ y: 30, duration: $reducedMotion ? 0 : 700 }}>
-        <h1>{t(m.home_title_lead)} <br /><span class="coral-gradient">{t(m.home_title_accent)}</span></h1>
+        <h1><span class="hero-title-lead">{t(m.home_title_lead)}</span><span class="coral-gradient hero-title-accent">{t(m.home_title_accent)}</span></h1>
         <p>{t(m.home_description)}</p>
         <div class="hero-buttons">
           <a href={resolve('/tasks', {})} class="btn-coral btn-lg" data-sveltekit-preload-data="hover">{t(m.home_find_task)}</a>
@@ -354,7 +354,7 @@
   .btn-coral { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--color-primary); color: var(--color-action-on-coral); font-weight: 700; border: none; border-radius: 9999px; cursor: pointer; text-decoration: none; transition: all .3s; }
   .btn-coral:hover { background: var(--color-primary-variant); transform: translateY(-2px); box-shadow: 0 16px 40px rgba(159,18,57,0.35); }
   .btn-coral:active { transform: scale(0.97); }
-  .btn-outline { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--color-surface); backdrop-filter: blur(12px); color: var(--color-text); font-weight: 700; border: 1px solid var(--card-border-strong); border-radius: 9999px; cursor: pointer; text-decoration: none; transition: all .3s; }
+  .btn-outline { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--color-surface); backdrop-filter: blur(12px); color: var(--color-text); font-weight: 700; border: 1px solid var(--card-border-strong); border-radius: 9999px; cursor: pointer; text-decoration: none; transition: all .3s; white-space: nowrap; }
   .btn-outline:hover { background: var(--color-surface-variant); border-color: var(--card-border-strong); }
   .btn-outline-dark { display: inline-flex; align-items: center; justify-content: center; padding: 12px 32px; background: var(--color-surface); border: 1px solid var(--card-border-strong); border-radius: 9999px; color: var(--color-text); font-weight: 700; font-size: 16px; text-decoration: none; transition: all .3s; white-space: nowrap; }
   .btn-outline-dark:hover { border-color: var(--color-primary-readable); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
@@ -366,12 +366,13 @@
   .hero { position: relative; min-height: 90vh; display: flex; align-items: center; overflow: hidden; padding: 80px 0 0; }
   .hero-inner { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 0 24px; display: grid; grid-template-columns: 1fr; gap: 48px; align-items: center; }
   @media (min-width: 1024px) { .hero-inner { grid-template-columns: 1fr 1fr; gap: 32px; } .hero { padding: 0; } }
-  .hero-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 28px; max-width: 560px; }
+  .hero-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 28px; max-width: 560px; min-width: 0; }
   /* The shared coral-gradient token provides readable heading contrast. */
-  .hero-copy h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2.25rem, 5vw + 0.5rem, 4.25rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin: 0; color: var(--color-text); }
+  .hero-copy h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2.25rem, 5vw + 0.5rem, 4.25rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin: 0; color: var(--color-text); text-wrap: balance; }
+  .hero-title-lead, .hero-title-accent { display: block; }
   .hero-copy p { color: var(--color-text-secondary); font-size: clamp(1rem, 1.5vw + 0.25rem, 1.25rem); font-weight: 500; line-height: 1.7; margin: 0; max-width: 480px; }
-  .hero-buttons { display: flex; flex-wrap: wrap; gap: 16px; width: 100%; }
-  @media (max-width: 639px) { .hero-buttons { flex-direction: column; } .hero-buttons a { width: 100%; } }
+  .hero-buttons { display: flex; flex-wrap: wrap; gap: 16px; width: 100%; min-width: 0; }
+  @media (max-width: 639px) { .hero-buttons { flex-direction: column; } .hero-buttons a { width: 100%; min-width: 0; box-sizing: border-box; } }
 
   /* Hero Mockup Cards - Deck Unfold System */
   .hero-visual {

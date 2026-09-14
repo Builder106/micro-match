@@ -114,7 +114,7 @@
         <img src="/logo.png" alt="" width="36" height="36" />
         <span>{t(m.app_name)}</span>
       </a>
-      <nav class="header-nav" dir={currentLocale === 'ar' ? 'rtl' : 'ltr'} aria-label="Main navigation">
+      <nav class="header-nav" aria-label="Main navigation">
         <a href={resolve('/how-it-works', {})} class:active={activeTab === 'how-it-works'}>{t(m.how_it_works)}</a>
         <a href={resolve('/tasks', {})} class:active={activeTab === 'tasks'}>{t(m.browse_tasks)}</a>
         <a href={resolve('/for-ngos', {})} class:active={activeTab === 'for-ngos'}>{t(m.for_ngos)}</a>
@@ -233,7 +233,7 @@
   <footer class="site-footer">
     <div class="container">
       <div class="footer-grid">
-        <div class="footer-brand" dir="ltr">
+        <div class="footer-brand">
           <div class="footer-logo">
             <img src="/logo.png" alt="" width="36" height="36" />
             <span>{t(m.app_name)}</span>
@@ -289,47 +289,51 @@
   .container, :global(.container) { max-width: 1200px !important; margin: 0 auto !important; padding: 0 24px !important; box-sizing: border-box !important; }
 
   /* Buttons */
-  .btn-coral { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--color-primary); color: var(--color-brand-on-coral); font-weight: 700; border: none; border-radius: 9999px; cursor: pointer; text-decoration: none; transition: all .3s; }
+  .btn-coral { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--color-primary); color: var(--color-brand-on-coral); font-weight: 700; border: none; border-radius: 9999px; cursor: pointer; text-decoration: none; transition: all .3s; white-space: nowrap; }
   .btn-coral:hover { background: var(--color-primary); transform: translateY(-2px); box-shadow: 0 16px 40px rgba(136,19,55,0.35); }
   .btn-coral:active { transform: scale(0.97); }
   .btn-sm { padding: 10px 24px; font-size: 14px; }
 
   /* Header */
   .site-header { position: sticky; top: 0; z-index: 50; background: var(--color-background); border-bottom: 1px solid var(--card-border); }
-  .header-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; height: 72px; display: flex; align-items: center; justify-content: space-between; }
-  .header-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--color-text); }
+  .header-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; height: 72px; display: flex; align-items: center; justify-content: space-between; min-width: 0; }
+  .header-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--color-text); min-width: 0; }
   .header-brand span { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
   .header-nav { display: none; gap: 32px; align-items: center; }
-  .header-nav a { background: var(--color-background); border-radius: 6px; font-size: 14px; font-weight: 500; color: var(--color-text-secondary); text-decoration: none; transition: color .2s; display: inline-flex; align-items: center; justify-content: center; text-align: center; line-height: 1.25; white-space: normal; }
+  .header-nav a { background: var(--color-background); border-radius: 6px; font-size: 14px; font-weight: 500; color: var(--color-text-secondary); text-decoration: none; transition: color .2s; display: inline-flex; align-items: center; justify-content: center; text-align: center; line-height: 1.25; white-space: nowrap; }
   .header-nav a:hover { color: var(--color-primary-readable); }
   .header-nav a.active { color: var(--color-primary-readable); font-weight: 600; }
   .header-actions { display: flex; align-items: center; gap: 12px; }
   .locale-picker { position: relative; }
-  .locale-trigger { align-items: center; background: var(--color-surface); border: 1px solid var(--card-border-strong); border-radius: 9999px; color: var(--color-text); cursor: pointer; display: inline-flex; font-size: 14px; font-weight: 700; gap: 7px; height: 40px; justify-content: center; min-width: 76px; padding: 0 12px; }
+  .locale-trigger { align-items: center; background: var(--color-surface); border: 1px solid var(--card-border-strong); border-radius: 9999px; color: var(--color-text); cursor: pointer; display: inline-flex; font-size: 14px; font-weight: 700; gap: 7px; height: 40px; justify-content: center; min-width: 76px; padding: 0 12px; white-space: nowrap; }
   .locale-trigger:hover { border-color: var(--color-primary-readable); color: var(--color-primary-readable); }
   .locale-trigger:focus-visible, .locale-option:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 3px; }
-  .locale-menu { background: var(--color-surface); border: 1px solid var(--card-border-strong); border-radius: 16px; box-shadow: var(--elev-4); display: grid; gap: 4px; min-width: 220px; padding: 8px; position: absolute; right: 0; top: calc(100% + 10px); z-index: 60; }
-  .locale-option { align-items: center; background: transparent; border: 0; border-radius: 10px; color: var(--color-text); cursor: pointer; display: grid; grid-template-columns: 34px 1fr 18px; font: inherit; gap: 8px; min-height: 44px; padding: 8px 10px; text-align: left; width: 100%; }
+  .locale-menu { background: var(--color-surface); border: 1px solid var(--card-border-strong); border-radius: 16px; box-shadow: var(--elev-4); display: grid; gap: 4px; min-width: 220px; padding: 8px; position: absolute; inset-inline-end: 0; top: calc(100% + 10px); z-index: 60; }
+  .locale-option { align-items: center; background: transparent; border: 0; border-radius: 10px; color: var(--color-text); cursor: pointer; display: grid; grid-template-columns: 34px 1fr 18px; font: inherit; gap: 8px; min-height: 44px; padding: 8px 10px; text-align: start; width: 100%; }
   .locale-option:hover, .locale-option.selected { background: color-mix(in srgb, var(--color-primary) 10%, var(--color-surface)); }
   .locale-option.selected { color: var(--color-primary-readable); }
   .locale-code { font-weight: 800; }
   .locale-name { color: var(--color-text-secondary); font-size: 13px; }
   .locale-option.selected .locale-name { color: inherit; }
-  .header-signin { font-size: 14px; font-weight: 600; color: var(--color-text); text-decoration: none; display: none; }
+  .header-signin { font-size: 14px; font-weight: 600; color: var(--color-text); text-decoration: none; display: none; white-space: nowrap; }
   .header-signin:hover { color: var(--color-primary-readable); }
-  .header-github { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 40px; height: 40px; padding: 0; background: var(--color-surface); border: 1px solid var(--card-border-strong); border-radius: 9999px; color: var(--color-text); font-size: 14px; font-weight: 600; text-decoration: none; transition: all .2s; cursor: pointer; }
+  .header-github { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 40px; height: 40px; padding: 0; background: var(--color-surface); border: 1px solid var(--card-border-strong); border-radius: 9999px; color: var(--color-text); font-size: 14px; font-weight: 600; text-decoration: none; transition: all .2s; cursor: pointer; white-space: nowrap; }
   .header-github:hover { background: var(--color-text); color: var(--color-surface); border-color: var(--color-text); transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
   .header-github span { display: none; }
   .menu-toggle { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; padding: 0; background: var(--color-surface); border: 1px solid var(--card-border-strong); border-radius: 9999px; color: var(--color-text); cursor: pointer; transition: all .2s; }
   .menu-toggle:hover { background: var(--color-surface-variant); border-color: var(--card-border-strong); }
   @media (max-width: 639px) {
+    .header-inner { padding-inline: 16px; gap: 8px; }
+    .header-brand span { display: none; }
+    .header-actions { gap: 8px; }
+    .locale-trigger { min-width: 60px; padding-inline: 8px; }
     .header-github,
     .header-actions .btn-sm {
       display: none;
     }
-    .locale-menu { min-width: 200px; right: -4px; }
+    .locale-menu { min-width: 200px; inset-inline-end: -4px; }
   }
-  @media (min-width: 768px) {
+  @media (min-width: 1024px) {
     .header-nav { display: flex; }
     .header-signin { display: block; }
     .header-actions { gap: 16px; }
@@ -339,7 +343,6 @@
     .mobile-menu, .mobile-menu-backdrop { display: none; }
   }
   @media (min-width: 768px) and (max-width: 1023px) {
-    .header-nav { gap: 12px; }
     .header-actions { gap: 8px; }
     .header-signin { display: none; }
     .header-github { width: 40px; height: 40px; padding: 0; }
