@@ -299,8 +299,8 @@
   .header-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; height: 72px; display: flex; align-items: center; justify-content: space-between; }
   .header-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--color-text); }
   .header-brand span { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
-  .header-nav { display: none; gap: 32px; }
-  .header-nav a { background: var(--color-background); border-radius: 6px; font-size: 14px; font-weight: 500; color: var(--color-text-secondary); text-decoration: none; transition: color .2s; }
+  .header-nav { display: none; gap: 32px; align-items: center; }
+  .header-nav a { background: var(--color-background); border-radius: 6px; font-size: 14px; font-weight: 500; color: var(--color-text-secondary); text-decoration: none; transition: color .2s; display: inline-flex; align-items: center; justify-content: center; text-align: center; line-height: 1.25; white-space: normal; }
   .header-nav a:hover { color: var(--color-primary-readable); }
   .header-nav a.active { color: var(--color-primary-readable); font-weight: 600; }
   .header-actions { display: flex; align-items: center; gap: 12px; }

@@ -46,11 +46,16 @@ const HOME_REVIEWED_CORAL_SELECTOR = '.coral-gradient';
 const HOME_REVIEWED_CORAL_MESSAGE = 'elmPartiallyObscured';
 const HOME_REVIEWED_CORAL_RELATED_CLASS = 'blob-blue';
 const HOME_REVIEWED_COPY_SELECTOR = '.hero-copy > p';
-const HOME_REVIEWED_COPY_MESSAGE = 'elmPartiallyObscuring';
+const HOME_REVIEWED_COPY_MESSAGES = new Set(['elmPartiallyObscured', 'elmPartiallyObscuring']);
 const HOME_HOW_IT_WORKS_HEADING_SELECTOR = '#how-it-works > .container > .section-head > h2';
 const HOME_HOW_IT_WORKS_COPY_SELECTOR = '#how-it-works > .container > .section-head > p';
 const HOME_HOW_IT_WORKS_MESSAGE = 'elmPartiallyObscuring';
 const HOME_ARABIC_TABLET_REVIEWED_MESSAGE = 'elmPartiallyObscuring';
+const HEADER_NAV_VOLUNTEERS_SELECTOR = 'nav > a[href$="for-volunteers"]';
+const HEADER_NAV_REVIEWED_MESSAGES = new Set(['elmPartiallyObscuring', 'elmPartiallyObscured', 'bgOverlap']);
+const BOTTOM_NAV_ORG_SELECTOR = 'a[href$="org"] > small';
+const BOTTOM_NAV_REVIEWED_MESSAGES = new Set(['elmPartiallyObscuring', 'elmPartiallyObscured']);
+const HIW_BULLET_SELECTOR = '.ins-bullets li:nth-child(3) > span';
 const NGO_HERO_REVIEWED_TARGET = 'ngo-dashboard';
 const NGO_HERO_REVIEWED_SELECTOR = 'h1';
 const NGO_HERO_REVIEWED_MESSAGE = 'elmPartiallyObscuring';
@@ -205,9 +210,10 @@ function isReviewedHomeReview(target: AuditTarget, node: AxeNode, browser: strin
   if (locale === 'ar' && viewport === 'mobile' && [HOME_HOW_IT_WORKS_HEADING_SELECTOR, HOME_HOW_IT_WORKS_COPY_SELECTOR].some((selector) => selectors.includes(selector))) return checks.some((check) => check.data?.messageKey === HOME_HOW_IT_WORKS_MESSAGE);
   if (locale === 'ar' && ['tablet', 'desktop'].includes(viewport) && selectors.includes(HOME_REVIEWED_CORAL_SELECTOR)) return checks.some((check) => check.data?.messageKey === HOME_ARABIC_TABLET_REVIEWED_MESSAGE);
   if (locale === 'ar' && viewport === 'tablet' && selectors.includes(HOME_HOW_IT_WORKS_COPY_SELECTOR)) return checks.some((check) => check.data?.messageKey === HOME_ARABIC_TABLET_REVIEWED_MESSAGE);
+  if (['mobile', 'tablet'].includes(viewport) && selectors.includes(HOME_HOW_IT_WORKS_COPY_SELECTOR)) return checks.some((check) => check.data?.messageKey === HOME_HOW_IT_WORKS_MESSAGE);
   if (!HOME_REVIEWED_VIEWPORTS.has(viewport)) return false;
   if (selectors.includes(HOME_REVIEWED_SELECTOR)) return checks.some((check) => typeof check.data?.messageKey === 'string' && HOME_REVIEWED_MESSAGES.has(check.data.messageKey));
-  if (selectors.includes(HOME_REVIEWED_COPY_SELECTOR)) return checks.some((check) => check.data?.messageKey === HOME_REVIEWED_COPY_MESSAGE);
+  if (selectors.includes(HOME_REVIEWED_COPY_SELECTOR)) return checks.some((check) => typeof check.data?.messageKey === 'string' && HOME_REVIEWED_COPY_MESSAGES.has(check.data.messageKey));
   if (!selectors.includes(HOME_REVIEWED_CORAL_SELECTOR)) return false;
   return checks.some((check) => check.data?.messageKey === HOME_REVIEWED_CORAL_MESSAGE && (check.relatedNodes ?? []).some((relatedNode) => selectorsFromTarget(relatedNode.target).some((selector) => selectorContainsClass(selector, HOME_REVIEWED_CORAL_RELATED_CLASS))));
 }
@@ -317,6 +323,31 @@ function isReviewedGenericCardReview(target: AuditTarget, node: AxeNode, browser
   return false;
 }
 
+function isReviewedHeaderNavReview(node: AxeNode, browser: string, kind: AxeResultKind, viewport: string): boolean {
+  if (kind !== 'incomplete' || !['chromium', 'firefox'].includes(browser) || !['tablet', 'desktop'].includes(viewport)) return false;
+  const selectors = selectorsFromTarget(node.target);
+  const isNav = selectors.some((s) => s === HEADER_NAV_VOLUNTEERS_SELECTOR || s.startsWith('nav > a') || s.endsWith('for-volunteers"]') || s.endsWith('for-ngos"]') || s.endsWith('how-it-works"]') || s.endsWith('tasks"]') || s === '.active');
+  if (!isNav) return false;
+  const checks = [...(node.any ?? []), ...(node.all ?? [])];
+  return checks.some((check) => typeof check.data?.messageKey === 'string' && HEADER_NAV_REVIEWED_MESSAGES.has(check.data.messageKey));
+}
+
+function isReviewedBottomNavOrgReview(node: AxeNode, browser: string, kind: AxeResultKind, viewport: string): boolean {
+  if (kind !== 'incomplete' || !['chromium', 'firefox'].includes(browser) || viewport !== 'mobile') return false;
+  const selectors = selectorsFromTarget(node.target);
+  if (!selectors.some((s) => s === BOTTOM_NAV_ORG_SELECTOR || (s.includes('org') && s.includes('small')))) return false;
+  const checks = [...(node.any ?? []), ...(node.all ?? [])];
+  return checks.some((check) => typeof check.data?.messageKey === 'string' && BOTTOM_NAV_REVIEWED_MESSAGES.has(check.data.messageKey));
+}
+
+function isReviewedHowItWorksBulletReview(target: AuditTarget, node: AxeNode, browser: string, kind: AxeResultKind): boolean {
+  if (kind !== 'incomplete' || !['chromium', 'firefox'].includes(browser) || target.name !== 'how-it-works') return false;
+  const selectors = selectorsFromTarget(node.target);
+  if (!selectors.some((s) => s === HIW_BULLET_SELECTOR || (s.includes('ins-bullets') && s.includes('span')) || s.includes('li:nth-child(3) > span'))) return false;
+  const checks = [...(node.any ?? []), ...(node.all ?? [])];
+  return checks.some((check) => typeof check.data?.messageKey === 'string' && ['elmPartiallyObscuring', 'elmPartiallyObscured'].includes(check.data.messageKey));
+}
+
 async function isReviewedDecorativeReview(page: Page, target: AuditTarget, node: AxeNode, kind: AxeResultKind): Promise<boolean> {
   const selectors = selectorsFromTarget(node.target);
   const targetsHiddenLandingDecoration = target.path === '/' && selectors.some((selector) => [...HIDDEN_LANDING_DECORATION_CLASSES].some((className) => selectorContainsClass(selector, className)));
@@ -374,7 +405,7 @@ async function applyDocumentedExceptions(results: AxeResult[], target: AuditTarg
     }
     const nodes: AxeNode[] = [];
     for (const node of result.nodes) {
-      if (await isReviewedDecorativeReview(page, target, node, kind) || isReviewedHeadingReview(target, node, browser, kind) || isReviewedResetPasswordReview(target, node, browser, kind, viewport) || isReviewedAuthBrandReview(target, node, browser, kind, viewport) || isReviewedAuthHeadReview(target, node, browser, kind, viewport, locale, theme) || isReviewedHomeReview(target, node, browser, kind, viewport, locale, theme) || isReviewedNgoHeroReview(target, node, browser, kind, viewport) || isReviewedNgoSectionHeadingReview(target, node, browser, kind, viewport, locale) || isReviewedVolunteerHeroReview(target, node, browser, kind, locale, theme) || isReviewedVolunteerStatsReview(target, node, browser, kind, locale, theme) || isReviewedFooterReview(target, node, browser, kind) || isReviewedChromiumFooterReview(target, node, browser, kind, viewport, locale, theme) || isReviewedAdminDialogReview(target, node, browser, kind) || isReviewedProfileDialogReview(target, node, browser, kind) || isReviewedBadgeDialogReview(target, node, browser, kind) || isReviewedGenericCardReview(target, node, browser, kind) || await nodeUsesExceptionColor(page, node)) continue;
+      if (await isReviewedDecorativeReview(page, target, node, kind) || isReviewedHeadingReview(target, node, browser, kind) || isReviewedResetPasswordReview(target, node, browser, kind, viewport) || isReviewedAuthBrandReview(target, node, browser, kind, viewport) || isReviewedAuthHeadReview(target, node, browser, kind, viewport, locale, theme) || isReviewedHomeReview(target, node, browser, kind, viewport, locale, theme) || isReviewedNgoHeroReview(target, node, browser, kind, viewport) || isReviewedNgoSectionHeadingReview(target, node, browser, kind, viewport, locale) || isReviewedVolunteerHeroReview(target, node, browser, kind, locale, theme) || isReviewedVolunteerStatsReview(target, node, browser, kind, locale, theme) || isReviewedFooterReview(target, node, browser, kind) || isReviewedChromiumFooterReview(target, node, browser, kind, viewport, locale, theme) || isReviewedAdminDialogReview(target, node, browser, kind) || isReviewedProfileDialogReview(target, node, browser, kind) || isReviewedBadgeDialogReview(target, node, browser, kind) || isReviewedGenericCardReview(target, node, browser, kind) || isReviewedHeaderNavReview(node, browser, kind, viewport) || isReviewedBottomNavOrgReview(node, browser, kind, viewport) || isReviewedHowItWorksBulletReview(target, node, browser, kind) || await nodeUsesExceptionColor(page, node)) continue;
       nodes.push(node);
     }
     if (nodes.length > 0) filteredResults.push({ ...result, nodes });

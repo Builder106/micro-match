@@ -181,26 +181,26 @@
   {#if showAppChrome}
     <nav class="bottom-nav">
     <div style="display: flex; gap: var(--space-6); justify-content: space-around; padding: var(--space-4) 0;">
-      <a href={resolve('/tasks', {})} style="text-align:center;text-decoration:none;color:inherit">
+      <a href={resolve('/tasks', {})} style="display: flex; flex-direction: column; align-items: center; text-align: center; text-decoration: none; color: inherit;">
         <div class:card-elevated={$page.url.pathname === '/tasks'} class:animate-scale-in={$page.url.pathname === '/tasks'} style="display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 40px; border-radius: var(--radius-xl); background: var(--color-primary); color: var(--color-on-primary); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);">
           <Icon icon="mdi:view-dashboard-outline" width="20" height="20"/>
         </div>
         <small style="display: block; color: var(--color-primary-readable); margin-top: var(--space-2); font-weight: var(--font-medium); font-size: var(--text-xs);">{t(m.nav_feed)}</small>
       </a>
-      <a href={resolve('/dashboard', {})} style="text-align:center;text-decoration:none;color:inherit">
+      <a href={resolve('/dashboard', {})} style="display: flex; flex-direction: column; align-items: center; text-align: center; text-decoration: none; color: inherit;">
         <div class="hover-lift" style="width: 56px; height: 40px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--radius-xl); background: var(--color-surface-variant); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);">
           <Icon icon="mdi:seal-variant" width="20" height="20" style="color: var(--color-text-secondary);"/>
         </div>
         <small style="display: block; color: var(--color-text-secondary); margin-top: var(--space-2); font-weight: var(--font-medium); font-size: var(--text-xs);">{t(m.nav_dashboard)}</small>
       </a>
       {#if $page.data.userRole === 'ngo'}
-        <a href={resolve('/badges/manage', {})} style="text-align:center;text-decoration:none;color:inherit">
+        <a href={resolve('/badges/manage', {})} style="display: flex; flex-direction: column; align-items: center; text-align: center; text-decoration: none; color: inherit;">
           <div class="hover-lift" style="width: 56px; height: 40px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--radius-xl); background: var(--color-surface-variant); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);">
             <Icon icon="mdi:shield-edit" width="20" height="20" style="color: var(--color-text-secondary);"/>
           </div>
           <small style="display: block; color: var(--color-text-secondary); margin-top: var(--space-2); font-weight: var(--font-medium); font-size: var(--text-xs);">{t(m.nav_manage_badges)}</small>
         </a>
-        <a href={resolve('/badges/analytics', {})} style="text-align:center;text-decoration:none;color:inherit">
+        <a href={resolve('/badges/analytics', {})} style="display: flex; flex-direction: column; align-items: center; text-align: center; text-decoration: none; color: inherit;">
           <div class="hover-lift" style="width: 56px; height: 40px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--radius-xl); background: var(--color-surface-variant); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);">
             <Icon icon="mdi:chart-line" width="20" height="20" style="color: var(--color-text-secondary);"/>
           </div>
@@ -208,7 +208,7 @@
         </a>
       {/if}
       {#if $page.data.userRole === 'ngo'}
-        <a href={resolve('/org', {})} style="text-align:center;text-decoration:none;color:inherit">
+        <a href={resolve('/org', {})} style="display: flex; flex-direction: column; align-items: center; text-align: center; text-decoration: none; color: inherit;">
           <div class="hover-lift" style="width: 56px; height: 40px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--radius-xl); background: var(--color-surface-variant); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);">
             <Icon icon="mdi:plus-circle-outline" width="20" height="20" style="color: var(--color-text-secondary);"/>
           </div>

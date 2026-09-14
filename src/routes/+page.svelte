@@ -94,10 +94,6 @@
 
   <!-- ───── Hero ───── -->
   <section class="hero">
-    <div class="blob blob-yellow"></div>
-    <div class="blob blob-coral"></div>
-    <div class="blob blob-blue"></div>
-
     <div class="hero-inner">
       {#if visible}
       <div class="hero-copy" in:fly={{ y: 30, duration: $reducedMotion ? 0 : 700 }}>
@@ -368,10 +364,6 @@
 
   /* ──────────── Hero ──────────── */
   .hero { position: relative; min-height: 90vh; display: flex; align-items: center; overflow: hidden; padding: 80px 0 0; }
-  .blob { position: absolute; border-radius: 50%; pointer-events: none; mix-blend-mode: multiply; }
-  .blob-yellow { top: -10%; left: -10%; width: 500px; height: 500px; background: rgba(253,224,71,0.4); filter: blur(100px); opacity: 0.7; }
-  .blob-coral { top: 20%; right: -10%; width: 600px; height: 600px; background: rgba(255,107,107,0.2); filter: blur(120px); opacity: 0.6; }
-  .blob-blue { bottom: -20%; left: 20%; width: 700px; height: 700px; background: rgba(147,197,253,0.3); filter: blur(140px); opacity: 0.5; }
   .hero-inner { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 0 24px; display: grid; grid-template-columns: 1fr; gap: 48px; align-items: center; }
   @media (min-width: 1024px) { .hero-inner { grid-template-columns: 1fr 1fr; gap: 32px; } .hero { padding: 0; } }
   .hero-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 28px; max-width: 560px; }
@@ -390,6 +382,17 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
+  }
+  .hero-visual::before {
+    content: '';
+    position: absolute;
+    inset: -20%;
+    pointer-events: none;
+    background:
+      radial-gradient(circle 350px at 70% 30%, rgba(255, 107, 107, 0.18) 0%, transparent 70%),
+      radial-gradient(circle 300px at 40% 70%, rgba(147, 197, 253, 0.2) 0%, transparent 70%),
+      radial-gradient(circle 250px at 30% 20%, rgba(253, 224, 71, 0.2) 0%, transparent 70%);
+    z-index: 0;
   }
   @media (max-width: 1023px) { .hero-visual { height: 440px; } }
 
