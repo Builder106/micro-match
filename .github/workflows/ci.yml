@@ -74,7 +74,7 @@ jobs:
 
   functional:
     name: Functional smoke
-    if: ${{ github.event_name == 'pull_request' }}
+    if: ${{ github.event_name == 'pull_request' && needs.build.result == 'success' && needs.test.result == 'success' }}
     needs: [build, test]
     runs-on: ubuntu-24.04
     steps:
@@ -125,7 +125,7 @@ jobs:
 
   a11y-pr:
     name: Accessibility smoke (${{ matrix.project }}, shard ${{ matrix.shard }})
-    if: ${{ github.event_name == 'pull_request' }}
+    if: ${{ github.event_name == 'pull_request' && needs.build.result == 'success' && needs.test.result == 'success' }}
     needs: [build, test]
     runs-on: ubuntu-24.04
     strategy:
@@ -175,7 +175,7 @@ jobs:
 
   a11y-full:
     name: Accessibility full (${{ matrix.project }}, shard ${{ matrix.shard }})
-    if: ${{ github.event_name == 'push' }}
+    if: ${{ github.event_name == 'push' && needs.build.result == 'success' && needs.test.result == 'success' }}
     needs: [build, test]
     runs-on: ubuntu-24.04
     strategy:
@@ -227,7 +227,7 @@ jobs:
   responsiveness:
     name: Responsiveness audit
     needs: [build, test]
-    if: ${{ !cancelled() }}
+    if: ${{ !cancelled() && needs.build.result == 'success' && needs.test.result == 'success' }}
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
@@ -267,7 +267,7 @@ jobs:
   localization-formatting:
     name: Localization formatting audit
     needs: [build, test]
-    if: ${{ !cancelled() }}
+    if: ${{ !cancelled() && needs.build.result == 'success' && needs.test.result == 'success' }}
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
@@ -371,11 +371,15 @@ jobs:
   ci-gate:
     name: CI required gate
     if: ${{ always() }}
-    needs: [functional, a11y-pr, a11y-full, responsiveness, localization-formatting, matrix-evidence, merge-a11y]
+    needs: [check, lint, test, build, functional, a11y-pr, a11y-full, responsiveness, localization-formatting, matrix-evidence, merge-a11y]
     runs-on: ubuntu-24.04
     steps:
       - name: Require selected CI checks
         env:
+          CHECK: ${{ needs.check.result }}
+          LINT: ${{ needs.lint.result }}
+          TEST: ${{ needs.test.result }}
+          BUILD: ${{ needs.build.result }}
           FUNCTIONAL: ${{ needs.functional.result }}
           A11Y_PR: ${{ needs.a11y-pr.result }}
           A11Y_FULL: ${{ needs.a11y-full.result }}
@@ -385,6 +389,7 @@ jobs:
           MERGE: ${{ needs.merge-a11y.result }}
           EVENT_NAME: ${{ github.event_name }}
         run: |
+          if [ "$CHECK" != success ] || [ "$LINT" != success ] || [ "$TEST" != success ] || [ "$BUILD" != success ]; then exit 1; fi
           if [ "$RESPONSIVENESS" != success ]; then exit 1; fi
           if [ "$LOCALIZATION_FORMATTING" != success ]; then exit 1; fi
           if [ "$EVENT_NAME" = pull_request ] && { [ "$FUNCTIONAL" != success ] || [ "$A11Y_PR" != success ] || [ "$EVIDENCE" != success ] || [ "$MERGE" != success ]; }; then exit 1; fi
