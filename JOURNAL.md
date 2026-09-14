@@ -4,6 +4,10 @@
 > things happen — retrospectives need this raw material to land.
 > Reverse-chronological; one paragraph max per entry.
 
+## 2026-09-14 - Repaired CI base gating and mobile public-shell accessibility #fix
+
+Fixed the typed test load-event helper, restored an accessible localized name for the compact public-shell brand link, and made its logo sizing stable at narrow widths. Artifact-consuming CI jobs now require successful build and test prerequisites, while the required gate explicitly checks type-check, lint, unit tests, and build results. Managed Linux check, lint, coverage, build, responsiveness, and representative Chromium and Firefox accessibility shards passed; the localization audit was not started because the verifier connection reset during synchronization.
+
 ## 2026-09-13 - Wired Paraglide into rendered public UI #fix
 
 Locale-prefixed routing and middleware were already active, but the public shell, homepage, and app chrome still rendered literal English strings, so `/fr` changed the URL without changing the visible UI. Added locale-aware Paraglide calls with the URL locale passed explicitly for deterministic SSR and hydration, expanded all seven catalogs for the rendered shell and homepage, kept dynamic task content separate, and verified French output in a real browser plus check, lint, build, and full tests.
