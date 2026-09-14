@@ -72,6 +72,7 @@ const FOOTER_REVIEWED_TARGET = 'tasks';
 const FOOTER_REVIEWED_SELECTOR = '.footer-brand > p';
 const FOOTER_REVIEWED_MESSAGE = 'elmPartiallyObscuring';
 const MOBILE_MENU_MAX_WIDTH = 767;
+const DESKTOP_NAV_MIN_WIDTH = 1024;
 const FIXTURE_VERSION = 'a11y-fixture-v1';
 const OUTPUT_DIR = path.resolve(process.cwd(), 'audit-output', 'accessibility');
 fs.mkdirSync(OUTPUT_DIR, { recursive: true });
@@ -440,12 +441,14 @@ for (const locale of LOCALES) for (const theme of THEMES) for (const viewport of
   });
 }
 
-test('responsive navigation switches at the 768px breakpoint', async ({ page }) => {
+test('responsive navigation switches at the 1024px breakpoint', async ({ page }) => {
   await page.setViewportSize({ width: MOBILE_MENU_MAX_WIDTH, height: 900 });
   await page.goto(localizedPath('en', '/'), { waitUntil: 'networkidle' });
   const toggle = page.locator('.menu-toggle');
   await expect(toggle).toBeVisible(); await toggle.click(); await expect(page.locator('#mobile-menu')).toBeVisible();
   await page.keyboard.press('Escape'); await expect(toggle).toBeFocused();
-  await page.setViewportSize({ width: MOBILE_MENU_MAX_WIDTH + 1, height: 900 }); await page.reload({ waitUntil: 'networkidle' });
+  await page.setViewportSize({ width: DESKTOP_NAV_MIN_WIDTH - 1, height: 900 }); await page.reload({ waitUntil: 'networkidle' });
+  await expect(page.locator('.header-nav')).toBeHidden(); await expect(page.locator('.menu-toggle')).toBeVisible(); await expect(page.locator('#mobile-menu')).toBeHidden();
+  await page.setViewportSize({ width: DESKTOP_NAV_MIN_WIDTH, height: 900 }); await page.reload({ waitUntil: 'networkidle' });
   await expect(page.locator('.header-nav')).toBeVisible(); await expect(page.locator('.menu-toggle')).toBeHidden(); await expect(page.locator('#mobile-menu')).toBeHidden();
 });

@@ -4,6 +4,10 @@
 > things happen — retrospectives need this raw material to land.
 > Reverse-chronological; one paragraph max per entry.
 
+## 2026-09-14 - Aligned the navigation breakpoint regression test #fix
+
+The public shell intentionally keeps the compact menu through 1023px and shows the full navigation from 1024px, but the accessibility regression test still expected the former 768px transition. Updated the test to cover the 767px mobile state, the 1023px tablet state, and the 1024px desktop state.
+
 ## 2026-09-14 - Repaired CI base gating and mobile public-shell accessibility #fix
 
 Fixed the typed test load-event helper, restored an accessible localized name for the compact public-shell brand link, and made its logo sizing stable at narrow widths. Artifact-consuming CI jobs now require successful build and test prerequisites, while the required gate explicitly checks type-check, lint, unit tests, and build results. Managed Linux check, lint, coverage, build, responsiveness, and representative Chromium and Firefox accessibility shards passed; the localization audit was not started because the verifier connection reset during synchronization.
