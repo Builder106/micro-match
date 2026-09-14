@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import {
   createLoadEvent,
   createServerLoadEvent,
@@ -43,6 +43,9 @@ describe('createServerLoadEvent helper', () => {
     expect(event.getClientAddress()).toBe('127.0.0.1');
     expect(await event.parent()).toEqual({});
     expect(event.request.url).toBe('http://localhost:5173/');
+    expect(event.tracing.enabled).toBe(false);
+    expect(event.tracing.root.isRecording()).toBe(false);
+    expect(event.tracing.current).toBe(event.tracing.root);
   });
 
   it('correctly maps userRole, userId, and session options', () => {
@@ -93,6 +96,8 @@ describe('createPageLoadEvent helper', () => {
     expect(event.params).toEqual({ id: 'task-1' });
     expect(event.route).toEqual({ id: '/task/[id]' });
     expect(await event.parent()).toEqual({});
+    expect(event.tracing.enabled).toBe(false);
+    expect(event.tracing.root.isRecording()).toBe(false);
 
     const compute = event.untrack(() => 42);
     expect(compute).toBe(42);
@@ -100,7 +105,6 @@ describe('createPageLoadEvent helper', () => {
     expect(() => event.depends('app:tasks')).not.toThrow();
   });
 });
-
 describe('createLoadEvent entrypoint', () => {
   it('creates ServerLoadEvent by default', () => {
     const event = createLoadEvent({ userRole: 'volunteer' });
@@ -117,4 +121,3 @@ describe('createLoadEvent entrypoint', () => {
     expect('depends' in event).toBe(true);
   });
 });
-

@@ -1,3 +1,5 @@
+/* global App */
+
 import type { ServerLoadEvent, LoadEvent, Cookies } from '@sveltejs/kit';
 import { vi } from 'vitest';
 
@@ -7,6 +9,29 @@ export type PageLoadEvent<
   ParentData extends Record<string, unknown> = Record<string, unknown>,
   RouteId extends string | null = string | null
 > = LoadEvent<Params, Data, ParentData, RouteId>;
+
+type LoadTracing = ServerLoadEvent['tracing'];
+type LoadSpan = LoadTracing['root'];
+
+const noopSpan = new Proxy({} as LoadSpan, {
+  get: (_target, property: string | symbol) => {
+    if (property === 'isRecording') {
+      return () => false;
+    }
+
+    if (property === 'spanContext') {
+      return () => ({ traceId: '', spanId: '', traceFlags: 0 });
+    }
+
+    return () => noopSpan;
+  }
+});
+
+const createNoopTracing = (): LoadTracing => ({
+  enabled: false,
+  root: noopSpan,
+  current: noopSpan
+});
 
 export interface MockCookies extends Cookies {
   _store: Map<string, string>;
@@ -61,7 +86,7 @@ export interface CreateServerLoadEventOptions<
   platform?: Readonly<App.Platform>;
   depends?: (...deps: string[]) => void;
   untrack?: <T>(fn: () => T) => T;
-  tracing?: Record<string, unknown>;
+  tracing?: LoadTracing;
   isRemoteRequest?: boolean;
 }
 
@@ -81,7 +106,7 @@ export interface CreatePageLoadEventOptions<
   depends?: (...deps: string[]) => void;
   untrack?: <T>(fn: () => T) => T;
   setHeaders?: (headers: Record<string, string>) => void;
-  tracing?: Record<string, unknown>;
+  tracing?: PageLoadEvent['tracing'];
 }
 
 export function createServerLoadEvent<
@@ -150,7 +175,7 @@ export function createServerLoadEvent<
     isRemoteRequest: options.isRemoteRequest ?? false,
     depends: options.depends ?? vi.fn(),
     untrack: untrackFn,
-    tracing: (options.tracing ?? {}) as any
+    tracing: options.tracing ?? createNoopTracing()
   };
 }
 
@@ -188,34 +213,35 @@ export function createPageLoadEvent<
     depends: options.depends ?? vi.fn(),
     untrack: untrackFn,
     setHeaders: options.setHeaders ?? vi.fn(),
-    tracing: (options.tracing ?? {}) as any
+    tracing: options.tracing ?? createNoopTracing()
   };
 }
 
-export function createLoadEvent<
-  Params extends Record<string, string> = Record<string, string>,
-  Data extends Record<string, unknown> = Record<string, unknown>,
-  ParentData extends Record<string, unknown> = Record<string, unknown>,
-  RouteId extends string | null = string | null
->(
-  options: CreatePageLoadEventOptions<Params, Data, ParentData, RouteId> & { type: 'page' }
-): PageLoadEvent<Params, Data, ParentData, RouteId>;
+export interface CreateLoadEvent {
+  <
+    Params extends Record<string, string> = Record<string, string>,
+    Data extends Record<string, unknown> = Record<string, unknown>,
+    ParentData extends Record<string, unknown> = Record<string, unknown>,
+    RouteId extends string | null = string | null
+  >(
+    options: CreatePageLoadEventOptions<Params, Data, ParentData, RouteId> & { type: 'page' }
+  ): PageLoadEvent<Params, Data, ParentData, RouteId>;
+  <
+    Params extends Record<string, string> = Record<string, string>,
+    ParentData extends Record<string, unknown> = Record<string, unknown>,
+    RouteId extends string | null = string | null
+  >(
+    options?: CreateServerLoadEventOptions<Params, ParentData, RouteId> & { type?: 'server' }
+  ): ServerLoadEvent<Params, ParentData, RouteId>;
+}
 
-export function createLoadEvent<
-  Params extends Record<string, string> = Record<string, string>,
-  ParentData extends Record<string, unknown> = Record<string, unknown>,
-  RouteId extends string | null = string | null
->(
-  options?: CreateServerLoadEventOptions<Params, ParentData, RouteId> & { type?: 'server' }
-): ServerLoadEvent<Params, ParentData, RouteId>;
-
-export function createLoadEvent(
+export const createLoadEvent: CreateLoadEvent = ((
   options:
     | (CreateServerLoadEventOptions & { type?: 'server' })
     | (CreatePageLoadEventOptions & { type: 'page' }) = {}
-): ServerLoadEvent | PageLoadEvent {
+): ServerLoadEvent | PageLoadEvent => {
   if ('type' in options && options.type === 'page') {
     return createPageLoadEvent(options);
   }
   return createServerLoadEvent(options);
-}
+}) as CreateLoadEvent;
