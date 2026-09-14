@@ -62,3 +62,18 @@ test('mobile menu opens, closes, and restores focus', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 800 }); await page.emulateMedia({ reducedMotion: 'reduce' }); await page.goto('/en', { waitUntil: 'networkidle' }); const toggle = page.locator('.menu-toggle'); await expect(toggle).toBeVisible();
   await toggle.click(); await expect(toggle).toHaveAttribute('aria-expanded', 'true'); await page.keyboard.press('Escape'); await expect(toggle).toHaveAttribute('aria-expanded', 'false'); await expect(toggle).toBeFocused();
 });
+
+for (const width of [320, 375]) for (const route of ['/en', '/ar']) {
+  test(`mobile brand remains accessible and contained on ${route} at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 812 });
+    await page.goto(route, { waitUntil: 'networkidle' });
+
+    const brand = page.locator('.header-brand');
+    const logo = brand.locator('img');
+    await expect(brand).toBeVisible();
+    await expect(brand).toHaveAccessibleName('MicroMatch');
+    await expect(logo).toHaveAttribute('alt', '');
+    await expect.poll(() => logo.evaluate((element) => Math.round(element.getBoundingClientRect().width))).toBe(36);
+    await expectNoOverflow(page, route, width);
+  });
+}

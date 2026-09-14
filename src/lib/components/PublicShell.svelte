@@ -110,7 +110,7 @@
   <!-- ───── Header ───── -->
   <header class="site-header">
     <div class="header-inner">
-      <a href={resolve('/', {})} class="header-brand">
+      <a href={resolve('/', {})} class="header-brand" aria-label={t(m.app_name)}>
         <img src="/logo.png" alt="" width="36" height="36" />
         <span>{t(m.app_name)}</span>
       </a>
@@ -297,7 +297,8 @@
   /* Header */
   .site-header { position: sticky; top: 0; z-index: 50; background: var(--color-background); border-bottom: 1px solid var(--card-border); }
   .header-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; height: 72px; display: flex; align-items: center; justify-content: space-between; min-width: 0; }
-  .header-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--color-text); min-width: 0; }
+  .header-brand { display: flex; flex: 0 0 auto; align-items: center; gap: 10px; text-decoration: none; color: var(--color-text); min-width: 0; }
+  .header-brand img { flex: 0 0 36px; max-width: 36px; height: auto; }
   .header-brand span { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
   .header-nav { display: none; gap: 32px; align-items: center; }
   .header-nav a { background: var(--color-background); border-radius: 6px; font-size: 14px; font-weight: 500; color: var(--color-text-secondary); text-decoration: none; transition: color .2s; display: inline-flex; align-items: center; justify-content: center; text-align: center; line-height: 1.25; white-space: nowrap; }
