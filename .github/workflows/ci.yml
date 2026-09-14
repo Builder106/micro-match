@@ -350,7 +350,7 @@ jobs:
   deploy:
     name: Trigger Vercel Deploy
     needs: [secrets, ci-gate]
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging')
+    if: always() && !cancelled() && needs.secrets.result == 'success' && needs.ci-gate.result == 'success' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging')
     runs-on: ubuntu-24.04
     steps:
       - name: Deploy to Staging
