@@ -264,6 +264,47 @@ jobs:
           retention-days: 7
           if-no-files-found: error
 
+  localization-formatting:
+    name: Localization formatting audit
+    needs: [build, test]
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/cache@v6
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+      - uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-chromium-${{ hashFiles('bun.lock') }}
+      - run: bun install --frozen-lockfile
+      - run: bunx playwright install --with-deps chromium
+      - uses: actions/download-artifact@v8
+        with:
+          name: micro-match-build-${{ github.run_id }}
+      - run: |
+          NODE_ENV=development bun run preview --host 127.0.0.1 --port 4173 > "$RUNNER_TEMP/preview.log" 2>&1 &
+          for _ in 1 2 3 4 5 6 7 8 9 10; do curl --silent --fail http://127.0.0.1:4173/ && exit 0; sleep 2; done
+          cat "$RUNNER_TEMP/preview.log"
+          exit 1
+      - run: bun run test:localization-formatting -- --project=chromium
+        env:
+          PLAYWRIGHT_USE_PREBUILT: '1'
+          PLAYWRIGHT_BASE_URL: http://127.0.0.1:4173
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: localization-formatting-${{ github.run_id }}
+          path: |
+            test-results/
+            audit-output/
+            playwright-report/
+          retention-days: 7
+          if-no-files-found: error
+
   matrix-evidence:
     name: PR accessibility evidence validation
     if: ${{ github.event_name == 'pull_request' }}
@@ -330,7 +371,7 @@ jobs:
   ci-gate:
     name: CI required gate
     if: ${{ always() }}
-    needs: [functional, a11y-pr, a11y-full, responsiveness, matrix-evidence, merge-a11y]
+    needs: [functional, a11y-pr, a11y-full, responsiveness, localization-formatting, matrix-evidence, merge-a11y]
     runs-on: ubuntu-24.04
     steps:
       - name: Require selected CI checks
@@ -339,11 +380,13 @@ jobs:
           A11Y_PR: ${{ needs.a11y-pr.result }}
           A11Y_FULL: ${{ needs.a11y-full.result }}
           RESPONSIVENESS: ${{ needs.responsiveness.result }}
+          LOCALIZATION_FORMATTING: ${{ needs.localization-formatting.result }}
           EVIDENCE: ${{ needs.matrix-evidence.result }}
           MERGE: ${{ needs.merge-a11y.result }}
           EVENT_NAME: ${{ github.event_name }}
         run: |
           if [ "$RESPONSIVENESS" != success ]; then exit 1; fi
+          if [ "$LOCALIZATION_FORMATTING" != success ]; then exit 1; fi
           if [ "$EVENT_NAME" = pull_request ] && { [ "$FUNCTIONAL" != success ] || [ "$A11Y_PR" != success ] || [ "$EVIDENCE" != success ] || [ "$MERGE" != success ]; }; then exit 1; fi
           if [ "$EVENT_NAME" = push ] && { [ "$A11Y_FULL" != success ] || [ "$MERGE" != success ]; }; then exit 1; fi
 

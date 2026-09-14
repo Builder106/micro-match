@@ -111,6 +111,41 @@ jobs:
           retention-days: 90
           if-no-files-found: warn
 
+  localization-formatting:
+    name: Release localization formatting audit
+    needs: build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7 # v5.0.0
+      - uses: oven-sh/setup-bun@v2 # v2
+      - uses: actions/cache@v6 # v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+      - uses: actions/cache@v6 # v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-chromium-${{ hashFiles('bun.lock') }}
+      - run: bun install --frozen-lockfile
+      - run: bunx playwright install --with-deps chromium
+      - uses: actions/download-artifact@v8 # v4
+        with:
+          name: micro-match-release-build-${{ github.run_id }}
+      - name: Run localization formatting audit
+        run: bun run test:localization-formatting -- --project=chromium
+        env:
+          PLAYWRIGHT_USE_PREBUILT: '1'
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: localization-formatting-release-${{ github.run_id }}
+          path: |
+            test-results/
+            audit-output/
+            playwright-report/
+          retention-days: 90
+          if-no-files-found: warn
+
   merge-a11y:
     name: Merge release accessibility evidence
     if: ${{ always() }}
@@ -175,15 +210,16 @@ jobs:
   release-evidence-gate:
     name: Release accessibility evidence gate
     if: ${{ always() }}
-    needs: [automated-audit, responsiveness, merge-a11y, matrix-evidence]
+    needs: [automated-audit, responsiveness, localization-formatting, merge-a11y, matrix-evidence]
     runs-on: ubuntu-24.04
     steps:
       - name: Require release accessibility checks
         env:
           AUDIT: ${{ needs.automated-audit.result }}
           RESPONSIVENESS: ${{ needs.responsiveness.result }}
+          LOCALIZATION_FORMATTING: ${{ needs.localization-formatting.result }}
           MERGE: ${{ needs.merge-a11y.result }}
           EVIDENCE: ${{ needs.matrix-evidence.result }}
         run: |
-          if [ "$AUDIT" != success ] || [ "$RESPONSIVENESS" != success ] || [ "$MERGE" != success ] || [ "$EVIDENCE" != success ]; then exit 1; fi
+          if [ "$AUDIT" != success ] || [ "$RESPONSIVENESS" != success ] || [ "$LOCALIZATION_FORMATTING" != success ] || [ "$MERGE" != success ] || [ "$EVIDENCE" != success ]; then exit 1; fi
       - run: echo "Automated audit and matrix evidence passed."
