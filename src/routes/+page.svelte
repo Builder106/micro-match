@@ -702,12 +702,12 @@
   .badges-section { width: 100%; }
   .badges-section h4 { font-size: 22px; font-weight: 700; margin: 0 0 20px; padding: 0 8px; color: var(--color-text); }
   .badges-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-  .badge-card { position: relative; overflow: hidden; background: var(--color-surface); border-radius: 24px; padding: 20px 16px; display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid var(--card-border); box-shadow: 0 2px 8px rgba(0,0,0,0.03); transition: transform .3s; }
-  .badge-sparkle { position: absolute; inset: 0; pointer-events: none; }
+  .badge-card { position: relative; isolation: isolate; overflow: hidden; background: var(--color-surface); border-radius: 24px; padding: 20px 16px; display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid var(--card-border); box-shadow: 0 2px 8px rgba(0,0,0,0.03); transition: transform .3s; }
+  .badge-sparkle { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
   .badge-sparkle :global(.lottie-animation) { width: 100%; height: 100%; display: block; }
   .badge-card:hover { transform: translateY(-4px); }
-  .badge-icon { position: relative; width: 80px; height: 80px; border-radius: 24px; display: flex; align-items: center; justify-content: center; color: #fff; margin-bottom: 12px; transition: transform .3s; overflow: visible; }
+  .badge-icon { position: relative; z-index: 1; width: 80px; height: 80px; border-radius: 24px; display: flex; align-items: center; justify-content: center; color: #fff; margin-bottom: 12px; transition: transform .3s; overflow: visible; }
   .badge-card:hover .badge-icon { transform: scale(1.1); }
   .badge-level { position: absolute; bottom: -6px; right: -6px; width: 28px; height: 28px; border-radius: 50%; background: var(--color-text); color: var(--color-surface); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; border: 2px solid var(--color-surface); box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
-  .badge-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 700; line-height: 1.3; color: var(--color-text); }
+  .badge-title { position: relative; z-index: 1; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 700; line-height: 1.3; color: var(--color-text); }
 </style>
