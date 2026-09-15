@@ -1,31 +1,76 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
-const { mocks } = vi.hoisted(() => ({ mocks: { getTasks: vi.fn() } }));
+const { mocks } = vi.hoisted(() => ({ mocks: { getTasks: vi.fn(), translateTasks: vi.fn() } }));
 vi.mock('$lib/server/appwrite', () => ({ getTasks: mocks.getTasks }));
+vi.mock('$lib/server/taskTranslation', () => ({ translateTasks: mocks.translateTasks }));
 
 import { load } from '../../routes/+page.server';
 
 describe('/ (home feed) load', () => {
   beforeEach(() => mocks.getTasks.mockReset());
+  beforeEach(() => mocks.translateTasks.mockReset());
 
   interface FeedResult {
     tasks: Array<{ id: string }>;
   }
 
-  it('slices the task list down to the first 3', async () => {
+  it('passes only the first 3 tasks and the selected locale to translation', async () => {
+    const tasks = [
+      { id: '1', title: 'One', shortDescription: 'First task', tags: ['first'], language: 'English' },
+      { id: '2', title: 'Two', shortDescription: 'Second task', tags: ['second'], language: 'English' },
+      { id: '3', title: 'Three', shortDescription: 'Third task', tags: ['third'], language: 'English' },
+      { id: '4', title: 'Four', shortDescription: 'Fourth task', tags: ['fourth'], language: 'English' },
+      { id: '5', title: 'Five', shortDescription: 'Fifth task', tags: ['fifth'], language: 'English' }
+    ];
+    const translatedTasks = tasks.slice(0, 3).map((task) => ({
+      ...task,
+      title: `Translated ${task.title}`,
+      shortDescription: `Translated ${task.shortDescription}`,
+      tags: [`translated-${task.tags[0]}`]
+    }));
+    mocks.getTasks.mockResolvedValue(tasks);
+    mocks.translateTasks.mockResolvedValue(translatedTasks);
+
+    const result = (await load({ locals: { locale: 'es' } } as unknown as Parameters<typeof load>[0])) as unknown as FeedResult;
+
+    expect(mocks.translateTasks).toHaveBeenCalledWith(tasks.slice(0, 3), 'es');
+    expect(result.tasks).toEqual(translatedTasks);
+    expect(result.tasks[0]).toMatchObject({
+      title: 'Translated One',
+      shortDescription: 'Translated First task',
+      tags: ['translated-first'],
+      language: 'English'
+    });
+  });
+
+  it('defaults to English and preserves the helper result', async () => {
     mocks.getTasks.mockResolvedValue([
-      { id: '1' }, { id: '2' }, { id: '3' }, { id: '4' }, { id: '5' }
+      { id: '1' }, { id: '2' }, { id: '3' }, { id: '4' }
     ]);
+    const originalTasks = [{ id: '1' }, { id: '2' }, { id: '3' }];
+    mocks.translateTasks.mockResolvedValue(originalTasks);
 
-    const result = (await load({} as unknown as Parameters<typeof load>[0])) as unknown as FeedResult;
+    const result = (await load({ locals: {} } as unknown as Parameters<typeof load>[0])) as unknown as FeedResult;
 
-    expect(result.tasks).toHaveLength(3);
-    expect(result.tasks.map((t: { id: string }) => t.id)).toEqual(['1', '2', '3']);
+    expect(mocks.translateTasks).toHaveBeenCalledWith([{ id: '1' }, { id: '2' }, { id: '3' }], 'en');
+    expect(result.tasks).toEqual(originalTasks);
   });
 
   it('returns an empty array when there are no tasks', async () => {
     mocks.getTasks.mockResolvedValue([]);
-    const result = (await load({} as unknown as Parameters<typeof load>[0])) as unknown as FeedResult;
+    mocks.translateTasks.mockResolvedValue([]);
+    const result = (await load({ locals: { locale: 'fr' } } as unknown as Parameters<typeof load>[0])) as unknown as FeedResult;
     expect(result.tasks).toEqual([]);
+    expect(mocks.translateTasks).toHaveBeenCalledWith([], 'fr');
+  });
+
+  it('returns original task content when translation falls back', async () => {
+    const originalTasks = [{ id: '1', title: 'Original', language: 'English' }];
+    mocks.getTasks.mockResolvedValue(originalTasks);
+    mocks.translateTasks.mockResolvedValue(originalTasks);
+
+    const result = (await load({ locals: { locale: 'es' } } as unknown as Parameters<typeof load>[0])) as unknown as FeedResult;
+
+    expect(result.tasks).toEqual(originalTasks);
   });
 });

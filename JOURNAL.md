@@ -4,6 +4,10 @@
 > things happen — retrospectives need this raw material to land.
 > Reverse-chronological; one paragraph max per entry.
 
+## 2026-09-15 - Localized homepage featured tasks #fix
+
+Homepage featured tasks now pass the selected URL locale through the existing server-side translation boundary after bounding the load to the first three tasks; original task fields and source-language metadata remain intact when translation is unavailable.
+
 ## 2026-09-14 - Enabled the accessibility harness for responsiveness fixtures #fix
 
 The responsiveness CI preview now starts with `PLAYWRIGHT_A11Y_HARNESS=1`, allowing the localized task-detail smoke test to seed its isolated fixture through `/api/test/a11y`; the reproduced failure was a 404 because that server-side flag was missing from the responsiveness job.
