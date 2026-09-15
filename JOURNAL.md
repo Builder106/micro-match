@@ -4,6 +4,10 @@
 > things happen — retrospectives need this raw material to land.
 > Reverse-chronological; one paragraph max per entry.
 
+## 2026-09-14 - Enabled the accessibility harness for responsiveness fixtures #fix
+
+The responsiveness CI preview now starts with `PLAYWRIGHT_A11Y_HARNESS=1`, allowing the localized task-detail smoke test to seed its isolated fixture through `/api/test/a11y`; the reproduced failure was a 404 because that server-side flag was missing from the responsiveness job.
+
 ## 2026-09-14 - Simplified task translation controls #decision
 
 Task detail pages now use the selected site locale as the automatic translation target. The task’s source language remains visible, while one accessible original/translation toggle supports comparison without alternate-language picker state; translation failures remain fail-open to the original content.
