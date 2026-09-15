@@ -300,7 +300,7 @@
   .header-brand { display: flex; flex: 0 0 auto; align-items: center; gap: 10px; text-decoration: none; color: var(--color-text); min-width: 0; }
   .header-brand img { flex: 0 0 36px; max-width: 36px; height: auto; }
   .header-brand span { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
-  .header-nav { display: none; gap: 32px; align-items: center; justify-content: center; min-width: 0; }
+  .header-nav { display: none; gap: 32px; align-items: center; justify-content: flex-start; min-width: 0; }
   .header-nav a { background: var(--color-background); border-radius: 6px; font-size: 14px; font-weight: 500; color: var(--color-text-secondary); text-decoration: none; transition: color .2s; display: inline-flex; align-items: center; justify-content: center; text-align: center; line-height: 1.25; white-space: nowrap; }
   .header-nav a:hover { color: var(--color-primary-readable); }
   .header-nav a.active { color: var(--color-primary-readable); font-weight: 600; }
@@ -345,6 +345,7 @@
   }
   @media (min-width: 1024px) and (max-width: 1199px) {
     .header-inner { column-gap: 16px; }
+    .header-brand span { display: none; }
     .header-nav { gap: 20px; }
     .header-actions { gap: 8px; }
     .header-signin { display: none; }
@@ -352,7 +353,16 @@
     .header-github span { display: none; }
     .header-actions .btn-sm { padding-inline: 12px; }
   }
+  @media (min-width: 1200px) {
+    .header-inner { column-gap: 16px; }
+    .header-nav { gap: 16px; }
+    .header-actions { gap: 8px; }
+    .header-github { width: 40px; height: 40px; padding: 0; }
+    .header-github span { display: none; }
+    .header-actions .btn-sm { padding-inline: 12px; }
+  }
   @media (min-width: 768px) and (max-width: 1023px) {
+    .header-brand span { display: none; }
     .header-actions { gap: 8px; }
     .header-signin { display: none; }
     .header-github { width: 40px; height: 40px; padding: 0; }
