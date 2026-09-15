@@ -1,17 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import {
-  TRANSLATION_OPTIONS,
-  isSupportedTranslationCode,
-  getTaskDetailCopy
-} from './translation';
+import { isSupportedTranslationCode, getTaskDetailCopy } from './translation';
 
 describe('translation utilities', () => {
-  describe('TRANSLATION_OPTIONS and isSupportedTranslationCode', () => {
-    it('defines the expected translation options with empty code for Original', () => {
-      expect(TRANSLATION_OPTIONS.length).toBeGreaterThanOrEqual(7);
-      expect(TRANSLATION_OPTIONS[0]).toEqual({ code: '', label: 'Original' });
-    });
-
+  describe('isSupportedTranslationCode', () => {
     it('returns true for supported language codes', () => {
       expect(isSupportedTranslationCode('es')).toBe(true);
       expect(isSupportedTranslationCode('fr')).toBe(true);
@@ -19,6 +10,7 @@ describe('translation utilities', () => {
       expect(isSupportedTranslationCode('pt')).toBe(true);
       expect(isSupportedTranslationCode('zh')).toBe(true);
       expect(isSupportedTranslationCode('ar')).toBe(true);
+      expect(isSupportedTranslationCode('en')).toBe(false);
     });
 
     it('returns false for unsupported or empty language codes', () => {
@@ -53,6 +45,18 @@ describe('translation utilities', () => {
       const arCopy = getTaskDetailCopy('ar');
       expect(arCopy.backToFeed).toBe('العودة إلى المهام');
       expect(arCopy.claimTask).toBe('تولَّ هذه المهمة');
+    });
+
+    it('provides localized original and translation controls for every locale', () => {
+      expect(getTaskDetailCopy(null)).toMatchObject({
+        viewOriginal: 'View original', viewTranslation: 'View translation', translationUnavailable: 'Translation unavailable.'
+      });
+      expect(getTaskDetailCopy('es')).toMatchObject({ viewOriginal: 'Ver original', viewTranslation: 'Ver traducción', translationUnavailable: 'La traducción no está disponible.' });
+      expect(getTaskDetailCopy('fr')).toMatchObject({ viewOriginal: 'Voir l’original', viewTranslation: 'Voir la traduction', translationUnavailable: 'Traduction indisponible.' });
+      expect(getTaskDetailCopy('de')).toMatchObject({ viewOriginal: 'Original anzeigen', viewTranslation: 'Übersetzung anzeigen', translationUnavailable: 'Übersetzung nicht verfügbar.' });
+      expect(getTaskDetailCopy('pt')).toMatchObject({ viewOriginal: 'Ver original', viewTranslation: 'Ver tradução', translationUnavailable: 'Tradução indisponível.' });
+      expect(getTaskDetailCopy('zh')).toMatchObject({ viewOriginal: '查看原文', viewTranslation: '查看译文', translationUnavailable: '翻译不可用。' });
+      expect(getTaskDetailCopy('ar')).toMatchObject({ viewOriginal: 'عرض النص الأصلي', viewTranslation: 'عرض الترجمة', translationUnavailable: 'الترجمة غير متاحة.' });
     });
 
     it('returns original English fallback copy when language is null or empty', () => {

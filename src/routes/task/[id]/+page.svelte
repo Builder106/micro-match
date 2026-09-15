@@ -4,10 +4,9 @@
   import { onMount } from 'svelte';
   import { localizedHref, type Locale } from '$lib/locale';
   import { page } from '$app/stores';
-  import { getTaskDetailCopy, TRANSLATION_OPTIONS } from '$lib/translation';
+  import { getTaskDetailCopy } from '$lib/translation';
   import { getTagStyle } from '$lib/utils/tagColors';
   import type { Task } from '$lib/types';
-  import CustomSelect from '$lib/components/CustomSelect.svelte';
 
   export let data: {
     task: Task;
@@ -18,20 +17,25 @@
 
   $: id = $page.params.id;
   let translatedTask: Task | null = null;
-  $: task = translatedTask ?? data.task;
   $: orgName = data.orgName ?? 'Community organization';
   $: signedIn = $page.data.userRole && $page.data.userRole !== 'anonymous';
   $: currentLocale = ($page.data.locale as Locale | undefined) ?? 'en';
   function resolve(pathname: string) { return localizedHref(pathname, currentLocale); }
   $: copy = getTaskDetailCopy(currentLocale === 'en' ? null : currentLocale);
+  $: viewOriginalLabel = copy.viewOriginal;
+  $: viewTranslationLabel = copy.viewTranslation;
+  $: translationUnavailableLabel = copy.translationUnavailable;
 
-  let langSelection = currentLocale;
   let isTranslating = false;
+  let showOriginal = false;
+  let translationStatus: 'translated' | 'fallback' | null = null;
+  let translationTarget: string | null = null;
   let translationRequest = 0;
 
   async function loadTranslation(to: string | null) {
     const request = ++translationRequest;
-    translatedTask = null;
+    translationTarget = to;
+    translationStatus = null;
 
     if (!to || to === 'en') {
       isTranslating = false;
@@ -41,25 +45,48 @@
     isTranslating = true;
     try {
       const response = await fetch(`/api/tasks/${id}/translation?lang=${encodeURIComponent(to)}`);
-      if (!response.ok) return;
+      if (!response.ok) {
+        if (request === translationRequest) translationStatus = 'fallback';
+        return;
+      }
 
-      const result = (await response.json()) as { task?: Task };
-      if (request === translationRequest && result.task) translatedTask = result.task;
+      const result = (await response.json()) as {
+        task?: Task & { translation?: { status?: 'translated' | 'fallback' } };
+      };
+      if (request === translationRequest && result.task) {
+        translatedTask = result.task;
+        translationStatus = result.task.translation?.status ?? 'fallback';
+      } else if (request === translationRequest) {
+        translationStatus = 'fallback';
+      }
     } catch {
       // Preserve the original task when a translation request cannot finish.
+      if (request === translationRequest) translationStatus = 'fallback';
     } finally {
       if (request === translationRequest) isTranslating = false;
     }
   }
 
-  async function applyTranslation() {
-    const to = langSelection || null;
-    void loadTranslation(to);
-    window.location.href = resolve(`/task/${id}`);
+  function toggleTranslation() {
+    if (showOriginal) {
+      showOriginal = false;
+      if (translationStatus !== 'translated' || !translatedTask) {
+        void loadTranslation(translationTarget ?? currentLocale);
+      }
+      return;
+    }
+
+    if (isTranslating) {
+      translationRequest += 1;
+      isTranslating = false;
+      translationStatus = null;
+    }
+    showOriginal = !showOriginal;
   }
 
   onMount(() => {
-    if (currentLocale !== 'en') void loadTranslation(currentLocale);
+    const target = data.translatedTo ?? currentLocale;
+    if (target !== 'en') void loadTranslation(target);
   });
 
   let deleting = false;
@@ -90,6 +117,7 @@
     if (days <= 7) return { text: `Due in ${days} days`, tone: 'soon' };
     return { text: `Due ${date.toLocaleDateString()}`, tone: 'normal' };
   }
+  $: task = showOriginal || translationStatus !== 'translated' || !translatedTask ? data.task : translatedTask;
   $: deadline = formatDeadline(task.deadline);
 
   function statusInfo(s?: string) {
@@ -139,18 +167,10 @@
       {/if}
     </div>
 
-    {#if isTranslating}
-      <div class="td-hero-skeleton" aria-hidden="true">
-        <span class="td-skeleton-title"></span>
-        <span class="td-skeleton-short"></span>
-        <span class="td-skeleton-short td-skeleton-short-last"></span>
-        <div class="td-skeleton-chips"><span></span><span></span><span></span><span></span></div>
-      </div>
-    {:else}
-      <h1>{task.title}</h1>
-      <p class="td-short">{task.shortDescription}</p>
+    <h1>{task.title}</h1>
+    <p class="td-short">{task.shortDescription}</p>
 
-      <div class="td-meta">
+    <div class="td-meta">
         {#if typeof task.estimatedMinutes === 'number'}
           <span class="td-chip td-chip-time">
             <Icon icon="lucide:clock" width="14" height="14" /> {task.estimatedMinutes} {copy.minutes}
@@ -158,7 +178,8 @@
         {/if}
         {#if task.language}
           <span class="td-chip td-chip-lang">
-            <Icon icon="lucide:globe" width="14" height="14" /> {translatedTask && data.translatedTo ? copy.autoTranslated : task.language}
+            <Icon icon="lucide:globe" width="14" height="14" /> {task.language}
+            {#if translationStatus === 'translated'}<span class="td-chip-translation">({copy.autoTranslated})</span>{/if}
           </span>
         {/if}
         {#if task.maxVolunteers}
@@ -175,41 +196,37 @@
           {@const s = getTagStyle(tag)}
           <span class="td-chip" style="background: {s.bg}; color: {s.color};">#{tag}</span>
         {/each}
-      </div>
-    {/if}
+    </div>
   </section>
 
   <!-- ───── Description ───── -->
   <section class="td-card brand-card">
     <header class="td-card-head">
       <h2>{copy.theMission}</h2>
-      <label class="td-translate">
+      {#if translationTarget && translationTarget !== 'en' && (showOriginal || isTranslating || translationStatus === 'translated')}
+        <button class="td-translate" type="button" on:click={toggleTranslation} aria-pressed={showOriginal}>
         <Icon icon="lucide:languages" width="14" height="14" />
-        <CustomSelect
-          bind:value={langSelection}
-          onChange={applyTranslation}
-          disabled={isTranslating}
-          ariaLabel="Translate description"
-          options={TRANSLATION_OPTIONS.map((opt) => ({ value: opt.code, label: opt.label }))}
-        />
-      </label>
+        {showOriginal ? viewTranslationLabel : viewOriginalLabel}
+        </button>
+      {/if}
     </header>
     {#if isTranslating}
       <div class="td-translating" role="status">
         <span class="spin"><Icon icon="lucide:loader-2" width="13" height="13" /></span>
         {copy.translating}
       </div>
-    {:else if data.translatedTo && translatedTask}
+    {:else if translationStatus === 'translated' && !showOriginal}
       <div class="td-translated-note">
         <Icon icon="lucide:info" width="13" height="13" />
         {copy.translationNotice}
       </div>
-    {/if}
-    {#if isTranslating}
-      <div class="td-skeleton" aria-hidden="true">
-        <span></span><span></span><span></span><span></span>
+    {:else if translationStatus === 'fallback'}
+      <div class="td-translated-note" role="status">
+        <Icon icon="lucide:info" width="13" height="13" />
+        {translationUnavailableLabel}
       </div>
-    {:else if task.description}
+    {/if}
+    {#if task.description}
       <div class="td-prose">
         {#each task.description.split(/\n\n+/) as para (para)}
           <p>{para}</p>
@@ -311,16 +328,6 @@
 
   .td-hero h1 { position: relative; font-size: clamp(1.5rem, 2.5vw + 0.5rem, 2.25rem); font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; margin: 0; }
   .td-short { position: relative; font-size: 17px; font-weight: 500; line-height: 1.6; color: color-mix(in srgb, var(--color-text) 75%, transparent); margin: 0; max-width: 640px; }
-  .td-hero-skeleton { position: relative; display: grid; gap: 14px; max-width: 640px; }
-  .td-hero-skeleton > span, .td-skeleton-chips span { border-radius: 999px; background: linear-gradient(90deg, color-mix(in srgb, var(--color-text) 8%, transparent), color-mix(in srgb, var(--color-text) 15%, transparent), color-mix(in srgb, var(--color-text) 8%, transparent)); background-size: 200% 100%; animation: td-shimmer 1.2s ease-in-out infinite; }
-  .td-skeleton-title { width: 84%; height: 42px; }
-  .td-skeleton-short { width: 96%; height: 20px; }
-  .td-skeleton-short-last { width: 62%; }
-  .td-skeleton-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2px; }
-  .td-skeleton-chips span { width: 94px; height: 30px; }
-  .td-skeleton-chips span:nth-child(2) { width: 132px; }
-  .td-skeleton-chips span:nth-child(3) { width: 76px; }
-  .td-skeleton-chips span:nth-child(4) { width: 102px; }
 
   .td-meta { position: relative; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
   .td-chip {
@@ -336,6 +343,7 @@
   }
   .td-chip-time { background: rgba(255, 107, 107, 0.12); color: var(--color-primary-readable); }
   .td-chip-lang { background: var(--color-info-container); color: var(--color-info); }
+  .td-chip-translation { font-weight: 600; }
   .td-chip-cap { background: var(--color-surface-variant); color: var(--color-text-secondary); }
   .td-chip.tone-soon { background: #FEF3C7; color: #D97706; }
   .td-chip.tone-late { background: #FEE2E2; color: #DC2626; }
@@ -357,20 +365,15 @@
     font-size: 13px;
     font-weight: 600;
     transition: background .15s;
+    border: 0;
+    font: inherit;
+    cursor: pointer;
   }
+  .td-translate:disabled { cursor: not-allowed; opacity: 0.6; }
   .td-translate:hover { background: color-mix(in srgb, var(--color-text) 8%, transparent); }
-  .td-translate :global(.custom-select) { width: auto; min-width: 118px; }
-  .td-translate :global(.custom-select-trigger) { min-height: 30px; padding: 0 2px; border: 0; background: transparent; font-size: 13px; font-weight: 700; }
-  .td-translate :global(.custom-select-trigger:hover), .td-translate :global(.custom-select.open .custom-select-trigger) { border: 0; background: transparent; }
-  .td-translate :global(.custom-select-menu) { width: 190px; right: 0; left: auto; }
 
-  .td-translated-note { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; background: #FEF3C7; color: #92400E; border-radius: 10px; font-size: 12px; font-weight: 600; margin-bottom: 16px; }
+  .td-translated-note { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; background: #FEF3C7; color: #713F12; border-radius: 10px; font-size: 12px; font-weight: 600; margin-bottom: 16px; }
   .td-translating { display: inline-flex; align-items: center; gap: 6px; color: color-mix(in srgb, var(--color-text) 65%, transparent); font-size: 12px; font-weight: 700; margin-bottom: 16px; }
-  .td-skeleton { display: grid; gap: 12px; padding: 6px 0; }
-  .td-skeleton span { height: 18px; border-radius: 999px; background: linear-gradient(90deg, color-mix(in srgb, var(--color-text) 8%, transparent), color-mix(in srgb, var(--color-text) 15%, transparent), color-mix(in srgb, var(--color-text) 8%, transparent)); background-size: 200% 100%; animation: td-shimmer 1.2s ease-in-out infinite; }
-  .td-skeleton span:nth-child(2) { width: 92%; }
-  .td-skeleton span:nth-child(3) { width: 78%; }
-  .td-skeleton span:nth-child(4) { width: 58%; }
 
   .td-prose { display: flex; flex-direction: column; gap: 14px; }
   .td-prose p { font-size: 15px; line-height: 1.7; color: var(--color-text); margin: 0; white-space: pre-wrap; }
