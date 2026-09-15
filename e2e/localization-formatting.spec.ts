@@ -1,4 +1,4 @@
-import { expect, test, type Locator, type Page, type TestInfo } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
 const LOCALES = ['en', 'es', 'fr', 'de', 'pt', 'zh', 'ar'] as const;
 const ROUTES = ['/', '/tasks', '/how-it-works', '/for-ngos', '/for-volunteers', '/impact', '/login', '/signup', '/contact', '/help', '/docs/api'] as const;
@@ -8,8 +8,6 @@ const VIEWPORTS = [
   { name: 'tablet', width: 768, height: 1024 },
   { name: 'desktop', width: 1440, height: 900 }
 ] as const;
-const SCREENSHOT_LOCALES = new Set(['de', 'ar', 'zh', 'fr']);
-const SCREENSHOT_ROUTES = new Set(['/', '/tasks', '/for-volunteers']);
 
 function localizedPath(locale: string, route: string): string {
   return `/${locale}${route === '/' ? '' : route}`;
@@ -68,13 +66,6 @@ async function expectDesktopHeaderControls(page: Page): Promise<void> {
   }
 }
 
-async function captureRepresentativeScreenshot(page: Page, testInfo: TestInfo, locale: string, route: string, viewportName: string): Promise<void> {
-  if (!SCREENSHOT_LOCALES.has(locale) || !SCREENSHOT_ROUTES.has(route) || !['mobile', 'desktop'].includes(viewportName)) return;
-  const target: Locator = page.locator('header').first();
-  await expect(target).toBeVisible();
-  await target.screenshot({ path: testInfo.outputPath(`${locale}-${viewportName}.png`) });
-}
-
 test.describe.configure({ mode: 'serial' });
 
 for (const locale of LOCALES) {
@@ -83,7 +74,7 @@ for (const locale of LOCALES) {
       test.use({ viewport: { width: viewport.width, height: viewport.height } });
 
       for (const route of ROUTES) {
-        test(`${localizedPath(locale, route)} formats correctly`, async ({ page }, testInfo) => {
+        test(`${localizedPath(locale, route)} formats correctly`, async ({ page }) => {
           await page.goto(localizedPath(locale, route), { waitUntil: 'networkidle' });
           await expect(page.locator('html')).toHaveAttribute('lang', locale);
           await expect(page.locator('html')).toHaveAttribute('dir', locale === 'ar' ? 'rtl' : 'ltr');
@@ -92,7 +83,6 @@ for (const locale of LOCALES) {
           await expectNoClippedConstrainedText(page);
 
           if (viewport.name === 'desktop') await expectDesktopHeaderControls(page);
-          await captureRepresentativeScreenshot(page, testInfo, locale, route, viewport.name);
         });
       }
     });

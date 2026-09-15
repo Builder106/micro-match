@@ -135,6 +135,19 @@ jobs:
         run: bun run test:localization-formatting -- --project=chromium
         env:
           PLAYWRIGHT_USE_PREBUILT: '1'
+      - name: Run localization visual audit
+        run: bun run test:localization-visual -- --project=chromium
+        env:
+          PLAYWRIGHT_USE_PREBUILT: '1'
+      - uses: actions/upload-artifact@v7
+        if: ${{ failure() }}
+        with:
+          name: localization-visual-failure-release-${{ github.run_id }}
+          path: |
+            test-results/
+            playwright-report/
+          retention-days: 90
+          if-no-files-found: warn
       - uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:

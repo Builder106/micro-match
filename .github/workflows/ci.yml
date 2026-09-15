@@ -294,6 +294,19 @@ jobs:
         env:
           PLAYWRIGHT_USE_PREBUILT: '1'
           PLAYWRIGHT_BASE_URL: http://127.0.0.1:4173
+      - run: bun run test:localization-visual -- --project=chromium
+        env:
+          PLAYWRIGHT_USE_PREBUILT: '1'
+          PLAYWRIGHT_BASE_URL: http://127.0.0.1:4173
+      - uses: actions/upload-artifact@v7
+        if: ${{ failure() }}
+        with:
+          name: localization-visual-failure-${{ github.run_id }}
+          path: |
+            test-results/
+            playwright-report/
+          retention-days: 7
+          if-no-files-found: warn
       - uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:
