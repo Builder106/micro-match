@@ -63,6 +63,25 @@ test('mobile menu opens, closes, and restores focus', async ({ page }) => {
   await toggle.click(); await expect(toggle).toHaveAttribute('aria-expanded', 'true'); await page.keyboard.press('Escape'); await expect(toggle).toHaveAttribute('aria-expanded', 'false'); await expect(toggle).toBeFocused();
 });
 
+for (const width of [320, 375]) {
+  test(`localized task detail has no overflow at ${width}px`, async ({ page }, testInfo) => {
+    const namespace = `responsive-${width}-${testInfo.project.name}-${testInfo.workerIndex}`;
+    const seed = await page.request.post('/api/test/a11y', { data: { action: 'seed', namespace } });
+    expect(seed.ok()).toBe(true);
+    const body = await seed.json() as { taskId?: string };
+    expect(body.taskId).toBeTruthy();
+    const taskId = body.taskId as string;
+    await page.route(`**/api/tasks/${taskId}/translation?lang=es`, (route) => route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ task: { title: 'Revisar un documento público', shortDescription: 'Revisa un documento.', description: 'Descripción traducida.', tags: ['accesibilidad'], language: 'English', translation: { locale: 'es', status: 'translated' } } })
+    }));
+    await page.goto(`/es/task/${taskId}`, { waitUntil: 'networkidle' });
+    await expect(page.locator('.td-translate')).toBeVisible();
+    await expectNoOverflow(page, `/es/task/${taskId}`, width);
+  });
+}
+
 for (const width of [320, 375]) for (const route of ['/en', '/ar']) {
   test(`mobile brand remains accessible and contained on ${route} at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 812 });

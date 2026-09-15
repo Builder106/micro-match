@@ -117,6 +117,16 @@ async function prepareFixture(page: Page, namespace: string, role?: Exclude<Audi
   return body.taskId as string;
 }
 
+async function mockTaskTranslation(page: Page, taskId: string, response: { task?: Record<string, unknown> } | null, status = 200): Promise<void> {
+  await page.route(`**/api/tasks/${taskId}/translation?lang=es`, async (route) => {
+    if (response === null) {
+      await route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ error: 'Translation unavailable' }) });
+      return;
+    }
+    await route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(response) });
+  });
+}
+
 async function prepareState(page: Page, state: AuditState): Promise<void> {
   if (state === 'mobile-menu') {
     const toggle = page.locator('.menu-toggle');
@@ -440,6 +450,58 @@ for (const locale of LOCALES) for (const theme of THEMES) for (const viewport of
     });
   });
 }
+
+test('localized task detail translates automatically and exposes one original-content toggle', async ({ page }, testInfo) => {
+  const namespace = fixtureNamespace(testInfo);
+  const taskId = await prepareFixture(page, namespace);
+  await mockTaskTranslation(page, taskId, {
+    task: {
+      title: 'Revisar un documento público',
+      shortDescription: 'Revisa un documento y envía una nota clara.',
+      description: 'Revisa un documento público breve y envía una nota clara como prueba.',
+      tags: ['accesibilidad', 'documentación'],
+      language: 'English',
+      translation: { locale: 'es', status: 'translated' }
+    }
+  });
+
+  await page.goto(localizedPath('es', `/task/${taskId}`), { waitUntil: 'networkidle' });
+  await expect(page.locator('html')).toHaveAttribute('lang', 'es');
+  await expect(page.locator('h1')).toHaveText('Revisar un documento público');
+  await expect(page.locator('.td-chip-lang')).toContainText('English');
+  await expect(page.getByText('Traducido automáticamente')).toBeVisible();
+  await expect(page.getByRole('listbox')).toHaveCount(0);
+
+  const toggle = page.locator('button.td-translate');
+  await expect(toggle).toHaveAccessibleName('Ver original');
+  await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+  await toggle.focus();
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-pressed', 'true');
+  await expect(toggle).toHaveAccessibleName('Ver traducción');
+  await expect(page.locator('h1')).toContainText('Accessibility fixture task');
+  await expect(page.locator('.td-prose')).toContainText('Review a short public document');
+  await expect(page.locator('.td-chip').filter({ hasText: '#accessibility' })).toBeVisible();
+  await expect(page).toHaveURL(new RegExp(`/es/task/${taskId}$`));
+  await expect(toggle).toBeFocused();
+
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+  await expect(toggle).toHaveAccessibleName('Ver original');
+  await expect(page.locator('h1')).toHaveText('Revisar un documento público');
+});
+
+test('localized task detail reports translation fallback without claiming it is translated', async ({ page }, testInfo) => {
+  const namespace = fixtureNamespace(testInfo);
+  const taskId = await prepareFixture(page, namespace);
+  await mockTaskTranslation(page, taskId, null);
+
+  await page.goto(localizedPath('es', `/task/${taskId}`), { waitUntil: 'networkidle' });
+  await expect(page.locator('h1')).toContainText('Accessibility fixture task');
+  await expect(page.getByText(/traducción no está disponible/i)).toBeVisible();
+  await expect(page.getByText('Traducido automáticamente')).toHaveCount(0);
+  await expect(page.getByRole('listbox')).toHaveCount(0);
+});
 
 test('responsive navigation switches at the 1024px breakpoint', async ({ page }) => {
   await page.setViewportSize({ width: MOBILE_MENU_MAX_WIDTH, height: 900 });
