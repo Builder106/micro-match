@@ -36,7 +36,7 @@ Password recovery is managed separately by Appwrite through its configured recov
 
 ### How do translations work
 
-The language picker changes the locale prefix, such as `/es/tasks` or `/fr/task/123`. Paraglide supplies the reviewed static UI messages. LibreTranslate translates user-created task display fields on the server for the selected locale. Tasks with an active translation display an "Auto-translated" badge. If the translation service is unavailable, the page shows the original text. Older `/task/123?lang=es` links redirect to `/es/task/123`.
+The site language controls the locale prefix, such as `/es/tasks` or `/fr/task/123`, and remains selected through the URL and locale cookie. Paraglide supplies the reviewed static UI messages. LibreTranslate automatically translates user-created task fields into the selected site locale. On a task page, use “View original” to compare the source text and “View translation” to return to the localized version. The task’s source language remains visible, and if translation is unavailable the original text stays visible with a fallback notice. Older `/task/123?lang=es` links redirect to `/es/task/123`.
 
 ### Why was my task or claim note blocked
 
