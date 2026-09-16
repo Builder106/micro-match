@@ -7,14 +7,16 @@
   import LottieAnimation from '$lib/components/LottieAnimation.svelte';
   import { page } from '$app/state';
   import { localizedHref, type Locale } from '$lib/locale';
-  import { translateTaskBatch, type DisplayTask } from '$lib/taskTranslationClient';
-  import { onMount } from 'svelte';
+  import * as m from '$lib/paraglide/messages.js';
 
-  interface Task extends DisplayTask {
+  interface Task {
     id: string;
     title: string;
     shortDescription: string;
+    description?: string;
     tags: string[];
+    sourceTags?: string[];
+    translation: { locale: Locale; status: 'original' | 'translated' | 'fallback' };
     estimatedMinutes?: number;
     language?: string;
     status?: string;
@@ -26,14 +28,18 @@
 
   let { data }: { data: { tasks: Task[] } } = $props();
 
-  const sortOptions = [
-    { value: 'recommended', label: 'Recommended' },
-    { value: 'shortest', label: 'Shortest first' },
-    { value: 'az', label: 'A–Z' }
-  ];
+  type StaticMessage = (inputs?: Record<string, never>, options?: { locale?: Locale }) => string;
+  let currentLocale = $derived((page.data?.locale as Locale | undefined) ?? 'en');
+  function t(message: StaticMessage): string { return message({}, { locale: currentLocale }); }
+
+  const sortOptions = $derived([
+    { value: 'recommended', label: t(m.tasks_sort_recommended) },
+    { value: 'shortest', label: t(m.tasks_sort_shortest) },
+    { value: 'az', label: t(m.tasks_sort_az) }
+  ]);
 
   let q = $state("");
-  let tasks = $state<Task[]>([]);
+  let tasks = $derived(data.tasks);
 
   let selectedTags = $state<string[]>([]);
   let maxMinutes = $state<number | null>(null);
@@ -52,7 +58,15 @@
     sortBy = 'recommended';
   };
 
-  const quickTags = ['translation', 'design', 'data', 'excel', 'spanish'];
+  type QuickTag = 'translation' | 'design' | 'data' | 'excel' | 'spanish';
+  const quickTags: QuickTag[] = ['translation', 'design', 'data', 'excel', 'spanish'];
+  const quickTagLabels: Record<QuickTag, StaticMessage> = {
+    translation: m.tasks_tag_translation,
+    design: m.tasks_tag_design,
+    data: m.tasks_tag_data,
+    excel: m.tasks_tag_excel,
+    spanish: m.tasks_tag_spanish
+  };
   const timeOptions = [15, 20, 30];
 
   const filtered = $derived(tasks.filter((t) => {
@@ -61,10 +75,10 @@
       qLower === '' ||
       t.title.toLowerCase().includes(qLower) ||
       t.shortDescription.toLowerCase().includes(qLower) ||
-      t.tags.some((tg) => tg.toLowerCase().includes(qLower));
+      [...t.tags, ...(t.sourceTags ?? [])].some((tg) => tg.toLowerCase().includes(qLower));
 
     const matchesTags =
-      selectedTags.length === 0 || selectedTags.every((tg) => t.tags.includes(tg));
+      selectedTags.length === 0 || selectedTags.every((tg) => (t.sourceTags ?? t.tags).includes(tg));
 
     const matchesTime =
       maxMinutes === null ||
@@ -88,28 +102,16 @@
 
   let userRole = $derived(page.data?.userRole ?? 'anonymous');
   let isSignedIn = $derived(userRole !== 'anonymous');
-  let currentLocale = $derived((page.data?.locale as Locale | undefined) ?? 'en');
   const taskHref = (id: string) => localizedHref(`/task/${id}`, currentLocale);
-
-  onMount(() => {
-    const sourceTasks = data.tasks.map((task) => ({
-      ...task,
-      translation: { locale: 'en' as const, status: 'original' as const }
-    }));
-    tasks = sourceTasks;
-    void translateTaskBatch(sourceTasks, currentLocale).then((translated) => {
-      tasks = translated as Task[];
-    });
-  });
 </script>
 
 {#if isSignedIn}
   <div class="feed-page feed-page-app">
     <!-- ───── Header ───── -->
     <header class="feed-head">
-      <h1>Find your next <span class="coral-gradient">mission</span>.</h1>
+      <h1>{t(m.tasks_title_lead)} <span class="coral-gradient">{t(m.tasks_title_accent)}</span></h1>
       <p>
-        {tasks.length} task{tasks.length === 1 ? '' : 's'} open{ngoCount > 0 ? ` across ${ngoCount} NGO${ngoCount === 1 ? '' : 's'}` : ''} <span class="pipe-sep">|</span> pick something that matches your skills and dive in.
+        {m.tasks_open({ count: tasks.length }, { locale: currentLocale })}{#if ngoCount > 0} {m.tasks_summary_across({ count: ngoCount }, { locale: currentLocale })}{/if} <span class="pipe-sep">|</span> {t(m.tasks_summary_prompt)}
       </p>
     </header>
 
@@ -121,11 +123,11 @@
         id="task-search"
         name="task-search"
         bind:value={q}
-        placeholder="Search tasks, tags, or skills…"
-        aria-label="Search tasks"
+        placeholder={t(m.tasks_search_placeholder)}
+        aria-label={t(m.tasks_search_label)}
       />
       {#if q}
-        <button type="button" class="search-clear" onclick={() => q = ''} aria-label="Clear search">
+        <button type="button" class="search-clear" onclick={() => q = ''} aria-label={t(m.tasks_clear_search)}>
           <Icon icon="lucide:x" width="16" height="16" />
         </button>
       {/if}
@@ -134,21 +136,21 @@
     <!-- ───── Filters ───── -->
     <div class="filters">
       <div class="filter-row">
-        <span class="filter-label">Time</span>
-        {#each timeOptions as m (m)}
+        <span class="filter-label">{t(m.tasks_filter_time)}</span>
+        {#each timeOptions as minutes (minutes)}
           <button
             type="button"
             class="filter-chip"
-            class:active={maxMinutes === m}
-            onclick={() => (maxMinutes = maxMinutes === m ? null : m)}
+            class:active={maxMinutes === minutes}
+            onclick={() => (maxMinutes = maxMinutes === minutes ? null : minutes)}
           >
-            <Icon icon="lucide:clock" width="13" height="13" /> ≤ {m} min
+            <Icon icon="lucide:clock" width="13" height="13" /> ≤ {minutes} {t(m.minutes_short)}
           </button>
         {/each}
       </div>
 
       <div class="filter-row">
-        <span class="filter-label">Tags</span>
+        <span class="filter-label">{t(m.tasks_filter_tags)}</span>
         {#each quickTags as tag (tag)}
           <button
             type="button"
@@ -156,19 +158,19 @@
             class:active={selectedTags.includes(tag)}
             onclick={() => toggleTag(tag)}
           >
-            #{tag}
+            #{t(quickTagLabels[tag])}
           </button>
         {/each}
       </div>
 
       <div class="filter-row filter-controls">
         <div class="sort">
-          <span class="sort-label">Sort</span>
-          <CustomSelect bind:value={sortBy} ariaLabel="Sort tasks" options={sortOptions} />
+          <span class="sort-label">{t(m.tasks_sort_label)}</span>
+          <CustomSelect bind:value={sortBy} ariaLabel={t(m.tasks_sort_label)} options={sortOptions} />
         </div>
         {#if hasActiveFilters}
           <button type="button" class="filter-clear" onclick={clearFilters}>
-            <Icon icon="lucide:x" width="14" height="14" /> Clear filters
+            <Icon icon="lucide:x" width="14" height="14" /> {t(m.tasks_clear_filters)}
           </button>
         {/if}
       </div>
@@ -183,15 +185,15 @@
           </LottieAnimation>
         </div>
         {#if hasActiveFilters}
-          <h2>Nothing matches those filters.</h2>
-          <p>Try widening your search or clearing the filters to see everything.</p>
+          <h2>{t(m.tasks_empty_filtered_title)}</h2>
+          <p>{t(m.tasks_empty_filtered_body)}</p>
           <button type="button" class="btn-dark-pill" onclick={clearFilters}>
             <Icon icon="lucide:rotate-ccw" width="14" height="14" />
-            Clear filters
+            {t(m.tasks_clear_filters)}
           </button>
         {:else}
-          <h2>You're too fast!</h2>
-          <p>Our NGOs are busy preparing more bite-sized tasks. Check back soon — fresh missions land daily.</p>
+          <h2>{t(m.home_empty_title)}</h2>
+          <p>{t(m.home_empty_body)}</p>
         {/if}
       </div>
     {:else}
@@ -223,9 +225,9 @@
     <div class="feed-page">
       <!-- ───── Header ───── -->
       <header class="feed-head">
-        <h1>Find your next <span class="coral-gradient">mission</span>.</h1>
+        <h1>{t(m.tasks_title_lead)} <span class="coral-gradient">{t(m.tasks_title_accent)}</span></h1>
         <p>
-          {tasks.length} task{tasks.length === 1 ? '' : 's'} open{ngoCount > 0 ? ` across ${ngoCount} NGO${ngoCount === 1 ? '' : 's'}` : ''} <span class="pipe-sep">|</span> pick something that matches your skills and dive in.
+          {m.tasks_open({ count: tasks.length }, { locale: currentLocale })}{#if ngoCount > 0} {m.tasks_summary_across({ count: ngoCount }, { locale: currentLocale })}{/if} <span class="pipe-sep">|</span> {t(m.tasks_summary_prompt)}
         </p>
       </header>
 
@@ -237,11 +239,11 @@
           id="task-search-public"
           name="task-search"
           bind:value={q}
-          placeholder="Search tasks, tags, or skills…"
-          aria-label="Search tasks"
+          placeholder={t(m.tasks_search_placeholder)}
+          aria-label={t(m.tasks_search_label)}
         />
         {#if q}
-          <button type="button" class="search-clear" onclick={() => q = ''} aria-label="Clear search">
+          <button type="button" class="search-clear" onclick={() => q = ''} aria-label={t(m.tasks_clear_search)}>
             <Icon icon="lucide:x" width="16" height="16" />
           </button>
         {/if}
@@ -250,21 +252,21 @@
       <!-- ───── Filters ───── -->
       <div class="filters">
         <div class="filter-row">
-          <span class="filter-label">Time</span>
-          {#each timeOptions as m (m)}
+          <span class="filter-label">{t(m.tasks_filter_time)}</span>
+          {#each timeOptions as minutes (minutes)}
             <button
               type="button"
               class="filter-chip"
-              class:active={maxMinutes === m}
-              onclick={() => (maxMinutes = maxMinutes === m ? null : m)}
+              class:active={maxMinutes === minutes}
+              onclick={() => (maxMinutes = maxMinutes === minutes ? null : minutes)}
             >
-              <Icon icon="lucide:clock" width="13" height="13" /> ≤ {m} min
+              <Icon icon="lucide:clock" width="13" height="13" /> ≤ {minutes} {t(m.minutes_short)}
             </button>
           {/each}
         </div>
 
         <div class="filter-row">
-          <span class="filter-label">Tags</span>
+          <span class="filter-label">{t(m.tasks_filter_tags)}</span>
           {#each quickTags as tag (tag)}
             <button
               type="button"
@@ -272,19 +274,19 @@
               class:active={selectedTags.includes(tag)}
               onclick={() => toggleTag(tag)}
             >
-              #{tag}
+              #{t(quickTagLabels[tag])}
             </button>
           {/each}
         </div>
 
         <div class="filter-row filter-controls">
           <div class="sort">
-            <span class="sort-label">Sort</span>
-            <CustomSelect bind:value={sortBy} ariaLabel="Sort tasks" options={sortOptions} />
+            <span class="sort-label">{t(m.tasks_sort_label)}</span>
+            <CustomSelect bind:value={sortBy} ariaLabel={t(m.tasks_sort_label)} options={sortOptions} />
           </div>
           {#if hasActiveFilters}
             <button type="button" class="filter-clear" onclick={clearFilters}>
-              <Icon icon="lucide:x" width="14" height="14" /> Clear filters
+              <Icon icon="lucide:x" width="14" height="14" /> {t(m.tasks_clear_filters)}
             </button>
           {/if}
         </div>
@@ -299,15 +301,15 @@
             </LottieAnimation>
           </div>
           {#if hasActiveFilters}
-            <h2>Nothing matches those filters.</h2>
-            <p>Try widening your search or clearing the filters to see everything.</p>
+            <h2>{t(m.tasks_empty_filtered_title)}</h2>
+            <p>{t(m.tasks_empty_filtered_body)}</p>
             <button type="button" class="btn-dark-pill" onclick={clearFilters}>
               <Icon icon="lucide:rotate-ccw" width="14" height="14" />
-              Clear filters
+              {t(m.tasks_clear_filters)}
             </button>
           {:else}
-            <h2>You're too fast!</h2>
-            <p>Our NGOs are busy preparing more bite-sized tasks. Check back soon — fresh missions land daily.</p>
+            <h2>{t(m.home_empty_title)}</h2>
+            <p>{t(m.home_empty_body)}</p>
           {/if}
         </div>
       {:else}

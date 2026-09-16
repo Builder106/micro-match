@@ -4,6 +4,10 @@
 > things happen — retrospectives need this raw material to land.
 > Reverse-chronological; one paragraph max per entry.
 
+## 2026-09-16 - Localized tasks feed at the server boundary #fix
+
+The tasks feed now translates all loaded task display fields during the locale-aware server load, so localized routes render translated cards in the initial HTML instead of waiting for a client-only request. Feed controls, empty states, task-card labels, source-language names, and deadline text now use the selected Paraglide locale.
+
 ## 2026-09-16 - Contained localized homepage progress labels #fix
 
 The homepage impact ring now reserves its inner area for the localized “to next level” label, wrapping longer translations without crossing the track. The localization-formatting matrix checks that containment across all supported locales and responsive viewports, and the impact visual baselines record the intentional wrapping.

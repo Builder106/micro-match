@@ -1,8 +1,16 @@
-import { describe, it, expect } from 'vitest';
+import { beforeEach, describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/svelte';
+
+const { pageState } = vi.hoisted(() => ({ pageState: { data: { locale: 'en' }, url: new URL('http://test/en/tasks') } }));
+vi.mock('$app/state', () => ({ page: pageState }));
+
 import TaskCard from '$lib/components/TaskCard.svelte';
 
 describe('TaskCard', () => {
+  beforeEach(() => {
+    pageState.data = { locale: 'en' };
+  });
+
   it('renders title, description, and estimated time', () => {
     render(TaskCard, {
       id: 't1', title: 'Translate flyer', shortDescription: 'Short desc', estimatedMinutes: 20
@@ -88,5 +96,19 @@ describe('TaskCard', () => {
   it('shows a max-volunteers tag when maxVolunteers is set', () => {
     render(TaskCard, { id: 't1', title: 'T', shortDescription: 'S', maxVolunteers: 5 });
     expect(screen.getByText(/Max 5/)).toBeInTheDocument();
+  });
+
+  it('localizes card chrome and source-language labels', () => {
+    pageState.data = { locale: 'de' };
+    render(TaskCard, {
+      id: 't1', title: 'Aufgabe', shortDescription: 'Kurz', language: 'English', estimatedMinutes: 20,
+      maxVolunteers: 5, status: 'completed', isVerified: false
+    });
+
+    expect(screen.getByText('Englisch')).toBeInTheDocument();
+    expect(screen.getByText('Abgeschlossen')).toBeInTheDocument();
+    expect(screen.getByText('Nicht verifiziert')).toBeInTheDocument();
+    expect(screen.getByText('Max. 5')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Aufgabe ansehen/i })).toBeInTheDocument();
   });
 });
