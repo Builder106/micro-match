@@ -694,9 +694,9 @@
   .progress-ring { width: 100%; height: 100%; transform: rotate(-90deg); }
   .ring-bg { fill: transparent; stroke: var(--card-border-strong); stroke-width: 8; }
   .ring-fg { fill: transparent; stroke: #FF6B6B; stroke-width: 8; stroke-linecap: round; stroke-dasharray: 251; stroke-dashoffset: 63; transition: stroke-dashoffset 1.5s ease-out; }
-  .ring-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .ring-label { position: absolute; inset: 0; box-sizing: border-box; padding: 0 15%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
   .ring-pct { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 40px; font-weight: 800; color: var(--color-text); }
-  .ring-sub { font-size: 11px; font-weight: 700; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 4px; }
+  .ring-sub { display: block; width: 100%; max-width: 100%; font-size: 11px; font-weight: 700; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.1em; line-height: 1.2; margin-top: 4px; overflow-wrap: anywhere; text-wrap: balance; }
   .progress-card h3 { font-size: 22px; font-weight: 700; margin: 0 0 8px; text-align: center; color: var(--color-text); }
   .progress-card p { color: var(--color-text-secondary); font-weight: 500; margin: 0; text-align: center; }
   .badges-section { width: 100%; }

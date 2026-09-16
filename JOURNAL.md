@@ -4,6 +4,10 @@
 > things happen — retrospectives need this raw material to land.
 > Reverse-chronological; one paragraph max per entry.
 
+## 2026-09-16 - Contained localized homepage progress labels #fix
+
+The homepage impact ring now reserves its inner area for the localized “to next level” label, wrapping longer translations without crossing the track. The localization-formatting matrix checks that containment across all supported locales and responsive viewports, and the impact visual baselines record the intentional wrapping.
+
 ## 2026-09-15 - Localized homepage featured tasks #fix
 
 Homepage featured tasks now pass the selected URL locale through the existing server-side translation boundary after bounding the load to the first three tasks; original task fields and source-language metadata remain intact when translation is unavailable.

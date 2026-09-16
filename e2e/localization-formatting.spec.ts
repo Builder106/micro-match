@@ -56,6 +56,44 @@ async function expectNoClippedConstrainedText(page: Page): Promise<void> {
   expect(issues, 'Constrained text containers must not clip content').toEqual([]);
 }
 
+async function expectProgressRingLabelFitsInsideTrack(page: Page): Promise<void> {
+  const geometry = await page.locator('.progress-ring-wrap').evaluate((ring) => {
+    const label = ring.querySelector<HTMLElement>('.ring-sub');
+    const svg = ring.querySelector<SVGSVGElement>('.progress-ring');
+    const circle = svg?.querySelector<SVGCircleElement>('.ring-bg');
+    if (!label || !svg || !circle) return null;
+
+    const svgRect = svg.getBoundingClientRect();
+    const labelRect = label.getBoundingClientRect();
+    const viewBox = svg.viewBox.baseVal;
+    const scaleX = svgRect.width / viewBox.width;
+    const scaleY = svgRect.height / viewBox.height;
+    const strokeWidth = Number.parseFloat(getComputedStyle(circle).strokeWidth);
+    const innerRadiusX = (circle.r.baseVal.value - strokeWidth / 2) * scaleX;
+    const innerRadiusY = (circle.r.baseVal.value - strokeWidth / 2) * scaleY;
+    const centerX = svgRect.left + (circle.cx.baseVal.value / viewBox.width) * svgRect.width;
+    const centerY = svgRect.top + (circle.cy.baseVal.value / viewBox.height) * svgRect.height;
+    return {
+      innerBottom: centerY + innerRadiusY,
+      innerLeft: centerX - innerRadiusX,
+      innerRight: centerX + innerRadiusX,
+      innerTop: centerY - innerRadiusY,
+      labelBottom: labelRect.bottom,
+      labelLeft: labelRect.left,
+      labelRight: labelRect.right,
+      labelTop: labelRect.top
+    };
+  });
+
+  expect(geometry, 'Homepage progress ring label must be rendered').not.toBeNull();
+  if (!geometry) return;
+
+  expect(geometry.labelLeft, 'Progress ring label must stay inside the ring track on the left').toBeGreaterThanOrEqual(geometry.innerLeft - 1);
+  expect(geometry.labelRight, 'Progress ring label must stay inside the ring track on the right').toBeLessThanOrEqual(geometry.innerRight + 1);
+  expect(geometry.labelTop, 'Progress ring label must stay inside the ring track at the top').toBeGreaterThanOrEqual(geometry.innerTop - 1);
+  expect(geometry.labelBottom, 'Progress ring label must stay inside the ring track at the bottom').toBeLessThanOrEqual(geometry.innerBottom + 1);
+}
+
 async function expectDesktopHeaderControls(page: Page): Promise<void> {
   const controls = page.locator('.header-nav a:visible, .header-signin:visible, .header-github:visible, .locale-trigger:visible, .header-actions .btn-coral:visible');
   const count = await controls.count();
@@ -81,6 +119,7 @@ for (const locale of LOCALES) {
           await expectNoHorizontalOverflow(page, route, viewport.width);
           await expectVisibleGeometry(page);
           await expectNoClippedConstrainedText(page);
+          if (route === '/') await expectProgressRingLabelFitsInsideTrack(page);
 
           if (viewport.name === 'desktop') await expectDesktopHeaderControls(page);
         });
