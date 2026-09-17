@@ -51,7 +51,7 @@ async function verifyStaging() {
   try {
     const db = await databases.get(dbId);
     console.log(`✓ Database "${db.name}" (${db.$id}) is accessible.`);
-  } catch (err: unknown) {
+  } catch (err) {
     console.error(`✗ Failed to access database "${dbId}":`, err instanceof Error ? err.message : err);
     hasError = true;
   }
@@ -67,7 +67,7 @@ async function verifyStaging() {
       try {
         const rows = await tables.listRows(dbId, tableId);
         console.log(`✓ Table "${tableId}" is accessible (${rows.total} rows).`);
-      } catch (err: unknown) {
+      } catch (err) {
         console.error(`✗ Failed to access table "${tableId}":`, err instanceof Error ? err.message : err);
         hasError = true;
       }
@@ -79,7 +79,7 @@ async function verifyStaging() {
     try {
       const bucket = await storage.getBucket(bucketId);
       console.log(`✓ Storage bucket "${bucket.name}" (${bucket.$id}) is accessible.`);
-    } catch (err: unknown) {
+    } catch (err) {
       console.error(`✗ Failed to access bucket "${bucketId}":`, err instanceof Error ? err.message : err);
       hasError = true;
     }
@@ -91,7 +91,7 @@ async function verifyStaging() {
     try {
       const team = await teams.get(teamId);
       console.log(`✓ Team "${team.name}" (${team.$id}) is accessible.`);
-    } catch (err: unknown) {
+    } catch (err) {
       console.error(`✗ Failed to access team "${teamId}":`, err instanceof Error ? err.message : err);
       hasError = true;
     }

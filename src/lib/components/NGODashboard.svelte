@@ -18,13 +18,19 @@
       pendingReviewsCount?: number;
       approvedClaimsCount?: number;
       totalHours?: number;
-      [key: string]: unknown;
+      [key: string]:
+        | string
+        | number
+        | boolean
+        | null
+        | undefined
+        | Array<{ id: string; [k: string]: string | number | boolean | null | undefined | string[] | object }>;
     } | null;
   };
 
   const currentLocale = (page.data?.locale as Locale | undefined) ?? 'en';
 
-  function resolve(pathname: string, _options?: unknown): string {
+  function resolve(pathname: string, _options?: Record<string, string | number | boolean | null>): string {
     return localizedHref(pathname, currentLocale);
   }
 

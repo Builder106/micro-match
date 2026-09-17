@@ -44,7 +44,7 @@ export async function lookupNonprofitByEin(rawEin: string): Promise<ProPublicaRe
       ntee: org.ntee_code || undefined,
       rulingDate: org.ruling_date || undefined
     };
-  } catch (err: unknown) {
+  } catch (err) {
     return { found: false, error: err instanceof Error ? err.message : String(err) };
   }
 }

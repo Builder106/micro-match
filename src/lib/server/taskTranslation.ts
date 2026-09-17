@@ -17,7 +17,7 @@ export type TranslatedTask = Task & {
 
 export const MAX_TASK_TRANSLATION_BATCH_SIZE = 50;
 
-export function isSupportedTaskLocale(value: unknown): value is Locale {
+export function isSupportedTaskLocale(value: string | number | boolean | null | undefined | object): value is Locale {
   return value === 'en' || (typeof value === 'string' && isSupportedTranslationCode(value));
 }
 

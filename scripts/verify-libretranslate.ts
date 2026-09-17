@@ -7,9 +7,9 @@ if (!endpoint || !apiKey) {
   throw new Error('Set LIBRETRANSLATE_ENDPOINT and LIBRETRANSLATE_API_KEY before running this check.');
 }
 
-async function readJson(response: Response): Promise<unknown> {
+async function readJson<T = Record<string, string | number | boolean | null | undefined>>(response: Response): Promise<T | undefined> {
   try {
-    return await response.json();
+    return (await response.json()) as T;
   } catch {
     return undefined;
   }

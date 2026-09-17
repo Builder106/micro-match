@@ -11,7 +11,7 @@ const DEFAULT_API_URL = 'https://next-api.useplunk.com';
 const DEFAULT_FROM_NAME = 'MicroMatch';
 const SEND_TIMEOUT_MS = 10_000;
 
-type PlunkResponse = { success?: boolean; data?: { emails?: Array<{ email?: string }> }; error?: unknown };
+type PlunkResponse = { success?: boolean; data?: { emails?: Array<{ email?: string }> }; error?: string | { message?: string } | null };
 
 function textToHtml(text: string): string {
   return text

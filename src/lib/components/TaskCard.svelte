@@ -21,7 +21,7 @@
   type StatusInfo = { color: string; bg: string; icon: string; label: StaticMessage };
   let currentLocale: Locale = 'en';
   $: currentLocale = (page.data?.locale as Locale | undefined) ?? 'en';
-  function resolve(pathname: string, _options?: unknown) { return localizedHref(pathname, currentLocale); }
+  function resolve(pathname: string, _options?: Record<string, string | number | boolean | null>) { return localizedHref(pathname, currentLocale); }
 
   const languageMessages: Record<string, StaticMessage> = {
     en: m.language_english,

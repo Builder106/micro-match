@@ -23,7 +23,7 @@ function requireHarness(): void {
   if (!isHarnessEnabled()) throw error(404, 'Not found');
 }
 
-function requireNamespace(value: unknown): string {
+function requireNamespace(value: string | null | undefined): string {
   if (typeof value !== 'string' || !namespacePattern.test(value)) {
     throw error(400, 'A valid accessibility harness namespace is required.');
   }

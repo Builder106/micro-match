@@ -75,9 +75,11 @@ export async function translateTexts({ texts, to }: { texts: string[]; to: strin
       signal: controller.signal
     });
 
-    if (!response.ok) return translations;
-
-    const data: unknown = await response.json();
+    interface LibreTranslateResponse {
+      translatedText?: string[] | string;
+      error?: string;
+    }
+    const data = (await response.json()) as LibreTranslateResponse | null;
     const translated =
       typeof data === 'object' && data !== null && 'translatedText' in data
         ? data.translatedText
