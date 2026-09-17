@@ -76,7 +76,7 @@
     "@types/howler": "^2.2.13",
     "@types/node": "^26.4.1",
     "@vitest/coverage-v8": "^5.0.0",
-    "autoprefixer": "^10.5.5",
+    "autoprefixer": "^10.6.0",
     "csstype": "^3.2.3",
     "dotenv": "^17.4.2",
     "eslint": "^10.10.0",
