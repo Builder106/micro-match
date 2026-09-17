@@ -12,7 +12,7 @@ export const POST: RequestHandler = async ({ request }) => {
     taskIds?: string[];
     locale?: string;
   }
-  let body: TranslationRequestBody | null = null;
+  let body: TranslationRequestBody;
   try {
     body = (await request.json()) as TranslationRequestBody;
   } catch {
