@@ -113,7 +113,7 @@
     }
   }
 
-  function isUnauthError(err: Error | { code?: number; type?: string } | null | undefined): boolean {
+  function isUnauthError(err: unknown): boolean {
     const e = err && typeof err === 'object' ? (err as { code?: number; type?: string }) : null;
     return (
       e?.code === 401 ||
