@@ -35,7 +35,7 @@
     "format": "prettier -w ."
   },
   "dependencies": {
-    "@inlang/paraglide-js": "^2.25.0",
+    "@inlang/paraglide-js": "^2.25.2",
     "@iconify/svelte": "^5.2.2",
     "@smui/button": "^9.0.2",
     "@smui/card": "^9.0.2",
