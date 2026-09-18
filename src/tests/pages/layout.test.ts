@@ -11,6 +11,7 @@ vi.mock('$lib/server/teams', () => ({
 }));
 
 import { load } from '../../routes/+layout.server';
+import { createServerLoadEvent } from '../helpers/createLoadEvent';
 
 describe('+layout.server load', () => {
   beforeEach(() => {
@@ -18,12 +19,27 @@ describe('+layout.server load', () => {
   });
 
   it('returns anonymous role and isAdmin=false when no session exists', async () => {
-    const event = {
-      locals: {},
-      url: new URL('http://localhost:5173/about')
-    } as unknown as Parameters<typeof load>[0];
+    const event = createServerLoadEvent({ url: 'http://localhost:5173/about' });
 
     const result = await load(event);
+    expect(result).toEqual({
+      userRole: 'anonymous',
+      isAdmin: false,
+      origin: 'http://localhost:5173',
+      locale: 'en'
+    });
+    expect(mocks.isUserAdmin).not.toHaveBeenCalled();
+  });
+
+  it('falls back to the anonymous role when locals.userRole is undefined', async () => {
+    const event = createServerLoadEvent({
+      userRole: 'volunteer',
+      url: 'http://localhost:5173/about'
+    });
+    event.locals.userRole = undefined;
+
+    const result = await load(event);
+
     expect(result).toEqual({
       userRole: 'anonymous',
       isAdmin: false,
@@ -36,13 +52,11 @@ describe('+layout.server load', () => {
   it('checks admin status when user session exists', async () => {
     mocks.isUserAdmin.mockResolvedValue(true);
 
-    const event = {
-      locals: {
-        userRole: 'ngo',
-        session: { user: { id: 'admin-user-1' } }
-      },
-      url: new URL('http://localhost:5173/dashboard')
-    } as unknown as Parameters<typeof load>[0];
+    const event = createServerLoadEvent({
+      userRole: 'ngo',
+      userId: 'admin-user-1',
+      url: 'http://localhost:5173/dashboard'
+    });
 
     const result = await load(event);
     expect(result).toEqual({
@@ -57,13 +71,11 @@ describe('+layout.server load', () => {
   it('returns isAdmin=false when isUserAdmin returns false', async () => {
     mocks.isUserAdmin.mockResolvedValue(false);
 
-    const event = {
-      locals: {
-        userRole: 'volunteer',
-        session: { user: { id: 'volunteer-1' } }
-      },
-      url: new URL('http://localhost:5173/profile')
-    } as unknown as Parameters<typeof load>[0];
+    const event = createServerLoadEvent({
+      userRole: 'volunteer',
+      userId: 'volunteer-1',
+      url: 'http://localhost:5173/profile'
+    });
 
     const result = await load(event);
     expect(result).toEqual({
@@ -75,4 +87,3 @@ describe('+layout.server load', () => {
     expect(mocks.isUserAdmin).toHaveBeenCalledWith('volunteer-1');
   });
 });
-

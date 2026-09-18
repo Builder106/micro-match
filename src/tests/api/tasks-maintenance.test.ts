@@ -15,17 +15,16 @@ vi.mock('$lib/server/appwrite', () => ({
 }));
 
 import { GET, POST } from '../../routes/api/tasks/maintenance/+server';
+import { createRequestEvent } from '../helpers/createLoadEvent';
 
 function makeEvent(opts: { userId?: string | null; body?: unknown } = {}) {
-  return {
-    locals: { session: opts.userId ? { user: { id: opts.userId } } : null },
-    request: {
-      json: async () => {
-        if (opts.body === undefined) throw new Error('no body');
-        return opts.body;
-      }
-    }
-  } as unknown as import("@sveltejs/kit").RequestEvent;
+  return createRequestEvent({
+    userId: opts.userId ?? undefined,
+    request: new Request('http://test/api/tasks/maintenance', {
+      method: 'POST', body: opts.body === undefined ? undefined : JSON.stringify(opts.body),
+      headers: opts.body === undefined ? undefined : { 'content-type': 'application/json' }
+    })
+  });
 }
 
 describe('GET/POST /api/tasks/maintenance', () => {

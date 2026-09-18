@@ -44,7 +44,7 @@ describe('email module (Plunk)', () => {
     await sendEmail({ to: 'a@b', subject: 'Subject', text: '<script>x</script>\n\nSecond' });
     const body = JSON.parse((fetchSpy.mock.calls[0]![1] as RequestInit).body as string).body;
     expect(body).toContain('&lt;script&gt;x&lt;/script&gt;'); expect(body).toContain('<p>Second</p>'); expect(body).not.toContain('<script>');
-    await sendEmail({ to: 'a@b', subject: 'Subject', html: null as unknown as string, text: 'null HTML fallback' });
+    await sendEmail({ to: 'a@b', subject: 'Subject', html: null, text: 'null HTML fallback' });
     await sendEmail({ to: 'a@b', subject: 'Subject' });
   });
 

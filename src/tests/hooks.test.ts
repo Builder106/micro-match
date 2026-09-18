@@ -15,17 +15,12 @@ vi.mock('$lib/server/session', () => ({ getSession: mocks.getSession }));
 vi.mock('$lib/server/auth', () => ({ getUserRole: mocks.getUserRole }));
 
 import { handle } from '../hooks.server';
+import { createRequestEvent } from './helpers/createLoadEvent';
 
 function makeEvent(cookies: Record<string, string>) {
-  return {
-    locals: {},
-    cookies: {
-      get: (name: string) => cookies[name],
-      set: vi.fn()
-    },
-    url: new URL('http://test/en/tasks'),
-    request: new Request('http://test/en/tasks')
-  } as unknown as import("@sveltejs/kit").RequestEvent;
+  const event = createRequestEvent({ url: 'http://test/en/tasks', cookies });
+  event.locals.userRole = undefined;
+  return event;
 }
 
 const resolve = vi.fn(async () => new Response('ok'));
@@ -115,4 +110,3 @@ describe('SSR sessionStorage polyfill in node environment', () => {
     expect(globalThis.sessionStorage.getItem('k2')).toBeNull();
   });
 });
-

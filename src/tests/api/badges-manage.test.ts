@@ -17,20 +17,19 @@ vi.mock('$lib/server/badgeDefs', () => ({
 }));
 
 import { POST, GET, DELETE } from '../../routes/api/badges/manage/+server';
+import { createRequestEvent } from '../helpers/createLoadEvent';
 
 function makeEvent(opts: { orgId?: string | null; body?: unknown; deleteId?: string }) {
   const url = new URL('http://test/api/badges/manage');
   if (opts.deleteId) url.searchParams.set('id', opts.deleteId);
-  return {
-    locals: { session: opts.orgId ? { user: { id: opts.orgId } } : null },
-    request: {
-      json: async () => {
-        if (opts.body === undefined) throw new Error('no body');
-        return opts.body;
-      }
-    },
-    url
-  } as unknown as import("@sveltejs/kit").RequestEvent;
+  return createRequestEvent({
+    userId: opts.orgId ?? undefined,
+    url,
+    request: new Request(url, {
+      method: 'POST', body: opts.body === undefined ? undefined : JSON.stringify(opts.body),
+      headers: opts.body === undefined ? undefined : { 'content-type': 'application/json' }
+    })
+  });
 }
 
 const validBadge = {

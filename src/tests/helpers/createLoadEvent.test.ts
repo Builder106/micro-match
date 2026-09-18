@@ -19,13 +19,13 @@ describe('createMockCookies helper', () => {
       { name: 'session', value: 'xyz' }
     ]);
 
-    cookies.set('locale', 'es');
+    cookies.set('locale', 'es', { path: '/' });
     expect(cookies.get('locale')).toBe('es');
 
-    cookies.delete('theme');
+    cookies.delete('theme', { path: '/' });
     expect(cookies.get('theme')).toBeUndefined();
 
-    expect(cookies.serialize('pref', 'compact')).toBe('pref=compact');
+    expect(cookies.serialize('pref', 'compact', { path: '/' })).toBe('pref=compact');
   });
 });
 

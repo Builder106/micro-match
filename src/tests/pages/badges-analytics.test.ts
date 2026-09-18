@@ -1,17 +1,18 @@
+/* global App */
+
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 const { mocks } = vi.hoisted(() => ({ mocks: { getTasks: vi.fn(), getBadgeAnalytics: vi.fn() } }));
 vi.mock('$lib/server/appwrite', () => ({ getTasks: mocks.getTasks, getBadgeAnalytics: mocks.getBadgeAnalytics }));
 
 import { load } from '../../routes/badges/analytics/+page.server';
+import { createServerLoadEventFor, requireLoadResult } from '../helpers/createLoadEvent';
 
-function makeEvent(opts: { userRole?: string; userId?: string } = {}) {
-  return {
-    locals: {
-      userRole: opts.userRole ?? 'anonymous',
-      session: opts.userId ? { user: { id: opts.userId, email: 'jane@example.com' } } : undefined
-    }
-  } as unknown as Parameters<typeof load>[0];
+function makeEvent(opts: { userRole?: App.Locals['userRole']; userId?: string } = {}) {
+  return createServerLoadEventFor<typeof load>({
+    userRole: opts.userRole,
+    userId: opts.userId
+  });
 }
 
 describe('/badges/analytics load', () => {
@@ -25,13 +26,7 @@ describe('/badges/analytics load', () => {
     mocks.getTasks.mockResolvedValue([{ id: 't1' }]);
     mocks.getBadgeAnalytics.mockResolvedValue({ totalBadgesAwarded: 5 });
 
-    interface AnalyticsResult {
-      userRole: string;
-      user: { id: string; email?: string } | null;
-      tasks: unknown[];
-      analytics: unknown;
-    }
-    const result = (await load(makeEvent({ userRole: 'ngo', userId: 'org-1' }))) as unknown as AnalyticsResult;
+    const result = requireLoadResult(await load(makeEvent({ userRole: 'ngo', userId: 'org-1' })));
 
     expect(result.userRole).toBe('ngo');
     expect(result.user).toEqual({ id: 'org-1', email: 'jane@example.com' });
@@ -39,17 +34,18 @@ describe('/badges/analytics load', () => {
     expect(result.analytics).toEqual({ totalBadgesAwarded: 5 });
 
     // Test with user without email
-    const result2 = (await load({
-      locals: {
-        userRole: 'ngo',
-        session: { user: { id: 'org-2' } }
-      }
-    } as unknown as Parameters<typeof load>[0])) as unknown as AnalyticsResult;
+    const result2 = requireLoadResult(await load(createServerLoadEventFor<typeof load>({
+      userRole: 'ngo',
+      session: { user: { id: 'org-2' } }
+    })));
     expect(result2.user).toEqual({ id: 'org-2', email: undefined });
   });
 
   it('handles locals with default anonymous role', async () => {
-    await expect(load({ locals: {} } as unknown as Parameters<typeof load>[0])).rejects.toThrow(/NGO access required/);
+    await expect(load(makeEvent())).rejects.toThrow(/NGO access required/);
+
+    const event = makeEvent({ userRole: 'ngo', userId: 'org-1' });
+    event.locals.userRole = undefined;
+    await expect(load(event)).rejects.toThrow(/NGO access required/);
   });
 });
-

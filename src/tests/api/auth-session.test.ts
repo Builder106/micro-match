@@ -34,24 +34,27 @@ vi.mock('$lib/server/teams', () => ({
 }));
 
 import { POST } from '../../routes/api/auth/session/+server';
+import { createRequestEvent, createMockCookies } from '../helpers/createLoadEvent';
+import type { CookieSerializeOptions } from '../helpers/createLoadEvent';
 
 type MockEvent = Parameters<typeof POST>[0] & {
-  setCalls: Array<{ name: string; value: string; opts: Record<string, unknown> }>;
+  setCalls: Array<{ name: string; value: string; opts: CookieSerializeOptions }>;
 };
 
 function makeEvent(body: unknown, protocol = 'https:'): MockEvent {
-  const setCalls: Array<{ name: string; value: string; opts: Record<string, unknown> }> = [];
-  return {
-    request: {
-      json: async () => {
-        if (body === undefined) throw new Error('bad json');
-        return body;
-      }
-    },
-    cookies: { set: (name: string, value: string, opts: Record<string, unknown>) => setCalls.push({ name, value, opts }) },
-    url: new URL(`${protocol}//test/api/auth/session`),
-    setCalls
-  } as unknown as MockEvent;
+  const setCalls: Array<{ name: string; value: string; opts: CookieSerializeOptions }> = [];
+  const cookies = createMockCookies();
+  cookies.set = vi.fn((name, value, opts) => {
+    setCalls.push({ name, value, opts });
+  });
+  const request = body === undefined
+    ? new Request(`${protocol}//test/api/auth/session`, { body: '', method: 'POST' })
+    : new Request(`${protocol}//test/api/auth/session`, {
+      body: JSON.stringify(body),
+      method: 'POST',
+      headers: { 'content-type': 'application/json' }
+    });
+  return Object.assign(createRequestEvent({ request, cookies }), { setCalls });
 }
 
 describe('POST /api/auth/session', () => {

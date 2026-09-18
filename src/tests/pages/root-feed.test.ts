@@ -5,14 +5,11 @@ vi.mock('$lib/server/appwrite', () => ({ getTasks: mocks.getTasks }));
 vi.mock('$lib/server/taskTranslation', () => ({ translateTasks: mocks.translateTasks }));
 
 import { load } from '../../routes/+page.server';
+import { createServerLoadEventFor, requireLoadResult } from '../helpers/createLoadEvent';
 
 describe('/ (home feed) load', () => {
   beforeEach(() => mocks.getTasks.mockReset());
   beforeEach(() => mocks.translateTasks.mockReset());
-
-  interface FeedResult {
-    tasks: Array<{ id: string }>;
-  }
 
   it('passes only the first 3 tasks and the selected locale to translation', async () => {
     const tasks = [
@@ -31,7 +28,7 @@ describe('/ (home feed) load', () => {
     mocks.getTasks.mockResolvedValue(tasks);
     mocks.translateTasks.mockResolvedValue(translatedTasks);
 
-    const result = (await load({ locals: { locale: 'es' } } as unknown as Parameters<typeof load>[0])) as unknown as FeedResult;
+    const result = requireLoadResult(await load(createServerLoadEventFor<typeof load>({ locals: { locale: 'es' } })));
 
     expect(mocks.translateTasks).toHaveBeenCalledWith(tasks.slice(0, 3), 'es');
     expect(result.tasks).toEqual(translatedTasks);
@@ -50,7 +47,7 @@ describe('/ (home feed) load', () => {
     const originalTasks = [{ id: '1' }, { id: '2' }, { id: '3' }];
     mocks.translateTasks.mockResolvedValue(originalTasks);
 
-    const result = (await load({ locals: {} } as unknown as Parameters<typeof load>[0])) as unknown as FeedResult;
+    const result = requireLoadResult(await load(createServerLoadEventFor<typeof load>()));
 
     expect(mocks.translateTasks).toHaveBeenCalledWith([{ id: '1' }, { id: '2' }, { id: '3' }], 'en');
     expect(result.tasks).toEqual(originalTasks);
@@ -59,7 +56,7 @@ describe('/ (home feed) load', () => {
   it('returns an empty array when there are no tasks', async () => {
     mocks.getTasks.mockResolvedValue([]);
     mocks.translateTasks.mockResolvedValue([]);
-    const result = (await load({ locals: { locale: 'fr' } } as unknown as Parameters<typeof load>[0])) as unknown as FeedResult;
+    const result = requireLoadResult(await load(createServerLoadEventFor<typeof load>({ locals: { locale: 'fr' } })));
     expect(result.tasks).toEqual([]);
     expect(mocks.translateTasks).toHaveBeenCalledWith([], 'fr');
   });
@@ -69,7 +66,7 @@ describe('/ (home feed) load', () => {
     mocks.getTasks.mockResolvedValue(originalTasks);
     mocks.translateTasks.mockResolvedValue(originalTasks);
 
-    const result = (await load({ locals: { locale: 'es' } } as unknown as Parameters<typeof load>[0])) as unknown as FeedResult;
+    const result = requireLoadResult(await load(createServerLoadEventFor<typeof load>({ locals: { locale: 'es' } })));
 
     expect(result.tasks).toEqual(originalTasks);
   });

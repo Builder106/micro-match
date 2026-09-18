@@ -1,17 +1,27 @@
 /* global App */
 
-import type { ServerLoadEvent, LoadEvent, Cookies } from '@sveltejs/kit';
+import type { ServerLoadEvent, LoadEvent, RequestEvent, Cookies } from '@sveltejs/kit';
 import { vi } from 'vitest';
 
 export type PageLoadEvent<
-  Params extends Record<string, string> = Record<string, string>,
+  Params extends Record<string, string> = Record<string, never>,
   Data extends Record<string, unknown> = Record<string, unknown>,
-  ParentData extends Record<string, unknown> = Record<string, unknown>,
-  RouteId extends string | null = string | null
+  ParentData extends Record<string, unknown> = DefaultParentData,
+  RouteId extends string | null = never
 > = LoadEvent<Params, Data, ParentData, RouteId>;
 
 type LoadTracing = ServerLoadEvent['tracing'];
 type LoadSpan = LoadTracing['root'];
+type DefaultParentData = {
+  userRole: App.Locals['userRole'];
+  isAdmin: boolean;
+  origin: string;
+  locale: 'en' | 'es' | 'fr' | 'de' | 'pt' | 'zh' | 'ar';
+};
+export type CookieSerializeOptions = Parameters<Cookies['set']>[2];
+type MockLocals = Omit<Partial<App.Locals>, 'userRole'> & {
+  userRole?: App.Locals['userRole'] | null;
+};
 
 const noopSpan = new Proxy({} as LoadSpan, {
   get: (_target, property: string | symbol) => {
@@ -37,9 +47,9 @@ export interface MockCookies extends Cookies {
   _store: Map<string, string>;
   get: ReturnType<typeof vi.fn<(name: string) => string | undefined>>;
   getAll: ReturnType<typeof vi.fn<() => Array<{ name: string; value: string }>>>;
-  set: ReturnType<typeof vi.fn<(name: string, value: string, opts?: unknown) => void>>;
-  delete: ReturnType<typeof vi.fn<(name: string, opts?: unknown) => void>>;
-  serialize: ReturnType<typeof vi.fn<(name: string, value: string, opts?: unknown) => string>>;
+  set: ReturnType<typeof vi.fn<(name: string, value: string, opts: CookieSerializeOptions) => void>>;
+  delete: ReturnType<typeof vi.fn<(name: string, opts: CookieSerializeOptions) => void>>;
+  serialize: ReturnType<typeof vi.fn<(name: string, value: string, opts?: CookieSerializeOptions) => string>>;
 }
 
 export function createMockCookies(initial: Record<string, string> = {}): MockCookies {
@@ -49,30 +59,30 @@ export function createMockCookies(initial: Record<string, string> = {}): MockCoo
     _store: store,
     get: vi.fn((name: string) => store.get(name)),
     getAll: vi.fn(() => Array.from(store.entries()).map(([name, value]) => ({ name, value }))),
-    set: vi.fn((name: string, value: string) => {
+    set: vi.fn((name: string, value: string, _opts: CookieSerializeOptions) => {
       store.set(name, value);
     }),
-    delete: vi.fn((name: string) => {
+    delete: vi.fn((name: string, _opts: CookieSerializeOptions) => {
       store.delete(name);
     }),
-    serialize: vi.fn((name: string, value: string) => `${name}=${encodeURIComponent(value)}`)
+    serialize: vi.fn((name: string, value: string, _opts?: CookieSerializeOptions) => `${name}=${encodeURIComponent(value)}`)
   };
 
   return cookies;
 }
 
 export interface CreateServerLoadEventOptions<
-  Params extends Record<string, string> = Record<string, string>,
-  ParentData extends Record<string, unknown> = Record<string, unknown>,
-  RouteId extends string | null = string | null
+  Params extends Record<string, string> = Record<string, never>,
+  ParentData extends Record<string, unknown> = DefaultParentData,
+  RouteId extends string | null = never
 > {
   url?: URL | string;
   params?: Params;
   route?: { id: RouteId } | RouteId;
   cookies?: Record<string, string> | Cookies;
-  locals?: Partial<App.Locals>;
+  locals?: MockLocals;
   userRole?: App.Locals['userRole'];
-  userId?: string;
+  userId?: string | null;
   email?: string;
   session?: App.Session | null;
   request?: Request;
@@ -91,10 +101,10 @@ export interface CreateServerLoadEventOptions<
 }
 
 export interface CreatePageLoadEventOptions<
-  Params extends Record<string, string> = Record<string, string>,
+  Params extends Record<string, string> = Record<string, never>,
   Data extends Record<string, unknown> = Record<string, unknown>,
-  ParentData extends Record<string, unknown> = Record<string, unknown>,
-  RouteId extends string | null = string | null
+  ParentData extends Record<string, unknown> = DefaultParentData,
+  RouteId extends string | null = never
 > {
   url?: URL | string;
   params?: Params;
@@ -110,9 +120,9 @@ export interface CreatePageLoadEventOptions<
 }
 
 export function createServerLoadEvent<
-  Params extends Record<string, string> = Record<string, string>,
-  ParentData extends Record<string, unknown> = Record<string, unknown>,
-  RouteId extends string | null = string | null
+  Params extends Record<string, string> = Record<string, never>,
+  ParentData extends Record<string, unknown> = DefaultParentData,
+  RouteId extends string | null = never
 >(
   options: CreateServerLoadEventOptions<Params, ParentData, RouteId> = {}
 ): ServerLoadEvent<Params, ParentData, RouteId> {
@@ -139,13 +149,13 @@ export function createServerLoadEvent<
 
   const session = options.session !== undefined
     ? options.session
-    : options.userId !== undefined
+    : options.userId != null
       ? { user: { id: options.userId, email: options.email ?? 'jane@example.com' } }
       : (options.locals?.session ?? undefined);
 
   const resolvedLocals: App.Locals = {
     userRole: options.userRole ?? options.locals?.userRole ?? 'anonymous',
-    ...options.locals,
+    ...(options.locals ? { ...options.locals, userRole: options.locals.userRole ?? undefined } : {}),
     ...(options.userRole ? { userRole: options.userRole } : {}),
     ...(session !== undefined ? { session } : {})
   };
@@ -179,11 +189,31 @@ export function createServerLoadEvent<
   };
 }
 
+export function createRequestEvent<
+  Params extends Record<string, string> = Record<string, never>,
+  ParentData extends Record<string, unknown> = DefaultParentData,
+  RouteId extends string | null = never
+>(
+  options: CreateServerLoadEventOptions<Params, ParentData, RouteId> = {}
+): RequestEvent<Params, RouteId> {
+  return {
+    ...createServerLoadEvent(options),
+    request: options.request ?? new Request(
+      options.url instanceof URL
+        ? options.url
+        : typeof options.url === 'string'
+          ? new URL(options.url, 'http://localhost:5173')
+          : 'http://localhost:5173/'
+    ),
+    setHeaders: options.setHeaders ?? vi.fn()
+  };
+}
+
 export function createPageLoadEvent<
   Params extends Record<string, string> = Record<string, string>,
   Data extends Record<string, unknown> = Record<string, unknown>,
-  ParentData extends Record<string, unknown> = Record<string, unknown>,
-  RouteId extends string | null = string | null
+  ParentData extends Record<string, unknown> = DefaultParentData,
+  RouteId extends string | null = never
 >(
   options: CreatePageLoadEventOptions<Params, Data, ParentData, RouteId> = {}
 ): PageLoadEvent<Params, Data, ParentData, RouteId> {
@@ -219,17 +249,17 @@ export function createPageLoadEvent<
 
 export interface CreateLoadEvent {
   <
-    Params extends Record<string, string> = Record<string, string>,
+    Params extends Record<string, string> = Record<string, never>,
     Data extends Record<string, unknown> = Record<string, unknown>,
-    ParentData extends Record<string, unknown> = Record<string, unknown>,
-    RouteId extends string | null = string | null
+    ParentData extends Record<string, unknown> = DefaultParentData,
+    RouteId extends string | null = never
   >(
     options: CreatePageLoadEventOptions<Params, Data, ParentData, RouteId> & { type: 'page' }
   ): PageLoadEvent<Params, Data, ParentData, RouteId>;
   <
-    Params extends Record<string, string> = Record<string, string>,
-    ParentData extends Record<string, unknown> = Record<string, unknown>,
-    RouteId extends string | null = string | null
+    Params extends Record<string, string> = Record<string, never>,
+    ParentData extends Record<string, unknown> = DefaultParentData,
+    RouteId extends string | null = never
   >(
     options?: CreateServerLoadEventOptions<Params, ParentData, RouteId> & { type?: 'server' }
   ): ServerLoadEvent<Params, ParentData, RouteId>;
@@ -245,3 +275,16 @@ export const createLoadEvent: CreateLoadEvent = ((
   }
   return createServerLoadEvent(options);
 }) as CreateLoadEvent;
+
+export function requireLoadResult<T>(result: T | void): T {
+  if (result === undefined) {
+    throw new Error('expected load() to return data');
+  }
+  return result;
+}
+
+export function createServerLoadEventFor<Handler extends (...args: never[]) => unknown>(
+  options: CreateServerLoadEventOptions<Record<string, string>, DefaultParentData, string | null> = {}
+): Parameters<Handler>[0] {
+  return createServerLoadEvent(options) as Parameters<Handler>[0];
+}

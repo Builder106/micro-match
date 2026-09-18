@@ -226,7 +226,7 @@ describe('appwrite.client', () => {
       append(k: string, v: unknown) { this.appended[k] = v; }
     });
 
-    const file = { name: 'avatar.png' } as unknown as File;
+    const file = new File(['avatar'], 'avatar.png', { type: 'image/png' });
     const result = await uploadAvatar(file);
 
     expect(result).toEqual({ fileId: 'file-1', url: 'https://cdn/file-1' });

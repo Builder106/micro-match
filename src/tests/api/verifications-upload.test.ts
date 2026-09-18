@@ -27,6 +27,7 @@ vi.mock('node-appwrite', () => ({
 }));
 
 import { POST } from '../../routes/api/verifications/upload/+server';
+import { createRequestEvent } from '../helpers/createLoadEvent';
 
 function makeEvent(opts: {
   userId?: string | null; authorization?: string; file?: File | null | 'missing';
@@ -35,13 +36,13 @@ function makeEvent(opts: {
   if (opts.file !== 'missing') {
     form.set('file', opts.file ?? new File(['x'], 'doc.pdf', { type: 'application/pdf' }));
   }
-  return {
-    locals: opts.userId ? { session: { user: { id: opts.userId } } } : {},
-    request: {
-      headers: new Headers(opts.authorization ? { authorization: opts.authorization } : {}),
-      formData: async () => form
-    }
-  } as unknown as import("@sveltejs/kit").RequestEvent;
+  return createRequestEvent({
+    userId: opts.userId ?? undefined,
+    request: new Request('http://test/api/verifications/upload', {
+      method: 'POST', body: form,
+      headers: opts.authorization ? { authorization: opts.authorization } : undefined
+    })
+  });
 }
 
 describe('POST /api/verifications/upload', () => {

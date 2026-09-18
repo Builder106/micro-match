@@ -3,7 +3,7 @@ import { env } from '$env/dynamic/private';
 export type SendArgs = {
   to: string;
   subject: string;
-  html?: string;
+  html?: string | null;
   text?: string;
 };
 

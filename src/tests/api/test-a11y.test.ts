@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { createMockCookies, createRequestEvent } from '../helpers/createLoadEvent';
 
 const { mocks } = vi.hoisted(() => ({
   mocks: {
@@ -38,21 +39,12 @@ vi.mock('$lib/server/verifications', () => ({
 import { POST } from '../../routes/api/test/a11y/+server';
 
 function makeEvent(opts: { body?: unknown } = {}) {
-
-  const cookieJar: Record<string, string> = {};
-  return {
-    request: {
-      json: async () => {
-        if (opts.body === undefined) throw new Error('no body');
-        return opts.body;
-      }
-    },
-    cookies: {
-      set: vi.fn((key: string, value: string) => {
-        cookieJar[key] = value;
-      })
-    }
-  } as unknown as import('@sveltejs/kit').RequestEvent;
+  const request = opts.body === undefined
+    ? new Request('http://test/api/test/a11y')
+    : new Request('http://test/api/test/a11y', {
+      method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(opts.body)
+    });
+  return createRequestEvent({ request, cookies: createMockCookies() });
 }
 
 describe('POST /api/test/a11y', () => {

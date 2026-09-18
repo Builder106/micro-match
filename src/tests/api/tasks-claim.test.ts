@@ -14,13 +14,18 @@ vi.mock('$lib/server/auth', () => ({ getUserRole: mocks.getUserRole }));
 vi.mock('$lib/server/contentsafety', () => ({ moderateText: mocks.moderateText }));
 
 import { POST } from '../../routes/api/tasks/[id]/claim/+server';
+import { createRequestEvent } from '../helpers/createLoadEvent';
 
 function makeEvent(opts: { userId?: string | null; taskId?: string; body?: unknown } = {}) {
-  return {
+  const url = `http://test/api/tasks/${opts.taskId ?? 'task-1'}/claim`;
+  return createRequestEvent({
     params: { id: opts.taskId ?? 'task-1' },
-    locals: opts.userId ? { session: { user: { id: opts.userId } } } : {},
-    request: { json: async () => opts.body ?? {} }
-  } as unknown as import("@sveltejs/kit").RequestEvent;
+    userId: opts.userId ?? undefined,
+    request: new Request(url, {
+      method: 'POST', body: JSON.stringify(opts.body ?? {}),
+      headers: { 'content-type': 'application/json' }
+    })
+  });
 }
 
 describe('POST /api/tasks/[id]/claim', () => {
