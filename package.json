@@ -36,7 +36,7 @@
     "format": "prettier -w ."
   },
   "dependencies": {
-    "@inlang/paraglide-js": "^2.25.0",
+    "@inlang/paraglide-js": "^2.25.2",
     "@iconify/svelte": "^5.2.2",
     "@smui/button": "^9.0.2",
     "@smui/card": "^9.0.2",
@@ -75,21 +75,21 @@
     "@types/bun": "^1.4.0",
     "@types/canvas-confetti": "^1.9.0",
     "@types/howler": "^2.2.13",
-    "@types/node": "^26.4.1",
-    "@vitest/coverage-v8": "^4.1.11",
-    "autoprefixer": "^10.5.5",
+    "@types/node": "^26.5.1",
+    "@vitest/coverage-v8": "^5.0.0",
+    "autoprefixer": "^10.6.0",
     "csstype": "^3.2.3",
     "dotenv": "^17.4.2",
     "eslint": "^10.10.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-svelte": "^3.23.0",
     "jsdom": "^30.0.1",
-    "postcss": "^8.5.26",
+    "postcss": "^8.5.28",
     "prettier": "^3.9.6",
     "svelte-check": "^4.7.6",
     "tailwindcss": "^4.3.3",
     "typescript": "6.0.3",
     "typescript-eslint": "^8.69.0",
-    "vitest": "^4.1.11"
+    "vitest": "^5.0.0"
   }
 }
