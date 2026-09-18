@@ -35,7 +35,7 @@ try {
     });
     const page = await context.newPage();
     await page.goto(`file://${htmlPath}`, { waitUntil: 'networkidle' });
-    await page.evaluate(() => (document as Document & { fonts: { ready: Promise<unknown> } }).fonts.ready);
+    await page.evaluate(() => (document as Document & { fonts: { ready: Promise<void> } }).fonts.ready);
     await page.screenshot({ path: pngPath, fullPage: false });
     await context.close();
     console.log(`✓ ${t.html} → ${t.png}`);

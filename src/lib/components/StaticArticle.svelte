@@ -38,7 +38,7 @@
   $: pathname = page.url.pathname;
   /* eslint-disable-next-line svelte/no-immutable-reactive-statements */
   $: currentLocale = (page.data?.locale as Locale | undefined) ?? 'en';
-  function resolve(targetPath: string, _options?: unknown) { return localizedHref(targetPath, currentLocale); }
+  function resolve(targetPath: string, _options?: Record<string, string | number | boolean | null>) { return localizedHref(targetPath, currentLocale); }
 
   let activeSection = '';
 

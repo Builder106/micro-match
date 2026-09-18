@@ -34,7 +34,7 @@
   $: isLanding = currentPath === '/';
   $: isAuthPath = authPaths.includes(currentPath);
   $: isPublicPath = publicPaths.some((p) => currentPath === p || currentPath.startsWith(p + '/'));
-  function resolve(pathname: string, _options?: unknown) { return localizedHref(pathname, currentLocale); }
+  function resolve(pathname: string, _options?: Record<string, string | number | boolean | null>) { return localizedHref(pathname, currentLocale); }
   $: userRole = $page.data.userRole ?? 'anonymous';
   $: isSignedIn = userRole !== 'anonymous';
   $: showAppChrome = !isLanding && !isAuthPath && (!isPublicPath || (currentPath === '/tasks' && isSignedIn)) && isSignedIn;

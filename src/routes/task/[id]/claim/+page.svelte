@@ -19,7 +19,7 @@
 
   const currentLocale = (page.data?.locale as Locale | undefined) ?? 'en';
 
-  function resolve(pathname: string, _options?: unknown): string {
+  function resolve(pathname: string, _options?: Record<string, string | number | boolean | null>): string {
     return localizedHref(pathname, currentLocale);
   }
 

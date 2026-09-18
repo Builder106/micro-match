@@ -8,9 +8,13 @@ import {
 } from '$lib/server/taskTranslation';
 
 export const POST: RequestHandler = async ({ request }) => {
-  let body: unknown;
+  interface TranslationRequestBody {
+    taskIds?: string[];
+    locale?: string;
+  }
+  let body: TranslationRequestBody;
   try {
-    body = await request.json();
+    body = (await request.json()) as TranslationRequestBody;
   } catch {
     return json({ error: 'Invalid JSON body' }, { status: 400 });
   }
@@ -18,7 +22,7 @@ export const POST: RequestHandler = async ({ request }) => {
   if (typeof body !== 'object' || body === null) {
     return json({ error: 'taskIds and locale are required' }, { status: 400 });
   }
-  const { taskIds, locale } = body as { taskIds?: string[]; locale?: string };
+  const { taskIds, locale } = body;
   if (!isSupportedTaskLocale(locale)) {
     return json({ error: 'Unsupported translation language' }, { status: 400 });
   }

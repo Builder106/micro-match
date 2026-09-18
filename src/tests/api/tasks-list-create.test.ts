@@ -16,17 +16,17 @@ vi.mock('$lib/server/verifications', () => ({ getVerificationByUserId: mocks.get
 vi.mock('$lib/server/contentsafety', () => ({ moderateText: mocks.moderateText }));
 
 import { GET, POST } from '../../routes/api/tasks/+server';
+import { createRequestEvent } from '../helpers/createLoadEvent';
 
 function makeEvent(opts: { orgId?: string | null; body?: unknown } = {}) {
-  return {
+  return createRequestEvent({
     locals: opts.orgId ? { session: { user: { id: opts.orgId } } } : {},
-    request: {
-      json: async () => {
-        if (opts.body === undefined) throw new Error('no body');
-        return opts.body;
-      }
-    }
-  } as unknown as import("@sveltejs/kit").RequestEvent;
+    request: new Request('http://localhost/api/tasks', {
+      method: 'POST',
+      body: opts.body === undefined ? undefined : JSON.stringify(opts.body),
+      headers: { 'content-type': 'application/json' }
+    })
+  });
 }
 
 describe('GET /api/tasks', () => {
@@ -38,7 +38,7 @@ describe('GET /api/tasks', () => {
       tags: ['a'], estimatedMinutes: 10, language: 'en', status: 'active'
     }]);
 
-    const res = await GET({} as unknown as import("@sveltejs/kit").RequestEvent);
+    const res = await GET(createRequestEvent());
     const body = await res.json();
 
     expect(body).toEqual([{ id: 't1', title: 'T', shortDescription: 's', tags: ['a'], estimatedMinutes: 10, language: 'en' }]);

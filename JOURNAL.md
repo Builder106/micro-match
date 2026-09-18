@@ -1,5 +1,22 @@
 # JOURNAL — MicroMatch
 
+## 2026-09-17 - Strengthened authored test fixtures #fix
+
+Extended the shared SvelteKit test factory to return a real request event with
+request, cookies, route, and header contracts, and migrated task and session
+tests to use it. Replaced the avatar upload double with a real File fixture.
+Generated Paraglide declarations and intentional browser-environment casts
+remain outside this change. Source diff validation passed; the managed
+verification run was blocked during existing generated-output cleanup.
+
+## 2026-09-17 - Continued typed test boundary migration #fix
+
+Replaced the remaining simple page-feed and ProPublica response doubles in this pass with the shared SvelteKit event factory and real `Response` instances. Existing generated Paraglide declarations and negative-input casts remain outside this migration; source-only diff validation passed.
+
+## 2026-09-17 - Centralized typed test event construction #fix
+
+Extended the existing SvelteKit test event factory with a typed RequestEvent boundary and migrated representative page and API tests away from double casts; cookie options now use the framework contract.
+
 > Dated log of decisions, pivots, incidents, and quotes. Add entries as
 > things happen — retrospectives need this raw material to land.
 > Reverse-chronological; one paragraph max per entry.

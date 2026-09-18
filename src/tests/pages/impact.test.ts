@@ -15,6 +15,7 @@ vi.mock('$lib/server/appwrite', () => ({
 }));
 
 import { load } from '../../routes/impact/+page.server';
+import { createServerLoadEventFor, requireLoadResult } from '../helpers/createLoadEvent';
 
 describe('/impact load', () => {
   beforeEach(() => {
@@ -42,19 +43,7 @@ describe('/impact load', () => {
       { id: 'b2', userId: 'u2' }
     ]);
 
-    const result = (await load({} as unknown as Parameters<typeof load>[0])) as {
-      stats: {
-        tasksCompleted: number;
-        activeVolunteers: number;
-        ngosOnboarded: number;
-        badgesAwarded: number;
-        totalMinutesContributed: number;
-        hoursContributed: string;
-        avgTaskMinutes: number;
-        durationCounts: Record<string, number>;
-        causeBreakdown: Array<{ name: string; count: number; percentage: number; bg: string; color: string }>;
-      };
-    };
+    const result = requireLoadResult(await load(createServerLoadEventFor<typeof load>()));
 
     expect(result.stats.tasksCompleted).toBe(4);
     expect(result.stats.activeVolunteers).toBe(3); // u1, u2, u3
@@ -72,7 +61,7 @@ describe('/impact load', () => {
     });
 
     expect(result.stats.causeBreakdown.length).toBeGreaterThan(0);
-    const spanish = result.stats.causeBreakdown.find((c) => c.name === 'Spanish');
+    const spanish = result.stats.causeBreakdown.find((c: { name: string; count: number }) => c.name === 'Spanish');
     expect(spanish).toBeDefined();
     expect(spanish?.count).toBe(2);
   });
@@ -84,13 +73,7 @@ describe('/impact load', () => {
     ]);
     mocks.getBadges.mockResolvedValue([]);
 
-    const result = (await load({} as unknown as Parameters<typeof load>[0])) as {
-      stats: {
-        tasksCompleted: number;
-        totalMinutesContributed: number;
-        durationCounts: Record<string, number>;
-      };
-    };
+    const result = requireLoadResult(await load(createServerLoadEventFor<typeof load>()));
 
     expect(result.stats.tasksCompleted).toBe(1);
     expect(result.stats.totalMinutesContributed).toBe(15); // fallback 15 mins
@@ -103,19 +86,7 @@ describe('/impact load', () => {
     mocks.getClaims.mockResolvedValue([]);
     mocks.getBadges.mockResolvedValue([]);
 
-    const result = (await load({} as unknown as Parameters<typeof load>[0])) as {
-      stats: {
-        tasksCompleted: number;
-        activeVolunteers: number;
-        ngosOnboarded: number;
-        badgesAwarded: number;
-        totalMinutesContributed: number;
-        hoursContributed: string;
-        avgTaskMinutes: number;
-        durationCounts: Record<string, number>;
-        causeBreakdown: Array<unknown>;
-      };
-    };
+    const result = requireLoadResult(await load(createServerLoadEventFor<typeof load>()));
 
     expect(result.stats.tasksCompleted).toBe(0);
     expect(result.stats.activeVolunteers).toBe(0);

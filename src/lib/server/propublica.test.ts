@@ -3,8 +3,8 @@ import { lookupNonprofitByEin } from './propublica';
 
 const ENDPOINT_BASE = 'https://projects.propublica.org/nonprofits/api/v2/organizations/';
 
-function mockFetchOnce(response: Partial<Response> & { ok: boolean; status?: number; json?: () => Promise<unknown> }) {
-  vi.stubGlobal('fetch', vi.fn(async () => response as unknown as Response));
+function mockFetchOnce(response: Response) {
+  vi.stubGlobal('fetch', vi.fn<typeof fetch>().mockResolvedValue(response));
 }
 
 describe('lookupNonprofitByEin', () => {
@@ -17,11 +17,9 @@ describe('lookupNonprofitByEin', () => {
   });
 
   it('strips dashes from EIN before calling the API', async () => {
-    const fetchSpy = vi.fn<typeof fetch>().mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: async () => ({ organization: { name: 'Test Org' } })
-    } as unknown as Response);
+    const fetchSpy = vi.fn<typeof fetch>().mockResolvedValue(
+      new Response(JSON.stringify({ organization: { name: 'Test Org' } }), { status: 200 })
+    );
     vi.stubGlobal('fetch', fetchSpy);
 
     await lookupNonprofitByEin('13-3433452');
@@ -32,13 +30,9 @@ describe('lookupNonprofitByEin', () => {
   });
 
   it('returns active status when revocation_date is empty', async () => {
-    mockFetchOnce({
-      ok: true,
-      status: 200,
-      json: async () => ({
-        organization: { name: 'Doctors Without Borders', ntee_code: 'Q33', ruling_date: '1980-09-01' }
-      })
-    });
+    mockFetchOnce(new Response(JSON.stringify({
+      organization: { name: 'Doctors Without Borders', ntee_code: 'Q33', ruling_date: '1980-09-01' }
+    }), { status: 200 }));
 
     const result = await lookupNonprofitByEin('133433452');
     expect(result).toEqual({
@@ -51,32 +45,28 @@ describe('lookupNonprofitByEin', () => {
   });
 
   it('reports revoked status when revocation_date is set', async () => {
-    mockFetchOnce({
-      ok: true,
-      status: 200,
-      json: async () => ({
-        organization: { name: 'Bad Charity', revocation_date: '2018-05-15' }
-      })
-    });
+    mockFetchOnce(new Response(JSON.stringify({
+      organization: { name: 'Bad Charity', revocation_date: '2018-05-15' }
+    }), { status: 200 }));
 
     const result = await lookupNonprofitByEin('123456789');
     expect(result).toMatchObject({ found: true, status: 'revoked' });
   });
 
   it('returns found=false on 404', async () => {
-    mockFetchOnce({ ok: false, status: 404 });
+    mockFetchOnce(new Response(null, { status: 404 }));
     const result = await lookupNonprofitByEin('999999999');
     expect(result).toEqual({ found: false, error: 'Not found in IRS records' });
   });
 
   it('returns found=false with status code on other HTTP errors', async () => {
-    mockFetchOnce({ ok: false, status: 503 });
+    mockFetchOnce(new Response(null, { status: 503 }));
     const result = await lookupNonprofitByEin('111111111');
     expect(result).toEqual({ found: false, error: 'ProPublica 503' });
   });
 
   it('handles a malformed response that lacks the organization field', async () => {
-    mockFetchOnce({ ok: true, status: 200, json: async () => ({}) });
+    mockFetchOnce(new Response('{}', { status: 200 }));
     const result = await lookupNonprofitByEin('222222222');
     expect(result).toEqual({ found: false, error: 'Empty response' });
   });
@@ -93,11 +83,7 @@ describe('lookupNonprofitByEin', () => {
   });
 
   it('falls back to "Unknown" when organization has no name', async () => {
-    mockFetchOnce({
-      ok: true,
-      status: 200,
-      json: async () => ({ organization: {} })
-    });
+    mockFetchOnce(new Response(JSON.stringify({ organization: {} }), { status: 200 }));
     const result = await lookupNonprofitByEin('444444444');
     expect(result).toEqual({ found: true, orgName: 'Unknown', status: 'active', ntee: undefined, rulingDate: undefined });
   });

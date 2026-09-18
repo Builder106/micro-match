@@ -7,13 +7,13 @@ vi.mock('$lib/server/appwrite', () => ({ getClaims: mocks.getClaims }));
 vi.mock('$lib/server/auth', () => ({ getUserRole: mocks.getUserRole }));
 
 import { GET } from '../../routes/api/claims/+server';
+import { createRequestEvent } from '../helpers/createLoadEvent';
 
 function makeEvent(opts: { userId?: string | null; search?: string } = {}) {
-  return {
-    locals: opts.userId ? { session: { user: { id: opts.userId } } } : {},
-    request: { headers: new Headers() },
-    url: new URL(`http://test/api/claims${opts.search ?? ''}`)
-  } as unknown as import("@sveltejs/kit").RequestEvent;
+  return createRequestEvent({
+    url: `http://test/api/claims${opts.search ?? ''}`,
+    userId: opts.userId ?? undefined
+  });
 }
 
 describe('GET /api/claims', () => {

@@ -20,12 +20,10 @@ vi.mock('$lib/server/badgeAwarder', () => ({ onTaskApproved: mocks.onTaskApprove
 
 import { POST as approve } from '../../routes/api/claims/[id]/approve/+server';
 import { POST as reject } from '../../routes/api/claims/[id]/reject/+server';
+import { createRequestEvent } from '../helpers/createLoadEvent';
 
 function makeEvent(opts: { reviewerId?: string | null; claimId?: string }) {
-  return {
-    locals: { session: opts.reviewerId ? { user: { id: opts.reviewerId } } : null },
-    params: { id: opts.claimId ?? 'claim-1' }
-  } as unknown as import("@sveltejs/kit").RequestEvent;
+  return createRequestEvent({ userId: opts.reviewerId ?? undefined, params: { id: opts.claimId ?? 'claim-1' } });
 }
 
 const claimOnOwnedTask = {
@@ -73,10 +71,7 @@ describe('POST /api/claims/[id]/approve', () => {
   });
 
   it('returns 400 when claim id param is missing', async () => {
-    const res = await approve({
-      locals: { session: { user: { id: 'ngo-1' } } },
-      params: {}
-    } as unknown as import("@sveltejs/kit").RequestEvent);
+    const res = await approve(createRequestEvent<Record<string, string>>({ userId: 'ngo-1', params: {} }));
     expect(res.status).toBe(400);
   });
 
@@ -184,10 +179,7 @@ describe('POST /api/claims/[id]/reject', () => {
   });
 
   it('returns 400 when claim id param is missing', async () => {
-    const res = await reject({
-      locals: { session: { user: { id: 'ngo-1' } } },
-      params: {}
-    } as unknown as import("@sveltejs/kit").RequestEvent);
+    const res = await reject(createRequestEvent<Record<string, string>>({ userId: 'ngo-1', params: {} }));
     expect(res.status).toBe(400);
   });
 

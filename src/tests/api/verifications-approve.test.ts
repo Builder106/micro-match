@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { createRequestEvent } from '../helpers/createLoadEvent';
 
 const { mocks } = vi.hoisted(() => ({
   mocks: {
@@ -30,17 +31,16 @@ import { POST as approve } from '../../routes/api/verifications/[userId]/approve
 import { POST as reject } from '../../routes/api/verifications/[userId]/reject/+server';
 
 function makeEvent(opts: { adminId?: string | null; userId?: string; body?: unknown }) {
-  return {
-    locals: { session: opts.adminId ? { user: { id: opts.adminId } } : null },
-    params: { userId: opts.userId ?? 'target-user' },
-    request: {
-      json: async () => {
-        if (opts.body === undefined) throw new Error('no body');
-        return opts.body;
-      }
-    },
-    url: new URL('http://test/api/verifications/x/approve')
-  } as unknown as import("@sveltejs/kit").RequestEvent;
+  const request = opts.body === undefined
+    ? new Request('http://test/api/verifications/x/approve')
+    : new Request('http://test/api/verifications/x/approve', {
+      method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(opts.body)
+    });
+  return createRequestEvent({
+    url: 'http://test/api/verifications/x/approve',
+    params: { userId: opts.userId ?? 'target-user' }, request,
+    session: opts.adminId ? { user: { id: opts.adminId } } : null
+  });
 }
 
 const happyVerification = {
@@ -73,10 +73,7 @@ describe('POST /api/verifications/[userId]/approve', () => {
   });
 
   it('returns 400 when userId param is missing', async () => {
-    const res = await approve({
-      locals: { session: { user: { id: 'admin-1' } } },
-      params: {}
-    } as unknown as import("@sveltejs/kit").RequestEvent);
+    const res = await approve(createRequestEvent({ session: { user: { id: 'admin-1' } } }));
     expect(res.status).toBe(400);
   });
 
@@ -153,11 +150,11 @@ describe('POST /api/verifications/[userId]/reject', () => {
   });
 
   it('returns 400 when JSON body is invalid in reject', async () => {
-    const res = await reject({
-      locals: { session: { user: { id: 'admin-1' } } },
+    const res = await reject(createRequestEvent({
       params: { userId: 'target-user' },
-      request: { json: async () => { throw new Error('invalid json'); } }
-    } as unknown as import("@sveltejs/kit").RequestEvent);
+      session: { user: { id: 'admin-1' } },
+      request: new Request('http://test/api/verifications/x/reject')
+    }));
     expect(res.status).toBe(400);
   });
 
@@ -168,11 +165,12 @@ describe('POST /api/verifications/[userId]/reject', () => {
   });
 
   it('returns 400 when userId param is missing in reject', async () => {
-    const res = await reject({
-      locals: { session: { user: { id: 'admin-1' } } },
-      params: {},
-      request: { json: async () => ({ reason: 'some reason' }) }
-    } as unknown as import("@sveltejs/kit").RequestEvent);
+    const res = await reject(createRequestEvent({
+      session: { user: { id: 'admin-1' } },
+      request: new Request('http://test/api/verifications/x/reject', {
+        method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ reason: 'some reason' })
+      })
+    }));
     expect(res.status).toBe(400);
   });
 

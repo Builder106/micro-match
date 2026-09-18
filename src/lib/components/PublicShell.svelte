@@ -61,7 +61,7 @@
   $: currentLocale = (page.data?.locale as Locale | undefined) ?? 'en';
   type StaticMessage = (inputs?: Record<string, never>, options?: { locale?: Locale }) => string;
   function t(message: StaticMessage) { return message({}, { locale: currentLocale }); }
-  function resolve(pathname: string, _options?: unknown) { return localizedHref(pathname, currentLocale); }
+  function resolve(pathname: string, _options?: Record<string, string | number | boolean | null>) { return localizedHref(pathname, currentLocale); }
   async function toggleLanguageMenu() {
     languageOpen = !languageOpen;
     if (languageOpen) {

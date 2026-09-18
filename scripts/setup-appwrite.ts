@@ -36,8 +36,8 @@ interface AppwriteTableConfig {
   databaseId: string;
   enabled?: boolean;
   rowSecurity?: boolean;
-  columns?: Array<Record<string, unknown>>;
-  indexes?: Array<Record<string, unknown>>;
+  columns?: Array<Record<string, string | number | boolean | null | undefined | string[]>>;
+  indexes?: Array<Record<string, string | number | boolean | null | undefined | string[]>>;
 }
 
 interface AppwriteConfig {

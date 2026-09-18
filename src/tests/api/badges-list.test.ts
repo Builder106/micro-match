@@ -4,12 +4,10 @@ const { mocks } = vi.hoisted(() => ({ mocks: { listBadgesByUser: vi.fn() } }));
 vi.mock('$lib/server/appwrite', () => ({ listBadgesByUser: mocks.listBadgesByUser }));
 
 import { GET } from '../../routes/api/badges/+server';
+import { createRequestEvent } from '../helpers/createLoadEvent';
 
 function makeEvent(opts: { userId?: string; query?: string } = {}) {
-  return {
-    locals: opts.userId ? { session: { user: { id: opts.userId } } } : {},
-    url: new URL(`http://test/api/badges${opts.query ?? ''}`)
-  } as unknown as import("@sveltejs/kit").RequestEvent;
+  return createRequestEvent({ userId: opts.userId ?? undefined, url: `http://test/api/badges${opts.query ?? ''}` });
 }
 
 describe('GET /api/badges', () => {

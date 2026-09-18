@@ -201,7 +201,7 @@ async function ensureNgoTeamMembership(userId: string): Promise<void> {
   try {
     await teams.createMembership(ngoTeamId, ['ngo'], undefined, userId);
     console.log(`✓ Demo user is in '${ngoTeamId}' team`);
-  } catch (err: unknown) {
+  } catch (err) {
     const errObj = err as { code?: number; response?: { code?: number }; message?: string };
     const status = errObj?.code ?? errObj?.response?.code;
     if (status === 409) {
@@ -222,7 +222,7 @@ async function listExistingTasks(orgId: string): Promise<Map<string, string>> {
     Query.equal('orgID', orgId),
     Query.limit(100),
   ]);
-  const rows = (res.rows ?? []) as unknown as TaskRowItem[];
+  const rows = (res.rows ?? []) as TaskRowItem[];
   return new Map<string, string>(
     rows.map((r) => [String(r.title ?? ''), String(r.$id)]),
   );
@@ -311,7 +311,7 @@ async function ensureVolunteerUser(): Promise<string> {
   try {
     await teams.createMembership(volunteerTeamId, ['volunteer'], undefined, userId);
     console.log(`✓ Demo volunteer is in '${volunteerTeamId}' team`);
-  } catch (err: unknown) {
+  } catch (err) {
     const errObj = err as { code?: number; response?: { code?: number }; message?: string };
     const status = errObj?.code ?? errObj?.response?.code;
     if (status === 409) {
@@ -372,7 +372,7 @@ async function resetDemoLoopState(volunteerId: string): Promise<void> {
     Query.equal('userID', volunteerId),
     Query.limit(100),
   ]);
-  for (const row of (claimRows.rows ?? []) as unknown as RowIdItem[]) {
+  for (const row of (claimRows.rows ?? []) as RowIdItem[]) {
     await tables.deleteRow(dbId, claimsTable, row.$id);
     claims++;
   }
@@ -381,7 +381,7 @@ async function resetDemoLoopState(volunteerId: string): Promise<void> {
     Query.equal('userID', volunteerId),
     Query.limit(100),
   ]);
-  for (const row of (badgeRows.rows ?? []) as unknown as RowIdItem[]) {
+  for (const row of (badgeRows.rows ?? []) as RowIdItem[]) {
     await tables.deleteRow(dbId, badgesTable, row.$id);
     badges++;
   }

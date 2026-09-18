@@ -20,12 +20,14 @@ vi.mock('node-appwrite', () => ({
 }));
 
 import { GET } from '../../routes/api/verifications/[userId]/document/+server';
+import { createRequestEvent } from '../helpers/createLoadEvent';
+import { isHttpError } from '../helpers/httpError';
 
 function makeEvent(opts: { adminId?: string | null; targetUserId?: string } = {}) {
-  return {
-    locals: opts.adminId ? { session: { user: { id: opts.adminId } } } : {},
+  return createRequestEvent({
+    userId: opts.adminId ?? undefined,
     params: { userId: opts.targetUserId ?? 'target-1' }
-  } as unknown as import("@sveltejs/kit").RequestEvent;
+  });
 }
 
 async function expectHttpError(promise: unknown, status: number) {
@@ -33,8 +35,10 @@ async function expectHttpError(promise: unknown, status: number) {
     await promise;
     throw new Error('expected an error() to be thrown');
   } catch (err: unknown) {
-    const e = err as { status?: number };
-    expect(e.status).toBe(status);
+    if (!isHttpError(err)) {
+      throw new Error('expected a structured HTTP error', { cause: err });
+    }
+    expect(err.status).toBe(status);
   }
 }
 
@@ -59,10 +63,7 @@ describe('GET /api/verifications/[userId]/document', () => {
 
   it('400s when userId param is missing', async () => {
     mocks.isUserAdmin.mockResolvedValue(true);
-    await expectHttpError(GET({
-      locals: { session: { user: { id: 'admin-1' } } },
-      params: {}
-    } as unknown as import("@sveltejs/kit").RequestEvent), 400);
+    await expectHttpError(GET(createRequestEvent({ userId: 'admin-1', params: {} })), 400);
   });
 
   it('404s when the target user has no verification document on file', async () => {

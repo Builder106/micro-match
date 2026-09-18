@@ -5,10 +5,7 @@ vi.mock('$lib/server/appwrite', () => ({ getTasks: mocks.getTasks }));
 vi.mock('$lib/server/taskTranslation', () => ({ translateTasks: mocks.translateTasks }));
 
 import { load } from '../../routes/tasks/+page.server';
-
-interface FeedResult {
-  tasks: unknown[];
-}
+import { createServerLoadEventFor, requireLoadResult } from '../helpers/createLoadEvent';
 
 describe('/tasks load', () => {
   beforeEach(() => mocks.getTasks.mockReset());
@@ -29,7 +26,7 @@ describe('/tasks load', () => {
     mocks.getTasks.mockResolvedValue(tasks);
     mocks.translateTasks.mockResolvedValue(translatedTasks);
 
-    const result = (await load({ locals: { locale: 'de' } } as unknown as Parameters<typeof load>[0])) as unknown as FeedResult;
+    const result = requireLoadResult(await load(createServerLoadEventFor<typeof load>({ locals: { locale: 'de' } })));
 
     expect(mocks.translateTasks).toHaveBeenCalledWith(tasks, 'de');
     expect(result.tasks).toEqual(translatedTasks.map((task, index) => ({
@@ -43,7 +40,7 @@ describe('/tasks load', () => {
     mocks.getTasks.mockResolvedValue(tasks);
     mocks.translateTasks.mockResolvedValue(tasks);
 
-    const result = (await load({ locals: {} } as unknown as Parameters<typeof load>[0])) as unknown as FeedResult;
+    const result = requireLoadResult(await load(createServerLoadEventFor<typeof load>()));
 
     expect(mocks.translateTasks).toHaveBeenCalledWith(tasks, 'en');
     expect(result.tasks).toEqual(tasks.map((task) => ({ ...task, sourceTags: undefined })));
@@ -54,7 +51,7 @@ describe('/tasks load', () => {
     mocks.getTasks.mockResolvedValue(tasks);
     mocks.translateTasks.mockResolvedValue(tasks);
 
-    const result = (await load({ locals: { locale: 'fr' } } as unknown as Parameters<typeof load>[0])) as unknown as FeedResult;
+    const result = requireLoadResult(await load(createServerLoadEventFor<typeof load>({ locals: { locale: 'fr' } })));
 
     expect(result.tasks).toEqual(tasks.map((task) => ({ ...task, sourceTags: undefined })));
   });

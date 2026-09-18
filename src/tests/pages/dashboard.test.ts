@@ -1,17 +1,19 @@
+/* global App */
+
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 const { mocks } = vi.hoisted(() => ({ mocks: { getTasks: vi.fn(), getClaims: vi.fn() } }));
 vi.mock('$lib/server/appwrite', () => ({ getTasks: mocks.getTasks, getClaims: mocks.getClaims }));
 
 import { load } from '../../routes/dashboard/+page.server';
+import { createServerLoadEventFor, requireLoadResult } from '../helpers/createLoadEvent';
+import { isHttpError } from '../helpers/httpError';
 
-function makeEvent(opts: { userRole?: string; userId?: string } = {}) {
-  return {
-    locals: {
-      userRole: opts.userRole ?? 'anonymous',
-      session: opts.userId ? { user: { id: opts.userId, email: 'jane@example.com' } } : undefined
-    }
-  } as unknown as Parameters<typeof load>[0];
+function makeEvent(opts: { userRole?: App.Locals['userRole']; userId?: string } = {}) {
+  return createServerLoadEventFor<typeof load>({
+    userRole: opts.userRole,
+    userId: opts.userId
+  });
 }
 
 describe('/dashboard load', () => {
@@ -22,40 +24,35 @@ describe('/dashboard load', () => {
       await load(makeEvent());
       throw new Error('expected load() to redirect');
     } catch (err: unknown) {
-      const e = err as { status?: number; location?: string; body?: { message?: string } };
-      expect(e.status).toBe(303);
-      expect(e.location).toBe('/login?next=/dashboard');
+      expect(isHttpError(err)).toBe(true);
+      if (isHttpError(err)) {
+        expect(err.status).toBe(303);
+        expect(err.location).toBe('/login?next=/dashboard');
+      }
     }
 
     try {
-      await load({ locals: {} } as unknown as Parameters<typeof load>[0]);
+      await load(makeEvent());
       throw new Error('expected load() to redirect');
     } catch (err: unknown) {
-      const e = err as { status?: number; location?: string; body?: { message?: string } };
-      expect(e.status).toBe(303);
+      expect(isHttpError(err)).toBe(true);
+      if (isHttpError(err)) expect(err.status).toBe(303);
+    }
+
+    const omittedRoleEvent = makeEvent({ userRole: 'volunteer', userId: 'user-1' });
+    omittedRoleEvent.locals.userRole = undefined;
+    try {
+      await load(omittedRoleEvent);
+      throw new Error('expected load() to redirect');
+    } catch (err: unknown) {
+      expect(isHttpError(err)).toBe(true);
+      if (isHttpError(err)) {
+        expect(err.status).toBe(303);
+        expect(err.location).toBe('/login?next=/dashboard');
+      }
     }
   });
 
-
-  interface NgoUserData {
-    totalTasks: number;
-    pendingReviewsCount: number;
-    approvedClaimsCount: number;
-    totalHours: number;
-    myClaims: Array<{ id: string; taskId?: string; task?: { id?: string } }>;
-    [key: string]: unknown;
-  }
-  interface VolunteerUserData {
-    approvedClaimsCount: number;
-    totalHours: number;
-    recommendations: Array<{ id: string }>;
-    [key: string]: unknown;
-  }
-  interface DashboardResult<T> {
-    signedIn: boolean;
-    userData: T;
-    [key: string]: unknown;
-  }
 
   it('builds NGO stats scoped to the org\'s own tasks and claims', async () => {
     mocks.getTasks.mockResolvedValue([
@@ -68,14 +65,14 @@ describe('/dashboard load', () => {
       { id: 'c3', taskId: 't2', status: 'approved' } // belongs to a different org's task
     ]);
 
-    const result = (await load(makeEvent({ userRole: 'ngo', userId: 'org-1' }))) as unknown as DashboardResult<NgoUserData>;
+    const result = requireLoadResult(await load(makeEvent({ userRole: 'ngo', userId: 'org-1' })));
 
     expect(result.signedIn).toBe(true);
     expect(result.userData.totalTasks).toBe(1);
     expect(result.userData.pendingReviewsCount).toBe(1);
     expect(result.userData.approvedClaimsCount).toBe(1);
     expect(result.userData.totalHours).toBe(1); // 60 minutes / 60
-    expect(result.userData.myClaims.every((c) => c.task?.id === 't1' || c.taskId === 't1')).toBe(true);
+    expect(result.userData.myClaims.every((c: { task?: { id?: string }; taskId?: string }) => c.task?.id === 't1' || c.taskId === 't1')).toBe(true);
   });
 
   it('builds volunteer stats with recommendations excluding already-claimed tasks', async () => {
@@ -90,7 +87,7 @@ describe('/dashboard load', () => {
       { id: 'c1', taskId: 't1', userId: 'user-1', status: 'approved' }
     ]);
 
-    const result = (await load(makeEvent({ userRole: 'volunteer', userId: 'user-1' }))) as unknown as DashboardResult<VolunteerUserData>;
+    const result = requireLoadResult(await load(makeEvent({ userRole: 'volunteer', userId: 'user-1' })));
 
     expect(result.signedIn).toBe(true);
     expect(result.userData.approvedClaimsCount).toBe(1);
@@ -101,13 +98,26 @@ describe('/dashboard load', () => {
     expect(recTaskIds).toEqual(['t2', 't3', 't4']);
 
     // Test volunteer user without email
-    const resultNoEmail = (await load({
-      locals: {
-        userRole: 'volunteer',
-        session: { user: { id: 'user-1' } }
-      }
-    } as unknown as Parameters<typeof load>[0])) as unknown as DashboardResult<VolunteerUserData>;
+    const resultNoEmail = requireLoadResult(await load(makeEvent({ userRole: 'volunteer', userId: 'user-1' })));
     expect(resultNoEmail.userData).toBeDefined();
+  });
+
+  it('preserves an authenticated session user without an email', async () => {
+    mocks.getTasks.mockResolvedValue([]);
+    mocks.getClaims.mockResolvedValue([]);
+
+    const result = requireLoadResult(await load(createServerLoadEventFor<typeof load>({
+      userRole: 'volunteer',
+      session: { user: { id: 'user-without-email' } }
+    })));
+
+    expect(result.user).toEqual({ id: 'user-without-email', email: undefined });
+    expect(result.userData).toEqual({
+      myClaims: [],
+      approvedClaimsCount: 0,
+      totalHours: 0,
+      recommendations: []
+    });
   });
 
 
@@ -116,25 +126,23 @@ describe('/dashboard load', () => {
     mocks.getTasks.mockResolvedValue([{ id: 't1', orgId: 'org-1' }]);
     mocks.getClaims.mockResolvedValue([{ id: 'c1', taskId: 't1', status: 'approved' }]);
 
-    const result = (await load(makeEvent({ userRole: 'ngo', userId: 'org-1' }))) as unknown as DashboardResult<NgoUserData>;
+    const result = requireLoadResult(await load(makeEvent({ userRole: 'ngo', userId: 'org-1' })));
     expect(result.userData.totalHours).toBe(0.5);
 
     // Also volunteer with missing task in enrichClaims
     mocks.getTasks.mockResolvedValue([]);
     mocks.getClaims.mockResolvedValue([{ id: 'c2', taskId: 'nonexistent', userId: 'user-1', status: 'approved' }]);
-    const volResult = (await load(makeEvent({ userRole: 'volunteer', userId: 'user-1' }))) as unknown as DashboardResult<VolunteerUserData>;
+    const volResult = requireLoadResult(await load(makeEvent({ userRole: 'volunteer', userId: 'user-1' })));
     expect(volResult.userData.totalHours).toBe(0.5);
   });
 
   it('returns signedIn:false for non-NGO, non-volunteer roles when authenticated', async () => {
-    const result = await load(makeEvent({ userRole: 'admin', userId: 'admin-1' }));
+    const result = requireLoadResult(await load(makeEvent({ userRole: 'user', userId: 'admin-1' })));
     expect(result).toEqual({
       signedIn: false,
-      userRole: 'admin',
+      userRole: 'user',
       user: null,
       userData: null
     });
   });
 });
-
-

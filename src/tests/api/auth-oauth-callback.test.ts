@@ -1,4 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { createMockCookies, createRequestEvent } from '../helpers/createLoadEvent';
+import type { CookieSerializeOptions } from '../helpers/createLoadEvent';
 
 const { mocks } = vi.hoisted(() => ({
   mocks: {
@@ -40,16 +42,26 @@ vi.mock('$lib/server/teams', () => ({
 import { GET } from '../../routes/api/auth/oauth/callback/+server';
 
 type MockEvent = Parameters<typeof GET>[0] & {
-  setCalls: Array<{ name: string; value: string; opts: Record<string, unknown> }>;
+  setCalls: Array<{ name: string; value: string; opts: CookieSerializeOptions }>;
 };
 
 function makeEvent(search: string, protocol = 'https:'): MockEvent {
-  const setCalls: Array<{ name: string; value: string; opts: Record<string, unknown> }> = [];
-  return {
-    url: new URL(`${protocol}//test/api/auth/oauth/callback${search}`),
-    cookies: { set: (name: string, value: string, opts: Record<string, unknown>) => setCalls.push({ name, value, opts }) },
-    setCalls
-  } as unknown as MockEvent;
+  const cookies = createMockCookies();
+  const event = createRequestEvent({
+    url: `${protocol}//test/api/auth/oauth/callback${search}`,
+    cookies
+  });
+  const setCalls: MockEvent['setCalls'] = [];
+  cookies.set.mockImplementation((name, value, opts) => {
+    setCalls.push({ name, value, opts });
+  });
+  return Object.assign(event, { setCalls });
+}
+
+function isRedirectError(error: unknown): error is { status: number; location: string } {
+  if (typeof error !== 'object' || error === null) return false;
+  const candidate = error as { status?: unknown; location?: unknown };
+  return typeof candidate.status === 'number' && typeof candidate.location === 'string';
 }
 
 async function expectRedirect(promise: unknown, status: number, location: string) {
@@ -57,9 +69,11 @@ async function expectRedirect(promise: unknown, status: number, location: string
     await promise;
     throw new Error('expected a redirect to be thrown');
   } catch (err: unknown) {
-    const e = err as { status?: number; location?: string };
-    expect(e.status).toBe(status);
-    expect(e.location).toBe(location);
+    expect(isRedirectError(err)).toBe(true);
+    if (isRedirectError(err)) {
+      expect(err.status).toBe(status);
+      expect(err.location).toBe(location);
+    }
   }
 }
 

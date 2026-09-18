@@ -75,15 +75,32 @@ export interface UserPreferences {
   bio?: string;
   skills?: string[];
   verificationStatus?: string;
-  [key: string]: unknown;
+  [key: string]: UserPreferenceValue;
 }
+
+export type UserPreferenceValue =
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
+  | string[];
+
+export type DashboardDataValue =
+  | number
+  | string
+  | boolean
+  | null
+  | undefined
+  | Task[]
+  | Array<Claim & { task?: { id: string; title: string; estimatedMinutes?: number } }>;
 
 export interface VolunteerUserData {
   myClaims?: Array<Claim & { task?: { id: string; title: string; estimatedMinutes?: number } }>;
   approvedClaimsCount?: number;
   totalHours?: number;
   recommendations?: Task[];
-  [key: string]: unknown;
+  [key: string]: DashboardDataValue;
 }
 
 export interface NgoUserData {
@@ -94,7 +111,7 @@ export interface NgoUserData {
   approvedClaimsCount?: number;
   totalHours?: number;
   myClaims?: Array<Claim & { task?: { id: string; title: string; estimatedMinutes?: number } }>;
-  [key: string]: unknown;
+  [key: string]: DashboardDataValue;
 }
 
 export type DashboardUserData = VolunteerUserData | NgoUserData;

@@ -27,19 +27,20 @@ vi.mock('node-appwrite', () => ({
 }));
 
 import { POST } from '../../routes/api/profile/avatar/+server';
+import { createRequestEvent } from '../../tests/helpers/createLoadEvent';
 
 function makeEvent(opts: { userId?: string | null; authorization?: string; file?: File | null } = {}) {
   const form = new FormData();
   if (opts.file !== null) {
     form.set('file', opts.file ?? new File(['x'], 'avatar.png', { type: 'image/png' }));
   }
-  return {
-    locals: opts.userId ? { session: { user: { id: opts.userId } } } : {},
-    request: {
-      headers: new Headers(opts.authorization ? { authorization: opts.authorization } : {}),
-      formData: async () => form
-    }
-  } as unknown as import("@sveltejs/kit").RequestEvent;
+  return createRequestEvent({
+    userId: opts.userId ?? undefined,
+    request: new Request('http://test/api/profile/avatar', {
+      method: 'POST', body: form,
+      headers: opts.authorization ? { authorization: opts.authorization } : undefined
+    })
+  });
 }
 
 describe('POST /api/profile/avatar', () => {

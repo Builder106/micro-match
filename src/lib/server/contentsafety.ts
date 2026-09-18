@@ -3,10 +3,20 @@ import { env } from '$env/dynamic/private';
 
 export type ModerationCategory = 'Hate' | 'SelfHarm' | 'Sexual' | 'Violence';
 
+export interface SafetyCategory {
+  category?: string;
+  severity?: number;
+}
+
+export interface SafetyResponse {
+  categoriesAnalysis?: SafetyCategory[];
+  categories?: SafetyCategory[];
+}
+
 export type ModerationResult = {
   blocked: boolean;
   reasons: Array<{ category: ModerationCategory | string; severity: number }>;
-  raw?: unknown;
+  raw?: SafetyResponse;
 };
 
 const DEFAULT_CATEGORIES: ModerationCategory[] = ['Hate', 'SelfHarm', 'Sexual', 'Violence'];
@@ -44,14 +54,6 @@ export async function moderateText(text: string, categories: ModerationCategory[
       return { blocked: false, reasons: [] };
     }
 
-    interface SafetyCategory {
-      category?: string;
-      severity?: number;
-    }
-    interface SafetyResponse {
-      categoriesAnalysis?: SafetyCategory[];
-      categories?: SafetyCategory[];
-    }
     const data = (await res.json()) as SafetyResponse;
 
     // Normalize categories array (API response shape can vary by version)

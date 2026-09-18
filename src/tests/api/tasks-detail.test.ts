@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { createRequestEvent } from '../helpers/createLoadEvent';
 
 const { mocks } = vi.hoisted(() => ({
   mocks: {
@@ -21,16 +22,15 @@ vi.mock('$lib/server/auth', () => ({ getUserRole: mocks.getUserRole }));
 import { PATCH, DELETE } from '../../routes/api/tasks/[id]/+server';
 
 function makeEvent(opts: { userId?: string | null; taskId?: string; body?: unknown } = {}): Parameters<typeof PATCH>[0] {
-  return {
-    params: { id: opts.taskId ?? 'task-1' },
-    locals: opts.userId ? { session: { user: { id: opts.userId } } } : {},
-    request: {
-      json: async () => {
-        if (opts.body === undefined) throw new Error('no body');
-        return opts.body;
-      }
-    }
-  } as unknown as Parameters<typeof PATCH>[0];
+  const request = opts.body === undefined
+    ? new Request('http://test/api/tasks/task-1')
+    : new Request('http://test/api/tasks/task-1', {
+      method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify(opts.body)
+    });
+  return createRequestEvent({
+    params: { id: opts.taskId ?? 'task-1' }, request,
+    session: opts.userId ? { user: { id: opts.userId } } : null
+  });
 }
 
 describe('PATCH /api/tasks/[id]', () => {
@@ -40,10 +40,7 @@ describe('PATCH /api/tasks/[id]', () => {
   });
 
   it('returns 400 when task id param is missing', async () => {
-    const res = await PATCH({
-      params: {},
-      locals: { session: { user: { id: 'org-1' } } }
-    } as unknown as Parameters<typeof PATCH>[0]);
+    const res = await PATCH(createRequestEvent({ session: { user: { id: 'org-1' } } }));
     expect(res.status).toBe(400);
   });
 
@@ -121,10 +118,7 @@ describe('DELETE /api/tasks/[id]', () => {
   });
 
   it('returns 400 when task id param is missing', async () => {
-    const res = await DELETE({
-      params: {},
-      locals: { session: { user: { id: 'org-1' } } }
-    } as unknown as Parameters<typeof DELETE>[0]);
+    const res = await DELETE(createRequestEvent({ session: { user: { id: 'org-1' } } }));
     expect(res.status).toBe(400);
   });
 

@@ -66,7 +66,20 @@ if (typeof globalThis !== 'undefined') {
 if (typeof document !== 'undefined') {
   if (typeof Element !== 'undefined' && !Element.prototype.animate) {
     Element.prototype.animate = function () {
-      return {
+      // jsdom has no Animation implementation; this is the minimal contract
+      // consumed by the component tests.
+      const animation = Object.create(null) as Animation;
+      Object.assign(animation, {
+        currentTime: 0,
+        effect: null,
+        id: '',
+        onremove: null,
+        playbackRate: 1,
+        playState: 'idle',
+        ready: Promise.resolve(new EventTarget()),
+        startTime: 0,
+        timeline: null,
+        overallProgress: null,
         onfinish: null,
         oncancel: null,
         finished: Promise.resolve(),
@@ -74,8 +87,12 @@ if (typeof document !== 'undefined') {
         finish: () => { },
         play: () => { },
         pause: () => { },
-        reverse: () => { }
-      } as unknown as Animation;
+        reverse: () => { },
+        updatePlaybackRate: () => { },
+        commitStyles: () => { },
+        persist: () => { }
+      });
+      return animation;
     };
   }
 

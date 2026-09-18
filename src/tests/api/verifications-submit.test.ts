@@ -21,23 +21,23 @@ vi.mock('$lib/server/verifications', () => ({
 vi.mock('$lib/server/propublica', () => ({ lookupNonprofitByEin: mocks.lookupNonprofitByEin }));
 
 import { POST, GET } from '../../routes/api/verifications/+server';
+import { createRequestEvent } from '../helpers/createLoadEvent';
 
 function makeEvent(opts: {
   userId?: string | null;
   body?: unknown;
   search?: string;
 } = {}) {
-  return {
-    locals: { session: opts.userId ? { user: { id: opts.userId } } : null },
-    request: {
-      json: async () => {
-        if (opts.body === undefined) throw new Error('no body');
-        return opts.body;
-      }
-    },
-    url: new URL(`http://test/api/verifications${opts.search ?? ''}`),
-    params: {}
-  } as unknown as import("@sveltejs/kit").RequestEvent;
+  const url = `http://test/api/verifications${opts.search ?? ''}`;
+  return createRequestEvent({
+    userId: opts.userId ?? undefined,
+    url,
+    request: new Request(url, {
+      method: 'POST',
+      body: opts.body === undefined ? undefined : JSON.stringify(opts.body),
+      headers: opts.body === undefined ? undefined : { 'content-type': 'application/json' }
+    })
+  });
 }
 
 describe('POST /api/verifications', () => {
@@ -67,11 +67,10 @@ describe('POST /api/verifications', () => {
 
   it('returns 400 for invalid JSON body', async () => {
     mocks.getUserRole.mockResolvedValue('ngo');
-    const event = {
-      locals: { session: { user: { id: 'u1' } } },
-      request: { json: async () => { throw new Error('parse error'); } },
-      url: new URL('http://test/api/verifications')
-    } as unknown as import("@sveltejs/kit").RequestEvent;
+    const event = createRequestEvent({
+      userId: 'u1',
+      request: new Request('http://test/api/verifications', { method: 'POST', body: '{' })
+    });
     const res = await POST(event);
     expect(res.status).toBe(400);
   });

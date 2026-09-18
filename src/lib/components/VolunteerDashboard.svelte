@@ -15,7 +15,13 @@
       totalHours?: number;
       myClaims?: Array<{ id: string; status: string; createdAt?: string; task?: { title?: string } }>;
       recommendations?: Array<{ id: string; title: string; shortDescription: string; estimatedMinutes?: number; tags?: string[] }>;
-      [key: string]: unknown;
+      [key: string]:
+        | string
+        | number
+        | boolean
+        | null
+        | undefined
+        | Array<{ id: string; [k: string]: string | number | boolean | null | undefined | string[] | object }>;
     } | null;
   };
 

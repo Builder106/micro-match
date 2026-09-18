@@ -26,18 +26,17 @@ vi.mock('node-appwrite', () => ({
 }));
 
 import { POST } from '../../routes/api/profile/update/+server';
+import { createRequestEvent } from '../helpers/createLoadEvent';
 
 function makeEvent(opts: { userId?: string | null; authorization?: string; body?: unknown } = {}) {
-  return {
-    locals: opts.userId ? { session: { user: { id: opts.userId } } } : {},
-    request: {
-      headers: new Headers(opts.authorization ? { authorization: opts.authorization } : {}),
-      json: async () => {
-        if (opts.body === undefined) throw new Error('bad json');
-        return opts.body;
-      }
-    }
-  } as unknown as import("@sveltejs/kit").RequestEvent;
+  return createRequestEvent({
+    userId: opts.userId ?? undefined,
+    request: new Request('http://test/api/profile/update', {
+      method: 'POST',
+      body: opts.body === undefined ? undefined : JSON.stringify(opts.body),
+      headers: { ...(opts.authorization ? { authorization: opts.authorization } : {}), ...(opts.body === undefined ? {} : { 'content-type': 'application/json' }) }
+    })
+  });
 }
 
 describe('POST /api/profile/update', () => {

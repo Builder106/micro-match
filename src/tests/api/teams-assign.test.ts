@@ -18,12 +18,15 @@ vi.mock('$lib/server/teams', () => ({
 vi.mock('$env/dynamic/private', () => ({ env: {} }));
 
 import { POST } from '../../routes/api/teams/assign/+server';
+import { createRequestEvent } from '../helpers/createLoadEvent';
 
 function makeEvent(opts: { userId?: string | null; authorization?: string } = {}) {
-  return {
-    locals: opts.userId ? { session: { user: { id: opts.userId } } } : {},
-    request: { headers: new Headers(opts.authorization ? { authorization: opts.authorization } : {}) }
-  } as unknown as import("@sveltejs/kit").RequestEvent;
+  return createRequestEvent({
+    userId: opts.userId ?? undefined,
+    request: new Request('http://test/api/teams/assign', {
+      headers: opts.authorization ? { authorization: opts.authorization } : undefined
+    })
+  });
 }
 
 describe('POST /api/teams/assign', () => {

@@ -10,6 +10,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-check --fail-on-warnings --tsconfig ./tsconfig.json --output human",
+    "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:unit": "vitest run",
     "test:watch": "vitest",

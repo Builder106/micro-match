@@ -152,7 +152,7 @@
         role = data.userRole;
         initialRole = data.userRole;
       }
-    } catch (err: unknown) {
+    } catch (err) {
       // The client SDK can't reach Appwrite (Safari ITP, etc) but we
       // already have a server session — the form will still save through
       // /api/profile/update. Just fall back to server-side userRole and

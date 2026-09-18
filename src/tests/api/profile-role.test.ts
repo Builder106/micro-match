@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { createRequestEvent } from '../helpers/createLoadEvent';
 
 const { envState, mocks, AppwriteCtors, teamIds } = vi.hoisted(() => {
   const userPrefs: Record<string, string> = { role: '' };
@@ -54,18 +55,18 @@ vi.mock('$lib/server/appwrite', () => ({ setTasksVerifiedForOrg: mocks.setTasksV
 import { POST } from '../../routes/api/profile/role/+server';
 
 function makeEvent(opts: { userId?: string | null; jwt?: string; body?: unknown }) {
-  const headers = new Map<string, string>();
-  if (opts.jwt) headers.set('authorization', `Bearer ${opts.jwt}`);
-  return {
-    locals: { session: opts.userId ? { user: { id: opts.userId } } : null },
-    request: {
-      json: async () => {
-        if (opts.body === undefined) throw new Error('no body');
-        return opts.body;
-      },
-      headers: { get: (k: string) => headers.get(k.toLowerCase()) ?? null }
-    }
-  } as unknown as import("@sveltejs/kit").RequestEvent;
+  const headers = opts.jwt ? { authorization: `Bearer ${opts.jwt}` } : undefined;
+  const request = opts.body === undefined
+    ? new Request('http://test/api/profile/role')
+    : new Request('http://test/api/profile/role', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', ...headers },
+      body: JSON.stringify(opts.body)
+    });
+  return createRequestEvent({
+    request,
+    session: opts.userId ? { user: { id: opts.userId } } : null
+  });
 }
 
 describe('POST /api/profile/role', () => {
@@ -89,14 +90,14 @@ describe('POST /api/profile/role', () => {
 
     // Invalid auth header prefix
     const makeCustomHeaderEvent = (authValue: string) => {
-      const headers = new Map<string, string>([['authorization', authValue]]);
-      return {
-        locals: { session: null },
-        request: {
-          json: async () => ({ newRole: 'ngo' }),
-          headers: { get: (k: string) => headers.get(k.toLowerCase()) ?? null }
-        }
-      } as unknown as import("@sveltejs/kit").RequestEvent;
+      return createRequestEvent({
+        request: new Request('http://test/api/profile/role', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json', authorization: authValue },
+          body: JSON.stringify({ newRole: 'ngo' })
+        }),
+        session: null
+      });
     };
 
     const resBadHeader = await POST(makeCustomHeaderEvent('Basic abc'));

@@ -1,3 +1,5 @@
+/* global App */
+
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 const { envState, mocks } = vi.hoisted(() => ({
@@ -26,17 +28,18 @@ vi.mock('./teams', () => ({
 }));
 
 import { getUserRole } from './auth';
+import { createRequestEvent } from '../../tests/helpers/createLoadEvent';
 
 function makeEvent(opts: {
   authorization?: string;
   localsRole?: string;
 } = {}) {
-  return {
-    locals: opts.localsRole ? { userRole: opts.localsRole } : {},
-    request: {
-      headers: new Headers(opts.authorization ? { authorization: opts.authorization } : {})
-    }
-  } as unknown as import('@sveltejs/kit').RequestEvent;
+  return createRequestEvent({
+    locals: opts.localsRole ? { userRole: opts.localsRole as App.Locals['userRole'] } : {},
+    request: new Request('http://localhost/', {
+      headers: opts.authorization ? { authorization: opts.authorization } : {}
+    })
+  });
 }
 
 describe('getUserRole', () => {
@@ -70,14 +73,9 @@ describe('getUserRole', () => {
   });
 
   it('treats a whitespace-only bearer token as anonymous after header parsing', async () => {
-    const event = {
-      locals: {},
-      request: {
-        headers: {
-          get: vi.fn().mockReturnValue('Bearer ')
-        }
-      }
-    } as unknown as import('@sveltejs/kit').RequestEvent;
+    const request = new Request('http://localhost/');
+    vi.spyOn(request.headers, 'get').mockReturnValue('Bearer ');
+    const event = createRequestEvent({ request });
 
     await expect(getUserRole(event)).resolves.toBe('anonymous');
   });
@@ -152,12 +150,13 @@ describe('getUserRole', () => {
   });
 
   it('continues when reading event.locals throws', async () => {
-    const event = {
-      get locals() {
+    const event = createRequestEvent();
+    Object.defineProperty(event, 'locals', {
+      configurable: true,
+      get() {
         throw new Error('locals unavailable');
-      },
-      request: { headers: new Headers() }
-    } as unknown as import('@sveltejs/kit').RequestEvent;
+      }
+    });
 
     expect(await getUserRole(event)).toBe('anonymous');
   });

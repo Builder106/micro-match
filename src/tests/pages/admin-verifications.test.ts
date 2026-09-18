@@ -4,22 +4,22 @@ const { mocks } = vi.hoisted(() => ({ mocks: { isUserAdmin: vi.fn() } }));
 vi.mock('$lib/server/teams', () => ({ isUserAdmin: mocks.isUserAdmin }));
 
 import { load } from '../../routes/admin/verifications/+page.server';
+import { createServerLoadEvent } from '../helpers/createLoadEvent';
+import { isHttpError, type HttpError } from '../helpers/httpError';
 
 function makeEvent(userId?: string | null): Parameters<typeof load>[0] {
-  return { locals: userId ? { session: { user: { id: userId } } } : {} } as unknown as Parameters<typeof load>[0];
+  return createServerLoadEvent({ userId: userId ?? undefined });
 }
 
-interface HttpError {
-  status?: number;
-  location?: string;
-  body?: { message?: string };
-}
 async function expectThrow(promise: unknown, matcher: (err: HttpError) => void) {
   try {
     await promise;
     throw new Error('expected load() to throw');
   } catch (err: unknown) {
-    matcher(err as HttpError);
+    if (!isHttpError(err)) {
+      throw new Error('expected a structured HTTP error', { cause: err });
+    }
+    matcher(err);
   }
 }
 
