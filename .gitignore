@@ -65,6 +65,7 @@ MicroMatch_Demo.webm
 # Local scratch / design exports
 project/
 image/
+artifacts/
 .vercel
 
 # Docs
