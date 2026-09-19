@@ -8,6 +8,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: a11y-release-${{ github.ref }}
+  cancel-in-progress: false
+
 env:
   PUBLIC_APPWRITE_ENDPOINT: https://placeholder.example.com
   PUBLIC_APPWRITE_PROJECT_ID: placeholder
