@@ -1,5 +1,26 @@
 # JOURNAL — MicroMatch
 
+## 2026-09-19 - Made the badge outline a continuous draw #fix
+
+Replaced four independently scaled shield segments with one closed indigo path
+revealed by a trim-path animation. The intermediate silhouette now has only one
+intentional drawing endpoint, never disconnected pieces that rejoin at the
+finish. The checkmark received the planned stronger stroke and settle; exact
+frame Chromium renders plus Gemini video review passed the revised v007 motion.
+
+## 2026-09-19 - Refined civic achievement badge clarity #fix
+
+Gemini vision review found visual collisions where the earlier badge ribbons
+crossed the seal and suggested a clearer compact-state silhouette. The final
+authored revision removes the ribbons and inner ring, shifts the right-side
+sparkles outward, and preserves the 90-frame one-shot, green checkmark,
+three-sparkle palette, and completed static fallback. Exact-frame Chromium
+renders and the reduced-motion fallback were rechecked after the refinement.
+
+## 2026-09-19 - Replaced the confetti badge burst with restrained recognition motion #fix
+
+Replaced the oversized imported badge burst with a compact authored civic achievement badge. The one-shot animation draws an indigo shield and seal, reveals a green checkmark, and ends with three coral and indigo sparkles. The homepage now uses the completed badge SVG for reduced-motion and load-failure fallback states. Exact-frame Chromium playback, replay/pause controls, reduced-motion behavior, and technical validation passed.
+
 ## 2026-09-17 - Strengthened authored test fixtures #fix
 
 Extended the shared SvelteKit test factory to return a real request event with

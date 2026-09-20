@@ -11,3 +11,12 @@ Downloaded from the public LottieFiles GraphQL API on 2026-08-22.
 The public API record did not provide an asset-specific license field. Confirm the creator or publisher terms permit the intended use before publishing or redistributing these files.
 
 MicroMatch extracts the JSON animation from each dotLottie bundle and renders it with `lottie-web`. It remaps the volunteer and NGO asset fills to coral shades. The animation structure and other colors remain unchanged.
+
+## Authored MicroMatch assets
+
+| Local file | Asset | Creator | Source |
+| --- | --- | --- | --- |
+| `badge_burst.json` | Civic achievement badge | MicroMatch product asset | Authored in-house; browser-rendered revision in `artifacts/lottie/civic-achievement-badge/v007/` |
+| `badge-burst-fallback.svg` | Completed civic achievement badge | MicroMatch product asset | Static reduced-motion and load-failure fallback for `badge_burst.json` |
+
+The authored badge uses the product palette, plays once at 60 FPS for 1.5 seconds, and contains no text or external artwork.

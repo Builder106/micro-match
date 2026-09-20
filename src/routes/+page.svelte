@@ -322,7 +322,7 @@
                 <div class="badge-sparkle" aria-hidden="true">
                   {#if badgeSeen[i]}
                     <LottieAnimation src="/animations/badge_burst.json" loop={false}>
-                      <Icon icon="lucide:sparkles" width="28" height="28" aria-hidden="true" />
+                      <img src="/animations/badge-burst-fallback.svg" alt="" width="512" height="512" />
                     </LottieAnimation>
                   {/if}
                 </div>
@@ -705,6 +705,7 @@
   .badge-card { position: relative; isolation: isolate; overflow: hidden; background: var(--color-surface); border-radius: 24px; padding: 20px 16px; display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid var(--card-border); box-shadow: 0 2px 8px rgba(0,0,0,0.03); transition: transform .3s; }
   .badge-sparkle { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
   .badge-sparkle :global(.lottie-animation) { width: 100%; height: 100%; display: block; }
+  .badge-sparkle :global(img) { display: block; width: 100%; height: 100%; object-fit: contain; }
   .badge-card:hover { transform: translateY(-4px); }
   .badge-icon { position: relative; z-index: 1; width: 80px; height: 80px; border-radius: 24px; display: flex; align-items: center; justify-content: center; color: #fff; margin-bottom: 12px; transition: transform .3s; overflow: visible; }
   .badge-card:hover .badge-icon { transform: scale(1.1); }
