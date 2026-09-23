@@ -1,5 +1,21 @@
 # JOURNAL — MicroMatch
 
+## 2026-09-23 - Added a TypeScript 7 Svelte check #decision
+
+Kept TypeScript 6 under the peer-visible `typescript` name and added native
+TypeScript 7 as `@typescript/native`, following the documented
+`svelte-check` 4.7.6 bridge. The separate `check:tsgo` script compiles
+Paraglide messages before checking the project with `--tsgo`; CI keeps the
+standard Svelte check and adds the TSGo check. On Linux ARM64, the frozen
+install, standard and TSGo checks, lint, production build, 728-test coverage
+suite, and functional, audit, and accessibility runs passed. A standalone
+TypeScript command initially failed because generated Paraglide and SvelteKit
+types were absent from a fresh verifier checkout. The `typecheck` script now
+generates them before invoking the TS6 compatibility compiler; this follow-up
+still needs a clean verifier run. The repo-wide Prettier failures all also
+occur on the unchanged baseline. This remains bridge work, not strict TS7
+completion, because the tools still need the TypeScript 6 API.
+
 ## 2026-09-19 - Made the badge outline a continuous draw #fix
 
 Replaced four independently scaled shield segments with one closed indigo path

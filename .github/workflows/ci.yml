@@ -44,7 +44,8 @@ jobs:
       - run: bunx license-checker --summary
       - run: bunx svelte-kit sync
       - run: bun run check
-      - run: bunx tsc --noEmit
+      - run: bun run typecheck
+      - run: bun run check:tsgo
 
   lint:
     name: Lint & Format
