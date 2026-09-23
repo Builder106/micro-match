@@ -13,10 +13,8 @@
    import { page } from '$app/stores';
    import { get } from 'svelte/store';
    import { account, getJWT } from '$lib/appwrite.client';
-   import { dev } from '$app/environment';
    import { localizedHref, stripLocale, type Locale } from '$lib/locale';
    import * as m from '$lib/paraglide/messages.js';
-   import { inject } from '@vercel/analytics';
   const authPaths = ['/login', '/signup', '/forgot-password', '/reset-password'];
   const publicPaths = ['/about', '/contact', '/cookies', '/docs', '/help', '/privacy', '/terms', '/how-it-works', '/for-ngos', '/for-volunteers', '/tasks', '/impact'];
 
@@ -44,8 +42,6 @@
   // Add Google Fonts
    
    onMount(() => {
-     inject({ mode: dev ? 'development' : 'production' });
-
      const links = [
        'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
        'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap',
