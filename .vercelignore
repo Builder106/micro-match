@@ -1,0 +1,21 @@
+# Standalone marketing compositions
+ui-demo/
+trailer/
+
+# Python rendering tools (Blender mockups)
+tools/
+
+# Test suites and snapshots
+e2e/
+src/tests/
+
+# Internal documentation and specs
+docs/
+
+# README demo GIFs — not used by the web app
+static/demos/
+
+# Social-preview HTML source templates (rendered offline)
+static/banner-dark.html
+static/banner-light.html
+static/social-preview.html
