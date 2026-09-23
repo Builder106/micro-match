@@ -20,7 +20,7 @@
         "@smui/top-app-bar": "^9.0.2",
         "@sveltejs/kit": "^2.70.3",
         "@vercel/analytics": "^2.0.1",
-        "appwrite": "^26.2.0",
+        "appwrite": "^27.0.0",
         "canvas-confetti": "1.9.4",
         "lottie-web": "5.13.0",
         "mode-watcher": "^1.1.0",
@@ -593,7 +593,7 @@
 
     "ansi-styles": ["ansi-styles@5.2.0", "", {}, "sha512-Cxwpt2SfTzTtXcfOlzGEee8O+c+MmUgGrNiBcXnuWxuFJHe6a5Hz7qwhwe5OgaSYI0IJvkLqWX1ASG+cJOkEiA=="],
 
-    "appwrite": ["appwrite@26.2.0", "", { "dependencies": { "json-bigint": "1.0.0" } }, "sha512-8TCd4mMKhhUxGF9sjZ6W2V1gesnj43v1SFZoeAue/0O0ikMXIU92p96PiRn0D4nAVvFM/92bluTTb/PoXH5mnQ=="],
+    "appwrite": ["appwrite@27.0.0", "", { "dependencies": { "json-bigint": "1.0.0" } }, "sha512-DPIk0WEy2zPma8zrQB/mRPku4HfM874MsH+VRTkCmyD06UzUZscab79JU9QZ+tAcj4vxh9h9Lyi14lFLVIL1hg=="],
 
     "argparse": ["argparse@2.0.1", "", {}, "sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q=="],
 

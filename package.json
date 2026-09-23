@@ -52,7 +52,7 @@
     "@smui/top-app-bar": "^9.0.2",
     "@sveltejs/kit": "^2.70.3",
     "@vercel/analytics": "^2.0.1",
-    "appwrite": "^26.2.0",
+    "appwrite": "^27.0.0",
     "canvas-confetti": "1.9.4",
     "lottie-web": "5.13.0",
     "mode-watcher": "^1.1.0",
