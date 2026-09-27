@@ -13,13 +13,15 @@ describe('AuthBrandPanel', () => {
     expect(screen.getByText(/Step into a thriving civic world/i)).toBeInTheDocument();
   });
 
-  it('hides the marketing copy when showCopy is false', () => {
-    render(AuthBrandPanel, { showCopy: false });
-    expect(screen.queryByText(/Step into a thriving civic world/i)).toBeNull();
-  });
+  it('keeps the illustration glow separate from the unboxed copy', () => {
+    const { container } = render(AuthBrandPanel, { animation: '/animations/collaboration.json' });
+    const scene = container.querySelector('.scene-wrap');
+    const copy = container.querySelector('.copy');
 
-  it('applies the compact class when compact is true', () => {
-    const { container } = render(AuthBrandPanel, { compact: true });
-    expect(container.querySelector('section.brand-stage.compact')).toBeInTheDocument();
+    expect(scene?.querySelectorAll('.auth-brand-animation')).toHaveLength(1);
+    expect(scene?.querySelectorAll('.glow')).toHaveLength(2);
+    expect(copy).not.toBeNull();
+    expect(scene?.contains(copy)).toBe(false);
+    expect(container.querySelector('.shade, .grain')).toBeNull();
   });
 });
