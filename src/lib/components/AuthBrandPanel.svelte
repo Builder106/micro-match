@@ -1,44 +1,34 @@
 <script lang="ts">
   import LottieAnimation from '$lib/components/LottieAnimation.svelte';
   import { resolve } from '$app/paths';
-  export let compact = false;
-  export let showCopy = true;
   export let animation = '/animations/collaboration.json';
 </script>
 
-<section class:compact class="brand-stage" aria-label="MicroMatch introduction">
-  <div class="grain"></div>
-  <div class="glow glow-coral"></div>
-  <div class="glow glow-teal"></div>
-  <div class="grain" aria-hidden="true"></div>
-  <div class="glow glow-coral" aria-hidden="true"></div>
-  <div class="glow glow-teal" aria-hidden="true"></div>
-
+<section class="brand-stage" aria-label="MicroMatch introduction">
   <div class="scene-wrap" aria-hidden="true">
+    <div class="glow glow-coral"></div>
+    <div class="glow glow-teal"></div>
     {#key animation}
       <LottieAnimation src={animation} loop={true} className="auth-brand-animation" />
     {/key}
   </div>
 
-  <div class="shade"></div>
   <div class="content">
     <a href={resolve("/", {})} class="logo-lockup">
       <img src="/logo.png" alt="" class="logo-mark" />
       <span>MicroMatch</span>
     </a>
 
-    {#if showCopy}
-      <div class="copy">
-        <h1>
-          Small actions
-          <br />
-          create
-          <br />
-          <em>big impact.</em>
-        </h1>
-        <p>Step into a thriving civic world. Complete bite-sized tasks, build your streak, and help NGOs drive real change in minutes a day.</p>
-      </div>
-    {/if}
+    <div class="copy">
+      <h1>
+        Small actions
+        <br />
+        create
+        <br />
+        <em>big impact.</em>
+      </h1>
+      <p>Step into a thriving civic world. Complete bite-sized tasks, build your streak, and help NGOs drive real change in minutes a day.</p>
+    </div>
   </div>
 </section>
 
@@ -52,38 +42,24 @@
     color: #fff;
     isolation: isolate;
   }
-  .compact {
-    min-height: 300px;
-    border-bottom-left-radius: 32px;
-    border-bottom-right-radius: 32px;
-  }
-  .grain {
-    position: absolute;
-    inset: 0;
-    opacity: 0.018;
-    background-image: radial-gradient(circle at 1px 1px, #ffffff 1px, transparent 0);
-    background-size: 4px 4px;
-    pointer-events: none;
-    z-index: 0;
-  }
   .glow {
     position: absolute;
-    width: 520px;
-    height: 520px;
+    width: min(26vw, 320px);
+    aspect-ratio: 1;
     border-radius: 999px;
-    filter: blur(100px);
+    filter: blur(clamp(24px, 5vh, 48px));
     pointer-events: none;
     z-index: 0;
   }
   .glow-coral {
     background: rgba(255, 107, 107, 0.16);
-    top: -28%;
-    left: -18%;
+    top: 4%;
+    left: -6%;
   }
   .glow-teal {
     background: rgba(72, 188, 174, 0.16);
-    bottom: -30%;
-    right: -20%;
+    top: 0;
+    right: -10%;
   }
   .scene-wrap {
     position: absolute;
@@ -97,31 +73,13 @@
     overflow: hidden;
     z-index: 0;
   }
-  .compact .scene-wrap {
-    top: 12%;
-    height: 42%;
-  }
   .scene-wrap :global(.auth-brand-animation) {
     width: min(460px, 70%);
     height: 100%;
     display: block;
     overflow: hidden;
-  }
-  .compact .scene-wrap :global(.auth-brand-animation) {
-    width: min(280px, 60%);
-  }
-  .compact .shade { background: #0f172a; }
-  .brand-stage:not(.compact) .shade { display: none; }
-  .brand-stage:not(.compact) .grain { display: none; }
-  .shade {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 64%;
-    background: linear-gradient(to top, rgba(15, 23, 42, 1) 0%, rgba(15, 23, 42, 0.9) 55%, rgba(15, 23, 42, 0) 100%);
-    z-index: 2;
-    pointer-events: none;
+    position: relative;
+    z-index: 1;
   }
   .content {
     position: relative;
@@ -134,22 +92,20 @@
     justify-content: flex-start;
     padding: 34px 28px 48px;
   }
-  .compact .content {
-    padding: 22px 24px;
-  }
   .logo-lockup {
     display: inline-flex;
     align-items: center;
     gap: 10px;
     color: #fff;
     text-decoration: none;
-    background: #0f172a;
-    border-radius: 12px;
-    padding: 6px 10px;
     width: fit-content;
     position: relative;
     z-index: 1;
     transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .logo-lockup:focus-visible {
+    outline: 2px solid #ff8b8b;
+    outline-offset: 5px;
   }
   .logo-lockup span {
     font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
@@ -176,22 +132,13 @@
     text-shadow: 0 0 14px rgba(255, 255, 255, 0.45);
   }
 
-  .compact .logo-lockup { gap: 8px; }
-  .compact .logo-lockup span { font-size: 1.05rem; }
-  .compact .logo-mark { width: 28px; height: 28px; }
   .copy {
     position: absolute;
-    left: 28px;
-    right: 28px;
-    inset-inline-start: 28px;
+    inset-inline: 28px;
     width: min(520px, calc(100% - 56px));
     top: 52%;
     z-index: 4;
     max-width: 520px;
-    padding: 14px 16px;
-    background: #0f172a;
-    border-radius: 16px;
-    isolation: isolate;
     box-sizing: border-box;
   }
   .copy h1 {
@@ -212,27 +159,55 @@
   }
   .copy p {
     margin: 16px 0 0;
-    background: #0f172a;
-    background: transparent;
     color: #cbd5e1;
     font-size: 1.2rem;
     line-height: 1.6;
     font-weight: 500;
     max-width: 460px;
   }
-  .compact .copy {
-    position: static;
-    margin-top: auto;
-    position: relative;
-    z-index: 1;
-    background: #0f172a;
-    padding: 12px 14px;
-    border-radius: 16px;
-  }
-  .compact .copy h1 {
-    font-size: 1.5rem;
-  }
-  .compact .copy p {
-    display: none;
+  @media (max-width: 1023px) {
+    .brand-stage {
+      min-height: 300px;
+      border-radius: 0 0 32px 32px;
+    }
+    .scene-wrap {
+      top: 18%;
+      height: 38%;
+    }
+    .scene-wrap :global(.auth-brand-animation) {
+      width: min(280px, 60%);
+    }
+    .scene-wrap .glow {
+      width: min(32vw, 140px);
+      filter: blur(24px);
+    }
+    .content {
+      padding: 22px 24px;
+    }
+    .logo-lockup {
+      gap: 8px;
+    }
+    .logo-lockup span {
+      font-size: 1.05rem;
+    }
+    .logo-mark {
+      width: 28px;
+      height: 28px;
+    }
+    .copy {
+      position: relative;
+      inset-inline: auto;
+      top: auto;
+      width: auto;
+      max-width: none;
+      margin-top: auto;
+      z-index: 1;
+    }
+    .copy h1 {
+      font-size: 1.5rem;
+    }
+    .copy p {
+      display: none;
+    }
   }
 </style>

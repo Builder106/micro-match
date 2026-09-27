@@ -3,7 +3,7 @@
   import { signInWithGoogle, signUpEmail } from '$lib/appwrite.client';
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
-  import AuthBrandPanel from '$lib/components/AuthBrandPanel.svelte';
+  import AuthPageShell from '$lib/components/AuthPageShell.svelte';
   let email = $state('');
   let password = $state('');
   let firstName = $state('');
@@ -28,149 +28,98 @@
   }
 </script>
 
-<div class="auth-shell">
-  <div class="left-panel">
-    <AuthBrandPanel animation="/animations/brainstorming.json" />
+<AuthPageShell animation="/animations/brainstorming.json" wideContent>
+  <div class="auth-head">
+    {#if step === 2}
+      <button class="back-btn" type="button" onclick={() => (step = 1)}>
+        <Icon icon="mdi:arrow-left" width="16" height="16" />
+        Back
+      </button>
+    {/if}
+    <h1>{step === 1 ? 'Choose your path' : 'Create your account'}</h1>
+    <p>{step === 1 ? "Tell us how you'd like to use MicroMatch." : 'Just a few details to set up your civic hub.'}</p>
   </div>
 
-  <main class="right-panel">
-    <div class="mobile-stage">
-      <AuthBrandPanel compact animation="/animations/brainstorming.json" />
+  {#if step === 1}
+    <div class="roles">
+      <button class="role-card volunteer" type="button" onclick={() => { role = 'volunteer'; step = 2; }}>
+        <span class="role-icon">
+          <Icon icon="mdi:account-group-outline" width="28" height="28" />
+        </span>
+        <span class="role-copy">
+          <strong>I'm a Volunteer</strong>
+          <span>Complete micro-tasks, build streaks, and unlock civic badges.</span>
+        </span>
+      </button>
+      <button class="role-card ngo" type="button" onclick={() => { role = 'ngo'; step = 2; }}>
+        <span class="role-icon">
+          <Icon icon="mdi:office-building-outline" width="28" height="28" />
+        </span>
+        <span class="role-copy">
+          <strong>I represent an NGO</strong>
+          <span>Post modular needs, verify submissions, and mobilize volunteers.</span>
+        </span>
+      </button>
+    </div>
+    <p class="foot">
+      Already have an account?
+      <a href={resolve('/login', {})}>Sign in</a>
+    </p>
+  {:else}
+    <form onsubmit={(e) => { e.preventDefault(); signInWithGoogle(); }}>
+      <button type="submit" class="google-btn">
+        <Icon icon="logos:google-icon" />
+        Sign up with Google
+      </button>
+    </form>
+
+    <div class="divider">
+      <span></span>
+      <small>Or continue with email</small>
+      <span></span>
     </div>
 
-    <div class="auth-card">
-      <div class="auth-head">
-        {#if step === 2}
-          <button class="back-btn" type="button" onclick={() => (step = 1)}>
-            <Icon icon="mdi:arrow-left" width="16" height="16" />
-            Back
-          </button>
-        {/if}
-        <h1>{step === 1 ? 'Choose your path' : 'Create your account'}</h1>
-        <p>{step === 1 ? "Tell us how you'd like to use MicroMatch." : 'Just a few details to set up your civic hub.'}</p>
-      </div>
-
-      {#if step === 1}
-        <div class="roles">
-          <button class="role-card volunteer" type="button" onclick={() => { role = 'volunteer'; step = 2; }}>
-            <span class="role-icon">
-              <Icon icon="mdi:account-group-outline" width="28" height="28" />
-            </span>
-            <span class="role-copy">
-              <strong>I'm a Volunteer</strong>
-              <span>Complete micro-tasks, build streaks, and unlock civic badges.</span>
-            </span>
-          </button>
-          <button class="role-card ngo" type="button" onclick={() => { role = 'ngo'; step = 2; }}>
-            <span class="role-icon">
-              <Icon icon="mdi:office-building-outline" width="28" height="28" />
-            </span>
-            <span class="role-copy">
-              <strong>I represent an NGO</strong>
-              <span>Post modular needs, verify submissions, and mobilize volunteers.</span>
-            </span>
-          </button>
-        </div>
-        <p class="foot">
-          Already have an account?
-          <a href={resolve('/login', {})}>Sign in</a>
-        </p>
-      {:else}
-        <form onsubmit={(e) => { e.preventDefault(); signInWithGoogle(); }}>
-          <button type="submit" class="google-btn">
-            <Icon icon="logos:google-icon" />
-            Sign up with Google
-          </button>
-        </form>
-
-        <div class="divider">
-          <span></span>
-          <small>Or continue with email</small>
-          <span></span>
-        </div>
-
-        <form class="auth-form" onsubmit={handleSignup}>
-          {#if error}
-            <p class="error" role="alert"><Icon icon="lucide:alert-circle" width="14" height="14" /> {error}</p>
-          {/if}
-          <div class="name-grid">
-            <label>
-              <span>First name</span>
-              <input bind:value={firstName} type="text" placeholder="Jane" autocomplete="given-name" required />
-            </label>
-            <label>
-              <span>Last name</span>
-              <input bind:value={lastName} type="text" placeholder="Doe" autocomplete="family-name" required />
-            </label>
-          </div>
-          <label>
-            <span>Email address</span>
-            <input bind:value={email} type="email" placeholder="jane@example.com" required autocomplete="email" />
-          </label>
-          <label>
-            <span>Create password</span>
-            <input bind:value={password} type="password" placeholder="At least 8 characters" minlength="8" required autocomplete="new-password" />
-          </label>
-          <button type="submit" class="btn-coral btn-lg auth-submit" disabled={submitting}>
-            {#if submitting}
-              <Icon icon="lucide:loader-2" width="18" height="18" class="spin" />
-              Creating account…
-            {:else}
-              Join MicroMatch
-              <Icon icon="lucide:arrow-right" width="16" height="16" />
-            {/if}
-          </button>
-          <p class="legal-notice">
-            By registering, you agree to our <a href={resolve('/terms', {})}>Terms of Service</a> and <a href={resolve('/privacy', {})}>Privacy Policy</a>.
-          </p>
-        </form>
+    <form class="auth-form" onsubmit={handleSignup}>
+      {#if error}
+        <p class="error" role="alert"><Icon icon="lucide:alert-circle" width="14" height="14" /> {error}</p>
       {/if}
-    </div>
-  </main>
-</div>
+      <div class="name-grid">
+        <label>
+          <span>First name</span>
+          <input bind:value={firstName} type="text" placeholder="Jane" autocomplete="given-name" required />
+        </label>
+        <label>
+          <span>Last name</span>
+          <input bind:value={lastName} type="text" placeholder="Doe" autocomplete="family-name" required />
+        </label>
+      </div>
+      <label>
+        <span>Email address</span>
+        <input bind:value={email} type="email" placeholder="jane@example.com" required autocomplete="email" />
+      </label>
+      <label>
+        <span>Create password</span>
+        <input bind:value={password} type="password" placeholder="At least 8 characters" minlength="8" required autocomplete="new-password" />
+      </label>
+      <button type="submit" class="btn-coral btn-lg auth-submit" disabled={submitting}>
+        {#if submitting}
+          <Icon icon="lucide:loader-2" width="18" height="18" class="spin" />
+          Creating account…
+        {:else}
+          Join MicroMatch
+          <Icon icon="lucide:arrow-right" width="16" height="16" />
+        {/if}
+      </button>
+      <p class="legal-notice">
+        By registering, you agree to our <a href={resolve('/terms', {})}>Terms of Service</a> and <a href={resolve('/privacy', {})}>Privacy Policy</a>.
+      </p>
+    </form>
+  {/if}
+</AuthPageShell>
 
 <style>
-  .auth-shell {
-    height: 100vh;
-    width: 100%;
-    display: flex;
-    background: var(--color-background);
-    color: var(--color-text);
-    overflow: hidden;
-  }
-  .left-panel {
-    width: 55%;
-    height: 100vh;
-    display: none;
-  }
-  .right-panel {
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    overflow-y: auto;
-  }
-  .mobile-stage {
-    width: 100%;
-    display: block;
-    height: 300px;
-    flex: 0 0 300px;
-    margin-bottom: 8px;
-  }
-  .auth-card {
-    width: min(540px, calc(100% - 2rem));
-    padding: 28px 18px 32px;
-    position: relative;
-    z-index: 1;
-    background: var(--color-background);
-  }
   .auth-head {
     margin-bottom: 22px;
-    padding: 4px;
-    background: var(--color-background);
-    isolation: isolate;
   }
   .back-btn {
     border: 0;
@@ -371,21 +320,6 @@
     }
   }
   @media (min-width: 1024px) {
-    .left-panel {
-      display: block;
-    }
-    .right-panel {
-      width: 45%;
-      padding: 36px 16px;
-      justify-content: center;
-    }
-    .mobile-stage {
-      display: none;
-    }
-    .auth-card {
-      width: min(540px, 100%);
-      padding: 8px 4px;
-    }
     h1 {
       font-size: clamp(2.25rem, 2.4vw, 2.6rem);
     }

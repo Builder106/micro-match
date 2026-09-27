@@ -1,7 +1,7 @@
 <script lang="ts">
   import Icon from '@iconify/svelte';
   import { account } from '$lib/appwrite.client';
-  import AuthBrandPanel from '$lib/components/AuthBrandPanel.svelte';
+  import AuthPageShell from '$lib/components/AuthPageShell.svelte';
   import { resolve } from '$app/paths';
 
   let email = '';
@@ -28,101 +28,65 @@
 
 <svelte:head><title>Forgot password · MicroMatch</title></svelte:head>
 
-<div class="auth-shell">
-  <div class="left-panel">
-    <AuthBrandPanel animation="/animations/empty_state_mascot.json" />
+<AuthPageShell animation="/animations/empty_state_mascot.json">
+  <div class="auth-head">
+    <a href={resolve('/login', {})} class="back-btn">
+      <Icon icon="lucide:arrow-left" width="14" height="14" />
+      Back to sign in
+    </a>
+    <h1>Forgot password?</h1>
+    <p>Enter your email and we'll send a link to reset it.</p>
   </div>
 
-  <main class="right-panel">
-    <div class="mobile-stage">
-      <AuthBrandPanel compact animation="/animations/empty_state_mascot.json" />
-    </div>
-
-    <div class="auth-card">
-      <div class="auth-head">
-        <a href={resolve('/login', {})} class="back-btn">
-          <Icon icon="lucide:arrow-left" width="14" height="14" />
-          Back to sign in
-        </a>
-        <h1>Forgot password?</h1>
-        <p>Enter your email and we'll send a link to reset it.</p>
+  {#if success}
+    <div class="success">
+      <Icon icon="lucide:mail-check" width="20" height="20" />
+      <div>
+        <strong>Check your inbox.</strong>
+        <span>We sent a reset link to <code>{email}</code>. The link is valid for one hour.</span>
       </div>
-
-      {#if success}
-        <div class="success">
-          <Icon icon="lucide:mail-check" width="20" height="20" />
-          <div>
-            <strong>Check your inbox.</strong>
-            <span>We sent a reset link to <code>{email}</code>. The link is valid for one hour.</span>
-          </div>
-        </div>
-        <a href={resolve('/login', {})} class="btn-coral btn-lg auth-submit">
-          Back to sign in
-          <Icon icon="lucide:arrow-right" width="16" height="16" />
-        </a>
-      {:else}
-        <form class="auth-form" on:submit={handleForgotPassword}>
-          {#if error}
-            <p class="error" role="alert"><Icon icon="lucide:alert-circle" width="14" height="14" /> {error}</p>
-          {/if}
-          <label>
-            <span>Email address</span>
-            <div class="field-wrap">
-              <Icon icon="lucide:mail" width="16" height="16" />
-              <input
-                class="with-icon"
-                bind:value={email}
-                type="email"
-                placeholder="you@example.com"
-                required
-                autocomplete="email"
-              />
-            </div>
-          </label>
-          <button type="submit" class="btn-coral btn-lg auth-submit" disabled={submitting}>
-            {#if submitting}
-              <Icon icon="lucide:loader-2" width="18" height="18" class="spin" />
-              Sending…
-            {:else}
-              Send reset link
-              <Icon icon="lucide:arrow-right" width="16" height="16" />
-            {/if}
-          </button>
-        </form>
-      {/if}
-
-      <p class="foot">
-        Remembered it? <a href={resolve('/login', {})}>Sign in instead</a>
-      </p>
     </div>
-  </main>
-</div>
+    <a href={resolve('/login', {})} class="btn-coral btn-lg auth-submit">
+      Back to sign in
+      <Icon icon="lucide:arrow-right" width="16" height="16" />
+    </a>
+  {:else}
+    <form class="auth-form" on:submit={handleForgotPassword}>
+      {#if error}
+        <p class="error" role="alert"><Icon icon="lucide:alert-circle" width="14" height="14" /> {error}</p>
+      {/if}
+      <label>
+        <span>Email address</span>
+        <div class="field-wrap">
+          <Icon icon="lucide:mail" width="16" height="16" />
+          <input
+            class="with-icon"
+            bind:value={email}
+            type="email"
+            placeholder="you@example.com"
+            required
+            autocomplete="email"
+          />
+        </div>
+      </label>
+      <button type="submit" class="btn-coral btn-lg auth-submit" disabled={submitting}>
+        {#if submitting}
+          <Icon icon="lucide:loader-2" width="18" height="18" class="spin" />
+          Sending…
+        {:else}
+          Send reset link
+          <Icon icon="lucide:arrow-right" width="16" height="16" />
+        {/if}
+      </button>
+    </form>
+  {/if}
+
+  <p class="foot">
+    Remembered it? <a href={resolve('/login', {})}>Sign in instead</a>
+  </p>
+</AuthPageShell>
 
 <style>
-  .auth-shell {
-    height: 100vh;
-    width: 100%;
-    display: flex;
-    background: var(--color-background);
-    color: var(--color-text);
-    overflow: hidden;
-  }
-  .left-panel {
-    width: 55%;
-    height: 100vh;
-    display: none;
-  }
-  .right-panel {
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    overflow-y: auto;
-  }
-  .mobile-stage { display: block; width: 100%; height: 300px; flex: 0 0 300px; margin-bottom: 8px; }
-  .auth-card { width: min(440px, calc(100% - 2rem)); padding: 28px 18px 30px; position: relative; z-index: 1; background: var(--color-background); }
   .auth-head { margin-bottom: 22px; display: flex; flex-direction: column; gap: 10px; }
   .back-btn {
     display: inline-flex;
@@ -190,10 +154,4 @@
   .foot a { color: var(--color-text); text-decoration: underline; text-decoration-color: var(--card-border-strong); text-decoration-thickness: 2px; text-underline-offset: 4px; font-weight: 700; margin-left: 4px; }
   .foot a:hover { color: var(--color-primary-readable); text-decoration-color: var(--color-primary-readable); }
 
-  @media (min-width: 1024px) {
-    .left-panel { display: block; }
-    .right-panel { width: 45%; padding: 36px 16px; justify-content: center; }
-    .mobile-stage { display: none; }
-    .auth-card { width: min(440px, 100%); padding: 8px 4px; }
-  }
 </style>

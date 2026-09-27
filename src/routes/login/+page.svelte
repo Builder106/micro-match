@@ -4,7 +4,7 @@
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
   import { page } from '$app/stores';
-  import AuthBrandPanel from '$lib/components/AuthBrandPanel.svelte';
+  import AuthPageShell from '$lib/components/AuthPageShell.svelte';
 
   let email = '';
   let password = '';
@@ -40,111 +40,63 @@
   }
 </script>
 
-<div class="auth-shell">
-  <div class="left-panel">
-    <AuthBrandPanel animation="/animations/collaboration.json" />
+<AuthPageShell animation="/animations/collaboration.json">
+  <div class="auth-head">
+    <h1>Welcome back</h1>
+    <p>Ready to jump into your next mission?</p>
   </div>
 
-  <main class="right-panel">
-    <div class="mobile-stage">
-      <AuthBrandPanel compact animation="/animations/collaboration.json" />
-    </div>
+  <form on:submit={oauthGoogle}>
+    <button type="submit" class="google-btn">
+      <Icon icon="logos:google-icon" />
+      Continue with Google
+    </button>
+  </form>
 
-    <div class="auth-card">
-      <div class="auth-head">
-        <h1>Welcome back</h1>
-        <p>Ready to jump into your next mission?</p>
+  <div class="divider">
+    <span></span>
+    <small>Or log in with email</small>
+    <span></span>
+  </div>
+
+  <form class="auth-form" on:submit={handleEmailSignIn}>
+    {#if error}
+      <p class="error" role="alert"><Icon icon="lucide:alert-circle" width="14" height="14" /> {error}</p>
+    {/if}
+    <label>
+      <span>Email address</span>
+      <div class="field-wrap">
+        <Icon icon="lucide:mail" width="16" height="16" />
+        <input class="with-icon" bind:value={email} name="email" type="email" placeholder="jane@example.com" required autocomplete="email" />
       </div>
-
-      <form on:submit={oauthGoogle}>
-        <button type="submit" class="google-btn">
-          <Icon icon="logos:google-icon" />
-          Continue with Google
-        </button>
-      </form>
-
-      <div class="divider">
-        <span></span>
-        <small>Or log in with email</small>
-        <span></span>
+    </label>
+    <label>
+      <span>Password</span>
+      <div class="field-wrap">
+        <Icon icon="lucide:lock" width="16" height="16" />
+        <input class="with-icon" bind:value={password} name="password" type="password" placeholder="••••••••" required autocomplete="current-password" />
       </div>
-
-      <form class="auth-form" on:submit={handleEmailSignIn}>
-        {#if error}
-          <p class="error" role="alert"><Icon icon="lucide:alert-circle" width="14" height="14" /> {error}</p>
-        {/if}
-        <label>
-          <span>Email address</span>
-          <div class="field-wrap">
-            <Icon icon="lucide:mail" width="16" height="16" />
-            <input class="with-icon" bind:value={email} name="email" type="email" placeholder="jane@example.com" required autocomplete="email" />
-          </div>
-        </label>
-        <label>
-          <span>Password</span>
-          <div class="field-wrap">
-            <Icon icon="lucide:lock" width="16" height="16" />
-            <input class="with-icon" bind:value={password} name="password" type="password" placeholder="••••••••" required autocomplete="current-password" />
-          </div>
-        </label>
-        <div class="forgot-link">
-          <a href={resolve('/forgot-password', {})}>Forgot password?</a>
-        </div>
-        <button type="submit" class="btn-coral btn-lg auth-submit" disabled={submitting}>
-          {#if submitting}
-            <Icon icon="lucide:loader-2" width="18" height="18" class="spin" />
-            Signing in…
-          {:else}
-            Sign in <Icon icon="lucide:arrow-right" width="16" height="16" />
-          {/if}
-        </button>
-      </form>
-
-      <p class="foot">
-        Don't have an account?
-        <a href={resolve('/signup', {})}>Create one</a>
-      </p>
+    </label>
+    <div class="forgot-link">
+      <a href={resolve('/forgot-password', {})}>Forgot password?</a>
     </div>
-  </main>
-</div>
+    <button type="submit" class="btn-coral btn-lg auth-submit" disabled={submitting}>
+      {#if submitting}
+        <Icon icon="lucide:loader-2" width="18" height="18" class="spin" />
+        Signing in…
+      {:else}
+        Sign in <Icon icon="lucide:arrow-right" width="16" height="16" />
+      {/if}
+    </button>
+  </form>
+
+  <p class="foot">
+    Don't have an account?
+    <a href={resolve('/signup', {})}>Create one</a>
+  </p>
+</AuthPageShell>
 
 <style>
-  .auth-shell {
-    height: 100vh;
-    width: 100%;
-    display: flex;
-    background: var(--color-background);
-    color: var(--color-text);
-    overflow: hidden;
-  }
-  .left-panel {
-    width: 55%;
-    height: 100vh;
-    display: none;
-  }
-  .right-panel {
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    overflow-y: auto;
-  }
-  .mobile-stage {
-    display: block;
-    width: 100%;
-    height: 300px;
-    flex: 0 0 300px;
-    margin-bottom: 8px;
-  }
-  .auth-card {
-    width: min(440px, calc(100% - 2rem));
-    padding: 28px 18px 30px;
-    position: relative;
-    z-index: 1;
-    background: var(--color-background);
-  }
   .auth-head {
     margin-bottom: 20px;
   }
@@ -293,21 +245,6 @@
     margin-left: 4px;
   }
   @media (min-width: 1024px) {
-    .left-panel {
-      display: block;
-    }
-    .right-panel {
-      width: 45%;
-      padding: 36px 16px;
-      justify-content: center;
-    }
-    .mobile-stage {
-      display: none;
-    }
-    .auth-card {
-      width: min(440px, 100%);
-      padding: 8px 4px;
-    }
     h1 {
       font-size: clamp(2.25rem, 2.4vw, 2.6rem);
     }
