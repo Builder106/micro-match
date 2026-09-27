@@ -40,7 +40,7 @@
   }
 </script>
 
-<AuthPageShell animation="/animations/collaboration.json">
+<AuthPageShell animation="/animations/collaboration.json" animationScale={1.55}>
   <div class="auth-head">
     <h1>Welcome back</h1>
     <p>Ready to jump into your next mission?</p>

@@ -14,9 +14,10 @@ accessibility matrix remains an evidence gate, not a conformance claim.
 Removed the decorative background panels behind the auth brand copy and logo.
 Login, signup, recovery, and password reset now use one shared responsive auth
 shell and one brand illustration instance per route. The Lottie frame keeps
-the same responsive position across routes. Warm glows stay clipped to the art
-area so the copy remains on solid navy; functional form controls and signup
-choice cards remain visibly distinct.
+the same responsive position across routes. The brand stage stays solid navy
+without color glows beside the illustrations. Login scales its square canvas
+inside a taller frame, centered at the same spot as the other animations.
+Functional form controls and signup choice cards remain visibly distinct.
 
 ## 2026-09-23 - Added a TypeScript 7 Svelte check #decision
 

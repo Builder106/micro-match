@@ -13,13 +13,18 @@ describe('AuthBrandPanel', () => {
     expect(screen.getByText(/Step into a thriving civic world/i)).toBeInTheDocument();
   });
 
-  it('keeps the illustration glow separate from the unboxed copy', () => {
-    const { container } = render(AuthBrandPanel, { animation: '/animations/collaboration.json' });
+  it('keeps the illustration unadorned and supports route-specific sizing', () => {
+    const { container } = render(AuthBrandPanel, {
+      animation: '/animations/collaboration.json',
+      animationScale: 1.55
+    });
     const scene = container.querySelector('.scene-wrap');
     const copy = container.querySelector('.copy');
 
     expect(scene?.querySelectorAll('.auth-brand-animation')).toHaveLength(1);
-    expect(scene?.querySelectorAll('.glow')).toHaveLength(2);
+    expect(scene).toHaveClass('enlarged');
+    expect(scene?.querySelectorAll('.glow')).toHaveLength(0);
+    expect(scene?.getAttribute('style')).toContain('--auth-animation-scale: 1.55');
     expect(copy).not.toBeNull();
     expect(scene?.contains(copy)).toBe(false);
     expect(container.querySelector('.shade, .grain')).toBeNull();

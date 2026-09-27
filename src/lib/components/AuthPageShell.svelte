@@ -2,12 +2,13 @@
   import AuthBrandPanel from '$lib/components/AuthBrandPanel.svelte';
 
   export let animation: string;
+  export let animationScale = 1;
   export let wideContent = false;
 </script>
 
 <div class="auth-shell">
   <div class="brand-panel">
-    <AuthBrandPanel {animation} />
+    <AuthBrandPanel {animation} {animationScale} />
   </div>
 
   <main class="right-panel">

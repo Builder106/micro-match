@@ -2,12 +2,16 @@
   import LottieAnimation from '$lib/components/LottieAnimation.svelte';
   import { resolve } from '$app/paths';
   export let animation = '/animations/collaboration.json';
+  export let animationScale = 1;
 </script>
 
 <section class="brand-stage" aria-label="MicroMatch introduction">
-  <div class="scene-wrap" aria-hidden="true">
-    <div class="glow glow-coral"></div>
-    <div class="glow glow-teal"></div>
+  <div
+    class="scene-wrap"
+    class:enlarged={animationScale > 1}
+    style={`--auth-animation-scale: ${animationScale}`}
+    aria-hidden="true"
+  >
     {#key animation}
       <LottieAnimation src={animation} loop={true} className="auth-brand-animation" />
     {/key}
@@ -42,25 +46,6 @@
     color: #fff;
     isolation: isolate;
   }
-  .glow {
-    position: absolute;
-    width: min(26vw, 320px);
-    aspect-ratio: 1;
-    border-radius: 999px;
-    filter: blur(clamp(24px, 5vh, 48px));
-    pointer-events: none;
-    z-index: 0;
-  }
-  .glow-coral {
-    background: rgba(255, 107, 107, 0.16);
-    top: 4%;
-    left: -6%;
-  }
-  .glow-teal {
-    background: rgba(72, 188, 174, 0.16);
-    top: 0;
-    right: -10%;
-  }
   .scene-wrap {
     position: absolute;
     top: 12%;
@@ -73,6 +58,10 @@
     overflow: hidden;
     z-index: 0;
   }
+  .scene-wrap.enlarged {
+    top: 1%;
+    height: 60%;
+  }
   .scene-wrap :global(.auth-brand-animation) {
     width: min(460px, 70%);
     height: 100%;
@@ -80,6 +69,8 @@
     overflow: hidden;
     position: relative;
     z-index: 1;
+    transform: scale(var(--auth-animation-scale, 1));
+    transform-origin: center;
   }
   .content {
     position: relative;
@@ -174,12 +165,12 @@
       top: 18%;
       height: 38%;
     }
+    .scene-wrap.enlarged {
+      top: 8%;
+      height: 58%;
+    }
     .scene-wrap :global(.auth-brand-animation) {
       width: min(280px, 60%);
-    }
-    .scene-wrap .glow {
-      width: min(32vw, 140px);
-      filter: blur(24px);
     }
     .content {
       padding: 22px 24px;
