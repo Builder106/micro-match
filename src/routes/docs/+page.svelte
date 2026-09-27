@@ -305,8 +305,8 @@
     font-size: 0.775rem;
     padding: 3px 8px;
     border-radius: 6px;
-    background: var(--color-surface-container);
-    color: #334155;
+    background: var(--color-surface-variant);
+    color: var(--color-text-secondary);
   }
 
   .feature-bullets {
