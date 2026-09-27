@@ -148,7 +148,7 @@
     align-items: center;
     gap: 8px;
     padding: 4px 6px 4px 6px;
-    background: var(--color-surface-variant, #f8fafc);
+    background: var(--color-surface-variant, #FAF7F0);
     border: 1px solid var(--color-outline-variant, rgba(0, 0, 0, 0.08));
     border-radius: 24px;
     margin-bottom: 24px;
@@ -181,7 +181,7 @@
 
   .pillar-card {
     background: var(--color-surface, #ffffff);
-    border: 1px solid var(--color-outline-variant, rgba(0, 0, 0, 0.1));
+    border: 1px solid var(--card-border-strong);
     border-radius: 16px;
     padding: 24px;
     box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
@@ -266,7 +266,7 @@
     display: flex;
     flex-direction: column;
     background: var(--color-surface, #ffffff);
-    border: 1px solid var(--color-outline-variant, rgba(0, 0, 0, 0.08));
+    border: 1px solid var(--card-border-strong);
     border-radius: 16px;
     padding: 22px 20px;
     box-shadow: 0 2px 6px rgba(15, 23, 42, 0.02);
@@ -305,7 +305,7 @@
     font-size: 0.85rem;
     font-weight: 800;
     color: var(--color-text-tertiary, #94a3b8);
-    background: var(--color-surface-variant, #f1f5f9);
+    background: var(--color-surface-variant, #FAF7F0);
     padding: 3px 8px;
     border-radius: 6px;
   }
@@ -328,7 +328,7 @@
   /* Tech Foundation Card */
   .tech-foundation-card {
     background: var(--color-surface);
-    border: 1px solid var(--color-outline-variant, rgba(0, 0, 0, 0.1));
+    border: 1px solid var(--card-border-strong);
     border-radius: 16px;
     padding: 28px;
     margin-bottom: 40px;
@@ -379,8 +379,8 @@
     font-weight: 600;
     padding: 5px 12px;
     border-radius: 20px;
-    background: var(--color-surface-variant, #f1f5f9);
-    border: 1px solid var(--color-outline-variant, #e2e8f0);
+    background: var(--color-surface-variant, #FAF7F0);
+    border: 1px solid var(--color-outline-variant);
     color: var(--color-text, #334155);
   }
 

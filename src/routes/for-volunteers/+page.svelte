@@ -720,4 +720,16 @@
     border-color: var(--color-action-on-coral);
     transform: translateY(-2px) scale(1.03);
   }
+
+  :global(html.light) .vol-hero-visual {
+    background: radial-gradient(ellipse at 55% 44%, rgba(255, 107, 107, 0.20), rgba(253, 186, 116, 0.22) 38%, transparent 72%);
+    border-radius: 24px;
+  }
+  :global(html.light) .hero-sample-task { box-shadow: var(--elev-3); }
+  :global(html.light) .pillar-card,
+  :global(html.light) .sample-task-card { box-shadow: var(--elev-1); }
+  :global(html.light) .pillar-card:hover,
+  :global(html.light) .sample-task-card:hover { box-shadow: var(--elev-3); }
+  .tab-btn { border-color: var(--color-control-outline); }
+  .btn-outline-dark { border-color: var(--color-control-outline); }
 </style>

@@ -847,7 +847,7 @@
     align-items: center;
     gap: 8px;
     padding: 4px 6px 4px 6px;
-    background: var(--color-surface-variant, #f8fafc);
+    background: var(--color-surface-variant, #FAF7F0);
     border: 1px solid var(--color-outline-variant, rgba(0, 0, 0, 0.08));
     border-radius: 24px;
   }
@@ -882,8 +882,8 @@
   }
 
   .overview-card {
-    background: var(--color-surface-variant, #f8fafc);
-    border: 1px solid var(--color-outline-variant, rgba(0, 0, 0, 0.08));
+    background: var(--color-surface-variant, #FAF7F0);
+    border: 1px solid var(--card-border-strong);
     border-radius: 12px;
     padding: 18px 22px;
   }
@@ -947,7 +947,7 @@
     padding: 11px 38px 11px 40px;
     font-size: 0.9rem;
     border-radius: 10px;
-    border: 1px solid var(--color-outline, #cbd5e1);
+    border: 1px solid var(--color-control-outline);
     background: var(--color-surface, #ffffff);
     color: var(--color-text, #0f172a);
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
@@ -955,7 +955,7 @@
 
   .search-box input:focus {
     outline: none;
-    border-color: var(--color-primary, #ff6b6b);
+    border-color: var(--color-primary-readable);
     box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.15);
   }
 
@@ -1024,8 +1024,8 @@
     border-radius: 20px;
     font-size: 0.825rem;
     font-weight: 600;
-    border: 1px solid var(--color-outline-variant, rgba(0, 0, 0, 0.1));
-    background: var(--color-surface-variant, #f1f5f9);
+    border: 1px solid var(--color-control-outline);
+    background: var(--color-surface-variant, #FAF7F0);
     color: var(--color-text-secondary, #475569);
     cursor: pointer;
     transition: all 0.15s ease;
@@ -1040,7 +1040,7 @@
   .auth-pill-btn.active {
     background: var(--color-primary, #ff6b6b);
     color: var(--color-brand-on-coral);
-    border-color: var(--color-primary, #ff6b6b);
+    border-color: var(--color-primary-readable);
   }
 
   .auth-pill-btn.auth-public.active {
@@ -1088,7 +1088,7 @@
   .endpoint-card {
     min-width: 0;
     background: var(--color-surface, #ffffff);
-    border: 1px solid var(--color-outline-variant, rgba(0, 0, 0, 0.1));
+    border: 1px solid var(--card-border-strong);
     border-radius: 16px;
     padding: 24px;
     box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
@@ -1219,15 +1219,15 @@
     font-weight: 600;
     padding: 4px 12px;
     border-radius: 6px;
-    border: 1px solid var(--color-outline-variant, #cbd5e1);
-    background: var(--color-surface-variant, #f8fafc);
+    border: 1px solid var(--color-control-outline);
+    background: var(--color-surface-variant, #FAF7F0);
     color: var(--color-text, #334155);
     cursor: pointer;
     transition: all 0.15s ease;
   }
 
   .copy-btn:hover {
-    background: #e2e8f0;
+    background: var(--color-surface-container);
   }
 
   .card-grid > * { min-width: 0; }
@@ -1285,7 +1285,7 @@
 
   .table-wrapper {
     overflow-x: auto;
-    border: 1px solid var(--color-outline-variant, #e2e8f0);
+    border: 1px solid var(--color-outline-variant);
     border-radius: 8px;
   }
 
@@ -1297,16 +1297,16 @@
   }
 
   .params-table th {
-    background: var(--color-surface-variant, #f8fafc);
+    background: var(--color-surface-variant, #FAF7F0);
     padding: 8px 10px;
     font-weight: 700;
     color: #334155;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--color-outline-variant);
   }
 
   .params-table td {
     padding: 8px 10px;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--color-outline-variant);
     color: var(--color-text, #0f172a);
   }
 
@@ -1380,9 +1380,9 @@
   .empty-state {
     text-align: center;
     padding: 40px 20px;
-    background: var(--color-surface-variant, #f8fafc);
+    background: var(--color-surface-variant, #FAF7F0);
     border-radius: 12px;
-    border: 1px dashed var(--color-outline-variant, #cbd5e1);
+    border: 1px dashed var(--color-outline-variant);
   }
 
   .reset-link {

@@ -873,4 +873,14 @@
     border-color: var(--color-action-on-coral);
     transform: translateY(-2px) scale(1.03);
   }
+
+  :global(html.light) .process-ribbon,
+  :global(html.light) .inspector-card { box-shadow: var(--elev-2); }
+  :global(html.light) .ins-mockup-frame { box-shadow: var(--elev-2); }
+  :global(html.light) .ins-mockup-frame:hover { box-shadow: var(--elev-4); }
+  :global(html.light) .diag-box,
+  :global(html.light) .faq-item { box-shadow: var(--elev-1); }
+  :global(html.light) .diag-box:hover { box-shadow: var(--elev-3); }
+  :global(html.light) .faq-item:hover { box-shadow: var(--elev-2); }
+  .btn-nav-prev { border-color: var(--color-control-outline); }
 </style>

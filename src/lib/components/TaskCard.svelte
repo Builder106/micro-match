@@ -135,8 +135,8 @@
     background: var(--color-surface);
     border-radius: 28px;
     padding: 28px;
-    border: 1px solid var(--card-border);
-    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.04);
+    border: 1px solid var(--card-border-strong);
+    box-shadow: var(--elev-1);
     display: flex;
     flex-direction: column;
     gap: 18px;
@@ -144,7 +144,7 @@
   }
   .task-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
+    box-shadow: var(--elev-2);
   }
   .task-card.dimmed { opacity: 0.7; }
 

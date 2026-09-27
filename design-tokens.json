@@ -10,12 +10,12 @@
       "light": { "$value": "#FF9E5E", "$type": "color", "$description": "Light coral visual accent" }
     },
     "readable": {
-      "coral": { "$value": "#9F1239", "$type": "color", "$description": "Readable coral-family color for light-mode text and meaningful icons" },
+      "coral": { "$value": "#881337", "$type": "color", "$description": "Readable coral-family color for light-mode text and meaningful icons" },
       "darkCoral": { "$value": "#FDA4AF", "$type": "color", "$description": "Readable coral-family color for dark-mode text and meaningful icons" },
-      "secondary": { "$value": "#475569", "$type": "color", "$description": "Readable secondary text color for light mode" }
+      "secondary": { "$value": "#334155", "$type": "color", "$description": "Readable secondary text color for light mode" }
     },
     "action": {
-      "onBrightCoral": { "$value": "#020617", "$type": "color", "$description": "Dark text and icons on bright coral controls" }
+      "onBrightCoral": { "$value": "#000000", "$type": "color", "$description": "Dark text and icons on bright coral controls" }
     },
     "focus": {
       "light": { "$value": "#0F172A", "$type": "color", "$description": "High-contrast focus indicator for light mode" },
@@ -25,7 +25,7 @@
       "base": { "$value": "#FF6B6B", "$type": "color", "$description": "Warm coral brand primary color" },
       "variant": { "$value": "#E85555", "$type": "color", "$description": "Darker coral for hover and active states" },
       "light": { "$value": "#FF9E5E", "$type": "color", "$description": "Lighter coral gradient accent" },
-      "onPrimary": { "$value": "#020617", "$type": "color", "$description": "Dark text/icon color on bright primary background" }
+      "onPrimary": { "$value": "#000000", "$type": "color", "$description": "Dark text/icon color on bright primary background" }
     },
     "secondary": {
       "base": { "$value": "#FDBA74", "$type": "color", "$description": "Warm peach secondary accent" },
@@ -45,18 +45,26 @@
       "dark": { "$value": "#0F172A", "$type": "color", "$description": "Page canvas background in dark mode" }
     },
     "outline": {
-      "light": { "$value": "#CBD5E1", "$type": "color", "$description": "Border and divider line color in light mode" },
-      "variantLight": { "$value": "#E2E8F0", "$type": "color", "$description": "Subtle border color in light mode" },
+      "light": { "$value": "#B8AA96", "$type": "color", "$description": "Warm border and divider line color in light mode" },
+      "variantLight": { "$value": "#D8CCB9", "$type": "color", "$description": "Subtle warm border color in light mode" },
+      "controlLight": { "$value": "#8B8074", "$type": "color", "$description": "Control boundary with at least 3:1 contrast on light surfaces" },
       "dark": { "$value": "#475569", "$type": "color", "$description": "Border and divider line color in dark mode" },
-      "variantDark": { "$value": "#334155", "$type": "color", "$description": "Subtle border color in dark mode" }
+      "variantDark": { "$value": "#334155", "$type": "color", "$description": "Subtle border color in dark mode" },
+      "controlDark": { "$value": "#A8B6C9", "$type": "color", "$description": "Control boundary with at least 3:1 contrast on dark surfaces" }
+    },
+    "cardBorder": {
+      "light": { "$value": "rgba(139, 128, 116, 0.16)", "$type": "color", "$description": "Warm card edge in light mode" },
+      "lightStrong": { "$value": "rgba(139, 128, 116, 0.24)", "$type": "color", "$description": "Strong warm card edge in light mode" },
+      "dark": { "$value": "rgba(241, 245, 249, 0.10)", "$type": "color", "$description": "Card edge in dark mode" },
+      "darkStrong": { "$value": "rgba(241, 245, 249, 0.16)", "$type": "color", "$description": "Strong card edge in dark mode" }
     },
     "text": {
       "primaryLight": { "$value": "#0F172A", "$type": "color", "$description": "Primary high-contrast text in light mode" },
-      "secondaryLight": { "$value": "#475569", "$type": "color", "$description": "Secondary muted text in light mode" },
-      "tertiaryLight": { "$value": "#64748B", "$type": "color", "$description": "Tertiary subtle text in light mode" },
+      "secondaryLight": { "$value": "#334155", "$type": "color", "$description": "Secondary text in light mode" },
+      "tertiaryLight": { "$value": "#334155", "$type": "color", "$description": "Tertiary text in light mode" },
       "primaryDark": { "$value": "#F1F5F9", "$type": "color", "$description": "Primary high-contrast text in dark mode" },
-      "secondaryDark": { "$value": "#CBD5E1", "$type": "color", "$description": "Secondary muted text in dark mode" },
-      "tertiaryDark": { "$value": "#94A3B8", "$type": "color", "$description": "Tertiary subtle text in dark mode" }
+      "secondaryDark": { "$value": "#E2E8F0", "$type": "color", "$description": "Secondary text in dark mode" },
+      "tertiaryDark": { "$value": "#E2E8F0", "$type": "color", "$description": "Tertiary text in dark mode" }
     },
     "feedback": {
       "success": { "$value": "#064E3B", "$type": "color", "$description": "Readable success status foreground" },
@@ -69,7 +77,7 @@
       "coral200": { "$value": "#FFD1C2", "$type": "color", "$description": "Coral border highlight" },
       "coral500": { "$value": "#FF6B6B", "$type": "color", "$description": "Main brand coral" },
       "coral600": { "$value": "#E85555", "$type": "color", "$description": "Deep coral" },
-      "coral700": { "$value": "#CF4444", "$type": "color", "$description": "Dark coral" }
+      "coral700": { "$value": "#881337", "$type": "color", "$description": "Readable coral-family text and icon color" }
     },
     "tags": {
       "spanish": { "bg": { "$value": "#F3E8FF", "$type": "color" }, "color": { "$value": "#7C3AED", "$type": "color" } },

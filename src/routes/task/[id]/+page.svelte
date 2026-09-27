@@ -388,9 +388,9 @@
     flex-wrap: wrap;
     padding: 20px 24px;
     background: var(--color-surface);
-    border: 1px solid var(--card-border);
+    border: 1px solid var(--card-border-strong);
     border-radius: 24px;
-    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.04);
+    box-shadow: var(--elev-1);
   }
   .td-cta-meta, .td-owner-row, .td-not-claimable, .td-signin-cta {
     display: inline-flex;

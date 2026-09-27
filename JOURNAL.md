@@ -1,5 +1,14 @@
 # JOURNAL — MicroMatch
 
+## 2026-09-27 - Restored warmth to the light surfaces #decision
+
+The light-theme overrides had drifted to cool slate even though the design
+tokens still described cream. Restored the warm surfaces, stronger card edges,
+and control outlines, then brought the landing and task surfaces back into that
+palette. Bright coral remains for fills and decoration; readable coral text and
+dark text on coral actions keep their separate contrast colors. The
+accessibility matrix remains an evidence gate, not a conformance claim.
+
 ## 2026-09-23 - Added a TypeScript 7 Svelte check #decision
 
 Kept TypeScript 6 under the peer-visible `typescript` name and added native

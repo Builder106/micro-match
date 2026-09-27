@@ -272,7 +272,7 @@
 
   .metric-card {
     background: var(--color-surface, #ffffff);
-    border: 1px solid var(--color-outline-variant, rgba(15, 23, 42, 0.06));
+    border: 1px solid var(--card-border-strong);
     border-radius: var(--radius-xl, 24px);
     padding: var(--space-6, 24px);
     display: flex;
@@ -359,7 +359,7 @@
 
   .velocity-card {
     background: var(--color-surface, #ffffff);
-    border: 1px solid var(--color-outline-variant, rgba(15, 23, 42, 0.06));
+    border: 1px solid var(--card-border-strong);
     border-radius: var(--radius-lg, 16px);
     padding: var(--space-5, 20px);
     display: flex;
@@ -397,7 +397,7 @@
   /* Cause Distribution */
   .cause-card-grid {
     background: var(--color-surface, #ffffff);
-    border: 1px solid var(--color-outline-variant, rgba(15, 23, 42, 0.06));
+    border: 1px solid var(--card-border-strong);
     border-radius: var(--radius-xl, 24px);
     padding: var(--space-6, 24px);
     display: flex;
@@ -432,7 +432,7 @@
 
   .progress-track {
     height: 8px;
-    background: #F1F5F9;
+    background: var(--color-surface-container);
     border-radius: 9999px;
     overflow: hidden;
   }
@@ -445,7 +445,7 @@
 
   /* Trust Callout */
   .trust-banner {
-    background: rgba(255, 255, 255, 0.8);
+    background: color-mix(in srgb, var(--color-surface) 80%, transparent);
     backdrop-filter: blur(16px);
     border: 1px solid rgba(255, 107, 107, 0.2);
     border-radius: var(--radius-xl, 24px);
@@ -498,7 +498,7 @@
 
   .cta-card {
     background: var(--color-surface, #ffffff);
-    border: 1px solid var(--color-outline-variant, rgba(15, 23, 42, 0.06));
+    border: 1px solid var(--card-border-strong);
     border-radius: var(--radius-xl, 24px);
     padding: var(--space-6, 32px);
     display: flex;
@@ -600,9 +600,9 @@
     align-items: center;
     justify-content: center;
     padding: 12px 24px;
-    background: #ffffff;
-    color: #1E293B;
-    border: 1.5px solid #CBD5E1;
+    background: var(--color-surface);
+    color: var(--color-text);
+    border: 1.5px solid var(--color-control-outline);
     font-weight: 700;
     font-size: 0.95rem;
     border-radius: 9999px;

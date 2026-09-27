@@ -54,6 +54,16 @@ for (const locale of LOCALES) {
         await expect(impact).toBeVisible();
         await expect(impact).toHaveScreenshot(`${locale}-${viewport.name}-impact.png`, { animations: 'disabled', caret: 'hide', scale: 'css' });
       });
+
+      if (locale === 'en') {
+        test('home hero matches the light-theme baseline', async ({ page }) => {
+          await page.goto('/en', { waitUntil: 'networkidle' });
+          await prepareVisualState(page);
+          const hero = page.locator('.hero');
+          await expect(hero).toBeVisible();
+          await expect(hero).toHaveScreenshot(`en-${viewport.name}-home-hero.png`, { animations: 'disabled', caret: 'hide', scale: 'css' });
+        });
+      }
     });
   }
 }

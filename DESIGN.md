@@ -25,10 +25,11 @@ Color tokens are structured into primary brand colors, surface tones, typography
 
 | Token Name                  | Hex / CSS Value | Description                                            |
 | ---                         | ---             | ---                                                    |
-| `--color-primary`           | `#FF6B6B`       | Brand warm coral, primary buttons, hero text gradients |
+| `--color-primary`           | `#FF6B6B`       | Brand coral fills, primary buttons, and decorative accents |
 | `--color-primary-variant`   | `#E85555`       | Deeper coral for button hover states                   |
 | `--color-primary-light`     | `#FF9E5E`       | Light coral for gradients and scrollbar hover states   |
-| `--color-on-primary`        | `#FFFFFF`       | Text/icon color on primary backgrounds                 |
+| `--color-primary-readable`  | `#881337` light / `#FDA4AF` dark | Readable coral-family text and meaningful icons |
+| `--color-on-primary`        | `#000000`       | Dark text/icon color on bright coral backgrounds       |
 | `--color-secondary`         | `#FDBA74`       | Warm peach accent                                      |
 | `--color-secondary-variant` | `#FB923C`       | Deep peach accent variant                              |
 | `--color-secondary-light`   | `#FED7AA`       | Soft peach surface highlight                           |
@@ -42,7 +43,7 @@ Color tokens are structured into primary brand colors, surface tones, typography
 | `--color-accent-blue-200` | `#FFD1C2` | Border highlight, scrollbar thumb           |
 | `--color-accent-blue-500` | `#FF6B6B` | Primary accent base                         |
 | `--color-accent-blue-600` | `#E85555` | Darker accent state                         |
-| `--color-accent-blue-700` | `#CF4444` | High-contrast accent                        |
+| `--color-accent-blue-700` | `#881337` | Readable coral-family text and icon accent  |
 
 ### Surface & Background Tokens
 
@@ -54,9 +55,11 @@ Color tokens are structured into primary brand colors, surface tones, typography
 | `--color-surface`           | `#FFFFFF`                | Base card and container background     |
 | `--color-surface-variant`   | `#FAF7F0`                | Muted surface (chips, secondary cards) |
 | `--color-surface-container` | `#F5F0E8`                | Elevated container surface             |
-| `--color-outline`           | `#CBD5E1`                | Standard divider and border color      |
-| `--color-outline-variant`   | `#E2E8F0`                | Subtle container outline               |
-| `--card-border`             | `rgba(15, 23, 42, 0.06)` | Light mode card border                 |
+| `--color-outline`           | `#B8AA96`                | Warm divider and border color          |
+| `--color-outline-variant`   | `#D8CCB9`                | Subtle warm container outline          |
+| `--color-control-outline`   | `#8B8074`                | Control boundary with at least 3:1 contrast on light surfaces |
+| `--card-border`             | `rgba(139, 128, 116, 0.16)` | Light mode card border              |
+| `--card-border-strong`      | `rgba(139, 128, 116, 0.24)` | Strong light mode card border       |
 
 #### Dark Mode
 
@@ -68,15 +71,17 @@ Color tokens are structured into primary brand colors, surface tones, typography
 | `--color-surface-container` | `#475569`                   | Elevated dark container surface |
 | `--color-outline`           | `#475569`                   | Dark divider and border color   |
 | `--color-outline-variant`   | `#334155`                   | Dark subtle container outline   |
+| `--color-control-outline`   | `#A8B6C9`                   | Control boundary with at least 3:1 contrast on dark surfaces |
 | `--card-border`             | `rgba(241, 245, 249, 0.10)` | Dark mode card border           |
+| `--card-border-strong`      | `rgba(241, 245, 249, 0.16)` | Strong dark mode card border    |
 
 ### Text & Feedback Colors
 
 | Token                    | Light Hex | Dark Hex  | Role                                           |
 | ---                      | ---       | ---       | ---                                            |
 | `--color-text`           | `#0F172A` | `#F1F5F9` | Primary headings and body text                 |
-| `--color-text-secondary` | `#475569` | `#CBD5E1` | Secondary labels and supporting prose          |
-| `--color-text-tertiary`  | `#64748B` | `#94A3B8` | Captions, metadata, and timestamps             |
+| `--color-text-secondary` | `#334155` | `#E2E8F0` | Secondary labels and supporting prose          |
+| `--color-text-tertiary`  | `#334155` | `#E2E8F0` | Captions, metadata, and timestamps             |
 | `--color-success`        | `#059669` | `#059669` | Approved claims, verified chips, success state |
 | `--color-warning`        | `#D97706` | `#D97706` | Pending verification, warning alerts           |
 | `--color-error`          | `#DC2626` | `#DC2626` | Rejected claims, errors, destructive alerts    |
@@ -183,7 +188,7 @@ We use neutral slate alpha shadows to prevent dark color pollution on warm surfa
 <button class="btn-dark-pill">Sign In</button>
 ```
 
-- **Primary**: Coral gradient (`linear-gradient(135deg, #FF6B6B, #E85555)`), white bold text, elevates on hover.
+- **Primary**: Coral gradient (`linear-gradient(135deg, #FF6B6B, #E85555)`), black bold text, elevates on hover.
 - **Secondary**: Outlined border in primary coral with clean surface fill, fills coral on hover.
 - **Coral Pill**: Full rounded (`9999px`), glow shadow on hover (`0 16px 40px rgba(255, 107, 107, 0.35)`).
 

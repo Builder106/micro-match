@@ -272,7 +272,7 @@
     align-items: center;
     gap: 8px;
     padding: 4px 6px 4px 6px;
-    background: var(--color-surface-variant, #f8fafc);
+    background: var(--color-surface-variant, #FAF7F0);
     border: 1px solid var(--color-outline-variant, rgba(0, 0, 0, 0.08));
     border-radius: 24px;
     margin-bottom: 24px;
@@ -323,7 +323,7 @@
     padding: 12px 40px 12px 44px;
     font-size: 0.925rem;
     border-radius: 12px;
-    border: 1px solid var(--color-outline, #cbd5e1);
+    border: 1px solid var(--color-control-outline);
     background: var(--color-surface, #ffffff);
     color: var(--color-text, #0f172a);
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
@@ -331,7 +331,7 @@
 
   .search-box input:focus {
     outline: none;
-    border-color: var(--color-primary, #ff6b6b);
+    border-color: var(--color-primary-readable);
     box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.15);
   }
 
@@ -359,21 +359,21 @@
     border-radius: 20px;
     font-size: 0.825rem;
     font-weight: 600;
-    border: 1px solid var(--color-outline-variant, rgba(0, 0, 0, 0.1));
-    background: var(--color-surface-variant, #f1f5f9);
+    border: 1px solid var(--color-control-outline);
+    background: var(--color-surface-variant, #FAF7F0);
     color: var(--color-text-secondary, #475569);
     cursor: pointer;
     transition: all 0.15s ease;
   }
 
   .pill-btn:hover {
-    background: #e2e8f0;
+    background: var(--color-surface-container);
   }
 
   .pill-btn.active {
     background: var(--color-primary, #ff6b6b);
     color: var(--color-brand-on-coral);
-    border-color: var(--color-primary, #ff6b6b);
+    border-color: var(--color-primary-readable);
   }
 
   .count-tag {
@@ -403,7 +403,7 @@
     padding: 18px 20px;
     border-radius: 14px;
     background: var(--color-surface, #ffffff);
-    border: 1px solid var(--color-outline-variant, rgba(0, 0, 0, 0.08));
+    border: 1px solid var(--card-border-strong);
     text-decoration: none !important;
     box-shadow: 0 2px 6px rgba(15, 23, 42, 0.02);
     transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
@@ -494,7 +494,7 @@
 
   .faq-card {
     background: var(--color-surface, #ffffff);
-    border: 1px solid var(--color-outline-variant, rgba(0, 0, 0, 0.08));
+    border: 1px solid var(--card-border-strong);
     border-radius: 14px;
     overflow: hidden;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -531,7 +531,7 @@
     font-weight: 700;
     padding: 2px 8px;
     border-radius: 6px;
-    background: var(--color-surface-variant, #f1f5f9);
+    background: var(--color-surface-variant, #FAF7F0);
     color: var(--color-text-secondary, #475569);
   }
 
@@ -550,7 +550,7 @@
 
   .faq-body {
     padding: 0 20px 18px 20px;
-    border-top: 1px solid rgba(0, 0, 0, 0.04);
+    border-top: 1px solid var(--color-outline-variant);
   }
 
   .faq-body p {
@@ -577,9 +577,9 @@
   .empty-faq {
     text-align: center;
     padding: 40px 20px;
-    background: var(--color-surface-variant, #f8fafc);
+    background: var(--color-surface-variant, #FAF7F0);
     border-radius: 14px;
-    border: 1px dashed var(--color-outline, #cbd5e1);
+    border: 1px dashed var(--color-outline-variant);
   }
 
   .empty-icon-wrap {

@@ -638,6 +638,31 @@
   .mock-card:hover .mc-claim-btn { opacity: 1; transform: scale(1) translateX(0); }
   .mc-claim-btn:hover { background: var(--color-primary-variant); transform: scale(1.06) !important; box-shadow: 0 4px 12px color-mix(in srgb, var(--color-primary) 35%, transparent); }
 
+  :global(html.light) .hero-visual::before {
+    background:
+      radial-gradient(circle 350px at 70% 30%, rgba(255, 107, 107, 0.28) 0%, transparent 70%),
+      radial-gradient(circle 320px at 40% 70%, rgba(253, 186, 116, 0.34) 0%, transparent 72%),
+      radial-gradient(circle 250px at 30% 20%, rgba(254, 243, 199, 0.36) 0%, transparent 70%);
+  }
+  :global(html.light) .hero-glow {
+    background: radial-gradient(circle, rgba(255, 107, 107, 0.28) 0%, rgba(253, 186, 116, 0.26) 45%, transparent 72%);
+  }
+  :global(html.light) .mock-card {
+    background: linear-gradient(150deg, var(--color-surface) 0%, var(--color-surface) 68%, var(--color-surface-variant) 100%);
+    border-color: var(--card-border-strong);
+  }
+  :global(html.light) .mock-card-1 { box-shadow: var(--elev-5); }
+  :global(html.light) .mock-card-2 { box-shadow: var(--elev-4); }
+  :global(html.light) .mock-card-3 { box-shadow: var(--elev-3); }
+  :global(html.light) .mock-card-4 { box-shadow: var(--elev-2); }
+
+  :global(html.light) .task-card,
+  :global(html.light) .empty-card,
+  :global(html.light) .progress-card,
+  :global(html.light) .badge-card { box-shadow: var(--elev-2); }
+  :global(html.light) .task-card:hover { box-shadow: var(--elev-4); }
+  .btn-outline, .btn-outline-dark { border-color: var(--color-control-outline); }
+
   /* ──────────── How It Works ──────────── */
   .steps { display: grid; grid-template-columns: 1fr; gap: 48px; max-width: 1000px; margin: 0 auto; }
   @media (min-width: 768px) { .steps { grid-template-columns: repeat(3, 1fr); gap: 48px; } }

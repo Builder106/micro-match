@@ -156,7 +156,7 @@
     align-items: center;
     gap: 8px;
     padding: 4px 6px 4px 6px;
-    background: var(--color-surface-variant, #f8fafc);
+    background: var(--color-surface-variant, #FAF7F0);
     border: 1px solid var(--color-outline-variant, rgba(0, 0, 0, 0.08));
     border-radius: 24px;
     margin-bottom: 24px;
@@ -191,7 +191,7 @@
     display: flex;
     flex-direction: column;
     background: var(--color-surface, #ffffff);
-    border: 1px solid var(--color-outline-variant, rgba(0, 0, 0, 0.1));
+    border: 1px solid var(--card-border-strong);
     border-radius: 16px;
     padding: 26px;
     box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
@@ -224,7 +224,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--color-surface-variant, #f8fafc);
+    background: var(--color-surface-variant, #FAF7F0);
   }
 
   .coral-glow {
@@ -305,7 +305,7 @@
     font-size: 0.775rem;
     padding: 3px 8px;
     border-radius: 6px;
-    background: rgba(15, 23, 42, 0.05);
+    background: var(--color-surface-container);
     color: #334155;
   }
 
@@ -401,14 +401,14 @@
     flex-direction: column;
     padding: 18px;
     border-radius: 12px;
-    background: var(--color-surface-variant, #f8fafc);
-    border: 1px solid var(--color-outline-variant, rgba(0, 0, 0, 0.08));
+    background: var(--color-surface-variant, #FAF7F0);
+    border: 1px solid var(--card-border-strong);
     text-decoration: none !important;
     transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
   }
 
   .resource-tile:hover {
-    background: #ffffff;
+    background: var(--color-surface);
     border-color: rgba(255, 107, 107, 0.35);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);

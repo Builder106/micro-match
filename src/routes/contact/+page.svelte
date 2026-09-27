@@ -192,7 +192,7 @@
     align-items: center;
     gap: 8px;
     padding: 4px 6px 4px 6px;
-    background: var(--color-surface-variant, #f8fafc);
+    background: var(--color-surface-variant, #FAF7F0);
     border: 1px solid var(--color-outline-variant, rgba(0, 0, 0, 0.08));
     border-radius: 24px;
     margin-bottom: 24px;
@@ -231,7 +231,7 @@
   /* Form Card */
   .contact-form-card {
     background: var(--color-surface, #ffffff);
-    border: 1px solid var(--color-outline-variant, rgba(0, 0, 0, 0.1));
+    border: 1px solid var(--card-border-strong);
     border-radius: 20px;
     padding: 28px;
     box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
@@ -276,7 +276,7 @@
     padding: 11px 14px;
     font-size: 0.9rem;
     border-radius: 10px;
-    border: 1px solid var(--color-outline, #cbd5e1);
+    border: 1px solid var(--color-control-outline);
     background: var(--color-background, #fdfcf8);
     color: var(--color-text, #0f172a);
     box-sizing: border-box;
@@ -286,7 +286,7 @@
   .form-group input:focus,
   .form-group textarea:focus {
     outline: none;
-    border-color: var(--color-primary, #ff6b6b);
+    border-color: var(--color-primary-readable);
     box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.15);
   }
 
@@ -301,21 +301,21 @@
     font-weight: 600;
     padding: 5px 12px;
     border-radius: 20px;
-    border: 1px solid var(--color-outline-variant, rgba(0, 0, 0, 0.1));
-    background: var(--color-surface-variant, #f1f5f9);
+    border: 1px solid var(--color-control-outline);
+    background: var(--color-surface-variant, #FAF7F0);
     color: var(--color-text-secondary, #475569);
     cursor: pointer;
     transition: all 0.15s ease;
   }
 
   .topic-pill:hover {
-    background: #e2e8f0;
+    background: var(--color-surface-container);
   }
 
   .topic-pill.active {
     background: var(--color-primary, #ff6b6b);
     color: var(--color-brand-on-coral);
-    border-color: var(--color-primary, #ff6b6b);
+    border-color: var(--color-primary-readable);
   }
 
   .form-security-note {
@@ -421,7 +421,7 @@
     align-items: flex-start;
     gap: 16px;
     background: var(--color-surface, #ffffff);
-    border: 1px solid var(--color-outline-variant, rgba(0, 0, 0, 0.08));
+    border: 1px solid var(--card-border-strong);
     border-radius: 16px;
     padding: 22px 20px;
     box-shadow: 0 2px 6px rgba(15, 23, 42, 0.02);

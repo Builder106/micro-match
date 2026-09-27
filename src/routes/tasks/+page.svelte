@@ -353,7 +353,7 @@
     display: flex;
     align-items: center;
     background: var(--color-surface);
-    border: 1px solid var(--card-border-strong);
+    border: 1px solid var(--color-control-outline);
     border-radius: 9999px;
     padding: 4px 4px 4px 20px;
     box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
@@ -380,8 +380,8 @@
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    border: none;
-    background: var(--card-border-strong);
+    border: 1px solid var(--color-control-outline);
+    background: var(--color-surface-variant);
     color: var(--color-text-secondary);
     display: flex;
     align-items: center;
@@ -405,19 +405,23 @@
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
-    border: 1px solid var(--card-border-strong);
+    border: 1px solid var(--color-control-outline);
     background: var(--color-surface);
     color: var(--color-text);
     transition: all .15s;
   }
-  .filter-chip:hover { border-color: color-mix(in srgb, var(--color-primary-readable) 35%, transparent); color: var(--color-text); }
+  .filter-chip:hover { border-color: var(--color-primary-readable); color: var(--color-text); }
   .filter-chip.active {
-    background: #FF6B6B;
-    color: #0F172A;
+    background: var(--color-primary);
+    color: var(--color-action-on-coral);
     border-color: var(--color-primary-readable);
     box-shadow: 0 4px 12px rgba(255, 107, 107, 0.25);
   }
-  .filter-chip-tag.active { background: var(--color-text); border-color: var(--color-text); }
+  .filter-chip-tag.active {
+    background: var(--color-text);
+    color: var(--color-surface);
+    border-color: var(--color-text);
+  }
 
   .filter-controls { margin-top: 4px; justify-content: flex-end; }
   .sort {
@@ -426,7 +430,7 @@
     align-items: center;
     gap: 6px;
     background: var(--color-surface);
-    border: 1px solid var(--card-border-strong);
+    border: 1px solid var(--color-control-outline);
     border-radius: 9999px;
     padding: 4px 36px 4px 14px;
     transition: border-color .15s;
@@ -447,7 +451,7 @@
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
-    border: 1px solid var(--card-border-strong);
+    border: 1px solid var(--color-control-outline);
     background: transparent;
     color: var(--color-text-secondary);
     transition: all .15s;
@@ -467,14 +471,14 @@
   .feed-empty {
     background: var(--color-surface);
     border-radius: 32px;
-    border: 1px solid color-mix(in srgb, var(--color-primary-readable) 12%, transparent);
+    border: 1px solid var(--card-border-strong);
     padding: 64px 32px;
     text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 16px;
-    box-shadow: 0 16px 40px rgba(255, 107, 107, 0.05);
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.07);
   }
   .empty-mascot { width: 160px; height: 160px; display: flex; align-items: center; justify-content: center; color: var(--color-primary-light); margin-bottom: 8px; }
   .empty-mascot :global(.lottie-animation) { width: 100%; height: 100%; }
