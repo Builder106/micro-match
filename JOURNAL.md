@@ -15,9 +15,10 @@ Removed the decorative background panels behind the auth brand copy and logo.
 Login, signup, recovery, and password reset now use one shared responsive auth
 shell and one brand illustration instance per route. The Lottie frame keeps
 the same responsive position across routes. The brand stage stays solid navy
-without color glows beside the illustrations. Login scales its square canvas
-inside a taller frame, centered at the same spot as the other animations.
-Functional form controls and signup choice cards remain visibly distinct.
+without side glows or copy panels. Login scales its collaboration artwork
+inside the shared frame, so it appears larger without shifting position.
+Functional form controls and signup choice cards remain distinct. Axe's
+heading overlap report stays a pending human review for desktop auth pages.
 
 ## 2026-09-23 - Added a TypeScript 7 Svelte check #decision
 

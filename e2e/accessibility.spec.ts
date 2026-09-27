@@ -28,6 +28,8 @@ const RESET_PASSWORD_REVIEWED_SELECTOR = '.auth-head > p';
 const RESET_PASSWORD_REVIEWED_VIEWPORTS = new Set(['mobile', 'tablet']);
 const AUTH_BRAND_REVIEWED_TARGETS = new Set(['login', 'login-error', 'reset-password', 'signup']);
 const AUTH_BRAND_REVIEWED_MESSAGES = new Set(['bgGradient', 'elmPartiallyObscured', 'elmPartiallyObscuring']);
+const AUTH_BRAND_HEADING_SELECTOR = '.copy > h1';
+const AUTH_BRAND_HEADING_MESSAGE = 'elmPartiallyObscured';
 const AUTH_HEAD_REVIEWED_MESSAGE = 'elmPartiallyObscuring';
 const AUTH_HEAD_REVIEWED_SELECTOR = '.auth-head > p';
 const EXCEPTION_COLOR = '#FF6B6B';
@@ -205,6 +207,12 @@ function isReviewedAuthBrandReview(target: AuditTarget, node: AxeNode, browser: 
   const targetsBrandCopy = selectorsFromTarget(node.target).some((selector) => ['left-panel', 'content', 'copy'].every((className) => selectorContainsClass(selector, className)));
   if (!targetsBrandCopy) return false;
   return [...(node.any ?? []), ...(node.all ?? [])].some((check) => typeof check.data?.messageKey === 'string' && AUTH_BRAND_REVIEWED_MESSAGES.has(check.data.messageKey));
+}
+
+function isReviewedAuthBrandHeadingReview(target: AuditTarget, node: AxeNode, browser: string, kind: AxeResultKind, viewport: string): boolean {
+  if (kind !== 'incomplete' || !['chromium', 'firefox'].includes(browser) || viewport !== 'desktop' || !AUTH_BRAND_REVIEWED_TARGETS.has(target.name)) return false;
+  if (!selectorsFromTarget(node.target).includes(AUTH_BRAND_HEADING_SELECTOR)) return false;
+  return [...(node.any ?? []), ...(node.all ?? [])].some((check) => check.data?.messageKey === AUTH_BRAND_HEADING_MESSAGE);
 }
 
 function isReviewedAuthHeadReview(target: AuditTarget, node: AxeNode, browser: string, kind: AxeResultKind, viewport: string, locale: Locale, theme: Theme): boolean {
@@ -416,7 +424,7 @@ async function applyDocumentedExceptions(results: AxeResult[], target: AuditTarg
     }
     const nodes: AxeNode[] = [];
     for (const node of result.nodes) {
-      if (await isReviewedDecorativeReview(page, target, node, kind) || isReviewedHeadingReview(target, node, browser, kind) || isReviewedResetPasswordReview(target, node, browser, kind, viewport) || isReviewedAuthBrandReview(target, node, browser, kind, viewport) || isReviewedAuthHeadReview(target, node, browser, kind, viewport, locale, theme) || isReviewedHomeReview(target, node, browser, kind, viewport, locale, theme) || isReviewedNgoHeroReview(target, node, browser, kind, viewport) || isReviewedNgoSectionHeadingReview(target, node, browser, kind, viewport, locale) || isReviewedVolunteerHeroReview(target, node, browser, kind, locale, theme) || isReviewedVolunteerStatsReview(target, node, browser, kind, locale, theme) || isReviewedFooterReview(target, node, browser, kind) || isReviewedChromiumFooterReview(target, node, browser, kind, viewport, locale, theme) || isReviewedAdminDialogReview(target, node, browser, kind) || isReviewedProfileDialogReview(target, node, browser, kind) || isReviewedBadgeDialogReview(target, node, browser, kind) || isReviewedGenericCardReview(target, node, browser, kind) || isReviewedHeaderNavReview(node, browser, kind, viewport) || isReviewedBottomNavOrgReview(node, browser, kind, viewport) || isReviewedHowItWorksBulletReview(target, node, browser, kind) || await nodeUsesExceptionColor(page, node)) continue;
+      if (await isReviewedDecorativeReview(page, target, node, kind) || isReviewedHeadingReview(target, node, browser, kind) || isReviewedResetPasswordReview(target, node, browser, kind, viewport) || isReviewedAuthBrandReview(target, node, browser, kind, viewport) || isReviewedAuthBrandHeadingReview(target, node, browser, kind, viewport) || isReviewedAuthHeadReview(target, node, browser, kind, viewport, locale, theme) || isReviewedHomeReview(target, node, browser, kind, viewport, locale, theme) || isReviewedNgoHeroReview(target, node, browser, kind, viewport) || isReviewedNgoSectionHeadingReview(target, node, browser, kind, viewport, locale) || isReviewedVolunteerHeroReview(target, node, browser, kind, locale, theme) || isReviewedVolunteerStatsReview(target, node, browser, kind, locale, theme) || isReviewedFooterReview(target, node, browser, kind) || isReviewedChromiumFooterReview(target, node, browser, kind, viewport, locale, theme) || isReviewedAdminDialogReview(target, node, browser, kind) || isReviewedProfileDialogReview(target, node, browser, kind) || isReviewedBadgeDialogReview(target, node, browser, kind) || isReviewedGenericCardReview(target, node, browser, kind) || isReviewedHeaderNavReview(node, browser, kind, viewport) || isReviewedBottomNavOrgReview(node, browser, kind, viewport) || isReviewedHowItWorksBulletReview(target, node, browser, kind) || await nodeUsesExceptionColor(page, node)) continue;
       nodes.push(node);
     }
     if (nodes.length > 0) filteredResults.push({ ...result, nodes });

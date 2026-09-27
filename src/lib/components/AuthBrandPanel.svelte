@@ -8,7 +8,6 @@
 <section class="brand-stage" aria-label="MicroMatch introduction">
   <div
     class="scene-wrap"
-    class:enlarged={animationScale > 1}
     style={`--auth-animation-scale: ${animationScale}`}
     aria-hidden="true"
   >
@@ -58,10 +57,6 @@
     overflow: hidden;
     z-index: 0;
   }
-  .scene-wrap.enlarged {
-    top: 1%;
-    height: 60%;
-  }
   .scene-wrap :global(.auth-brand-animation) {
     width: min(460px, 70%);
     height: 100%;
@@ -103,6 +98,7 @@
     font-size: 1.25rem;
     font-weight: 700;
     letter-spacing: -0.02em;
+    background-color: #0f172a;
     transition: color 0.2s ease, text-shadow 0.25s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
   .logo-mark {
@@ -134,7 +130,7 @@
   }
   .copy h1 {
     margin: 0;
-    background: transparent;
+    background-color: #0f172a;
     color: #ffffff;
     font-size: clamp(2.25rem, 3.2vw, 3.25rem);
     line-height: 1.08;
@@ -145,7 +141,7 @@
     font-family: Georgia, "Times New Roman", serif;
     font-size: 1.05em;
     font-weight: 500;
-    background: transparent;
+    background-color: #0f172a;
     color: #ff8b8b;
   }
   .copy p {
@@ -164,10 +160,6 @@
     .scene-wrap {
       top: 18%;
       height: 38%;
-    }
-    .scene-wrap.enlarged {
-      top: 8%;
-      height: 58%;
     }
     .scene-wrap :global(.auth-brand-animation) {
       width: min(280px, 60%);
