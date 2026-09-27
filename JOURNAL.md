@@ -17,8 +17,11 @@ shell and one brand illustration instance per route. The Lottie frame keeps
 the same responsive position across routes. The brand stage stays solid navy
 without side glows or copy panels. Login scales its collaboration artwork
 inside the shared frame, so it appears larger without shifting position.
-Functional form controls and signup choice cards remain distinct. Axe's
-heading overlap report stays a pending human review for desktop auth pages.
+Functional form controls and signup choice cards remain distinct. Axe reports
+an indeterminate background on the exact brand heading across responsive auth
+layouts even where screenshots show no visible overlap. The incomplete-result
+review stays pending across auth routes and viewport sizes; no palette changes
+were needed to address the automated review.
 
 ## 2026-09-23 - Added a TypeScript 7 Svelte check #decision
 

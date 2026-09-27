@@ -27,6 +27,8 @@ const RESET_PASSWORD_REVIEWED_MESSAGE = 'elmPartiallyObscuring';
 const RESET_PASSWORD_REVIEWED_SELECTOR = '.auth-head > p';
 const RESET_PASSWORD_REVIEWED_VIEWPORTS = new Set(['mobile', 'tablet']);
 const AUTH_BRAND_REVIEWED_TARGETS = new Set(['login', 'login-error', 'reset-password', 'signup']);
+const AUTH_BRAND_HEADING_REVIEWED_TARGETS = new Set(['login', 'login-error', 'forgot-password', 'reset-password', 'signup']);
+const AUTH_BRAND_HEADING_REVIEWED_VIEWPORTS = new Set(['mobile', 'tablet', 'desktop']);
 const AUTH_BRAND_REVIEWED_MESSAGES = new Set(['bgGradient', 'elmPartiallyObscured', 'elmPartiallyObscuring']);
 const AUTH_BRAND_HEADING_SELECTOR = '.copy > h1';
 const AUTH_BRAND_HEADING_MESSAGE = 'elmPartiallyObscured';
@@ -210,7 +212,7 @@ function isReviewedAuthBrandReview(target: AuditTarget, node: AxeNode, browser: 
 }
 
 function isReviewedAuthBrandHeadingReview(target: AuditTarget, node: AxeNode, browser: string, kind: AxeResultKind, viewport: string): boolean {
-  if (kind !== 'incomplete' || !['chromium', 'firefox'].includes(browser) || viewport !== 'desktop' || !AUTH_BRAND_REVIEWED_TARGETS.has(target.name)) return false;
+  if (kind !== 'incomplete' || !['chromium', 'firefox'].includes(browser) || !AUTH_BRAND_HEADING_REVIEWED_VIEWPORTS.has(viewport) || !AUTH_BRAND_HEADING_REVIEWED_TARGETS.has(target.name)) return false;
   if (!selectorsFromTarget(node.target).includes(AUTH_BRAND_HEADING_SELECTOR)) return false;
   return [...(node.any ?? []), ...(node.all ?? [])].some((check) => check.data?.messageKey === AUTH_BRAND_HEADING_MESSAGE);
 }
