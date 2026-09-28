@@ -1,5 +1,12 @@
 # JOURNAL — MicroMatch
 
+## 2026-09-27 - Compile Paraglide before the CI build #fix
+
+The build job has its own checkout, so it cannot use the messages generated
+in the type-check job. Vite built that checkout with missing `site_meta_*`
+exports, and localized requests returned 500s. The build job now compiles
+Paraglide before `vite build`.
+
 ## 2026-09-27 - Restored warmth to the light surfaces #decision
 
 The light-theme overrides had drifted to cool slate even though the design
