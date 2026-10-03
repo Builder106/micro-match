@@ -1,5 +1,81 @@
 # JOURNAL — MicroMatch
 
+## 2026-10-02 - Reproduced transient screenshot timeout #decision
+
+Two unchanged Siena worker runs failed when Chrome did not answer a screenshot
+request within ten seconds. The diagnostic exposed the underlying TimeoutError
+that the worker had rendered as an empty message. On the same attached page,
+a DOM query then answered in one millisecond, PNG capture in 1.2 seconds, and
+JPEG capture in 67 milliseconds. The CDP reader remained healthy, and document
+request continuation had completed. The recorder stops after one screenshot
+timeout even when capture can recover. The page reported itself as hidden;
+visibility and compositor readiness remain hypotheses, not proven causes.
+Seasoned recorded 40.9 seconds but still failed consent verification. All three
+workers verified cleanup. Diagnostic sources, traces, media, results, and hashes
+are saved in the capture evidence directory. Adapter code is unchanged. The
+next controlled test should activate the recording page and verify visibility
+before capturing. No reference capture matrix or homepage implementation passed.
+
+## 2026-10-02 - Isolated screenshot formats both pass #decision
+
+All 24 PNG and JPEG screenshot requests passed across a control page, Seasoned,
+and Siena, both after navigation and during a second navigation. This used the
+retained worker CDP socket without changing adapter code. Image format alone
+does not explain the full worker failure. Visual inspection showed Seasoned's
+loader and a black Siena frame, so these are diagnostic samples, not accepted
+reference evidence. The next test must reproduce the worker's fresh-page and
+consent-preflight sequence with command timings and typed exceptions. The
+three-run diagnostic finished; its Python process required explicit termination
+after Chrome cleanup. Sources, images, results, and hashes are saved in the
+prescribed capture evidence directory. Homepage implementation remains blocked.
+
+## 2026-10-01 - Authorized consent and replaced stalled references #decision
+
+The user authorized accepting reference-site cookie prompts. The initial
+references remained unusable: one stayed on its loader and two failed hostname
+resolution. The design-inspiration MCP verified Seasoned, Siena Film Foundation,
+and Studio Alphonse as replacement Site of the Day references. Their live
+captures remain partial. Siena verifies consent but fails screenshot recording;
+Alphonse renders its homepage but has an uninspected iframe and no completed
+scroll. A page-session transport experiment did not improve recording and was
+removed. The retained adapter repair passes 102 tests. Required capture evidence
+and the editable handoff still block homepage implementation. The instance
+remains running with teardown cancelled, as requested.
+
+## 2026-10-01 - Recover screenshots during document navigation #fix
+
+A bounded retry for Chrome's inactive-document screenshot error resolved the
+recording failure in one live attempt. The recorder still fails on unrelated
+errors or inactivity lasting five seconds. All 102 adapter tests pass. The
+diagnostic WebM shows the site's animated preloader, but consent verification
+fails and the full page is not visible. It remains partial evidence; the
+reference matrix and editable handoff are still pending.
+
+## 2026-10-01 - Capture readiness verified after runner repair #decision
+
+The user authorized a sandbox-disabled Chrome process on the temporary capture
+runner and cancelled its scheduled teardown. A short isolated run path fixed
+Chrome's Unix socket length failure; installing the missing EGL loader enabled
+hardware WebGL. The live adapter probe now verifies recording and the RTX 3060
+renderer. A page-target selection fix passes 99 adapter regression tests. Three
+live reference attempts reached a recording plateau: two consecutive attempts
+failed with `Not attached to an active page`. Explicit activation did not help
+and was removed. Partial recordings are not accepted as motion evidence. The
+instance remains running at the user's request; the required capture matrix
+and Open Design handoff still precede homepage implementation. The earlier
+blocked preflight remains recorded below.
+
+## 2026-10-01 - Homepage redesign stopped at capture preflight #decision
+
+Verified three dated Awwwards Site of the Day references through the
+design-inspiration MCP. Extracted tokens describe Awwwards listing pages;
+live motion evidence is still missing. A local capture-adapter argument fix
+passed 95 tests, but its Docker runner could not provide Chrome's required
+sandbox. A replacement VM remained unverified when the repair budget ended.
+SVGator's Free account also refuses animated exports. The homepage and visual
+baselines remain unchanged. `LANDING-REDESIGN-STATUS.md` records the product
+contracts, evidence location, blockers, and outstanding verification.
+
 ## 2026-09-27 - Compile Paraglide before the CI build #fix
 
 The build job has its own checkout, so it cannot use the messages generated
