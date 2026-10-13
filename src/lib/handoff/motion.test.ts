@@ -92,6 +92,7 @@ describe('Handoff Table motion', () => {
     expect(ticketPosition(0, { width: 1000, height: 800, rtl: false })).toEqual({ x: 250, y: 400 });
     expect(ticketPosition(0.4, { width: 1000, height: 800, rtl: false })).toEqual({ x: 750, y: 400 });
     expect(ticketPosition(0, { width: 1000, height: 800, rtl: true })).toEqual({ x: 750, y: 400 });
+    expect(ticketPosition(0, { width: 1000, height: 800, rtl: false, bottomInset: 200 })).toEqual({ x: 250, y: 300 });
     expect(ticketPosition(0, { width: 390, height: 700, rtl: false })).toEqual({ x: 195, y: 182 });
     expect(ticketPosition(0.4, { width: 390, height: 700, rtl: false }).y).toBeCloseTo(378);
   });

@@ -21,6 +21,8 @@ export const DESKTOP_STOPS = [0.25, 0.75] as const;
 export const MOBILE_STOPS = [0.26, 0.54] as const;
 /** How long the time lanes stay after the work starts, in stage progress. */
 export const LANES_LINGER = 0.03;
+/** Space kept between the ticket and the caption box below it, in pixels. */
+export const CAPTION_GAP = 32;
 /** Stage progress at which the live task list and role links take over. */
 export const END_AT = 0.92;
 /** The minute dial's timeline spans 30 minutes. */
@@ -121,16 +123,17 @@ export function stageState(progress: number): StageState {
   };
 }
 
-export type Viewport = { width: number; height: number; rtl: boolean };
+/** bottomInset reserves the caption box at the bottom of a desktop stage. */
+export type Viewport = { width: number; height: number; rtl: boolean; bottomInset?: number };
 
 /** The ticket's center inside the stage, in pixels. */
-export function ticketPosition(progress: number, { width, height, rtl }: Viewport): { x: number; y: number } {
+export function ticketPosition(progress: number, { width, height, rtl, bottomInset = 0 }: Viewport): { x: number; y: number } {
   const t = along(progress);
   if (width < MOBILE_BREAKPOINT) {
     return { x: width / 2, y: lerp(height * MOBILE_STOPS[0], height * MOBILE_STOPS[1], t) };
   }
   const [ngo, volunteer] = rtl ? [DESKTOP_STOPS[1], DESKTOP_STOPS[0]] : DESKTOP_STOPS;
-  return { x: lerp(width * ngo, width * volunteer, t), y: height / 2 };
+  return { x: lerp(width * ngo, width * volunteer, t), y: (height - bottomInset) / 2 };
 }
 
 /** SMIL time for an asset timeline, kept just inside the end so the last frame holds. */

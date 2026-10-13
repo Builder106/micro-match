@@ -5,6 +5,8 @@
   import type { Locale } from '$lib/locale';
   import type { Task } from '$lib/types';
   import {
+    CAPTION_GAP,
+    MOBILE_BREAKPOINT,
     assetTimelines,
     clockText,
     dialStill,
@@ -63,8 +65,12 @@
     const reduced = matchMedia('(prefers-reduced-motion: reduce)');
     let cancel: (() => void) | undefined;
     let disposed = false;
-    let size = { width: 0, height: 0 };
-    const measure = () => (size = { width: stage.clientWidth, height: stage.clientHeight });
+    let size = { width: 0, height: 0, bottomInset: 0 };
+    const measure = () => {
+      const captions = stage.querySelector<HTMLElement>('.steps');
+      const desktop = stage.clientWidth >= MOBILE_BREAKPOINT;
+      size = { width: stage.clientWidth, height: stage.clientHeight, bottomInset: desktop && captions ? captions.offsetHeight + CAPTION_GAP : 0 };
+    };
 
     function render(progress: number, players: Array<[SVGSVGElement, keyof AssetTimelines]>) {
       const state = stageState(progress);
@@ -255,7 +261,7 @@
   .chip { padding: 2px 10px; border-radius: 9999px; background: #fed7aa; color: #431407; font-weight: 600; }
   /* Text boxes shrink to their content so the minute dial never sits under them. */
   .task > * { justify-self: start; }
-  .clock { font: 700 28px/1 'Plus Jakarta Sans', sans-serif; font-variant-numeric: tabular-nums; }
+  .clock { font: 700 clamp(20px, 2.4vw, 28px)/1 'Plus Jakarta Sans', sans-serif; font-variant-numeric: tabular-nums; }
 
   .steps { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 80px; row-gap: 28px; list-style: none; margin: 0; padding: 8px 40px 32px; }
   .steps li[data-side='ngo'] { grid-column: 1; }
@@ -295,7 +301,8 @@
   .motion .lanes.gone { opacity: 0; }
   .motion .vignette { width: min(300px, 32vh); height: min(225px, 24vh); right: 48px; bottom: 24px; z-index: 4; }
   .motion .badge { width: 220px; height: 220px; right: 72px; bottom: 140px; }
-  .motion .ticket { position: absolute; left: 0; top: 0; margin: 0; width: min(380px, 34vw); will-change: transform; }
+  @media (min-width: 768px) and (max-width: 1023px) { .motion .stamp { width: 150px; height: 150px; } }
+  .motion .ticket { position: absolute; left: 0; top: 0; margin: 0; width: clamp(300px, 34vw, 380px); max-width: none; will-change: transform; }
   .motion .seal { width: 88px; height: 88px; inset-inline-end: -44px; top: -52px; }
   .motion .clip { width: 64px; height: 106px; inset-inline-start: -38px; top: -72px; }
   .motion .dial { width: 96px; height: 100px; inset-inline-end: 14px; bottom: 12px; }
