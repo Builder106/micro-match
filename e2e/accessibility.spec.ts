@@ -35,7 +35,8 @@ const AUTH_BRAND_HEADING_MESSAGE = 'elmPartiallyObscured';
 const AUTH_HEAD_REVIEWED_MESSAGE = 'elmPartiallyObscuring';
 const AUTH_HEAD_REVIEWED_SELECTOR = '.auth-head > p';
 const EXCEPTION_COLOR = '#FF6B6B';
-const HIDDEN_LANDING_DECORATION_CLASSES = new Set(['hero-visual', 'mock-card-1', 'mock-card-2', 'mock-card-3', 'mock-card-4']);
+// The Handoff Table's live Glaxnimate players and the seam are aria-hidden decoration.
+const HIDDEN_LANDING_DECORATION_CLASSES = new Set(['live', 'player', 'seam']);
 const LANDING_REVIEWED_TARGETS: ReadonlyArray<{ className: string; messageKey: string; relatedClassName?: string }> = [
   { className: 'ring-pct', messageKey: 'imgNode', relatedClassName: 'progress-ring' },
   { className: 'ring-sub', messageKey: 'imgNode', relatedClassName: 'progress-ring' },
@@ -417,6 +418,33 @@ async function nodeUsesExceptionColor(page: Page, node: AxeNode): Promise<boolea
   return checks.some(checkUsesExceptionColor) || renderedNodeUsesExceptionColor(page, node);
 }
 
+// With the mobile menu open, it covers part of the page. Text under it has no single
+// background to measure (bgOverlap), and links inside it cover the page behind
+// (elmPartiallyObscuring). Review only those results, and only for elements that
+// intersect the open menu or sit inside it.
+async function isReviewedMenuOverlapReview(page: Page, target: AuditTarget, node: AxeNode, kind: AxeResultKind): Promise<boolean> {
+  if (target.state !== 'mobile-menu' || kind !== 'incomplete') return false;
+  const checks = [...(node.any ?? []), ...(node.all ?? [])];
+  const keys = new Set(checks.map((check) => check.data?.messageKey));
+  if (!keys.has('bgOverlap') && !keys.has('elmPartiallyObscuring')) return false;
+  return page.evaluate(({ candidateSelectors, obscuring }) => {
+    const menuElement = document.querySelector('#mobile-menu');
+    const menu = menuElement?.getBoundingClientRect();
+    if (!menuElement || !menu) return false;
+    return candidateSelectors.some((selector) => {
+      try {
+        return Array.from(document.querySelectorAll(selector)).some((element) => {
+          if (obscuring) return menuElement.contains(element);
+          const box = element.getBoundingClientRect();
+          return box.bottom > menu.top && box.top < menu.bottom && box.right > menu.left && box.left < menu.right;
+        });
+      } catch {
+        return false;
+      }
+    });
+  }, { candidateSelectors: selectorsFromTarget(node.target), obscuring: !keys.has('bgOverlap') });
+}
+
 async function applyDocumentedExceptions(results: AxeResult[], target: AuditTarget, page: Page, kind: AxeResultKind, browser: string, viewport: string, locale: Locale, theme: Theme): Promise<AxeResult[]> {
   const filteredResults: AxeResult[] = [];
   for (const result of results) {
@@ -426,7 +454,7 @@ async function applyDocumentedExceptions(results: AxeResult[], target: AuditTarg
     }
     const nodes: AxeNode[] = [];
     for (const node of result.nodes) {
-      if (await isReviewedDecorativeReview(page, target, node, kind) || isReviewedHeadingReview(target, node, browser, kind) || isReviewedResetPasswordReview(target, node, browser, kind, viewport) || isReviewedAuthBrandReview(target, node, browser, kind, viewport) || isReviewedAuthBrandHeadingReview(target, node, browser, kind, viewport) || isReviewedAuthHeadReview(target, node, browser, kind, viewport, locale, theme) || isReviewedHomeReview(target, node, browser, kind, viewport, locale, theme) || isReviewedNgoHeroReview(target, node, browser, kind, viewport) || isReviewedNgoSectionHeadingReview(target, node, browser, kind, viewport, locale) || isReviewedVolunteerHeroReview(target, node, browser, kind, locale, theme) || isReviewedVolunteerStatsReview(target, node, browser, kind, locale, theme) || isReviewedFooterReview(target, node, browser, kind) || isReviewedChromiumFooterReview(target, node, browser, kind, viewport, locale, theme) || isReviewedAdminDialogReview(target, node, browser, kind) || isReviewedProfileDialogReview(target, node, browser, kind) || isReviewedBadgeDialogReview(target, node, browser, kind) || isReviewedGenericCardReview(target, node, browser, kind) || isReviewedHeaderNavReview(node, browser, kind, viewport) || isReviewedBottomNavOrgReview(node, browser, kind, viewport) || isReviewedHowItWorksBulletReview(target, node, browser, kind) || await nodeUsesExceptionColor(page, node)) continue;
+      if (await isReviewedDecorativeReview(page, target, node, kind) || await isReviewedMenuOverlapReview(page, target, node, kind) || isReviewedHeadingReview(target, node, browser, kind) || isReviewedResetPasswordReview(target, node, browser, kind, viewport) || isReviewedAuthBrandReview(target, node, browser, kind, viewport) || isReviewedAuthBrandHeadingReview(target, node, browser, kind, viewport) || isReviewedAuthHeadReview(target, node, browser, kind, viewport, locale, theme) || isReviewedHomeReview(target, node, browser, kind, viewport, locale, theme) || isReviewedNgoHeroReview(target, node, browser, kind, viewport) || isReviewedNgoSectionHeadingReview(target, node, browser, kind, viewport, locale) || isReviewedVolunteerHeroReview(target, node, browser, kind, locale, theme) || isReviewedVolunteerStatsReview(target, node, browser, kind, locale, theme) || isReviewedFooterReview(target, node, browser, kind) || isReviewedChromiumFooterReview(target, node, browser, kind, viewport, locale, theme) || isReviewedAdminDialogReview(target, node, browser, kind) || isReviewedProfileDialogReview(target, node, browser, kind) || isReviewedBadgeDialogReview(target, node, browser, kind) || isReviewedGenericCardReview(target, node, browser, kind) || isReviewedHeaderNavReview(node, browser, kind, viewport) || isReviewedBottomNavOrgReview(node, browser, kind, viewport) || isReviewedHowItWorksBulletReview(target, node, browser, kind) || await nodeUsesExceptionColor(page, node)) continue;
       nodes.push(node);
     }
     if (nodes.length > 0) filteredResults.push({ ...result, nodes });

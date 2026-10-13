@@ -46,22 +46,22 @@ for (const locale of LOCALES) {
         await expect(header).toHaveScreenshot(`${locale}-${viewport.name}-site-header.png`, { animations: 'disabled', caret: 'hide', scale: 'css' });
       });
 
-      test('impact section matches the localization baseline', async ({ page }) => {
+      test('handoff storyboard matches the localization baseline', async ({ page }) => {
         await page.goto(`/${locale}`, { waitUntil: 'networkidle' });
         await prepareVisualState(page);
-        const impact = page.locator('#impact');
-        await impact.scrollIntoViewIfNeeded();
-        await expect(impact).toBeVisible();
-        await expect(impact).toHaveScreenshot(`${locale}-${viewport.name}-impact.png`, { animations: 'disabled', caret: 'hide', scale: 'css' });
+        const steps = page.locator('.exchange .steps');
+        await steps.scrollIntoViewIfNeeded();
+        await expect(steps).toBeVisible();
+        await expect(steps).toHaveScreenshot(`${locale}-${viewport.name}-handoff-steps.png`, { animations: 'disabled', caret: 'hide', scale: 'css' });
       });
 
       if (locale === 'en') {
-        test('home hero matches the light-theme baseline', async ({ page }) => {
+        test('home handoff table matches the light-theme baseline', async ({ page }) => {
           await page.goto('/en', { waitUntil: 'networkidle' });
           await prepareVisualState(page);
-          const hero = page.locator('.hero');
-          await expect(hero).toBeVisible();
-          await expect(hero).toHaveScreenshot(`en-${viewport.name}-home-hero.png`, { animations: 'disabled', caret: 'hide', scale: 'css' });
+          const ticket = page.locator('.exchange .ticket');
+          await expect(ticket).toBeVisible();
+          await expect(ticket).toHaveScreenshot(`en-${viewport.name}-home-hero.png`, { animations: 'disabled', caret: 'hide', scale: 'css' });
         });
       }
     });
