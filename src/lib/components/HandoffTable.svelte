@@ -236,7 +236,8 @@
   .skip:focus { top: 84px; }
 
   /* Storyboard: the default layout, used without JavaScript and under reduced motion. */
-  .stage { position: relative; display: grid; grid-template-columns: 1fr 1fr; background: var(--table); }
+  /* minmax(0, 1fr): a plain 1fr column grows to its widest child and overflows on phones. */
+  .stage { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); background: var(--table); }
   .side { position: relative; padding: 40px 40px 8px; }
   .side.ngo { background: var(--ngo-tint); }
   .side.volunteer { background: var(--vol-tint); }
@@ -244,7 +245,7 @@
   .seam { position: absolute; inset: 0 auto 0 50%; width: 2px; background: repeating-linear-gradient(to bottom, var(--seam) 0 10px, transparent 10px 20px); }
   .live { display: none; }
 
-  .ticket { position: relative; grid-column: 1 / -1; justify-self: center; margin: 32px 16px; width: min(380px, calc(100vw - 32px));
+  .ticket { position: relative; grid-column: 1 / -1; justify-self: center; margin: 32px 0; width: calc(100% - 32px); max-width: 380px;
     background: var(--color-surface); color: var(--color-text); border: 2px solid var(--line); border-radius: 16px; padding: 24px; box-shadow: var(--paper-shadow); z-index: 3; }
   .ticket h1 { font: 800 clamp(26px, 2.6vw, 36px)/1.15 'Plus Jakarta Sans', sans-serif; margin: 0 0 16px; }
   .ticket h1 em { font-style: normal; color: var(--color-primary-readable); }
@@ -256,7 +257,7 @@
   .task > * { justify-self: start; }
   .clock { font: 700 28px/1 'Plus Jakarta Sans', sans-serif; font-variant-numeric: tabular-nums; }
 
-  .steps { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; column-gap: 80px; row-gap: 28px; list-style: none; margin: 0; padding: 8px 40px 32px; }
+  .steps { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 80px; row-gap: 28px; list-style: none; margin: 0; padding: 8px 40px 32px; }
   .steps li[data-side='ngo'] { grid-column: 1; }
   .steps li[data-side='volunteer'] { grid-column: 2; }
   .steps h2 { font: 700 20px/1.3 'Plus Jakarta Sans', sans-serif; margin: 0 0 4px; color: var(--color-text); }
@@ -313,7 +314,7 @@
   .motion .ended .steps, .motion .ended .lanes, .motion .ended .vignette { opacity: 0; transition: opacity 0.2s ease-out; }
 
   @media (max-width: 767px) {
-    .stage, .steps { grid-template-columns: 1fr; }
+    .stage, .steps { grid-template-columns: minmax(0, 1fr); }
     .seam { display: none; }
     .side { padding: 24px 16px 0; }
     .side.volunteer { display: none; }
