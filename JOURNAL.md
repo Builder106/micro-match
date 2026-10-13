@@ -1,5 +1,23 @@
 # JOURNAL — MicroMatch
 
+## 2026-10-12 - The homepage became one table instead of a section stack #decision
+
+The redesign had stalled on reference capture, and SVGator's Free plan blocked
+animated export. Both blockers were removed rather than worked around: the
+workflow now records live references directly, and 2D assets come from
+Glaxnimate, which the user chose because it is free and open source. The
+concept came from the product's one distinctive mechanic: work handed across a
+table. An NGO posts, a volunteer claims and works, proof comes back, approval
+mints a badge, and scrolling moves a real task through that loop with the
+scroll position as its minute clock. Every illustration is a stationery
+object, such as a stamp, seal, clip, dial, or badge, because objects carry the
+story without drawn people. They are also within reach of programmatic vector
+drawing. Each asset is a seekable SVG from the Glaxnimate fork that the page
+scrubs with Motion's `scroll()`. Lesson: the reference-video review caught
+real defects, but its account of what happened at the end of a wheel
+recording was wrong. An exact-position state check settled it, so keep both
+checks.
+
 ## 2026-10-02 - Reproduced transient screenshot timeout #decision
 
 Two unchanged Siena worker runs failed when Chrome did not answer a screenshot

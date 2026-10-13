@@ -1,4 +1,36 @@
-# Homepage redesign status — October 1, 2026
+# Homepage redesign status — October 12, 2026
+
+## The Handoff Table
+
+The redesign restarted under the current workflow. Browser Use captures are
+no longer required, and 2D assets now come from Glaxnimate instead of SVGator.
+The approved concept, the Handoff Table, is written up in `DESIGN.md`.
+
+- **References.** Desktop video review covered gematik Digital Health
+  Journeys, Mâm Cơm, and Units, with motion extraction for each. Mobile
+  reference videos were not reviewed. Seasoned, War in Ukraine, and IZANAMI
+  were recorded but not reviewed. The Awwwards MCP could not open live sites,
+  because its proxy allows only awwwards.com. The evidence is in
+  `artifacts/design-inspiration/redesign-20261012/`.
+- **Prototype.** `design/home/handoff-table.html` is the layout prototype, and
+  the same file is in Open Design as "MicroMatch Handoff Table".
+  `design/home/handoff-table-assets.html` adds the 11 Glaxnimate assets.
+- **Verification.**
+  - Gemini video review of the delivered prototype, desktop and mobile:
+    scenes advance and reverse with scroll.
+  - Exact-position state checks: every player matches the scroll position
+    both ways and resets at the top.
+  - Reduced motion renders a static storyboard at both widths.
+  - Defects found by review were fixed and rechecked with screenshots.
+- **Not done.**
+  - The SvelteKit homepage, localization of the new copy, and its tests.
+  - Long-text locale and Arabic review.
+  - A MotionScore audit.
+  - A mobile stamp: the stamp is hidden on phones, so the Post and Review
+    scenes rely on their captions there.
+
+## Earlier record (October 1, 2026)
+
 
 ## Resumed capture repair
 
