@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Handoff Table prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FDFCF8; --table: #F5F0E8; --surface: #FFFFFF; --text: #0F172A; --text-2: #334155;
+    --coral: #FF6B6B; --coral-deep: #E85555; --coral-text: #881337; --peach: #FDBA74; --peach-soft: #FED7AA;
+    --green: #059669; --green-soft: #D1FAE5; --line: #0F172A; --outline: #B8AA96; --seam: #D8CCB9;
+    --ngo-tint: #FFF5F0; --vol-tint: #FAF7F0;
+    --radius-lg: 16px; --radius-xl: 24px;
+    --shadow-paper: 4px 4px 0 rgba(15, 23, 42, 0.14);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0F172A; --table: #1E293B; --surface: #1E293B; --text: #F1F5F9; --text-2: #E2E8F0;
+      --coral-text: #FDA4AF; --line: #F1F5F9; --outline: #475569; --seam: #334155;
+      --ngo-tint: #2A2433; --vol-tint: #24293A; --shadow-paper: 4px 4px 0 rgba(0, 0, 0, 0.4);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0F172A; --table: #1E293B; --surface: #1E293B; --text: #F1F5F9; --text-2: #E2E8F0;
+    --coral-text: #FDA4AF; --line: #F1F5F9; --outline: #475569; --seam: #334155;
+    --ngo-tint: #2A2433; --vol-tint: #24293A; --shadow-paper: 4px 4px 0 rgba(0, 0, 0, 0.4);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.5 Inter, system-ui, sans-serif; }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--coral-text); outline-offset: 3px; border-radius: 4px; }
+  .skip { position: absolute; left: 16px; top: -48px; background: var(--text); color: var(--bg); padding: 8px 16px; border-radius: 8px; z-index: 20; }
+  .skip:focus { top: 12px; }
+
+  .bar { position: fixed; inset: 0 0 auto 0; z-index: 10; display: flex; align-items: center; gap: 24px; padding: 14px 24px;
+    background: color-mix(in srgb, var(--bg) 94%, transparent); border-bottom: 1px solid color-mix(in srgb, var(--outline) 40%, transparent); }
+  .brand { font: 800 20px "Plus Jakarta Sans", sans-serif; text-decoration: none; }
+  .bar nav { margin-inline-start: auto; display: flex; gap: 20px; font-weight: 600; font-size: 14px; white-space: nowrap; }
+  .bar nav a { text-decoration: none; }
+
+  /* The exchange: a tall container whose height sets the scroll length, holding one sticky stage. */
+  .exchange { position: relative; height: 600vh; }
+  .stage { position: sticky; top: 0; height: 100vh; overflow: hidden; display: grid; grid-template-columns: 1fr 1fr; background: var(--table); }
+  .side { position: relative; padding: 88px 40px 40px; }
+  .side.ngo { background: var(--ngo-tint); }
+  .side.volunteer { background: var(--vol-tint); }
+  .side-label { font: 700 13px Inter, sans-serif; letter-spacing: 0.04em; color: var(--text-2); }
+  .seam { position: absolute; inset: 0 auto 0 50%; width: 2px; background: repeating-linear-gradient(to bottom, var(--seam) 0 10px, transparent 10px 20px); }
+
+  /* The traveling task ticket. Its text is real, localized HTML. */
+  .ticket { position: absolute; left: 0; top: 50%; width: min(380px, 34vw); translate: -50% -50%;
+    background: var(--surface); border: 2px solid var(--line); border-radius: var(--radius-lg); padding: 24px;
+    box-shadow: var(--shadow-paper); will-change: transform; z-index: 3; }
+  .ticket h1 { font: 800 clamp(26px, 2.6vw, 36px)/1.15 "Plus Jakarta Sans", sans-serif; margin: 0 0 16px; }
+  .ticket h1 em { font-style: normal; color: var(--coral-text); }
+  .task { border-top: 2px dashed var(--outline); padding-top: 14px; display: grid; gap: 6px; }
+  .task-title { font-weight: 700; }
+  .task-meta { display: flex; gap: 8px; font-size: 13px; color: var(--text-2); }
+  .chip { padding: 2px 10px; border-radius: 9999px; background: var(--peach-soft); color: #7C2D12; font-weight: 600; }
+  .clock { font: 700 28px/1 "Plus Jakarta Sans", sans-serif; font-variant-numeric: tabular-nums; }
+
+  /* Slots where Glaxnimate assets will mount. They are labeled, not stand-in art. */
+  .slot { position: absolute; border: 2px dashed var(--outline); border-radius: 12px; display: grid; place-items: center;
+    font: 600 11px Inter, sans-serif; color: var(--text-2); text-align: center; padding: 6px; background: color-mix(in srgb, var(--surface) 60%, transparent); }
+  .slot::after { content: attr(data-asset) " " attr(data-progress); }
+  .slot.still { display: none; }
+  .slot.filled { border: none; background: none; padding: 0; }
+  .slot.filled::after { content: none; }
+  .slot.filled > svg, .slot.filled > img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; }
+  .slot[data-asset="ink-stamp"] { width: 200px; height: 200px; left: 32px; top: 96px; }
+  .slot[data-asset="verified-seal"] { width: 88px; height: 88px; right: -44px; top: -52px; }
+  .slot[data-asset="minute-dial"] { width: 96px; height: 100px; right: 14px; bottom: 12px; }
+  .slot[data-asset="proof-clip"] { width: 64px; height: 106px; left: -38px; top: -72px; }
+  .slot[data-asset="time-lanes"] { width: 70%; height: 110px; left: 15%; bottom: 112px; }
+  .slot[data-asset="work-vignettes"] { width: 320px; height: 240px; right: 48px; top: 96px; }
+  .slot[data-asset="badge-press"] { width: 220px; height: 220px; right: 72px; bottom: 140px; }
+
+  /* Step captions: one is shown at a time while scrolling; all are listed for assistive tech. */
+  .steps { list-style: none; margin: 0; padding: 0; position: absolute; inset: auto 40px 32px 40px; z-index: 4; }
+  .steps li { position: absolute; inset: auto 0 0 0; max-width: 520px; opacity: 0; translate: 0 12px; }
+  .steps li.active { opacity: 1; translate: 0 0; transition: opacity 0.25s ease-out, translate 0.25s ease-out; }
+  .steps h2 { font: 700 20px "Plus Jakarta Sans", sans-serif; margin: 0 0 4px; }
+  .steps p { margin: 0; color: var(--text-2); }
+
+  /* The exchange's end state: live tasks lie on the volunteer side. */
+  .pile { position: absolute; inset: 112px 40px auto auto; width: min(420px, 40vw); display: grid; gap: 12px; opacity: 0; pointer-events: none; z-index: 5;
+    background: var(--vol-tint); padding: 12px; border-radius: var(--radius-lg); }
+  .pile.open, .pile:focus, .pile:focus-within { opacity: 1; pointer-events: auto; transition: opacity 0.3s ease-out; }
+  .pile h2 { font: 800 22px "Plus Jakarta Sans", sans-serif; margin: 0; }
+  .pile ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .pile li a { display: flex; justify-content: space-between; gap: 12px; padding: 14px 16px; background: var(--surface);
+    border: 2px solid var(--line); border-radius: 12px; box-shadow: var(--shadow-paper); text-decoration: none; font-weight: 600; }
+  .note { font-size: 12px; color: var(--text-2); }
+  .door { position: absolute; z-index: 5; bottom: 32px; padding: 12px 22px; border-radius: 9999px; font-weight: 700; text-decoration: none; border: 2px solid var(--line); }
+  .door.post { inset-inline-start: 40px; background: var(--surface); opacity: 0; }
+  .door.find { inset-inline-end: 40px; background: var(--coral); color: #000; opacity: 0; }
+  .doors-open .door { opacity: 1; transition: opacity 0.3s ease-out; }
+  .doors-open .steps, .doors-open .slot[data-asset="time-lanes"], .doors-open .slot[data-asset="work-vignettes"] { opacity: 0; transition: opacity 0.2s ease-out; }
+  .door, .pile li a { transition: transform 0.15s ease-out, box-shadow 0.15s ease-out, background-color 0.15s ease-out; }
+  .door:hover, .door:focus-visible, .pile li a:hover, .pile li a:focus-visible { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 rgba(15, 23, 42, 0.22); }
+  .door.find:hover { background: var(--coral-deep); }
+  .door.post:hover, .pile li a:hover { background: var(--peach-soft); }
+
+  footer { padding: 48px 24px; text-align: center; color: var(--text-2); }
+
+  @media (max-width: 767px) {
+    .bar { padding: 12px 16px; gap: 12px; }
+    .bar nav { gap: 14px; font-size: 13px; }
+    .bar nav a:nth-child(2) { display: none; }
+    .exchange { height: 500vh; }
+    .stage { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr auto; }
+    .side.volunteer { padding-bottom: 8px; }
+    .side-label { display: block; text-align: end; }
+    .side { padding: 72px 16px 16px; }
+    .seam { inset: 50% 0 auto 0; width: auto; height: 2px; background: repeating-linear-gradient(to right, var(--seam) 0 10px, transparent 10px 20px); }
+    .ticket { width: min(340px, calc(100vw - 32px)); left: 50%; top: 0; padding: 18px; }
+    .ticket h1 { font-size: 24px; }
+    .slot[data-asset="ink-stamp"], .slot[data-asset="work-vignettes"] { display: none; }
+    .slot[data-asset="proof-clip"] { left: 10px; top: -86px; width: 56px; height: 94px; }
+    .slot[data-asset="verified-seal"] { right: -8px; top: -40px; }
+    .steps { position: relative; inset: auto; grid-row: 3; min-height: 132px; padding: 14px 16px 18px; background: var(--surface); border-top: 2px solid var(--line); }
+    .steps li { inset: 14px 16px auto 16px; }
+    .steps h2 { font-size: 18px; }
+    .slot[data-asset="time-lanes"] { bottom: 12px; height: 64px; }
+    .slot[data-asset="badge-press"] { width: 120px; height: 120px; right: 16px; bottom: 76px; }
+    .doors-open .slot[data-asset="badge-press"], .doors-open .slot[data-asset="time-lanes"] { opacity: 0; }
+    .pile { inset: auto 16px 76px 16px; width: auto; }
+    .door { bottom: 16px; }
+    .door.post { inset-inline-start: 16px; } .door.find { inset-inline-end: 16px; }
+  }
+
+  /* Reduced motion: no pinning. The exchange becomes a storyboard across the same table:
+     NGO steps in the NGO column, volunteer steps in the volunteer column, final states only. */
+  @media (prefers-reduced-motion: reduce) {
+    .exchange { height: auto; }
+    .stage { position: relative; height: auto; overflow: visible; display: grid; grid-template-columns: 1fr 1fr; }
+    .side { padding: 88px 40px 8px; }
+    .side .slot { display: none; }
+    .ticket { position: relative; left: auto; top: auto; translate: none; transform: none !important; grid-column: 1 / -1; justify-self: center; margin: 32px 0; }
+    .steps { position: static; grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; column-gap: 80px; row-gap: 28px; padding: 8px 40px 32px; }
+    .steps li { position: static; opacity: 1; translate: none; }
+    .steps li[data-side="ngo"] { grid-column: 1; }
+    .steps li[data-side="volunteer"] { grid-column: 2; }
+    .slot.still { display: grid; position: relative; width: 96px; height: 96px; margin-bottom: 10px; }
+    .pile { position: static; opacity: 1; pointer-events: auto; width: auto; grid-column: 2; margin: 0 40px 24px; }
+    .door, .door.post, .door.find { position: static; opacity: 1; justify-self: start; margin: 0 40px 48px; grid-row: auto; }
+    .door.post { grid-column: 1; } .door.find { grid-column: 2; }
+  }
+  @media (prefers-reduced-motion: reduce) and (max-width: 767px) {
+    .stage, .steps { grid-template-columns: 1fr; grid-template-rows: none; }
+    .seam { display: none; }
+    .side { padding: 72px 16px 0; }
+    .side.volunteer { display: none; }
+    .steps { padding: 8px 16px 24px; }
+    .steps li[data-side] { grid-column: 1; }
+    .steps li[data-side="volunteer"] { margin-inline-start: 32px; }
+    .pile, .door.post, .door.find { grid-column: 1; margin: 0 16px 16px; }
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#tasks">Skip to tasks</a>
+<header class="bar">
+  <a class="brand" href="#">MicroMatch</a>
+  <nav aria-label="Primary"><a href="#tasks">Browse tasks</a><a href="#">For NGOs</a><a href="#">Sign in</a></nav>
+</header>
+
+<main>
+  <section class="exchange" aria-labelledby="title">
+    <div class="stage">
+      <div class="side ngo" aria-label="NGO side">
+        <span class="side-label">NGO</span>
+        <div class="slot" data-asset="ink-stamp" data-progress="0.00" aria-hidden="true"></div>
+      </div>
+      <div class="side volunteer" aria-label="Volunteer side">
+        <span class="side-label">Volunteer</span>
+        <div class="slot" data-asset="time-lanes" data-progress="0.00" aria-hidden="true"></div>
+        <div class="slot" data-asset="work-vignettes" data-progress="0.00" aria-hidden="true"></div>
+        <div class="slot" data-asset="badge-press" data-progress="0.00" aria-hidden="true"></div>
+      </div>
+      <div class="seam" aria-hidden="true"></div>
+
+      <article class="ticket" id="ticket">
+        <div class="slot" data-asset="verified-seal" data-progress="0.00" aria-hidden="true"></div>
+        <div class="slot" data-asset="proof-clip" data-progress="0.00" aria-hidden="true"></div>
+        <h1 id="title">Make a big impact in <em>a few minutes.</em></h1>
+        <div class="task">
+          <span class="task-title">Translate a medical flyer</span>
+          <span class="task-meta"><span class="chip">Spanish</span><span>15 min</span><span>Verified NGO</span></span>
+          <span class="clock" aria-hidden="true"><span id="minutes">15:00</span> / 15:00</span>
+        </div>
+        <div class="slot" data-asset="minute-dial" data-progress="0.00" aria-hidden="true"></div>
+      </article>
+
+      <ol class="steps" id="steps">
+        <li data-side="ngo" data-from="0.00" data-to="0.15"><div class="slot still" data-asset="ink-stamp" data-progress="final" aria-hidden="true"></div><h2>An NGO posts a task it can describe in a sentence.</h2><p>Verified organizations carry a seal, checked against public nonprofit records.</p></li>
+        <li data-side="volunteer" data-from="0.15" data-to="0.30"><div class="slot still" data-asset="time-lanes" data-progress="final" aria-hidden="true"></div><h2>You claim it in its time lane.</h2><p>Every task fits 15, 20, or 30 minutes, so you pick by the time you have.</p></li>
+        <li data-side="volunteer" data-from="0.30" data-to="0.55"><div class="slot still" data-asset="minute-dial" data-progress="final" aria-hidden="true"></div><h2>You do the work, right now.</h2><p>No onboarding call, no shift. The clock on the task is the whole commitment.</p></li>
+        <li data-side="volunteer" data-from="0.55" data-to="0.70"><div class="slot still" data-asset="proof-clip" data-progress="final" aria-hidden="true"></div><h2>You hand back a link to what you did.</h2><p>Proof stays on the platform, so the NGO reviews it where the task lives.</p></li>
+        <li data-side="ngo" data-from="0.70" data-to="0.85"><div class="slot still" data-asset="ink-stamp" data-progress="final" aria-hidden="true"></div><h2>The NGO approves it.</h2><p>Only the organization that posted the task can approve it.</p></li>
+        <li data-side="volunteer" data-from="0.85" data-to="1.01"><div class="slot still" data-asset="badge-press" data-progress="final" aria-hidden="true"></div><h2>Approval mints your badge.</h2><p>Badges are earned on approval, never on claim.</p></li>
+      </ol>
+
+      <div class="pile" id="tasks" tabindex="-1">
+        <h2>Tasks on the table now</h2>
+        <ul>
+          <li><a href="#">Translate a medical flyer <span>15 min</span></a></li>
+          <li><a href="#">Verify water pump data <span>20 min</span></a></li>
+          <li><a href="#">Proofread a storybook <span>30 min</span></a></li>
+        </ul>
+        <span class="note">Sample tasks in this prototype; the page loads the first three live tasks.</span>
+      </div>
+      <a class="door post" href="#">Post a task</a>
+      <a class="door find" href="#">Find a task</a>
+    </div>
+  </section>
+</main>
+
+<footer>MicroMatch: prototype of the Handoff Table concept</footer>
+
+<script type="module">
+  import { scroll } from "https://cdn.jsdelivr.net/npm/motion@12.23.12/+esm";
+
+  // Motion parameters: every scene range and position lives here.
+  const SCENES = { post: [0, 0.15], claim: [0.15, 0.3], work: [0.3, 0.55], proof: [0.55, 0.7], review: [0.7, 0.85], badge: [0.85, 1] };
+  const TASK_MINUTES = 15;
+  // Ticket centers on phones, as fractions of the viewport height: NGO half, then volunteer half above the lanes.
+  const MOBILE_STOPS = [0.3, 0.6];
+  const ASSET_SCENES = {
+    "ink-stamp": ["post", "review"], "verified-seal": ["post"], "time-lanes": ["claim"], "minute-dial": ["work"],
+    "work-vignettes": ["work"], "proof-clip": ["proof"], "badge-press": ["badge"],
+  };
+  // Glaxnimate players by root ID: each maps stage progress to its own 0-1 timeline.
+  const DIAL_MINUTES = 30;
+  const PLAYERS = {
+    "mm-ink-stamp-posted": (p) => local(p, SCENES.post),
+    "mm-ink-stamp-approved": (p) => local(p, SCENES.review),
+    "mm-verified-seal": (p) => local(p, SCENES.post),
+    "mm-time-lanes": (p) => local(p, SCENES.claim),
+    "mm-minute-dial": (p) => local(p, SCENES.work) * TASK_MINUTES / DIAL_MINUTES,
+    "mm-vignette-translate": (p) => local(p, SCENES.work),
+    "mm-proof-clip": (p) => local(p, SCENES.proof),
+    "mm-badge-press": (p) => local(p, SCENES.badge),
+  };
+
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+  const exchange = document.querySelector(".exchange");
+  const stage = document.querySelector(".stage");
+  const ticket = document.getElementById("ticket");
+  const minutes = document.getElementById("minutes");
+  const steps = [...document.querySelectorAll("#steps li")];
+  const pile = document.getElementById("tasks");
+  const slots = [...document.querySelectorAll(".slot")];
+
+  const clamp = (v) => Math.min(1, Math.max(0, v));
+  const local = (p, [a, b]) => clamp((p - a) / (b - a));
+  const ease = (t) => 1 - Math.pow(1 - t, 3);
+  const lerp = (a, b, t) => a + (b - a) * t;
+
+  // The ticket's position along the table: 0 is the NGO side, 1 the volunteer side.
+  function side(p) {
+    if (p < SCENES.claim[0]) return 0;
+    if (p < SCENES.work[0]) return ease(local(p, SCENES.claim));
+    if (p < SCENES.proof[0]) return 1;
+    if (p < SCENES.review[0]) return 1 - ease(local(p, SCENES.proof));
+    return 0;
+  }
+
+  function render(p) {
+    const mobile = innerWidth < 768;
+    const rtl = document.dir === "rtl";
+    const along = side(p);
+    if (mobile) {
+      const y = lerp(innerHeight * MOBILE_STOPS[0], innerHeight * MOBILE_STOPS[1], along);
+      ticket.style.transform = `translateY(${y}px)`;
+    } else {
+      const start = innerWidth * 0.25, end = innerWidth * 0.75;
+      const x = rtl ? lerp(end, start, along) : lerp(start, end, along);
+      ticket.style.transform = `translateX(${x}px)`;
+    }
+    const worked = local(p, SCENES.work) * TASK_MINUTES;
+    minutes.textContent = `${Math.floor(worked)}:${String(Math.floor((worked % 1) * 60)).padStart(2, "0")}`;
+    steps.forEach((li) => li.classList.toggle("active", p >= +li.dataset.from && p < +li.dataset.to));
+    for (const slot of slots) {
+      const scenes = ASSET_SCENES[slot.dataset.asset];
+      const progress = Math.max(...scenes.map((s) => local(p, SCENES[s])));
+      slot.dataset.progress = progress.toFixed(2);
+    }
+    for (const [id, timeline] of Object.entries(PLAYERS)) {
+      const player = document.getElementById(id)?.glaxnimatePlayer;
+      if (player) player.seek(clamp(timeline(p)) * player.duration);
+    }
+    const approved = document.getElementById("mm-ink-stamp-approved");
+    const posted = document.getElementById("mm-ink-stamp-posted");
+    if (approved && posted) {
+      const reviewing = p >= SCENES.review[0];
+      approved.style.visibility = reviewing ? "visible" : "hidden";
+      posted.style.visibility = reviewing ? "hidden" : "visible";
+    }
+    const end = p >= 0.92;
+    pile.classList.toggle("open", end);
+    stage.classList.toggle("doors-open", end);
+  }
+
+  if (!reduced.matches) {
+    scroll(render, { target: exchange });
+    // Skipping to tasks lands on the finished exchange, so the stage and the task list agree.
+    document.querySelector(".skip").addEventListener("click", (event) => {
+      event.preventDefault();
+      window.scrollTo(0, exchange.offsetTop + exchange.offsetHeight - innerHeight);
+      pile.focus({ preventScroll: true });
+    });
+  }
+</script>
+</body>
+</html>
