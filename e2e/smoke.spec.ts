@@ -1,4 +1,13 @@
+import type { Page } from '@playwright/test';
 import { test, expect } from './functional-fixtures';
+
+// Under full motion the homepage doors appear when the exchange finishes.
+async function scrollPastExchange(page: Page) {
+  await page.evaluate(() => {
+    const exchange = document.querySelector<HTMLElement>('.exchange');
+    if (exchange) window.scrollTo(0, exchange.offsetTop + exchange.offsetHeight - window.innerHeight);
+  });
+}
 
 // Smoke tests: pages and interactions a logged-out visitor can reach. The
 // functional config provides local Appwrite fallbacks and browser fixtures so
@@ -9,6 +18,7 @@ test.describe('public pages', () => {
     await page.goto('/');
     await expect(page).toHaveTitle(/MicroMatch/);
     await expect(page.getByRole('heading', { name: /Make a big impact/i })).toBeVisible();
+    await scrollPastExchange(page);
     await expect(page.getByRole('link', { name: /Find a Task/i }).first()).toBeVisible();
   });
 
@@ -115,7 +125,8 @@ test.describe('public pages', () => {
   });
 
   test('feed → click "Find a Task" CTA navigates to feed', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/', { waitUntil: 'networkidle' });
+    await scrollPastExchange(page);
     await page
       .getByRole('link', { name: /Find a Task/i })
       .first()

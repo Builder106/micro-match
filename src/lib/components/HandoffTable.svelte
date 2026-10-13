@@ -309,6 +309,8 @@
   @media (min-width: 768px) and (max-width: 1023px) { .motion .stamp { width: 150px; height: 150px; } }
   .motion .ticket { position: absolute; left: 0; top: 0; margin: 0; width: clamp(300px, 34vw, 380px); max-width: none; will-change: transform; }
   .motion .seal { width: 88px; height: 88px; inset-inline-end: -44px; top: -52px; }
+  /* Keep the title clear of the seal that overlaps the ticket's top corner. */
+  .motion .ticket h1 { padding-inline-end: 28px; }
   .motion .clip { width: 64px; height: 106px; inset-inline-start: -38px; top: -72px; }
   .motion .dial { width: 96px; height: 100px; inset-inline-end: 14px; bottom: 12px; }
   .motion .still { display: none; }
@@ -319,10 +321,12 @@
   .motion .steps li { grid-area: 1 / 1; max-width: 520px; opacity: 0; visibility: hidden; translate: 0 12px; }
   .motion .steps li.active { opacity: 1; visibility: visible; translate: 0 0; transition: opacity 0.25s ease-out, translate 0.25s ease-out; }
   .motion .pile { position: absolute; inset: 40px 40px auto auto; width: min(420px, 40vw); margin: 0; z-index: 5; opacity: 0; pointer-events: none; }
-  .motion .door { position: absolute; bottom: 32px; margin: 0; z-index: 5; opacity: 0; }
+  /* Clipped away until the exchange ends, so they cannot cover the captions or catch a stray click.
+     They stay in the tab order, and keyboard focus reveals them. */
+  .motion .door { position: absolute; bottom: 32px; margin: 0; z-index: 5; opacity: 0; clip-path: inset(50%); pointer-events: none; }
   .motion .door.secondary { inset-inline-start: 40px; }
   .motion .door.find { inset-inline-end: 40px; }
-  .motion .ended .pile, .motion .pile:focus, .motion .pile:focus-within, .motion .ended .door, .motion .door:focus-visible { opacity: 1; pointer-events: auto; transition: opacity 0.3s ease-out; }
+  .motion .ended .pile, .motion .pile:focus, .motion .pile:focus-within, .motion .ended .door, .motion .door:focus-visible { opacity: 1; clip-path: none; pointer-events: auto; transition: opacity 0.3s ease-out; }
   .motion .ended .steps, .motion .ended .lanes, .motion .ended .vignette { opacity: 0; transition: opacity 0.2s ease-out; }
 
   @media (max-width: 767px) {
@@ -339,7 +343,9 @@
     .motion .stage { grid-template-rows: 1fr 1fr auto; }
     .motion .side { padding: 16px 16px 8px; }
     .motion .side.volunteer { display: block; }
-    .motion .side-label { display: block; text-align: end; }
+    /* The phone stage is too tight for side labels beside the stamp and ticket; the seam and captions carry the sides. */
+    .motion .side-label { display: none; }
+    .motion .ticket h1 { padding-inline-end: 60px; }
     .motion .seam { display: block; inset: 50% 0 auto 0; width: auto; height: 2px; background: repeating-linear-gradient(to right, var(--seam) 0 10px, transparent 10px 20px); }
     .motion .ticket { width: min(340px, calc(100vw - 32px)); padding: 18px; }
     .motion .ticket h1 { font-size: 24px; }
