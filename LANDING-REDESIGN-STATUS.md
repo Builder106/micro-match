@@ -1,6 +1,29 @@
-# Homepage redesign status — October 12, 2026
+# Homepage redesign status — October 13, 2026
 
-## The Handoff Table
+## The SvelteKit homepage
+
+The Handoff Table now runs as the SvelteKit homepage, with copy in all seven
+locales. The Glaxnimate assets are inlined as SMIL players and scrubbed with
+Motion's `scroll()`. Reduced motion, and pages without JavaScript, get the
+static storyboard.
+
+- **Verified.** Lint, type check, unit tests at 100% coverage, the build, and
+  the functional, responsiveness, and localization visual suites pass in
+  Chromium. Phone baselines were regenerated after the storyboard stopped
+  overflowing at 375px.
+- **Known accessibility failures.** The homepage and mobile menu audit passes
+  in Chromium. Nine Firefox cases fail, and they are left for the final
+  accessibility and localization pass, which runs after the site chrome is
+  settled:
+  - `#home-title` is reported as partly obscured on tablets (English, Spanish,
+    French) and on Spanish phones. Long titles wrap under the seal or clip
+    art at the ticket's corners.
+  - On Chinese phones, the open mobile menu covers the active step caption.
+    This is expected under an overlay, but the menu review does not cover it.
+- **Next.** The header, footer, and signed-in app shell move to the same
+  stationery language on their own branch.
+
+## The Handoff Table (October 12, 2026)
 
 The redesign restarted under the current workflow. Browser Use captures are
 no longer required, and 2D assets now come from Glaxnimate instead of SVGator.
@@ -23,7 +46,6 @@ The approved concept, the Handoff Table, is written up in `DESIGN.md`.
   - Reduced motion renders a static storyboard at both widths.
   - Defects found by review were fixed and rechecked with screenshots.
 - **Not done.**
-  - The SvelteKit homepage, localization of the new copy, and its tests.
   - Long-text locale and Arabic review.
   - A MotionScore audit.
   - A mobile stamp: the stamp is hidden on phones, so the Post and Review
