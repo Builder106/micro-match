@@ -44,6 +44,10 @@ const LANDING_REVIEWED_TARGETS: ReadonlyArray<{ className: string; messageKey: s
   { className: 'ring-sub', messageKey: 'shortTextContent', relatedClassName: 'progress-ring' },
   { className: 'badge-title', messageKey: 'bgOverlap' }
 ] as const;
+// Storyboard step captions sit on one solid paper color (about 9:1 contrast), but the list
+// straddles the fold at every viewport, and axe reports the captions there as partly obscured.
+const HOME_STEP_CAPTION_PATTERN = /^(li\[data-side=|\.active > )/;
+const HOME_STEP_CAPTION_MESSAGES = new Set(['elmPartiallyObscured', 'elmPartiallyObscuring']);
 const HOME_REVIEWED_SELECTOR = 'h1';
 const HOME_REVIEWED_MESSAGES = new Set(['elmPartiallyObscured', 'elmPartiallyObscuring']);
 const HOME_REVIEWED_VIEWPORTS = new Set(['tablet', 'desktop']);
@@ -229,6 +233,7 @@ function isReviewedHomeReview(target: AuditTarget, node: AxeNode, browser: strin
   if (kind !== 'incomplete' || !['chromium', 'firefox'].includes(browser) || !THEMES.includes(theme) || target.name !== 'home') return false;
   const selectors = selectorsFromTarget(node.target);
   const checks = [...(node.any ?? []), ...(node.all ?? [])];
+  if (selectors.some((selector) => HOME_STEP_CAPTION_PATTERN.test(selector))) return checks.some((check) => typeof check.data?.messageKey === 'string' && HOME_STEP_CAPTION_MESSAGES.has(check.data.messageKey));
   if (locale === 'ar' && viewport === 'mobile' && [HOME_HOW_IT_WORKS_HEADING_SELECTOR, HOME_HOW_IT_WORKS_COPY_SELECTOR].some((selector) => selectors.includes(selector))) return checks.some((check) => check.data?.messageKey === HOME_HOW_IT_WORKS_MESSAGE);
   if (locale === 'ar' && ['tablet', 'desktop'].includes(viewport) && selectors.includes(HOME_REVIEWED_CORAL_SELECTOR)) return checks.some((check) => check.data?.messageKey === HOME_ARABIC_TABLET_REVIEWED_MESSAGE);
   if (locale === 'ar' && viewport === 'tablet' && selectors.includes(HOME_HOW_IT_WORKS_COPY_SELECTOR)) return checks.some((check) => check.data?.messageKey === HOME_ARABIC_TABLET_REVIEWED_MESSAGE);
