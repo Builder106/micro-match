@@ -280,7 +280,8 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    overflow-x: hidden;
+    /* clip, not hidden: hidden makes this a scroll container and breaks position: sticky inside it. */
+    overflow-x: clip;
     -webkit-font-smoothing: antialiased;
   }
   .landing *, .landing *::before, .landing *::after { box-sizing: border-box; }

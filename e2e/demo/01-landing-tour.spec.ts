@@ -14,24 +14,18 @@ test.describe('01-landing-tour', () => {
     }
   });
 
-  test('hero, how-it-works, and impact', async ({ page }) => {
+  test('the handoff table, from post to badge', async ({ page }) => {
     await page.goto('/');
-    await dwellForDemo(page, 1800); // hero animation in
-
-    // Beat 1: hero
     await expect(page.getByRole('heading', { name: /Make a big impact/i })).toBeVisible();
-    await dwellForDemo(page, 2000);
+    await dwellForDemo(page, 1800);
 
-    // Beat 2: scroll to "How it works"
-    await page.getByRole('heading', { name: /How It Works/i }).scrollIntoViewIfNeeded();
-    await dwellForDemo(page, 2200);
-
-    // Beat 3: scroll to featured tasks (empty state mascot animates in)
-    await page.getByRole('heading', { name: /Featured Tasks/i }).scrollIntoViewIfNeeded();
-    await dwellForDemo(page, 2500);
-
-    // Beat 4: scroll to impact / gamification (progress ring + badges)
-    await page.getByRole('heading', { name: /Track Your Impact/i }).scrollIntoViewIfNeeded();
-    await dwellForDemo(page, 2800);
+    // One beat per scene: post, claim, work, proof, review, badge, then the live tasks.
+    for (const progress of [0.08, 0.22, 0.42, 0.62, 0.78, 0.9, 1]) {
+      await page.evaluate((p) => {
+        const exchange = document.querySelector<HTMLElement>('.exchange');
+        if (exchange) window.scrollTo({ top: exchange.offsetTop + (exchange.offsetHeight - window.innerHeight) * p, behavior: 'smooth' });
+      }, progress);
+      await dwellForDemo(page, 2000);
+    }
   });
 });

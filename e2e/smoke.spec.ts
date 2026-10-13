@@ -1,38 +1,62 @@
+import type { Page } from '@playwright/test';
 import { test, expect } from './functional-fixtures';
+
+// Under full motion the homepage doors appear when the exchange finishes.
+async function scrollPastExchange(page: Page) {
+  await page.evaluate(() => {
+    const exchange = document.querySelector<HTMLElement>('.exchange');
+    if (exchange) window.scrollTo(0, exchange.offsetTop + exchange.offsetHeight - window.innerHeight);
+  });
+}
 
 // Smoke tests: pages and interactions a logged-out visitor can reach. The
 // functional config provides local Appwrite fallbacks and browser fixtures so
 // this gate does not depend on credentials or third-party network resources.
 
 test.describe('public pages', () => {
-  test('landing page renders the hero', async ({ page }) => {
+  test('landing page renders the handoff table', async ({ page }) => {
     await page.goto('/');
     await expect(page).toHaveTitle(/MicroMatch/);
     await expect(page.getByRole('heading', { name: /Make a big impact/i })).toBeVisible();
+    await scrollPastExchange(page);
     await expect(page.getByRole('link', { name: /Find a Task/i }).first()).toBeVisible();
   });
 
-  test('homepage Lottie fallback stays static when reduced motion is preferred', async ({ page }) => {
+  test('homepage shows a still storyboard when reduced motion is preferred', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/en', { waitUntil: 'networkidle' });
-    const animation = page.locator('.empty-mascot-icon .lottie-animation');
-    await expect(animation).toBeVisible();
-    await expect(animation).toHaveAttribute('data-lottie-ready', 'false');
+    await expect(page.locator('.exchange')).not.toHaveClass(/\bmotion\b/);
+    await expect(page.locator('.steps img.still')).toHaveCount(6);
+    await expect(page.locator('.steps img.still').first()).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Approval mints your badge.' })).toBeVisible();
   });
 
-  test('homepage Lottie uses the local player in normal motion', async ({ page }) => {
+  test('homepage scrubs its Glaxnimate assets with scroll', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'no-preference' });
     await page.goto('/en', { waitUntil: 'networkidle' });
-    await expect(
-      page.locator('.empty-mascot-icon .lottie-animation[data-lottie-ready="true"]'),
-    ).toBeVisible();
+    await expect(page.locator('.exchange.motion')).toBeVisible();
+    const dialTime = () => page.locator('[data-timeline="minute-dial"] svg').evaluate((svg) => (svg as SVGSVGElement).getCurrentTime());
+    expect(await dialTime()).toBe(0);
+    await page.evaluate(() => {
+      const exchange = document.querySelector<HTMLElement>('.exchange');
+      if (exchange) window.scrollTo(0, exchange.offsetTop + (exchange.offsetHeight - window.innerHeight) * 0.6);
+    });
+    await expect.poll(dialTime).toBeGreaterThan(0);
+    // The stage must stay pinned below the header while the exchange scrolls.
+    const stageTop = await page.locator('.exchange .stage').evaluate((stage) => stage.getBoundingClientRect().top);
+    expect(stageTop).toBeGreaterThanOrEqual(0);
+    expect(stageTop).toBeLessThanOrEqual(80);
+    await expect(page.locator('.site-header')).toBeInViewport();
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await expect.poll(dialTime).toBe(0);
   });
 
-  test('landing page renders its impact progress section', async ({ page }) => {
+  test('landing page lists live tasks and both role paths', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/en');
-    await expect(page.getByRole('heading', { name: 'Track Your Impact' })).toBeVisible();
-    await expect(page.locator('.progress-ring')).toBeVisible();
-    await expect(page.getByText('Level 12 Volunteer', { exact: true })).toBeVisible();
+    await expect(page.locator('#home-tasks h2')).toHaveText(/Tasks on the table now|You're too fast!/);
+    await expect(page.locator('.door.find')).toHaveAttribute('href', /\/tasks$/);
+    await expect(page.locator('.door.secondary')).toHaveAttribute('href', /\/signup$/);
   });
 
   test('feed page renders the search + filter chips', async ({ page }) => {
@@ -101,7 +125,8 @@ test.describe('public pages', () => {
   });
 
   test('feed → click "Find a Task" CTA navigates to feed', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/', { waitUntil: 'networkidle' });
+    await scrollPastExchange(page);
     await page
       .getByRole('link', { name: /Find a Task/i })
       .first()
