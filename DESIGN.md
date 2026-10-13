@@ -286,3 +286,124 @@ The design system follows a WCAG 2.2 AAA-oriented target. The audit and evidence
 ## ⚙️ Design Tokens JSON Reference
 
 The design system is programmatically exported to [`design-tokens.json`](file:///Users/yinkavaughan/My%20Drive%20%28yvaughan@wesleyan.edu%29/CS/projects/swe/micro-match/design-tokens.json), formatted according to W3C Design Tokens Community Group specifications.
+
+---
+
+## 🗺️ Homepage Redesign: The Handoff Table
+
+Status: concept approved, October 12, 2026. A prototype with the Glaxnimate assets exists in
+`design/home/`; the SvelteKit homepage is not changed yet.
+
+### Organizing idea
+
+MicroMatch is defined by one exchange. An NGO posts a task measured in
+minutes. A volunteer claims it, does the work, and hands back proof. The NGO
+reviews the proof, and approval mints a badge. Every step happens on the
+platform; that closed loop is what separates MicroMatch from a volunteer
+directory (`docs/positioning.md`).
+
+The homepage is a single table with the NGO on one side and the volunteer on
+the other. Scrolling carries one real featured task across the table through
+its whole life. Scroll position is the task's clock: a minute counter runs from
+0 to the task's `estimatedMinutes` as the exchange completes. When the
+exchange ends, the server's featured tasks lie on the volunteer side as tickets
+that a visitor can claim. "Post a task" sits on the NGO side.
+
+Another product cannot reuse this by changing the logo and copy. The
+composition encodes MicroMatch's mechanics: two parties, a time budget in
+minutes, proof review, verification, and a badge minted on approval.
+
+### Composition
+
+- **No hero and no section stack.** The first view is the opening moment of the
+  exchange: the NGO side, a blank ticket, and the page title written on that
+  ticket. Content appears where the exchange puts it, not in bands.
+- **One pinned stage.** On desktop the table is a sticky stage inside a tall
+  scroll container, and the ticket travels horizontally across a center seam.
+  On mobile the table turns: the NGO is at the top, the volunteer at the bottom,
+  and the ticket travels vertically.
+- **Right-to-left locales mirror the table.** In Arabic the NGO side is on the
+  right.
+- **Real data.** The traveling ticket shows the first featured task from the
+  server loader, translated for the locale. The end state lists all three
+  loaded tasks with working task links. The empty state keeps "You're too
+  fast!" on an empty volunteer side.
+- **Navigation stays usable.** Persistent navigation, skip links, and a
+  stage-step list (Post, Claim, Work, Proof, Review, Badge) give keyboard and
+  screen-reader users direct access to every step's text.
+
+### Scenes (fractions of the stage's scroll progress)
+
+| Range | Scene | What happens | Content shown |
+| --- | --- | --- | --- |
+| 0.00–0.15 | Post | The NGO's stamp presses the ticket; the verified seal sets | Page title on the ticket; what an NGO posts |
+| 0.15–0.30 | Claim | The ticket slides across the seam and snaps into its time lane (≤15, ≤20, or ≤30 minutes) | Time filters as lanes |
+| 0.30–0.55 | Work | The ticket's minute dial sweeps to the task's minutes; a small vignette for the task's tag plays | What the volunteer does |
+| 0.55–0.70 | Proof | A link slip clips onto the ticket, and the ticket slides back | Proof review |
+| 0.70–0.85 | Review | The NGO's approval stamp lands | Verification and review |
+| 0.85–1.00 | Badge | A badge presses out of the ticket onto the volunteer side; the level ring advances | Recognition, then the live task list and role paths |
+
+### Visual language
+
+Stationery from a volunteer exchange: tickets, ink stamps, seals, paper clips,
+link slips, dials, and pressed badges. Shapes are flat cut paper with a
+consistent 2-unit navy outline and an offset paper shadow made of shapes, not
+filters. The palette stays inside the tokens above: cream table, coral and
+peach inks, success green for approval, and navy line work. Objects carry the
+story, so no hands or faces need to be drawn.
+
+### References and what they contribute
+
+These are the reference observations from October 12, 2026. They contribute
+technique only, not layout or identity.
+
+| Reference | Observed (desktop video review and motion extraction) | Taken |
+| --- | --- | --- |
+| [gematik Digital Health Journeys](https://www.gematik.de/static/volkskrankheiten/index.html) | One continuous horizontal journey of a patient through scenes, fully scrubbed and exactly reversible, with UI cards over flat vector artwork (Lottie present) | Continuous scrubbed travel, reversible motion, cards over artwork |
+| [Mâm Cơm](https://the-family-rice-tray.vercel.app/) | Native CSS `view()` timeline that brings a motif into focus (blur 26px→0, scale 1.7→1), plus slow linear ambient rotation | Native scroll timelines for small focus effects |
+| [Units](https://units.gr/en/homepage/) | GSAP, ScrollTrigger, and Lenis, but the visible motion is a load sequence and marquees; recognition uses bold pixel icons on flat color | Bold flat color for recognition moments |
+
+Gaps: the Awwwards MCP could not reach live sites, because its proxy only
+allows awwwards.com, so the references were recorded with Playwright
+directly. Mobile videos were not reviewed, because uploads were approved for
+desktop recordings only. Seasoned, War in Ukraine, and IZANAMI are recorded
+but not reviewed.
+
+### Motion mechanism
+
+- One sticky stage per breakpoint, inside a container whose height sets the
+  scroll length: about 6 viewport heights on desktop and 5 on mobile.
+- Motion's `scroll()` reports the stage's progress. Each scene maps its range
+  to a 0–1 local progress in one motion-parameter module.
+- Each illustrated asset is a Glaxnimate interactive SVG with
+  `trigger: "programmatic"` and a distinct `root_id`. Its player's `seek()`
+  receives the scene's local progress multiplied by the asset duration. The
+  minute dial seeks to `estimatedMinutes / 30` of its timeline.
+- HTML cards for the ticket text, steps, and task list move with transforms and
+  opacity only.
+- Native scrolling only. There is no Lenis, so there is one smoothing layer
+  (none), and keyboard, find-in-page, and anchor scrolling stay native.
+- Reduced motion renders the final state of every scene as a static
+  storyboard strip, using each asset's reduced-motion SVG. Nothing waits for
+  JavaScript.
+
+### Glaxnimate assets
+
+All assets use the `glaxnimate` route (`svg-glaxnimate-workflow`): drawn and animated with the Glaxnimate MCP server, with the editable project, interactive SVG, and reference renders from the SankofaForge fork.
+
+| Asset | Scene | Scrubbed motion |
+| --- | --- | --- |
+| `ink-stamp-posted` | Post | Coral stamp drops, presses, and lifts off its "posted" mark |
+| `ink-stamp-approved` | Review | Green stamp presses and lifts off a check mark |
+| `verified-seal` | Post | Rosette seal drops in with a turn, its ring settles, and the check draws |
+| `time-lanes` | Claim | Three lanes (15, 20, 30) extend, a ticket chip slides into the 15 lane, and the lane turns coral |
+| `minute-dial` | Work | Wedges fill and the hand turns from 0 to 30 minutes; the page seeks to the task's minutes |
+| `vignette-translate`, `vignette-data`, `vignette-proofread`, `vignette-photos` | Work | One per task family: bubbles swap, rows tick, proofreading marks land, photo tags drop |
+| `proof-clip` | Proof | Link slip slides up and a paper clip swings onto it |
+| `badge-press` | Badge | A paper impression forms, the medal pops and settles, and the level ring fills to 12 of 16 |
+
+Sources: `design/home/assets/draw_assets.py` draws and animates every asset
+with the Glaxnimate MCP library, `fork_export.py` makes the `.rawr` project and
+seekable interactive SVG with the fork, and `assemble.py` inlines them into
+`design/home/handoff-table-assets.html`. Built assets are in
+`artifacts/glaxnimate/scroll/`.
