@@ -76,7 +76,8 @@
   .slot[data-asset="minute-dial"] { width: 96px; height: 100px; right: 14px; bottom: 12px; }
   .slot[data-asset="proof-clip"] { width: 64px; height: 106px; left: -38px; top: -72px; }
   .slot[data-asset="time-lanes"] { width: 70%; height: 110px; left: 15%; bottom: 112px; }
-  .slot[data-asset="work-vignettes"] { width: 320px; height: 240px; right: 48px; top: 96px; }
+  .slot[data-asset="work-vignettes"] { width: min(300px, 32vh); height: min(225px, 24vh); right: 48px; bottom: 24px; z-index: 4; }
+  .slot[data-asset="time-lanes"] { transition: opacity 0.2s ease-out; }
   .slot[data-asset="badge-press"] { width: 220px; height: 220px; right: 72px; bottom: 140px; }
 
   /* Step captions: one is shown at a time while scrolling; all are listed for assistive tech. */
@@ -119,7 +120,8 @@
     .seam { inset: 50% 0 auto 0; width: auto; height: 2px; background: repeating-linear-gradient(to right, var(--seam) 0 10px, transparent 10px 20px); }
     .ticket { width: min(340px, calc(100vw - 32px)); left: 50%; top: 0; padding: 18px; }
     .ticket h1 { font-size: 24px; }
-    .slot[data-asset="ink-stamp"], .slot[data-asset="work-vignettes"] { display: none; }
+    .slot[data-asset="work-vignettes"] { display: none; }
+    .slot[data-asset="ink-stamp"] { width: 84px; height: 84px; left: 120px; top: 54px; z-index: 4; }
     .slot[data-asset="proof-clip"] { left: 10px; top: -86px; width: 56px; height: 94px; }
     .slot[data-asset="verified-seal"] { right: -8px; top: -40px; }
     .steps { position: relative; inset: auto; grid-row: 3; min-height: 132px; padding: 14px 16px 18px; background: var(--surface); border-top: 2px solid var(--line); }
@@ -2528,6 +2530,7 @@
   const TASK_MINUTES = 15;
   // Ticket centers on phones, as fractions of the viewport height: NGO half, then volunteer half above the lanes.
   const MOBILE_STOPS = [0.3, 0.6];
+  const LANES_LINGER = 0.03;
   const ASSET_SCENES = {
     "ink-stamp": ["post", "review"], "verified-seal": ["post"], "time-lanes": ["claim"], "minute-dial": ["work"],
     "work-vignettes": ["work"], "proof-clip": ["proof"], "badge-press": ["badge"],
@@ -2592,6 +2595,9 @@
       const player = document.getElementById(id)?.glaxnimatePlayer;
       if (player) player.seek(clamp(timeline(p)) * player.duration);
     }
+    // The lanes belong to the claim; they leave as the work starts, making room for the work vignette.
+    const lanes = document.querySelector('.slot[data-asset="time-lanes"]');
+    if (lanes) lanes.style.opacity = p < SCENES.work[0] + LANES_LINGER ? "" : "0";
     const approved = document.getElementById("mm-ink-stamp-approved");
     const posted = document.getElementById("mm-ink-stamp-posted");
     if (approved && posted) {
