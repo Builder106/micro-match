@@ -248,6 +248,11 @@
   .side.ngo { background: var(--ngo-tint); }
   .side.volunteer { background: var(--vol-tint); }
   .side-label { font: 700 13px Inter, sans-serif; letter-spacing: 0.04em; color: var(--color-text-secondary); }
+  /* Text carries the background of the paper it sits on, so contrast checks can read it directly. */
+  .ngo .side-label { background: var(--ngo-tint); }
+  .volunteer .side-label { background: var(--vol-tint); }
+  .steps h2, .steps p { background: var(--caption-bg, var(--table)); }
+  .pile h2, .pile p { background: var(--vol-tint); }
   .seam { position: absolute; inset: 0 auto 0 50%; width: 2px; background: repeating-linear-gradient(to bottom, var(--seam) 0 10px, transparent 10px 20px); }
   .live { display: none; }
 
@@ -310,7 +315,7 @@
   /* Captions stay inside the NGO half, over a single background. */
   /* Captions share one grid cell, so the box fits the longest one and nothing overflows the stage.
      Inactive captions are hidden, not just transparent, so they are not read or measured. */
-  .motion .steps { position: absolute; inset-block: auto 32px; inset-inline: 40px calc(50% + 24px); display: grid; align-items: end; padding: 0; z-index: 4; }
+  .motion .steps { --caption-bg: var(--ngo-tint); position: absolute; inset-block: auto 32px; inset-inline: 40px calc(50% + 24px); display: grid; align-items: end; padding: 0; z-index: 4; }
   .motion .steps li { grid-area: 1 / 1; max-width: 520px; opacity: 0; visibility: hidden; translate: 0 12px; }
   .motion .steps li.active { opacity: 1; visibility: visible; translate: 0 0; transition: opacity 0.25s ease-out, translate 0.25s ease-out; }
   .motion .pile { position: absolute; inset: 40px 40px auto auto; width: min(420px, 40vw); margin: 0; z-index: 5; opacity: 0; pointer-events: none; }
@@ -344,7 +349,7 @@
     .motion .seal { inset-inline-end: -8px; top: -40px; }
     .motion .lanes { bottom: 12px; height: 64px; }
     .motion .badge { width: 120px; height: 120px; right: 16px; bottom: 76px; }
-    .motion .steps { position: relative; inset: auto; grid-row: 3; align-items: start; padding: 14px 16px 18px; background: var(--color-surface); border-top: 2px solid var(--line); }
+    .motion .steps { --caption-bg: var(--color-surface); position: relative; inset: auto; grid-row: 3; align-items: start; padding: 14px 16px 18px; background: var(--color-surface); border-top: 2px solid var(--line); }
     .motion .steps li { margin: 0; }
     .motion .steps h2 { font-size: 18px; }
     .motion .pile { inset: auto 16px 76px 16px; width: auto; }
