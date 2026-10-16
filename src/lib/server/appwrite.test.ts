@@ -25,6 +25,7 @@ import {
   getBadges,
   awardBadge,
   getBadgeAnalytics,
+  summarizeBadges,
   updateTaskStatus,
   updateTaskLastActivity,
   expireTasks,
@@ -225,9 +226,17 @@ describe('appwrite (in-memory mode) — badges', () => {
     expect(forX.every((b) => b.userId === 'user-X')).toBe(true);
   });
 
-  it('getBadgeAnalytics returns the empty-analytics shape in in-memory mode', async () => {
+  it('getBadgeAnalytics summarizes the badges awarded in in-memory mode', async () => {
+    const all = await getBadges();
     const analytics = await getBadgeAnalytics();
-    expect(analytics).toEqual({
+    expect(analytics.totalBadgesAwarded).toBe(all.length);
+    expect(analytics.totalVolunteersEngaged).toBe(new Set(all.map((b) => b.userId)).size);
+    expect(analytics.topBadgeTypes.length).toBeGreaterThan(0);
+    expect(analytics.recentAwards.length).toBe(Math.min(10, all.length));
+  });
+
+  it('summarizeBadges returns the empty shape for no badges', () => {
+    expect(summarizeBadges([])).toEqual({
       totalBadgesAwarded: 0,
       totalVolunteersEngaged: 0,
       averageTasksPerVolunteer: 0,

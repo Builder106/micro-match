@@ -486,6 +486,97 @@ export async function getPublicImpactStats(): Promise<{
   return { tasksCompleted, activeVolunteers, ngosOnboarded, badgesAwarded };
 }
 
+export type BadgeAnalytics = {
+  totalBadgesAwarded: number;
+  totalVolunteersEngaged: number;
+  averageTasksPerVolunteer: number;
+  topBadgeTypes: Array<{ type: string; count: number; percentage: number }>;
+  engagementTrend: Array<{ month: string; badges: number; volunteers: number }>;
+  recentAwards: Array<{ volunteer: string; badge: string; task: string; date: string }>;
+};
+
+/** Badge analytics from awarded badges, newest first. Shared by both stores. */
+export function summarizeBadges(badges: Badge[]): BadgeAnalytics {
+  if (badges.length === 0) return {
+    totalBadgesAwarded: 0,
+    totalVolunteersEngaged: 0,
+    averageTasksPerVolunteer: 0,
+    topBadgeTypes: [],
+    engagementTrend: [],
+    recentAwards: []
+  };
+
+  // Calculate total badges awarded
+  const totalBadgesAwarded = badges.length;
+
+  // Calculate unique volunteers (unique userIds)
+  const uniqueVolunteers = new Set(badges.map(b => b.userId));
+  const totalVolunteersEngaged = uniqueVolunteers.size;
+
+  // The empty-row guard above ensures at least one badge and one Set entry.
+  const averageTasksPerVolunteer = Math.round((totalBadgesAwarded / totalVolunteersEngaged) * 10) / 10;
+
+  // Calculate top badge types with better distribution
+  const badgeCounts = badges.reduce((acc, badge) => {
+    const label = badge.label || 'Unnamed Badge';
+    acc[label] = (acc[label] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const topBadgeTypes = Object.entries(badgeCounts)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 6) // Top 6 badge types
+    .map(([type, count]) => ({
+      type,
+      count,
+      percentage: Math.round((count / totalBadgesAwarded) * 100)
+    }));
+
+  // Calculate engagement trend (last 12 months for better insights)
+  const twelveMonthsAgo = new Date();
+  twelveMonthsAgo.setFullYear(twelveMonthsAgo.getFullYear() - 1);
+
+  const monthlyData: Record<string, { badges: number; volunteers: Set<string> }> = {};
+
+  badges.forEach(badge => {
+    const badgeDate = new Date(badge.awardedAt ?? Date.now());
+    if (badgeDate >= twelveMonthsAgo) {
+      const monthKey = badgeDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+      if (!monthlyData[monthKey]) {
+        monthlyData[monthKey] = { badges: 0, volunteers: new Set() };
+      }
+      monthlyData[monthKey].badges++;
+      monthlyData[monthKey].volunteers.add(badge.userId);
+    }
+  });
+
+  const engagementTrend = Object.entries(monthlyData)
+    .map(([month, data]) => ({
+      month,
+      badges: data.badges,
+      volunteers: data.volunteers.size
+    }))
+    .sort((a, b) => new Date(`01 ${a.month}`).getTime() - new Date(`01 ${b.month}`).getTime())
+    .slice(-6); // Show only last 6 months for cleaner display
+
+  // Get recent awards (last 10) with better formatting
+  const recentAwards = badges.slice(0, Math.min(10, badges.length)).map(badge => ({
+    volunteer: badge.userId || 'Unknown Volunteer', // TODO: Enhance with user names
+    badge: badge.label || 'Unnamed Badge',
+    task: badge.taskId || 'General Task',
+    date: new Date(badge.awardedAt ?? Date.now()).toISOString().split('T')[0]
+  }));
+
+  return {
+    totalBadgesAwarded,
+    totalVolunteersEngaged,
+    averageTasksPerVolunteer,
+    topBadgeTypes,
+    engagementTrend,
+    recentAwards
+  };
+}
+
 export async function getBadgeAnalytics(): Promise<{
   totalBadgesAwarded: number;
   totalVolunteersEngaged: number;
@@ -495,15 +586,8 @@ export async function getBadgeAnalytics(): Promise<{
   recentAwards: Array<{ volunteer: string; badge: string; task: string; date: string }>;
 }> {
   if (!useAppwrite) {
-    // Return empty analytics for in-memory fallback
-    return {
-      totalBadgesAwarded: 0,
-      totalVolunteersEngaged: 0,
-      averageTasksPerVolunteer: 0,
-      topBadgeTypes: [],
-      engagementTrend: [],
-      recentAwards: []
-    };
+    const all = Array.from(inMemory.badges.values()).sort((a, b) => b.awardedAt.localeCompare(a.awardedAt));
+    return summarizeBadges(all);
   }
 
   return withAppwrite(async ({ tables, dbId, badgesTable, Query }) => {
@@ -513,17 +597,6 @@ export async function getBadgeAnalytics(): Promise<{
         Query.limit(2000), // Increased limit for better analytics
         Query.orderDesc('$createdAt')
       ]);
-
-      if (res.rows.length === 0) {
-        return {
-          totalBadgesAwarded: 0,
-          totalVolunteersEngaged: 0,
-          averageTasksPerVolunteer: 0,
-          topBadgeTypes: [],
-          engagementTrend: [],
-          recentAwards: []
-        };
-      }
 
       const rows = res.rows;
       const badges = rows.map((d) => ({
@@ -535,76 +608,7 @@ export async function getBadgeAnalytics(): Promise<{
         awardedAt: d.awardedAt ?? d.$createdAt
       }));
 
-      // Calculate total badges awarded
-      const totalBadgesAwarded = badges.length;
-
-      // Calculate unique volunteers (unique userIds)
-      const uniqueVolunteers = new Set(badges.map(b => b.userId));
-      const totalVolunteersEngaged = uniqueVolunteers.size;
-
-      // The empty-row guard above ensures at least one badge and one Set entry.
-      const averageTasksPerVolunteer = Math.round((totalBadgesAwarded / totalVolunteersEngaged) * 10) / 10;
-
-      // Calculate top badge types with better distribution
-      const badgeCounts = badges.reduce((acc, badge) => {
-        const label = badge.label || 'Unnamed Badge';
-        acc[label] = (acc[label] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>);
-
-      const topBadgeTypes = Object.entries(badgeCounts)
-        .sort(([, a], [, b]) => b - a)
-        .slice(0, 6) // Top 6 badge types
-        .map(([type, count]) => ({
-          type,
-          count,
-          percentage: Math.round((count / totalBadgesAwarded) * 100)
-        }));
-
-      // Calculate engagement trend (last 12 months for better insights)
-      const twelveMonthsAgo = new Date();
-      twelveMonthsAgo.setFullYear(twelveMonthsAgo.getFullYear() - 1);
-
-      const monthlyData: Record<string, { badges: number; volunteers: Set<string> }> = {};
-
-      badges.forEach(badge => {
-        const badgeDate = new Date(badge.awardedAt ?? Date.now());
-        if (badgeDate >= twelveMonthsAgo) {
-          const monthKey = badgeDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
-          if (!monthlyData[monthKey]) {
-            monthlyData[monthKey] = { badges: 0, volunteers: new Set() };
-          }
-          monthlyData[monthKey].badges++;
-          monthlyData[monthKey].volunteers.add(badge.userId);
-        }
-      });
-
-      const engagementTrend = Object.entries(monthlyData)
-        .map(([month, data]) => ({
-          month,
-          badges: data.badges,
-          volunteers: data.volunteers.size
-        }))
-        .sort((a, b) => new Date(`01 ${a.month}`).getTime() - new Date(`01 ${b.month}`).getTime())
-        .slice(-6); // Show only last 6 months for cleaner display
-
-      // Get recent awards (last 10) with better formatting
-      const recentAwards = badges.slice(0, Math.min(10, badges.length)).map(badge => ({
-        volunteer: badge.userId || 'Unknown Volunteer', // TODO: Enhance with user names
-        badge: badge.label || 'Unnamed Badge',
-        task: badge.taskId || 'General Task',
-        date: new Date(badge.awardedAt ?? Date.now()).toISOString().split('T')[0]
-      }));
-
-      return {
-        totalBadgesAwarded,
-        totalVolunteersEngaged,
-        averageTasksPerVolunteer,
-        topBadgeTypes,
-        engagementTrend,
-        recentAwards
-      };
-
+      return summarizeBadges(badges);
     } catch (error) {
       console.error('Error fetching badge analytics:', error);
       // Return empty analytics on error with error logging

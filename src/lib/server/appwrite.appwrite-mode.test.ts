@@ -651,7 +651,7 @@ describe('appwrite (in-memory fallback)', () => {
     const badge = await appwrite.awardBadge({ userId: 'volunteer-a', label: 'Helper' });
     expect(await appwrite.listBadgesByUser('volunteer-a')).toEqual([expect.objectContaining({ id: badge.id })]);
     expect(await appwrite.getBadges()).toHaveLength(1);
-    expect(await appwrite.getBadgeAnalytics()).toEqual(expect.objectContaining({ totalBadgesAwarded: 0 }));
+    expect(await appwrite.getBadgeAnalytics()).toEqual(expect.objectContaining({ totalBadgesAwarded: 1, totalVolunteersEngaged: 1 }));
     expect(await appwrite.getPublicImpactStats()).toEqual({
       tasksCompleted: 2,
       activeVolunteers: 2,
