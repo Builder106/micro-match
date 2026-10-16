@@ -1,12 +1,14 @@
 import type { PageServerLoad } from './$types';
 import { getTasks, getClaims, getBadges } from '$lib/server/appwrite';
 import { getTagStyle } from '$lib/utils/tagColors';
+import { getQuiltPatches } from '$lib/server/quilt';
 
 export const load: PageServerLoad = async () => {
-  const [tasks, claims, badges] = await Promise.all([
+  const [tasks, claims, badges, patches] = await Promise.all([
     getTasks({ includeInactive: true }),
     getClaims(),
-    getBadges()
+    getBadges(),
+    getQuiltPatches()
   ]);
 
   const approvedClaims = claims.filter((c) => c.status === 'approved');
@@ -57,6 +59,7 @@ export const load: PageServerLoad = async () => {
   const avgTaskMinutes = Math.round(totalMinutesContributed / Math.max(tasksCompleted, 1));
 
   return {
+    patches,
     stats: {
       tasksCompleted,
       activeVolunteers,
