@@ -82,6 +82,9 @@ bun run dev             # dev server with HMR
 bun run check           # svelte-check + tsc
 bun run test            # vitest (server modules, API, page loaders)
 bun run test:watch      # vitest watch mode
+bun run test:functional # Playwright: the real flows
+bun run test:responsiveness # Playwright: overflow at 320 to 1440 px
+bun run test:visual     # Playwright: visual baselines (add --update-snapshots after a deliberate change)
 bun run test:coverage   # v8 coverage → coverage/index.html
 bun run lint            # eslint
 bun run format          # prettier write
@@ -90,7 +93,7 @@ bun run seed            # (re)seed the demo NGO + tasks
 bun run verify:libretranslate # live LibreTranslate health and auth check
 ```
 
-CI should at minimum run `bun run check`and`bun run test`.
+CI runs check, lint, unit tests with coverage, the build and the three browser suites; the required gate needs all of them.
 
 ## Seeding
 
@@ -108,7 +111,7 @@ claims and mint badges.
 
 ```text
 src/
-├── app.html                      # bare document shell
+├── app.html                      # document shell; sets html.js and html.motion before paint
 ├── app.d.ts                      # SvelteKit ambient types
 ├── hooks.server.ts               # locale routing, session cookie → locals.userRole
 ├── hooks.ts                      # locale reroute
@@ -123,12 +126,19 @@ src/
 │   │   ├── propublica.ts         # US 501(c)(3) lookup by EIN
 │   │   ├── teams.ts              # ngo / volunteer / admin team helpers
 │   │   └── verifications.ts      # ngoVerifications CRUD + prefs sync
+│   ├── components/               # Svelte components
+│   │   ├── world/                # the quilt the site is made of: blocks, panel, corner tags
+│   │   └── art/                  # Glaxnimate artwork (needle, pin, scissors, swatch)
+│   ├── quilt/                    # quilt logic: log cabin layout, block patterns, fabrics, icons, map
 │   ├── i18n/                     # locale-aware formatters
 │   ├── locale.ts                 # supported locales and localized paths
 │   ├── types.ts                  # shared TS types (Task, Claim, Badge, …)
+│   ├── site.ts, feed.ts, …       # small pure helpers with unit tests
 │   └── utils/tagColors.ts        # tag→{bg,color} palette
+├── engine/                       # camera, panel unfold/fold, panel scroll, idle input (GSAP)
+├── styles/                       # tokens.css, base.css, world.css (global on purpose)
 ├── routes/                       # page loaders (+page.server.ts) and API endpoints
-│   ├── +layout.svelte            # bare layout until the new frontend lands
+│   ├── +layout.svelte            # the quilt, the panel and the navigation lifecycle
 │   └── api/                      # endpoint handlers
 └── tests/
     ├── api/                      # endpoint tests
@@ -136,9 +146,10 @@ src/
     └── setup.ts                  # localStorage shim
 ```
 
-The frontend is being redesigned from a blank page, so this branch has no
-pages, components, or browser tests yet. All tests run in vitest's node
-environment, configured in `vite.config.ts`.
+Unit tests run in vitest's node environment (`vite.config.ts`). Browser
+suites live in `e2e/` and run through `playwright.config.ts`. Design
+decisions, the structure plan and the art direction are in `DESIGN.md`;
+Glaxnimate source art is in `design/glaxnimate/`.
 
 ## Style + conventions
 
@@ -161,10 +172,14 @@ environment, configured in `vite.config.ts`.
   unavoidable, link to a tracking issue.
 
 - **No emojis in code, comments, or commits.** README and docs are fine.
-- **Brand-forward editorial visual language.** Inner pages use the `brand-card`,
-
-  `btn-coral`, `btn-outline-dark`, `coral-gradient`, `tag` classes from
-  `src/app.css` and the Plus Jakarta Sans display face. New pages should match.
+- **The quilt is the interface.** A new public page is a block on the quilt:
+  add it to `BLOCKS` in `src/lib/quilt/world.ts` and route it there. Use the
+  shared classes in `src/styles/base.css` (`patch-btn`, `stitch-link`, `part`,
+  `field`, `input`) and the tokens in `tokens.css`. Read `DESIGN.md` first.
+- **Internal links go through `Link.svelte`** (or `go()` in scripts) so the
+  locale prefix is kept.
+- **Never invent content.** No made-up people, quotes, counts or partners; the
+  quilt shows real approved claims only.
 
 ## Pull requests
 

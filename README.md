@@ -29,7 +29,8 @@ Volunteers pick tasks that match their skills, submit their work, and earn verif
 - **Charity verification**: Simple trust verification where nonprofits submit their tax or charity ID, verified against public registries with a verified badge displayed on their tasks.
 - **Custom badge awards**: Organizations define custom award badges (label, color, icon, criteria) automatically awarded upon task approval.
 - **Worldwide localization**: Paraglide provides type-safe, reviewed UI catalogs and locale-prefixed routes; self-hosted LibreTranslate handles user-created task content on the server.
-- **Email updates**: Automated email notifications keep volunteers and organizations informed of approvals and submissions.
+- **Verification email**: Nonprofits get an email when an admin approves or rejects their verification, with the reason for a rejection.
+- **The community quilt**: The site is one quilt. Every page is a block in it, and every claim a person approves is sewn into the middle as a patch in the colors of the badge that nonprofit designed.
 
 ## 🔄 How it works
 
@@ -78,8 +79,8 @@ sequenceDiagram
 | **NGO verification** | [ProPublica Nonprofit Explorer API](https://projects.propublica.org/nonprofits/api/) for US 501(c)(3) lookups |
 | **Translation** | Self-hosted [LibreTranslate](https://libretranslate.com/) on an ARM64 Oracle VM behind `translate.micromatch.app` |
 | **Static UI localization** | [Paraglide JS](https://paraglidejs.com/sveltekit) with committed catalogs for English, Spanish, French, German, Portuguese, Chinese, and Arabic |
-| **UI** | Being redesigned from scratch on this branch |
-| **Testing** | [Vitest](https://vitest.dev/) (server modules, API endpoints, page loaders) |
+| **UI** | Svelte 5 components and plain CSS tokens; GSAP and Lenis for the quilt's camera and panels; artwork drawn with Glaxnimate (see [DESIGN.md](DESIGN.md)) |
+| **Testing** | [Vitest](https://vitest.dev/) (server modules, API endpoints, page loaders, quilt logic) and [Playwright](https://playwright.dev/) (functional flows, responsiveness, visual baselines) |
 
 ## 🏁 Getting started
 
@@ -106,6 +107,8 @@ bun run build           # production build (uses adapter-vercel)
 bun run check           # svelte-check + tsc
 bun run test            # vitest
 bun run seed            # (re)seed the demo NGO + tasks
+bun run test:functional # browser flows against an in-memory preview
+bun run test:visual     # visual baselines, desktop and phone
 bun run verify:libretranslate # live health and API-key smoke check
 ```
 
@@ -115,7 +118,11 @@ bun run verify:libretranslate # live health and API-key smoke check
 - **API endpoints** (vitest, node): auth gates, validation, and multi-step side effects.
 - **Page loaders** (vitest, node): the data each route's `+page.server.ts` returns.
 
-`bun run test:coverage` enforces 100% coverage and writes an HTML report to `coverage/`. Browser tests return with the new frontend.
+- **Browser flows** (Playwright): browse and filter the feed, open a task, sign up and pick a role, sign in, claim a task with proof, a nonprofit approving it, and the badge and patch appearing.
+- **Responsiveness** (Playwright): no horizontal overflow at 320, 375, 768 and 1440 px, and the phone's Contents tag opening and folding back.
+- **Visual baselines** (Playwright): every page, desktop and phone, in the quilt's zero state.
+
+`bun run test:coverage` enforces 100% coverage and writes an HTML report to `coverage/`. The browser suites start a production preview with empty Appwrite variables and `PLAYWRIGHT_A11Y_HARNESS=1`, so they run against the in-memory store and never touch a real backend.
 
 ## 📦 Data model & Provisioning
 
