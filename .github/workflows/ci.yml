@@ -99,10 +99,76 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
+  functional:
+    name: Browser functional flows
+    needs: [check, lint]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/cache@v6
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+      - run: bun install --frozen-lockfile
+      - run: bun run paraglide:compile
+      - run: bunx playwright install --with-deps chromium
+      - run: bun run test:functional
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: functional-results-${{ github.run_id }}
+          path: test-results/
+          retention-days: 7
+
+  responsiveness:
+    name: Browser responsiveness
+    needs: [check, lint]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/cache@v6
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+      - run: bun install --frozen-lockfile
+      - run: bun run paraglide:compile
+      - run: bunx playwright install --with-deps chromium
+      - run: bun run test:responsiveness
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: responsiveness-results-${{ github.run_id }}
+          path: test-results/
+          retention-days: 7
+
+  visual:
+    name: Browser visual baselines
+    needs: [check, lint]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/cache@v6
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+      - run: bun install --frozen-lockfile
+      - run: bun run paraglide:compile
+      - run: bunx playwright install --with-deps chromium
+      - run: bun run test:visual
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: visual-results-${{ github.run_id }}
+          path: test-results/
+          retention-days: 7
+
   ci-gate:
     name: CI required gate
     if: ${{ always() }}
-    needs: [check, lint, test, build]
+    needs: [check, lint, test, build, functional, responsiveness, visual]
     runs-on: ubuntu-24.04
     steps:
       - name: Require selected CI checks
@@ -111,8 +177,13 @@ jobs:
           LINT: ${{ needs.lint.result }}
           TEST: ${{ needs.test.result }}
           BUILD: ${{ needs.build.result }}
+          FUNCTIONAL: ${{ needs.functional.result }}
+          RESPONSIVENESS: ${{ needs.responsiveness.result }}
+          VISUAL: ${{ needs.visual.result }}
         run: |
-          if [ "$CHECK" != success ] || [ "$LINT" != success ] || [ "$TEST" != success ] || [ "$BUILD" != success ]; then exit 1; fi
+          for result in "$CHECK" "$LINT" "$TEST" "$BUILD" "$FUNCTIONAL" "$RESPONSIVENESS" "$VISUAL"; do
+            if [ "$result" != success ]; then exit 1; fi
+          done
 
   deploy:
     name: Trigger Vercel Deploy
