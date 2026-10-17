@@ -355,13 +355,72 @@ main[data-kind='work'] .quilt-view.has-panel::after, main[data-kind='narrow'] .q
   background: repeating-linear-gradient(180deg, var(--thread) 0 7px, transparent 7px 12px);
 }
 
-/* ---------- first visit: the quilt is pieced together (transform only, one shot) ---------- */
+/* ---------- later loads: the quilt is pieced together (transform only, one shot) ---------- */
 @keyframes lay-down { from { transform: translateY(-18px) rotate(-2.5deg) scale(0.96); } to { transform: none; } }
-html.motion .quilt-world .block { animation: lay-down 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: calc(var(--o) * 45ms + 80ms); }
+html.motion:not(.enter) .quilt-world .block { animation: lay-down 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: calc(var(--o) * 45ms + 80ms); }
+
+/* ---------- first home visit in a session: laid out, pinned, then quilted from the center out.
+   Each block is carried in from its own side of the frame, nearest the heart first; the title
+   block never fades, so the hero paints at once. Then the cornerstones press in like pins and
+   the running stitch spreads outward. ---------- */
+.quilt-world .block {
+  --ex: calc(var(--c) - 1 + var(--w) / 2 - 3);
+  --ey: calc(var(--r) - 1 + var(--h) / 2 - 2);
+  --ed: hypot(var(--ex), var(--ey));
+  --reach: calc(36px + (var(--ed) - 1) * 34px);
+  --fx: calc(var(--ex) / var(--ed) * var(--reach));
+  --fy: calc(var(--ey) / var(--ed) * var(--reach));
+  --ft: calc(var(--ex) / var(--ed) * 2.6deg + (mod(var(--o), 2) - 0.5) * 2deg);
+  --fs: 1.07;
+  --fo: 0;
+  --wait: calc((var(--ed) - 1) * 230ms + mod(var(--o) * 37, 60) * 1ms);
+}
+.quilt-world .block--title { --fo: 1; }
+@keyframes piece-in {
+  from { transform: translate(var(--fx), var(--fy)) rotate(var(--ft)) scale(var(--fs)); opacity: var(--fo); }
+  30% { opacity: 1; }
+  to { transform: none; opacity: 1; }
+}
+@keyframes held { from { opacity: 1; } to { opacity: 0; } }
+@keyframes pin-in {
+  from { transform: scale(2.2) rotate(45deg); opacity: 0; }
+  35% { opacity: 1; }
+  72% { transform: scale(0.86) rotate(-4deg); }
+  to { transform: none; opacity: 1; }
+}
+@keyframes sew-h { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0); } }
+@keyframes sew-h-rev { from { clip-path: inset(0 0 0 100%); } to { clip-path: inset(0); } }
+@keyframes sew-v { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0); } }
+@keyframes sew-v-rev { from { clip-path: inset(100% 0 0 0); } to { clip-path: inset(0); } }
+@keyframes tag-in { from { transform: translateY(-16px) scale(1.04); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes map-in { from { transform: translateY(18px) rotate(3deg); opacity: 0; } to { transform: none; opacity: 1; } }
+
+html.enter .quilt-world .block { animation: piece-in 1s cubic-bezier(0.16, 1, 0.3, 1) var(--wait) both; }
+/* The shadow of a piece still held above the table, gone once it lies flat. */
+html.enter .quilt-world .block::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  box-shadow: 0 28px 36px -12px rgb(28 31 59 / 0.45);
+  pointer-events: none;
+  animation: held 0.8s cubic-bezier(0.16, 1, 0.3, 1) var(--wait) both;
+}
+html.enter .cornerstone {
+  animation: pin-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(480ms + hypot(var(--x) - 3, var(--y) - 2) * 120ms);
+}
+html.enter .seam { animation: 0.55s cubic-bezier(0.65, 0, 0.35, 1) calc(760ms + var(--d) * 170ms) both; }
+html.enter .seam--h { animation-name: sew-h; }
+html.enter .seam--h.is-rev { animation-name: sew-h-rev; }
+html.enter .seam--v { animation-name: sew-v; }
+html.enter .seam--v.is-rev { animation-name: sew-v-rev; }
+html.enter .tag { animation: tag-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both; }
+html.enter .tag--ways { animation-delay: 0.63s; }
+html.enter .minimap { animation: map-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1.15s both; }
 
 /* ---------- phone: the quilt read top to bottom ---------- */
 @media (max-width: 899px) {
-  .quilt-view { padding: 5.2rem 0.85rem 2rem; min-height: 100dvh; }
+  .quilt-view { padding: 5.2rem 0.85rem 2rem; min-height: 100dvh; overflow-x: clip; }
   .quilt-world {
     --sash: 0.6rem;
     width: auto;
@@ -370,6 +429,14 @@ html.motion .quilt-world .block { animation: lay-down 0.9s cubic-bezier(0.16, 1,
     box-shadow: 0 0 0 6px var(--c-fg), 0 20px 40px -16px rgb(28 31 59 / 0.35);
   }
   .cornerstone, .seam, .minimap { display: none; }
+  /* The phone reads the quilt top to bottom, so pieces are laid from above, in reading order. */
+  .quilt-world .block {
+    --fx: 0px;
+    --fy: -26px;
+    --fs: 1.025;
+    --ft: calc((mod(var(--o), 2) - 0.5) * 2.4deg);
+    --wait: calc(min(var(--o), 5) * 90ms);
+  }
   .block { grid-column: auto; grid-row: auto; order: var(--o); aspect-ratio: 1; }
   .block--title, .block--community, .block.is-wide { grid-column: 1 / -1; aspect-ratio: auto; }
   .block--title .block__face, .block--community .block__face, .block.is-wide .block__face { position: relative; }

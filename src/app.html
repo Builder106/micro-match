@@ -9,6 +9,13 @@
     <link rel="preload" href="%sveltekit.assets%/fonts/bricolage-200_800-normal.woff2" as="font" type="font/woff2" crossorigin />
     <script>
       document.documentElement.classList.add('js', 'motion');
+      // The first time the home quilt opens in a session, it is laid out, pinned and quilted.
+      try {
+        if (/^\/([a-z]{2}\/?)?$/.test(location.pathname) && !matchMedia('(prefers-reduced-motion: reduce)').matches && !sessionStorage.getItem('mm-entered')) {
+          document.documentElement.classList.add('enter');
+          sessionStorage.setItem('mm-entered', '1');
+        }
+      } catch {}
     </script>
     %sveltekit.head%
   </head>
