@@ -108,7 +108,7 @@ export async function getTasks(filters?: { orgId?: string; includeInactive?: boo
       // Removed isVerified filter - unverified tasks should still show
     }
     
-    const res = await tables.listRows<DbTaskRow>(dbId, tasksTable, queries);
+    const res = await tables.listRows<DbTaskRow>({ databaseId: dbId, tableId: tasksTable, queries });
     const rows = res.rows;
     let tasks: Task[] = rows.map((d) => ({
       id: d.$id,
@@ -140,7 +140,7 @@ export async function getTaskById(id: string): Promise<Task | undefined> {
   if (!useAppwrite) return inMemory.tasks.get(id);
   return withAppwrite(async ({ tables, dbId, tasksTable }) => {
     try {
-      const d = await tables.getRow<DbTaskRow>(dbId, tasksTable, id);
+      const d = await tables.getRow<DbTaskRow>({ databaseId: dbId, tableId: tasksTable, rowId: id });
       return {
         id: d.$id,
         orgId: d.orgID, // Map database orgID to code orgId
@@ -168,11 +168,15 @@ async function hasReachedVolunteerLimit(taskId: string): Promise<boolean> {
   
   return withAppwrite(async ({ tables, dbId, claimsTable, Query }) => {
     try {
-      const claims = await tables.listRows(dbId, claimsTable, [
+      const claims = await tables.listRows({
+        databaseId: dbId,
+        tableId: claimsTable,
+        queries: [
         Query.equal('taskID', taskId),
         Query.equal('status', 'approved'),
         Query.limit(1000) // Reasonable limit for checking
-      ]);
+      ]
+      });
       return claims.total >= 1000; // If we hit the limit, assume it's full
     } catch {
       return false; // Fail open - don't block tasks if we can't check
@@ -241,7 +245,7 @@ export async function createTask(input: Omit<Task, 'id' | 'createdAt'>): Promise
       lastActivityAt: input.lastActivityAt ?? now,
       ...(input.orgId ? { orgID: input.orgId } : {})
     };
-    const d = await tables.createRow<DbTaskRow>(dbId, tasksTable, ID.unique(), payload);
+    const d = await tables.createRow<DbTaskRow>({ databaseId: dbId, tableId: tasksTable, rowId: ID.unique(), data: payload });
     return {
       id: d.$id,
       orgId: d.orgID, // Map database orgID to code orgId
@@ -279,7 +283,7 @@ export async function createClaim(input: Omit<Claim, 'id' | 'status' | 'createdA
       ...(input.proofUrl ? { proofURL: input.proofUrl } : {})
     };
     
-    const d = await tables.createRow<DbClaimRow>(dbId, claimsTable, ID.unique(), payload);
+    const d = await tables.createRow<DbClaimRow>({ databaseId: dbId, tableId: claimsTable, rowId: ID.unique(), data: payload });
     return {
       id: d.$id,
       taskId: d.taskID, // Map database taskID to code taskId
@@ -307,7 +311,7 @@ export async function getClaims(filters?: { userId?: string }): Promise<Claim[]>
     if (filters?.userId) {
       queries.push(Query.equal('userID', filters.userId));
     }
-    const res = await tables.listRows<DbClaimRow>(dbId, claimsTable, queries);
+    const res = await tables.listRows<DbClaimRow>({ databaseId: dbId, tableId: claimsTable, queries });
     const rows = res.rows;
     return rows.map((d) => ({
       id: d.$id,
@@ -327,7 +331,7 @@ export async function getClaimById(id: string): Promise<Claim | undefined> {
   if (!useAppwrite) return inMemory.claims.get(id);
   return withAppwrite(async ({ tables, dbId, claimsTable }) => {
     try {
-      const d = await tables.getRow<DbClaimRow>(dbId, claimsTable, id);
+      const d = await tables.getRow<DbClaimRow>({ databaseId: dbId, tableId: claimsTable, rowId: id });
       return {
         id: d.$id,
         taskId: d.taskID, // Map database taskID to code taskId
@@ -364,10 +368,15 @@ export async function updateClaimStatus(
   }
   return withAppwrite(async ({ tables, dbId, claimsTable }) => {
     try {
-      const d = await tables.updateRow<DbClaimRow>(dbId, claimsTable, id, {
+      const d = await tables.updateRow<DbClaimRow>({
+        databaseId: dbId,
+        tableId: claimsTable,
+        rowId: id,
+        data: {
         status,
         reviewedBy: reviewedBy ?? null,
         reviewedAt: new Date().toISOString()
+      }
       });
       return {
         id: d.$id,
@@ -392,7 +401,7 @@ export async function listBadgesByUser(userId: string): Promise<Badge[]> {
   }
   return withAppwrite(async ({ tables, dbId, badgesTable, Query }) => {
     try {
-      const res = await tables.listRows<DbBadgeRow>(dbId, badgesTable, [Query.equal('userID', userId), Query.limit(100)]);
+      const res = await tables.listRows<DbBadgeRow>({ databaseId: dbId, tableId: badgesTable, queries: [Query.equal('userID', userId), Query.limit(100)] });
       const rows = res.rows;
       return rows.map((d) => ({
         id: d.$id,
@@ -416,10 +425,14 @@ export async function getBadges(): Promise<Badge[]> {
   }
   return withAppwrite(async ({ tables, dbId, badgesTable, Query }) => {
     try {
-      const res = await tables.listRows<DbBadgeRow>(dbId, badgesTable, [
+      const res = await tables.listRows<DbBadgeRow>({
+        databaseId: dbId,
+        tableId: badgesTable,
+        queries: [
         Query.limit(1000), // Limit for performance
         Query.orderDesc('$createdAt')
-      ]);
+      ]
+      });
       const rows = res.rows;
       return rows.map((d) => ({
         id: d.$id,
@@ -453,7 +466,7 @@ export async function awardBadge(input: Omit<Badge, 'id' | 'awardedAt'> & { awar
       ...(input.color ? { color: input.color } : {})
     };
     
-    const d = await tables.createRow<DbBadgeRow>(dbId, badgesTable, ID.unique(), payload);
+    const d = await tables.createRow<DbBadgeRow>({ databaseId: dbId, tableId: badgesTable, rowId: ID.unique(), data: payload });
     return {
       id: d.$id,
       userId: d.userID, // Map database userID to code userId
@@ -593,10 +606,14 @@ export async function getBadgeAnalytics(): Promise<{
   return withAppwrite(async ({ tables, dbId, badgesTable, Query }) => {
     try {
       // Get all badges for analytics (limit to reasonable amount for performance)
-      const res = await tables.listRows<DbBadgeRow>(dbId, badgesTable, [
+      const res = await tables.listRows<DbBadgeRow>({
+        databaseId: dbId,
+        tableId: badgesTable,
+        queries: [
         Query.limit(2000), // Increased limit for better analytics
         Query.orderDesc('$createdAt')
-      ]);
+      ]
+      });
 
       const rows = res.rows;
       const badges = rows.map((d) => ({
@@ -634,9 +651,14 @@ export async function updateTaskStatus(id: string, status: Task['status']): Prom
   }
   return withAppwrite(async ({ tables, dbId, tasksTable }) => {
     try {
-      const d = await tables.updateRow<DbTaskRow>(dbId, tasksTable, id, {
+      const d = await tables.updateRow<DbTaskRow>({
+        databaseId: dbId,
+        tableId: tasksTable,
+        rowId: id,
+        data: {
         status: status || 'active',
         lastActivityAt: new Date().toISOString()
+      }
       });
       return {
         id: d.$id,
@@ -670,8 +692,13 @@ export async function updateTaskLastActivity(id: string): Promise<void> {
   }
   await withAppwrite(async ({ tables, dbId, tasksTable }) => {
     try {
-      await tables.updateRow(dbId, tasksTable, id, {
+      await tables.updateRow({
+        databaseId: dbId,
+        tableId: tasksTable,
+        rowId: id,
+        data: {
         lastActivityAt: new Date().toISOString()
+      }
       });
     } catch {
       // Fail silently - this is not critical
@@ -697,18 +724,27 @@ export async function expireTasks(): Promise<number> {
   return withAppwrite(async ({ tables, dbId, tasksTable, Query }) => {
     try {
       // Find all active tasks past their deadline
-      const expiredTasks = await tables.listRows(dbId, tasksTable, [
+      const expiredTasks = await tables.listRows({
+        databaseId: dbId,
+        tableId: tasksTable,
+        queries: [
         Query.equal('status', 'active'),
         Query.lessThanEqual('deadline', now),
         Query.limit(100) // Process in batches
-      ]);
+      ]
+      });
       
       // Update each expired task
       for (const task of expiredTasks.rows) {
         try {
-          await tables.updateRow(dbId, tasksTable, task.$id, {
+          await tables.updateRow({
+            databaseId: dbId,
+            tableId: tasksTable,
+            rowId: task.$id,
+            data: {
             status: 'expired',
             lastActivityAt: now
+          }
           });
           expiredCount++;
         } catch {
@@ -741,18 +777,27 @@ export async function autoArchiveTasks(): Promise<number> {
   return withAppwrite(async ({ tables, dbId, tasksTable, Query }) => {
     try {
       // Find all active tasks with no activity in 30+ days
-      const inactiveTasks = await tables.listRows(dbId, tasksTable, [
+      const inactiveTasks = await tables.listRows({
+        databaseId: dbId,
+        tableId: tasksTable,
+        queries: [
         Query.equal('status', 'active'),
         Query.lessThan('lastActivityAt', thirtyDaysAgo.toISOString()),
         Query.limit(100) // Process in batches
-      ]);
+      ]
+      });
       
       // Update each inactive task
       for (const task of inactiveTasks.rows) {
         try {
-          await tables.updateRow(dbId, tasksTable, task.$id, {
+          await tables.updateRow({
+            databaseId: dbId,
+            tableId: tasksTable,
+            rowId: task.$id,
+            data: {
             status: 'expired',
             lastActivityAt: new Date().toISOString()
+          }
           });
           archivedCount++;
         } catch {
@@ -786,13 +831,17 @@ export async function setTasksVerifiedForOrg(orgId: string, isVerified: boolean)
   return withAppwrite(async ({ tables, dbId, tasksTable, Query }) => {
     let updated = 0;
     try {
-      const res = await tables.listRows(dbId, tasksTable, [
+      const res = await tables.listRows({
+        databaseId: dbId,
+        tableId: tasksTable,
+        queries: [
         Query.equal('orgID', orgId),
         Query.limit(500)
-      ]);
+      ]
+      });
       for (const row of res.rows) {
         try {
-          await tables.updateRow(dbId, tasksTable, row.$id, { isVerified });
+          await tables.updateRow({ databaseId: dbId, tableId: tasksTable, rowId: row.$id, data: { isVerified } });
           updated++;
         } catch {
           // continue
@@ -811,7 +860,7 @@ export async function deleteTask(id: string): Promise<void> {
     return;
   }
   await withAppwrite(async ({ tables, dbId, tasksTable }) => {
-    await tables.deleteRow(dbId, tasksTable, id);
+    await tables.deleteRow({ databaseId: dbId, tableId: tasksTable, rowId: id });
   });
 }
 

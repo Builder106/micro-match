@@ -110,10 +110,12 @@ describe('POST /api/verifications/upload', () => {
     const res = await POST(makeEvent({ userId: 'user-1' }));
     const body = await res.json();
 
-    expect(mocks.createFile).toHaveBeenCalledWith(
-      'verif-bucket', 'file-id', expect.anything(),
-      expect.arrayContaining(['read:team:admins-team'])
-    );
+    expect(mocks.createFile).toHaveBeenCalledWith({
+      bucketId: 'verif-bucket',
+      fileId: 'file-id',
+      file: expect.anything(),
+      permissions: expect.arrayContaining(['read:team:admins-team'])
+    });
     expect(body).toEqual({ fileId: 'file-1' });
   });
 
@@ -123,12 +125,12 @@ describe('POST /api/verifications/upload', () => {
     const res = await POST(makeEvent({ userId: 'user-1' }));
 
     expect(res.status).toBe(200);
-    expect(mocks.createFile).toHaveBeenCalledWith(
-      'verif-bucket',
-      'file-id',
-      expect.anything(),
-      ['read:user:user-1', 'update:user:user-1', 'delete:user:user-1']
-    );
+    expect(mocks.createFile).toHaveBeenCalledWith({
+      bucketId: 'verif-bucket',
+      fileId: 'file-id',
+      file: expect.anything(),
+      permissions: ['read:user:user-1', 'update:user:user-1', 'delete:user:user-1']
+    });
   });
 
   it('returns 500 when the upload throws', async () => {

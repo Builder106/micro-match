@@ -45,7 +45,7 @@ describe('isUserInTeam', () => {
   it('returns true when the membership list is non-empty', async () => {
     mocks.listMemberships.mockResolvedValue({ total: 1, memberships: [{ $id: 'm1' }] });
     expect(await isUserInTeam('user-1', 'team-1')).toBe(true);
-    expect(mocks.listMemberships).toHaveBeenCalledWith('team-1', expect.any(Array));
+    expect(mocks.listMemberships).toHaveBeenCalledWith({ teamId: 'team-1', queries: expect.any(Array) });
 
     // When total is undefined, but memberships array has items
     mocks.listMemberships.mockResolvedValue({ memberships: [{ $id: 'm1' }] });
@@ -85,13 +85,13 @@ describe('removeUserFromTeam', () => {
     mocks.deleteMembership.mockResolvedValue(undefined);
 
     await removeUserFromTeam('user-1', 'team-1');
-    expect(mocks.deleteMembership).toHaveBeenCalledWith('team-1', 'm1');
+    expect(mocks.deleteMembership).toHaveBeenCalledWith({ teamId: 'team-1', membershipId: 'm1' });
 
     // Test with data property
     mocks.deleteMembership.mockClear();
     mocks.listMemberships.mockResolvedValue({ data: [{ $id: 'm2' }] });
     await removeUserFromTeam('user-1', 'team-1');
-    expect(mocks.deleteMembership).toHaveBeenCalledWith('team-1', 'm2');
+    expect(mocks.deleteMembership).toHaveBeenCalledWith({ teamId: 'team-1', membershipId: 'm2' });
 
     // Test with empty/undefined list
     mocks.deleteMembership.mockClear();
@@ -122,10 +122,10 @@ describe('addUserToTeam', () => {
   it('creates a membership with the given roles and default roles array', async () => {
     mocks.createMembership.mockResolvedValue({ $id: 'm1' });
     await addUserToTeam('user-1', 'team-1', ['member']);
-    expect(mocks.createMembership).toHaveBeenCalledWith('team-1', ['member'], undefined, 'user-1');
+    expect(mocks.createMembership).toHaveBeenCalledWith({ teamId: 'team-1', roles: ['member'], userId: 'user-1' });
 
     await addUserToTeam('user-1', 'team-1');
-    expect(mocks.createMembership).toHaveBeenCalledWith('team-1', [], undefined, 'user-1');
+    expect(mocks.createMembership).toHaveBeenCalledWith({ teamId: 'team-1', roles: [], userId: 'user-1' });
   });
 
   it('swallows errors from the Teams API', async () => {

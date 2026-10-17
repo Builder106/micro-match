@@ -9,7 +9,7 @@ export const account = new Account(client);
 export const storage = new Storage(client);
 
 export async function signInEmail(email: string, password: string) {
-  return account.createEmailPasswordSession(email, password);
+  return account.createEmailPasswordSession({ email, password });
 }
 
 export async function signUpEmail(
@@ -18,20 +18,20 @@ export async function signUpEmail(
   name?: string,
   role: 'volunteer' | 'ngo' = 'volunteer'
 ) {
-  await account.create(ID.unique(), email, password, name);
+  await account.create({ userId: ID.unique(), email, password, name });
   // account.create() does not log the user in. Without a session here, the
   // updatePrefs call below would fail with `User (role: guests) missing
   // scopes (["account"])`.
-  await account.createEmailPasswordSession(email, password);
-  await account.updatePrefs({ role });
+  await account.createEmailPasswordSession({ email, password });
+  await account.updatePrefs({ prefs: { role } });
 }
 
 export async function createRecovery(email: string, url: string): Promise<void> {
-  await account.createRecovery(email, url);
+  await account.createRecovery({ email, url });
 }
 
 export async function updateRecovery(userId: string, secret: string, password: string): Promise<void> {
-  await account.updateRecovery(userId, secret, password);
+  await account.updateRecovery({ userId, secret, password });
 }
 
 export function signInWithGoogle() {
@@ -42,7 +42,7 @@ export function signInWithGoogle() {
   // cookie blocking, which the old createOAuth2Session flow does not.
   const success = `${window.location.origin}/api/auth/oauth/callback`;
   const failure = `${window.location.origin}/login?error=oauth`;
-  account.createOAuth2Token(OAuthProvider.Google, success, failure);
+  account.createOAuth2Token({ provider: OAuthProvider.Google, success, failure });
 }
 
 export async function signOut() {
@@ -108,7 +108,7 @@ export function getAvatarUrl(fileId: string, size = 128): string {
   try {
     const bucketId = PUBLIC_ENV.PUBLIC_APPWRITE_AVATARS_BUCKET_ID;
     if (!bucketId) return '';
-    const url = storage.getFilePreview(bucketId, fileId, size, size);
+    const url = storage.getFilePreview({ bucketId, fileId, width: size, height: size });
     return String(url);
   } catch {
     return '';

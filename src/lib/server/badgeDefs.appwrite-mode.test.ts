@@ -62,7 +62,7 @@ describe('badgeDefs (Appwrite-backed mode)', () => {
       orgId: 'org-1', label: 'Helper', color: '#FF6B6B', criteria: 'task-completion'
     });
 
-    expect(mocks.createRow).toHaveBeenCalledWith('db', 'badge-defs', 'new-id', expect.objectContaining({ orgID: 'org-1' }));
+    expect(mocks.createRow).toHaveBeenCalledWith({ databaseId: 'db', tableId: 'badge-defs', rowId: 'new-id', data: expect.objectContaining({ orgID: 'org-1' }) });
     expect(created).toEqual(expect.objectContaining({ id: 'def-1', orgId: 'org-1' }));
   });
 
@@ -71,7 +71,7 @@ describe('badgeDefs (Appwrite-backed mode)', () => {
     mocks.deleteRow.mockResolvedValueOnce(undefined);
 
     expect(await deleteBadgeDefinition('def-1', 'org-1')).toBe(true);
-    expect(mocks.deleteRow).toHaveBeenCalledWith('db', 'badge-defs', 'def-1');
+    expect(mocks.deleteRow).toHaveBeenCalledWith({ databaseId: 'db', tableId: 'badge-defs', rowId: 'def-1' });
   });
 
   it('deleteBadgeDefinition returns false when the orgId does not match the row owner', async () => {

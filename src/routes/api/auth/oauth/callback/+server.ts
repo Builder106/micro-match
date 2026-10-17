@@ -29,7 +29,7 @@ export const GET: RequestHandler = async (event) => {
     .setProject(env.APPWRITE_PROJECT_ID!);
   const userAccount = new Account(userClient);
   try {
-    await userAccount.createSession(userId, secret);
+    await userAccount.createSession({ userId, secret });
   } catch (err) {
     if (env.NODE_ENV !== 'production') console.error('OAuth token exchange failed:', err);
     throw redirect(303, '/login?error=oauth_invalid');
@@ -44,7 +44,7 @@ export const GET: RequestHandler = async (event) => {
 
   let user: import('node-appwrite').Models.User<import('$lib/types').UserPreferences> | undefined;
   try {
-    user = await users.get<import('$lib/types').UserPreferences>(userId);
+    user = await users.get<import('$lib/types').UserPreferences>({ userId });
   } catch (err) {
     if (env.NODE_ENV !== 'production') console.error('users.get after OAuth failed:', err);
     throw redirect(303, '/login?error=oauth_user');

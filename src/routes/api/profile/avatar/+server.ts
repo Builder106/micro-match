@@ -42,19 +42,19 @@ export const POST: RequestHandler = async (event) => {
       .setKey(env.APPWRITE_API_KEY || '');
     const storage = new Storage(client);
 
-    const created = await storage.createFile(
+    const created = await storage.createFile({
       bucketId,
-      ID.unique(),
+      fileId: ID.unique(),
       file,
-      [
+      permissions: [
         Permission.read(Role.any()),
         Permission.update(Role.user(userId)),
         Permission.delete(Role.user(userId))
       ]
-    );
+    });
 
     const fileId: string = created?.$id;
-    const url = String(storage.getFilePreview(bucketId, fileId, 128, 128));
+    const url = String(storage.getFilePreview({ bucketId, fileId, width: 128, height: 128 }));
     return json({ fileId, url });
   } catch (err) {
     console.error('Avatar upload error', err);

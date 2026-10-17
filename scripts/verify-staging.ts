@@ -2,7 +2,7 @@
 // Verifies connectivity, schema tables, buckets, and teams against an isolated
 // MicroMatch staging Appwrite project (micromatch-staging).
 
-import { Client, Databases, Storage, Teams, TablesDB } from 'node-appwrite';
+import { Client, Storage, Teams, TablesDB } from 'node-appwrite';
 
 const endpoint = process.env.APPWRITE_ENDPOINT ?? 'https://sfo.cloud.appwrite.io/v1';
 const projectId = process.env.APPWRITE_PROJECT_ID;
@@ -40,7 +40,6 @@ async function verifyStaging() {
     .setProject(projectId)
     .setKey(apiKey);
 
-  const databases = new Databases(client);
   const tables = new TablesDB(client);
   const storage = new Storage(client);
   const teams = new Teams(client);
@@ -49,7 +48,7 @@ async function verifyStaging() {
 
   // 1. Verify Database
   try {
-    const db = await databases.get(dbId);
+    const db = await tables.get({ databaseId: dbId });
     console.log(`✓ Database "${db.name}" (${db.$id}) is accessible.`);
   } catch (err) {
     console.error(`✗ Failed to access database "${dbId}":`, err instanceof Error ? err.message : err);
@@ -60,12 +59,12 @@ async function verifyStaging() {
   const requiredTables = [tasksTable, claimsTable, badgesTable, verificationsTable, badgeDefsTable];
   for (const tableId of requiredTables) {
     try {
-      const table = await tables.getTable(dbId, tableId);
+      const table = await tables.getTable({ databaseId: dbId, tableId });
       console.log(`✓ Table "${table.name}" (${table.$id}) is accessible.`);
     } catch {
       // Fallback: try querying rows if getTable is not directly supported in the API version
       try {
-        const rows = await tables.listRows(dbId, tableId);
+        const rows = await tables.listRows({ databaseId: dbId, tableId });
         console.log(`✓ Table "${tableId}" is accessible (${rows.total} rows).`);
       } catch (err) {
         console.error(`✗ Failed to access table "${tableId}":`, err instanceof Error ? err.message : err);
@@ -77,7 +76,7 @@ async function verifyStaging() {
   // 3. Verify Storage Buckets
   for (const bucketId of [avatarsBucket, verificationsBucket]) {
     try {
-      const bucket = await storage.getBucket(bucketId);
+      const bucket = await storage.getBucket({ bucketId });
       console.log(`✓ Storage bucket "${bucket.name}" (${bucket.$id}) is accessible.`);
     } catch (err) {
       console.error(`✗ Failed to access bucket "${bucketId}":`, err instanceof Error ? err.message : err);
@@ -89,7 +88,7 @@ async function verifyStaging() {
   const requiredTeams = [ngoTeam, volunteerTeam, adminTeam];
   for (const teamId of requiredTeams) {
     try {
-      const team = await teams.get(teamId);
+      const team = await teams.get({ teamId });
       console.log(`✓ Team "${team.name}" (${team.$id}) is accessible.`);
     } catch (err) {
       console.error(`✗ Failed to access team "${teamId}":`, err instanceof Error ? err.message : err);

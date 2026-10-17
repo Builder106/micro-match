@@ -66,7 +66,7 @@ export const POST: RequestHandler = async (event) => {
       permissions.push(Permission.read(Role.team(ADMIN_TEAM_ID)));
     }
 
-    const created = await storage.createFile(bucketId, ID.unique(), file, permissions);
+    const created = await storage.createFile({ bucketId, fileId: ID.unique(), file, permissions });
     return json({ fileId: created?.$id });
   } catch (err) {
     console.error('Verification doc upload error', err);

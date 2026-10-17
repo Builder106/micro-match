@@ -104,7 +104,7 @@ describe('appwrite (Appwrite-backed mode) — tasks', () => {
   it('getTasks applies the active-status query when not including inactive tasks', async () => {
     mocks.listRows.mockResolvedValue({ rows: [] });
     await getTasks();
-    expect(mocks.listRows).toHaveBeenCalledWith('db', 'tasks', expect.arrayContaining(['equal(status,active)']));
+    expect(mocks.listRows).toHaveBeenCalledWith({ databaseId: 'db', tableId: 'tasks', queries: expect.arrayContaining(['equal(status,active)']) });
   });
 
   it('getTasks scopes the Appwrite query to an NGO when requested', async () => {
@@ -112,7 +112,7 @@ describe('appwrite (Appwrite-backed mode) — tasks', () => {
 
     await getTasks({ orgId: 'org-1', includeInactive: true });
 
-    expect(mocks.listRows).toHaveBeenCalledWith('db', 'tasks', expect.arrayContaining(['equal(orgID,org-1)']));
+    expect(mocks.listRows).toHaveBeenCalledWith({ databaseId: 'db', tableId: 'tasks', queries: expect.arrayContaining(['equal(orgID,org-1)']) });
   });
 
   it('keeps active tasks without a volunteer limit in the feed', async () => {
@@ -129,7 +129,7 @@ describe('appwrite (Appwrite-backed mode) — tasks', () => {
       maxVolunteers: 5,
       lastActivityAt: new Date().toISOString()
     };
-    mocks.listRows.mockImplementation(async (db, table) => {
+    mocks.listRows.mockImplementation(async ({ tableId: table }: { tableId: string }) => {
       if (table === 'tasks') return { rows: [taskWithLimit] };
       if (table === 'claims') return { total: 1000, rows: [] }; // reached limit
       return { rows: [] };
@@ -140,7 +140,7 @@ describe('appwrite (Appwrite-backed mode) — tasks', () => {
   });
 
   it('keeps a limited task visible when the claim-limit lookup fails', async () => {
-    mocks.listRows.mockImplementation(async (_db, table) => {
+    mocks.listRows.mockImplementation(async ({ tableId: table }: { tableId: string }) => {
       if (table === 'tasks') {
         return { rows: [{ ...taskRow, $id: 't-limit-error', maxVolunteers: 1, lastActivityAt: new Date().toISOString() }] };
       }
@@ -172,7 +172,7 @@ describe('appwrite (Appwrite-backed mode) — tasks', () => {
 
     const created = await createTask({ title: 'x', shortDescription: 's', tags: [], orgId: 'org-1' });
 
-    expect(mocks.createRow).toHaveBeenCalledWith('db', 'tasks', 'new-id', expect.objectContaining({ orgID: 'org-1' }));
+    expect(mocks.createRow).toHaveBeenCalledWith({ databaseId: 'db', tableId: 'tasks', rowId: 'new-id', data: expect.objectContaining({ orgID: 'org-1' }) });
     expect(created.orgId).toBe('org-1');
   });
 
@@ -181,7 +181,7 @@ describe('appwrite (Appwrite-backed mode) — tasks', () => {
 
     await createTask({ title: 'x', shortDescription: 's', tags: 'not-an-array' as never });
 
-    expect(mocks.createRow).toHaveBeenCalledWith('db', 'tasks', 'new-id', expect.objectContaining({ tags: [] }));
+    expect(mocks.createRow).toHaveBeenCalledWith({ databaseId: 'db', tableId: 'tasks', rowId: 'new-id', data: expect.objectContaining({ tags: [] }) });
   });
 
   it('updateTaskStatus maps the updated row and returns undefined on error', async () => {
@@ -209,7 +209,7 @@ describe('appwrite (Appwrite-backed mode) — tasks', () => {
 
     const updated = await updateTaskStatus('row-defaults', '' as never);
 
-    expect(mocks.updateRow).toHaveBeenCalledWith('db', 'tasks', 'row-defaults', expect.objectContaining({ status: 'active' }));
+    expect(mocks.updateRow).toHaveBeenCalledWith({ databaseId: 'db', tableId: 'tasks', rowId: 'row-defaults', data: expect.objectContaining({ status: 'active' }) });
     expect(updated).toEqual(expect.objectContaining({
       tags: [],
       estimatedMinutes: undefined,
@@ -316,7 +316,7 @@ describe('appwrite (Appwrite-backed mode) — tasks', () => {
     const count = await setTasksVerifiedForOrg('org-1', false);
 
     expect(count).toBe(2);
-    expect(mocks.updateRow).toHaveBeenCalledWith('db', 'tasks', 'a', { isVerified: false });
+    expect(mocks.updateRow).toHaveBeenCalledWith({ databaseId: 'db', tableId: 'tasks', rowId: 'a', data: { isVerified: false } });
   });
 
   it('setTasksVerifiedForOrg returns 0 when the query itself fails', async () => {
@@ -327,7 +327,7 @@ describe('appwrite (Appwrite-backed mode) — tasks', () => {
   it('deleteTask calls tables.deleteRow', async () => {
     mocks.deleteRow.mockResolvedValue(undefined);
     await deleteTask('row-1');
-    expect(mocks.deleteRow).toHaveBeenCalledWith('db', 'tasks', 'row-1');
+    expect(mocks.deleteRow).toHaveBeenCalledWith({ databaseId: 'db', tableId: 'tasks', rowId: 'row-1' });
   });
 });
 
@@ -353,9 +353,14 @@ describe('appwrite (Appwrite-backed mode) — claims', () => {
 
     const claim = await createClaim({ taskId: 'task-1', userId: 'user-1', notes: 'done', proofUrl: 'https://proof' });
 
-    expect(mocks.createRow).toHaveBeenCalledWith('db', 'claims', 'new-id', expect.objectContaining({
+    expect(mocks.createRow).toHaveBeenCalledWith({
+      databaseId: 'db',
+      tableId: 'claims',
+      rowId: 'new-id',
+      data: expect.objectContaining({
       taskID: 'task-1', userID: 'user-1', notes: 'done', proofURL: 'https://proof'
-    }));
+    })
+    });
     expect(claim).toEqual(expect.objectContaining({ id: 'claim-1', taskId: 'task-1', userId: 'user-1' }));
   });
 
@@ -363,7 +368,7 @@ describe('appwrite (Appwrite-backed mode) — claims', () => {
     mocks.listRows.mockResolvedValue({ rows: [claimRow] });
     const claims = await getClaims({ userId: 'user-1' });
 
-    expect(mocks.listRows).toHaveBeenCalledWith('db', 'claims', expect.arrayContaining(['equal(userID,user-1)']));
+    expect(mocks.listRows).toHaveBeenCalledWith({ databaseId: 'db', tableId: 'claims', queries: expect.arrayContaining(['equal(userID,user-1)']) });
     expect(claims[0]).toEqual(expect.objectContaining({ id: 'claim-1', taskId: 'task-1' }));
   });
 
@@ -371,7 +376,7 @@ describe('appwrite (Appwrite-backed mode) — claims', () => {
     mocks.listRows.mockResolvedValue({ rows: [claimRow] });
 
     await expect(getClaims()).resolves.toEqual([expect.objectContaining({ id: 'claim-1' })]);
-    expect(mocks.listRows).toHaveBeenCalledWith('db', 'claims', ['limit(100)']);
+    expect(mocks.listRows).toHaveBeenCalledWith({ databaseId: 'db', tableId: 'claims', queries: ['limit(100)'] });
   });
 
   it('getClaimById maps a row and returns undefined on error', async () => {
@@ -413,9 +418,14 @@ describe('appwrite (Appwrite-backed mode) — claims', () => {
       reviewedBy: undefined,
       reviewedAt: undefined
     }));
-    expect(mocks.createRow).toHaveBeenCalledWith('db', 'claims', 'new-id', expect.not.objectContaining({
+    expect(mocks.createRow).toHaveBeenCalledWith({
+      databaseId: 'db',
+      tableId: 'claims',
+      rowId: 'new-id',
+      data: expect.not.objectContaining({
       userID: expect.anything(), notes: expect.anything(), proofURL: expect.anything()
-    }));
+    })
+    });
 
     mocks.listRows.mockResolvedValueOnce({ rows: [sparseClaimRow] });
     await expect(getClaims()).resolves.toEqual([expect.objectContaining({ userId: undefined, notes: undefined, proofUrl: undefined })]);
@@ -431,7 +441,7 @@ describe('appwrite (Appwrite-backed mode) — claims', () => {
       reviewedBy: undefined,
       reviewedAt: undefined
     }));
-    expect(mocks.updateRow).toHaveBeenCalledWith('db', 'claims', 'claim-sparse', expect.objectContaining({ reviewedBy: null }));
+    expect(mocks.updateRow).toHaveBeenCalledWith({ databaseId: 'db', tableId: 'claims', rowId: 'claim-sparse', data: expect.objectContaining({ reviewedBy: null }) });
   });
 });
 
@@ -449,7 +459,7 @@ describe('appwrite (Appwrite-backed mode) — badges', () => {
     mocks.createRow.mockResolvedValue(badgeRow);
     const badge = await awardBadge({ userId: 'user-1', label: 'Helper', taskId: 'task-1', color: '#FF6B6B' });
 
-    expect(mocks.createRow).toHaveBeenCalledWith('db', 'badges', 'new-id', expect.objectContaining({ userID: 'user-1' }));
+    expect(mocks.createRow).toHaveBeenCalledWith({ databaseId: 'db', tableId: 'badges', rowId: 'new-id', data: expect.objectContaining({ userID: 'user-1' }) });
     expect(badge).toEqual(expect.objectContaining({ id: 'badge-1', userId: 'user-1' }));
   });
 
@@ -514,10 +524,15 @@ describe('appwrite (Appwrite-backed mode) — badges', () => {
       awardedAt: undefined
     });
     await awardBadge({ userId: 'user-1', label: 'Helper' });
-    expect(mocks.createRow).toHaveBeenCalledWith('db', 'badges', 'new-id', {
+    expect(mocks.createRow).toHaveBeenCalledWith({
+      databaseId: 'db',
+      tableId: 'badges',
+      rowId: 'new-id',
+      data: {
       userID: 'user-1',
       label: 'Helper',
       awardedAt: expect.any(String)
+    }
     });
 
     mocks.listRows.mockResolvedValueOnce({

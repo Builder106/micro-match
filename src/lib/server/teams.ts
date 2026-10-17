@@ -13,7 +13,7 @@ export async function isUserInTeam(userId: string, teamId?: string): Promise<boo
   if (!teamId) return false;
   try {
     const { teams, Query } = await getTeamsClient();
-    const list = await teams.listMemberships(teamId, [Query.equal('userId', userId), Query.limit(1)]);
+    const list = await teams.listMemberships({ teamId, queries: [Query.equal('userId', userId), Query.limit(1)] });
     return (list.total ?? list.memberships?.length ?? 0) > 0 || (list.memberships?.length ?? 0) > 0;
   } catch (err) {
     console.warn('Teams API unavailable, falling back to preferences-based roles');
@@ -25,7 +25,7 @@ export async function removeUserFromTeam(userId: string, teamId?: string) {
   if (!teamId) return;
   try {
     const { teams, Query } = await getTeamsClient();
-    const list = await teams.listMemberships(teamId, [Query.equal('userId', userId), Query.limit(10)]);
+    const list = await teams.listMemberships({ teamId, queries: [Query.equal('userId', userId), Query.limit(10)] });
     interface MembershipItem {
       $id?: string;
       id?: string;
@@ -35,7 +35,7 @@ export async function removeUserFromTeam(userId: string, teamId?: string) {
     for (const m of items) {
       const membershipId = m.$id ?? m.id;
       if (membershipId) {
-        await teams.deleteMembership(teamId, membershipId);
+        await teams.deleteMembership({ teamId, membershipId });
       }
     }
   } catch (err) {
@@ -47,7 +47,7 @@ export async function addUserToTeam(userId: string, teamId?: string, roles: stri
   if (!teamId) return;
   try {
     const { teams } = await getTeamsClient();
-    await teams.createMembership(teamId, roles, undefined, userId);
+    await teams.createMembership({ teamId, roles, userId });
   } catch (err) {
     console.warn('Could not add user to team:', err);
   }
