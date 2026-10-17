@@ -2,6 +2,7 @@ import type { PageServerLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
 import { getTasks, getClaims } from '$lib/server/appwrite';
 import type { Task, Claim } from '$lib/types';
+import { getQuiltPatches } from '$lib/server/quilt';
 
 type EnrichedClaim = Claim & { task?: { id: string; title: string; estimatedMinutes?: number } };
 
@@ -36,6 +37,7 @@ export const load: PageServerLoad = async ({ locals }) => {
     );
 
     const pendingReviews = myTaskClaims.filter(c => c.status === 'pending');
+    const patches = await getQuiltPatches({ orgId: user.id });
     const approvedClaims = myTaskClaims.filter(c => c.status === 'approved');
 
     const totalHours = approvedClaims.reduce((total, claim) => {
@@ -53,7 +55,8 @@ export const load: PageServerLoad = async ({ locals }) => {
         pendingReviewsCount: pendingReviews.length,
         approvedClaimsCount: approvedClaims.length,
         totalHours: Math.round(totalHours * 10) / 10,
-        myClaims: myTaskClaims
+        myClaims: myTaskClaims,
+        patches
       }
     };
   } else if (userRole === 'volunteer' && user) {
@@ -75,6 +78,7 @@ export const load: PageServerLoad = async ({ locals }) => {
       .filter(t => !claimedTaskIds.has(t.id))
       .sort((a, b) => (a.estimatedMinutes ?? 999) - (b.estimatedMinutes ?? 999))
       .slice(0, 3);
+    const patches = await getQuiltPatches({ userId: user.id, statuses: ['approved', 'pending', 'rejected'] });
 
     return {
       signedIn: true,
@@ -84,7 +88,8 @@ export const load: PageServerLoad = async ({ locals }) => {
         myClaims,
         approvedClaimsCount: approvedClaims.length,
         totalHours: Math.round(totalHours * 10) / 10,
-        recommendations
+        recommendations,
+        patches
       }
     };
   }

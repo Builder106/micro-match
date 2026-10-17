@@ -2,8 +2,9 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
-const { mocks } = vi.hoisted(() => ({ mocks: { getTasks: vi.fn(), getClaims: vi.fn() } }));
+const { mocks } = vi.hoisted(() => ({ mocks: { getTasks: vi.fn(), getClaims: vi.fn(), getQuiltPatches: vi.fn() } }));
 vi.mock('$lib/server/appwrite', () => ({ getTasks: mocks.getTasks, getClaims: mocks.getClaims }));
+vi.mock('$lib/server/quilt', () => ({ getQuiltPatches: mocks.getQuiltPatches }));
 
 import { load } from '../../routes/dashboard/+page.server';
 import { createServerLoadEventFor, requireLoadResult } from '../helpers/createLoadEvent';
@@ -17,7 +18,10 @@ function makeEvent(opts: { userRole?: App.Locals['userRole']; userId?: string } 
 }
 
 describe('/dashboard load', () => {
-  beforeEach(() => Object.values(mocks).forEach((m) => m.mockReset()));
+  beforeEach(() => {
+    Object.values(mocks).forEach((m) => m.mockReset());
+    mocks.getQuiltPatches.mockResolvedValue([]);
+  });
 
   it('redirects anonymous visitors to login', async () => {
     try {
@@ -116,8 +120,24 @@ describe('/dashboard load', () => {
       myClaims: [],
       approvedClaimsCount: 0,
       totalHours: 0,
-      recommendations: []
+      recommendations: [],
+      patches: []
     });
+  });
+
+  it("loads the volunteer's own patches in every state, and a nonprofit's approved patches", async () => {
+    const patch = { id: 'c1', status: 'approved' };
+    mocks.getTasks.mockResolvedValue([]);
+    mocks.getClaims.mockResolvedValue([]);
+    mocks.getQuiltPatches.mockResolvedValue([patch]);
+
+    const vol = requireLoadResult(await load(makeEvent({ userRole: 'volunteer', userId: 'user-1' })));
+    expect(mocks.getQuiltPatches).toHaveBeenCalledWith({ userId: 'user-1', statuses: ['approved', 'pending', 'rejected'] });
+    expect(vol.userData?.patches).toEqual([patch]);
+
+    const ngo = requireLoadResult(await load(makeEvent({ userRole: 'ngo', userId: 'org-1' })));
+    expect(mocks.getQuiltPatches).toHaveBeenCalledWith({ orgId: 'org-1' });
+    expect(ngo.userData?.patches).toEqual([patch]);
   });
 
 

@@ -62,11 +62,15 @@ export async function listBadgeDefinitions(orgId: string): Promise<BadgeDefiniti
   if (!useAppwrite) return Array.from(inMemory.values()).filter((b) => b.orgId === orgId);
   return withAppwrite(async ({ tables, dbId, table, Query }) => {
     try {
-      const res = await tables.listRows<DbBadgeDefRow>(dbId, table, [
+      const res = await tables.listRows<DbBadgeDefRow>({
+        databaseId: dbId,
+        tableId: table,
+        queries: [
         Query.equal('orgID', orgId),
         Query.orderDesc('$createdAt'),
         Query.limit(200)
-      ]);
+      ]
+      });
       return res.rows.map(fromRow);
     } catch {
       return [];
@@ -99,7 +103,7 @@ export async function createBadgeDefinition(input: {
       taskID: input.taskId ?? '',
       description: input.description ?? ''
     };
-    const created = await tables.createRow<DbBadgeDefRow>(dbId, table, ID.unique(), payload);
+    const created = await tables.createRow<DbBadgeDefRow>({ databaseId: dbId, tableId: table, rowId: ID.unique(), data: payload });
     return fromRow(created);
   });
 }
@@ -114,9 +118,9 @@ export async function deleteBadgeDefinition(id: string, orgId: string): Promise<
   return withAppwrite(async ({ tables, dbId, table }) => {
     try {
       // Confirm ownership before delete to prevent cross-org tampering.
-      const row = await tables.getRow<DbBadgeDefRow>(dbId, table, id);
+      const row = await tables.getRow<DbBadgeDefRow>({ databaseId: dbId, tableId: table, rowId: id });
       if (row?.orgID !== orgId) return false;
-      await tables.deleteRow(dbId, table, id);
+      await tables.deleteRow({ databaseId: dbId, tableId: table, rowId: id });
       return true;
     } catch {
       return false;
@@ -128,7 +132,7 @@ export async function getBadgeDefinition(id: string): Promise<BadgeDefinition | 
   if (!useAppwrite) return inMemory.get(id);
   return withAppwrite(async ({ tables, dbId, table }) => {
     try {
-      const row = await tables.getRow<DbBadgeDefRow>(dbId, table, id);
+      const row = await tables.getRow<DbBadgeDefRow>({ databaseId: dbId, tableId: table, rowId: id });
       return fromRow(row);
     } catch {
       return undefined;

@@ -1,328 +1,187 @@
 <script lang="ts">
-  import Icon from "@iconify/svelte";
-  import CustomSelect from '$lib/components/CustomSelect.svelte';
-  import { goto } from '$app/navigation';
-  import { resolve } from '$app/paths';
+  import { page } from '$app/state';
+  import Seo from '$lib/components/Seo.svelte';
+  import AccountTabs from '$lib/components/AccountTabs.svelte';
+  import VerificationCard from '$lib/components/VerificationCard.svelte';
+  import { callApi } from '$lib/api';
+  import { go } from '$lib/go';
+  import { TASK_MINUTES, LIMITS, parseTags } from '$lib/taskForm';
+  import type { Locale } from '$lib/locale';
+  import type { PageData } from './$types';
 
-  export let data: { verificationStatus: 'pending' | 'approved' | 'rejected' | null };
+  let { data }: { data: PageData } = $props();
+  const locale = $derived((page.data.locale as Locale | undefined) ?? 'en');
 
-  let title = "";
-  let shortDescription = "";
-  let description = "";
-  let language = "English";
-  let estimatedMinutes: number | string = 30;
-  let tags = "";
-  let maxVolunteers: number | string = "";
-  let deadline = "";
+  let title = $state('');
+  let shortDescription = $state('');
+  let description = $state('');
+  let minutes = $state(15);
+  let tags = $state('');
+  let language = $state('English');
+  let maxVolunteers = $state('');
+  let deadline = $state('');
+  let error = $state('');
+  let submitting = $state(false);
 
-  let isSubmitting = false;
-  let submitError = "";
-  let submitSuccess = false;
+  const languages = ['English', 'Spanish', 'French', 'German', 'Portuguese', 'Chinese', 'Arabic'];
 
-  const titleMax = 140;
-  const shortMax = 280;
-  const longMax = 4000;
-
-  $: titleCount = title.length;
-  $: shortCount = shortDescription.length;
-  $: descCount = description.length;
-
-  $: isVerified = data.verificationStatus === 'approved';
-  $: isPending = data.verificationStatus === 'pending';
-  $: isRejected = data.verificationStatus === 'rejected';
-
-  async function handleSubmit() {
-    submitError = "";
-    if (!title.trim() || !shortDescription.trim()) {
-      submitError = "Title and short description are required.";
-      return;
-    }
-
-    isSubmitting = true;
-    try {
-      const response = await fetch("/api/tasks", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: title.trim(),
-          shortDescription: shortDescription.trim(),
-          description: description.trim() || undefined,
-          language,
-          estimatedMinutes: Number(estimatedMinutes) || undefined,
-          tags: tags.split(",").map(t => t.trim()).filter(Boolean),
-          maxVolunteers: maxVolunteers ? Number(maxVolunteers) : undefined,
-          deadline: deadline || undefined
-        })
-      });
-
-      if (response.ok) {
-        const created = await response.json();
-        submitSuccess = true;
-        // Tiny delay so the success state registers, then navigate.
-        setTimeout(() => goto(resolve(`/task/${created.id}`, {})), 600);
-      } else {
-        const payload = await response.json().catch(() => ({}));
-        submitError = payload?.error || "Failed to create task";
-        if (Array.isArray(payload?.reasons)) {
-          submitError += `: ${payload.reasons.join(', ')}`;
-        }
-      }
-    } catch {
-      submitError = "Network error. Please try again.";
-    } finally {
-      isSubmitting = false;
-    }
+  async function post(e: SubmitEvent) {
+    e.preventDefault();
+    if (!title.trim() || !shortDescription.trim()) return void (error = 'A title and a one-line summary are required.');
+    submitting = true;
+    error = '';
+    const res = await callApi<{ id: string }>('/api/tasks', {
+      body: {
+        title: title.trim(),
+        shortDescription: shortDescription.trim(),
+        description: description.trim() || undefined,
+        estimatedMinutes: minutes,
+        tags: parseTags(tags),
+        language,
+        maxVolunteers: maxVolunteers ? Number(maxVolunteers) : undefined,
+        deadline: deadline ? new Date(deadline).toISOString() : undefined
+      },
+      fallback: 'Could not post the task.'
+    });
+    submitting = false;
+    if (res.ok) await go(`/task/${res.data.id}`, locale, { invalidateAll: true });
+    else error = res.error;
   }
-
-  const languages = [
-    'English', 'Spanish', 'French', 'German', 'Chinese', 'Japanese',
-    'Korean', 'Arabic', 'Portuguese', 'Russian'
-  ];
-  const timePresets = [10, 15, 20, 30, 45, 60];
 </script>
 
-<svelte:head><title>Post a task · MicroMatch</title></svelte:head>
+<Seo title="Post a task | MicroMatch" description="Post a 5 to 30 minute task for volunteers and verify your nonprofit." noindex />
 
-<div class="org-page">
-  <!-- ───── Hero ───── -->
-  <section class="org-hero brand-card">
-    <div class="org-hero-blob" aria-hidden="true"></div>
-    <div class="org-hero-text">
-      <h1>Post a <span class="coral-gradient">task</span>.</h1>
-      <p>Describe a bite-sized contribution and volunteers will pick it up. Aim for 15–30 minutes per task — it's the sweet spot for response rate.</p>
-    </div>
-  </section>
+<AccountTabs />
 
-  <!-- ───── Verification status banner ───── -->
-  {#if !isVerified}
-    <div class="org-banner" role="status" class:org-banner-warn={!isPending} class:org-banner-info={isPending}>
-      <Icon icon={isPending ? 'lucide:hourglass' : 'lucide:shield-alert'} width="18" height="18" />
-      <div>
-        {#if isPending}
-          <strong>Verification under review.</strong>
-          <span>Your tasks will show an "Unverified" chip to volunteers until verification is approved.</span>
-        {:else if isRejected}
-          <strong>Verification needs changes.</strong>
-          <span>Your tasks will show "Unverified" until you resubmit.</span>
-        {:else}
-          <strong>Org not yet verified.</strong>
-          <span>Posted tasks will show "Unverified" to volunteers. <a href={resolve('/profile', {})}>Verify your org →</a></span>
-        {/if}
-      </div>
-    </div>
-  {/if}
-
-  <!-- ───── Form ───── -->
-  <form class="org-form brand-card" onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
-    <header class="org-form-head">
-      <h2>Mission details</h2>
-      <p>Required fields are marked. Volunteers see the title, short description, time estimate, and tags first.</p>
+<div class="org">
+  <form class="org__form" onsubmit={post}>
+    <header class="page-head">
+      <h1 class="display h-l" tabindex="-1">Post a task</h1>
+      <p class="lede">Cut one clear piece of work: what to make, what done looks like and how long it takes.</p>
     </header>
-
-    <fieldset class="org-section">
-      <legend>The basics</legend>
-
-      <label class="org-field">
-        <span class="org-label">Title <em>required</em></span>
-        <input
-          bind:value={title}
-          placeholder="e.g. Translate website copy to Spanish"
-          required
-          maxlength={titleMax}
-        />
-        <small class="org-counter">{titleCount}/{titleMax}</small>
-      </label>
-
-      <label class="org-field">
-        <span class="org-label">Short description <em>required</em></span>
-        <input
-          type="text"
-          bind:value={shortDescription}
-          placeholder="One-sentence summary volunteers see in the feed"
-          required
-          maxlength={shortMax}
-        />
-        <small class="org-counter">{shortCount}/{shortMax}</small>
-      </label>
-
-      <label class="org-field">
-        <span class="org-label">Detailed instructions</span>
-        <textarea
-          bind:value={description}
-          placeholder="What needs to happen, what's the context, what should the volunteer hand back?"
-          rows="6"
-          maxlength={longMax}
-        ></textarea>
-        <small class="org-counter">{descCount}/{longMax}</small>
-      </label>
-    </fieldset>
-
-    <fieldset class="org-section">
-      <legend>Time + scope</legend>
-
-      <div class="org-row">
-        <label class="org-field">
-          <span class="org-label">Language</span>
-          <CustomSelect bind:value={language} ariaLabel="Language" options={languages.map((lang) => ({ value: lang, label: lang }))} />
-        </label>
-
-        <label class="org-field">
-          <span class="org-label">Estimated minutes</span>
-          <input
-            type="number"
-            bind:value={estimatedMinutes}
-            min="5"
-            max="480"
-          />
-          <div class="org-presets">
-            {#each timePresets as m (m)}
-              <button type="button" class="org-preset" class:active={Number(estimatedMinutes) === m} onclick={() => (estimatedMinutes = m)}>{m}m</button>
-            {/each}
-          </div>
-        </label>
-      </div>
-
-      <label class="org-field">
-        <span class="org-label">Tags <em>comma-separated</em></span>
-        <input
-          bind:value={tags}
-          placeholder="e.g. translation, design, data, research"
-        />
-        <small class="org-hint">Tags help volunteers filter the feed. Use lowercase, no #.</small>
-      </label>
-    </fieldset>
-
-    <fieldset class="org-section">
-      <legend>Limits <em class="org-section-em">optional</em></legend>
-
-      <div class="org-row">
-        <label class="org-field">
-          <span class="org-label">Max volunteers</span>
-          <input
-            type="number"
-            bind:value={maxVolunteers}
-            placeholder="Unlimited"
-            min="1"
-          />
-          <small class="org-hint">Cap how many people can claim this task.</small>
-        </label>
-
-        <label class="org-field">
-          <span class="org-label">Deadline</span>
-          <input
-            type="datetime-local"
-            bind:value={deadline}
-          />
-          <small class="org-hint">Leave empty for no deadline.</small>
-        </label>
-      </div>
-    </fieldset>
-
-    {#if submitError}
-      <div class="org-error">
-        <Icon icon="lucide:alert-circle" width="16" height="16" />
-        {submitError}
-      </div>
+    {#if data.verificationStatus !== 'approved'}
+      <p class="notice">Tasks you post now stay out of the public feed until your organization is verified.</p>
     {/if}
 
-    <footer class="org-actions">
-      <a href={resolve('/dashboard', {})} class="org-cancel">Cancel</a>
-      <button type="submit" class="btn-coral btn-lg" disabled={isSubmitting || submitSuccess}>
-        {#if submitSuccess}
-          <Icon icon="lucide:check-circle-2" width="18" height="18" />
-          Posted!
-        {:else if isSubmitting}
-          <Icon icon="lucide:loader-2" width="18" height="18" class="spin" />
-          Posting…
-        {:else}
-          Post task
-          <Icon icon="lucide:arrow-right" width="16" height="16" />
-        {/if}
-      </button>
-    </footer>
+    <div class="field">
+      <label for="t-title">Title</label>
+      <input id="t-title" class="input" maxlength={LIMITS.title} bind:value={title} placeholder="Translate a medical flyer into Spanish" required />
+    </div>
+    <div class="field">
+      <label for="t-short">One-line summary</label>
+      <input id="t-short" class="input" maxlength={LIMITS.short} bind:value={shortDescription} placeholder="What the volunteer does, in one sentence." required />
+    </div>
+    <div class="field">
+      <label for="t-brief">The brief</label>
+      <textarea id="t-brief" class="input" maxlength={LIMITS.brief} bind:value={description} placeholder="Where the material is, what to deliver, how you will judge it."></textarea>
+    </div>
+
+    <fieldset class="field minutes">
+      <legend class="label">How long it takes</legend>
+      <div class="seg">
+        {#each TASK_MINUTES as m (m)}
+          <label class:is-on={minutes === m}><input type="radio" name="minutes" value={m} bind:group={minutes} />{m} min</label>
+        {/each}
+      </div>
+    </fieldset>
+
+    <div class="row">
+      <div class="field">
+        <label for="t-tags">Tags</label>
+        <input id="t-tags" class="input" bind:value={tags} placeholder="translation, health" />
+        <span class="hint">Separate with commas.</span>
+      </div>
+      <div class="field">
+        <label for="t-lang">Written in</label>
+        <select id="t-lang" class="input" bind:value={language}>{#each languages as l (l)}<option>{l}</option>{/each}</select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label for="t-cap">Most volunteers (optional)</label>
+        <input id="t-cap" class="input" type="number" min="1" inputmode="numeric" bind:value={maxVolunteers} />
+      </div>
+      <div class="field">
+        <label for="t-due">Deadline (optional)</label>
+        <input id="t-due" class="input" type="date" bind:value={deadline} />
+      </div>
+    </div>
+
+    {#if error}<p class="notice notice--error" role="alert">{error}</p>{/if}
+    <button class="patch-btn" type="submit" disabled={submitting}>{submitting ? 'Posting...' : 'Post the task'}</button>
+    <p class="small muted">Task text goes through Azure AI Content Safety before it is saved.</p>
   </form>
+
+  <aside class="org__side">
+    <VerificationCard />
+  </aside>
 </div>
 
 <style>
-  .org-page { display: flex; flex-direction: column; gap: 24px; max-width: 880px; margin: 0 auto; }
-
-  /* Hero */
-  .org-hero { position: relative; overflow: hidden; padding: 32px 36px; }
-  .org-hero-blob { position: absolute; z-index: 0; top: -50%; right: -10%; width: 320px; height: 320px; border-radius: 50%; background: rgba(255, 107, 107, 0.18); filter: blur(80px); pointer-events: none; }
-  .org-hero-text { position: relative; z-index: 1; max-width: 600px; padding: 8px 12px; border-radius: 12px; background: var(--color-surface); }
-  .org-hero-text h1 { font-size: clamp(1.75rem, 3vw + 0.5rem, 2.5rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 10px; }
-  .org-hero-text p { color: var(--color-text-secondary); font-size: 15px; line-height: 1.6; margin: 0; }
-
-  /* Verification banner */
-  .org-banner {
+  .org {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(16rem, 22rem);
+    gap: clamp(1.5rem, 4vw, 3.5rem);
+    align-items: start;
+  }
+  .org__form {
+    display: grid;
+    gap: 1.1rem;
+    max-width: 40rem;
+  }
+  .org__form .patch-btn {
+    justify-self: start;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.9rem;
+  }
+  .minutes {
+    border: 0;
+    padding: 0;
+  }
+  .seg {
     display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 14px 18px;
-    border-radius: 16px;
-    font-size: 14px;
-    line-height: 1.5;
+    flex-wrap: wrap;
+    gap: 0.35rem;
   }
-  .org-banner > div { display: flex; flex-direction: column; gap: 2px; }
-  .org-banner strong { font-weight: 700; }
-  .org-banner-warn { background: color-mix(in srgb, var(--color-warning) 12%, transparent); color: color-mix(in srgb, var(--color-warning) 75%, var(--color-text)); }
-  .org-banner-warn :global(svg) { color: var(--color-warning); flex-shrink: 0; margin-top: 2px; }
-  .org-banner-warn a { color: var(--color-warning); font-weight: 700; text-decoration: underline; }
-  .org-banner-info { background: #DBEAFE; color: #1E40AF; }
-  .org-banner-info :global(svg) { color: #2563EB; flex-shrink: 0; margin-top: 2px; }
-
-  /* Form */
-  .org-form { padding: 32px; display: flex; flex-direction: column; gap: 28px; }
-  .org-form-head h2 { font-size: 22px; font-weight: 700; margin: 0 0 6px; }
-  .org-form-head p { color: var(--color-text-secondary); font-size: 14px; margin: 0; }
-
-  .org-section { padding: 0; margin: 0; border: none; display: flex; flex-direction: column; gap: 16px; }
-  .org-section legend { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-secondary); padding: 0; margin: 0 0 4px; }
-  .org-section-em { font-style: normal; font-weight: 600; text-transform: none; letter-spacing: 0; color: var(--color-text-secondary); margin-left: 6px; }
-
-  .org-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  @media (max-width: 540px) { .org-row { grid-template-columns: 1fr; } }
-
-  .org-field { display: flex; flex-direction: column; gap: 6px; position: relative; }
-  .org-label { font-size: 13px; font-weight: 700; color: var(--color-text); display: inline-flex; align-items: center; gap: 6px; }
-  .org-label em { font-style: normal; font-size: 11px; font-weight: 600; padding: 2px 6px; background: color-mix(in srgb, var(--color-primary) 12%, transparent); color: var(--color-primary-readable); border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.04em; }
-  .org-label em { font-style: normal; font-size: 12px; font-weight: 500; color: var(--color-text-secondary); text-transform: lowercase; }
-
-  .org-field input, .org-field textarea {
-    padding: 12px 14px;
-    border: 1px solid var(--card-border-strong);
-    border-radius: 12px;
-    background: var(--color-surface-variant);
-    color: var(--color-text);
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 500;
-    transition: all .2s;
-  }
-  .org-field input:focus, .org-field textarea:focus { outline: none; border-color: var(--color-primary-readable); box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12); }
-  .org-field textarea { resize: vertical; min-height: 120px; line-height: 1.55; }
-  .org-counter { position: absolute; right: 4px; bottom: -18px; font-size: 11px; font-weight: 600; color: var(--color-text-secondary); }
-  .org-hint { font-size: 12px; color: var(--color-text-secondary); }
-
-  .org-presets { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
-  .org-preset {
-    padding: 5px 12px;
-    border-radius: 9999px;
-    border: 1px solid var(--card-border-strong);
-    background: var(--color-surface);
-    font-family: inherit;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--color-text-secondary);
+  .seg label {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.5rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: var(--radius);
+    box-shadow: inset 0 0 0 1.5px var(--c-line);
     cursor: pointer;
-    transition: all .15s;
   }
-  .org-preset:hover { color: var(--color-text); border-color: color-mix(in srgb, var(--color-primary-readable) 30%, transparent); }
-  .org-preset.active { background: var(--color-primary); border-color: var(--color-primary-readable); color: var(--color-action-on-coral); }
-
-  .org-error { display: inline-flex; align-items: center; gap: 8px; padding: 12px 14px; background: color-mix(in srgb, var(--color-error) 10%, transparent); color: var(--color-error); border-radius: 12px; font-size: 14px; font-weight: 600; }
-
-  .org-actions { display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding-top: 12px; border-top: 1px solid var(--card-border); flex-wrap: wrap; }
-  .org-cancel { padding: 12px 24px; border-radius: 9999px; border: 1px solid var(--card-border-strong); background: transparent; color: var(--color-text); font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; text-decoration: none; transition: background .15s; }
-  .org-cancel:hover { background: color-mix(in srgb, var(--color-text) 5%, transparent); }
+  .seg input {
+    position: absolute;
+    opacity: 0;
+  }
+  .seg label.is-on {
+    background: var(--c-fg);
+    color: var(--c-bg);
+    box-shadow: none;
+  }
+  .seg label:has(input:focus-visible) {
+    outline: 2px solid var(--c-fg);
+    outline-offset: 2px;
+  }
+  .org__side {
+    position: sticky;
+    top: 0;
+  }
+  @media (max-width: 899px) {
+    .org {
+      grid-template-columns: 1fr;
+    }
+    .org__side {
+      position: static;
+    }
+    .row {
+      grid-template-columns: 1fr;
+    }
+  }
 </style>

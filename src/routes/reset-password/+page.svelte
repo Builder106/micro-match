@@ -1,177 +1,58 @@
 <script lang="ts">
-  import Icon from '@iconify/svelte';
-  import { account } from '$lib/appwrite.client';
-  import { page } from '$app/stores';
-  import { onMount } from 'svelte';
-  import AuthPageShell from '$lib/components/AuthPageShell.svelte';
-  import { resolve } from '$app/paths';
+  import { page } from '$app/state';
+  import Seo from '$lib/components/Seo.svelte';
+  import Link from '$lib/components/Link.svelte';
 
-  let password = '';
-  let passwordConfirm = '';
-  let error: string | null = null;
-  let submitting = false;
-  let success = false;
-  let userId = '';
-  let secret = '';
-  let linkInvalid = false;
+  const userId = page.url.searchParams.get('userId') ?? '';
+  const secret = page.url.searchParams.get('secret') ?? '';
+  const linkOk = Boolean(userId && secret);
 
-  onMount(() => {
-    const params = $page.url.searchParams;
-    userId = params.get('userId') ?? '';
-    secret = params.get('secret') ?? '';
-    if (!userId || !secret) {
-      linkInvalid = true;
-      error = 'This reset link is missing parameters. Request a new one from the forgot-password page.';
-    }
-  });
+  let password = $state('');
+  let confirm = $state('');
+  let done = $state(false);
+  let error = $state('');
+  let submitting = $state(false);
 
-  async function handleResetPassword(e: Event) {
+  async function reset(e: SubmitEvent) {
     e.preventDefault();
-    if (password !== passwordConfirm) {
-      error = 'Passwords do not match.';
-      return;
-    }
-    if (password.length < 8) {
-      error = 'Password must be at least 8 characters.';
-      return;
-    }
-    error = null;
+    if (password.length < 8) return void (error = 'Use at least 8 characters.');
+    if (password !== confirm) return void (error = 'The two passwords do not match.');
+    error = '';
     submitting = true;
-    success = false;
     try {
-      await account.updateRecovery(userId, secret, password);
-      success = true;
+      const client = await import('$lib/appwrite.client');
+      await client.updateRecovery(userId, secret, password);
+      done = true;
     } catch {
-      error = 'Failed to reset password. The link may have expired — request a new one.';
+      error = 'That link has expired or was already used. Ask for a new one.';
     } finally {
       submitting = false;
     }
   }
 </script>
 
-<svelte:head><title>Reset password · MicroMatch</title></svelte:head>
+<Seo title="Choose a new password | MicroMatch" description="Choose a new password for your MicroMatch account." noindex />
 
-<AuthPageShell animation="/animations/confetti.json">
-  <div class="auth-head">
-    <h1>Set a new password</h1>
-    <p>Choose something at least 8 characters. Use a mix of letters and numbers for safety.</p>
-  </div>
-
-  {#if success}
-    <div class="success">
-      <Icon icon="lucide:check-circle-2" width="20" height="20" />
-      <div>
-        <strong>Password updated.</strong>
-        <span>You can sign in with your new password now.</span>
-      </div>
-    </div>
-    <a href={resolve('/login', {})} class="btn-coral btn-lg auth-submit">
-      Sign in
-      <Icon icon="lucide:arrow-right" width="16" height="16" />
-    </a>
-  {:else if linkInvalid}
-    <div class="error" role="alert"><Icon icon="lucide:alert-circle" width="14" height="14" /> {error}</div>
-    <a href={resolve('/forgot-password', {})} class="btn-coral btn-lg auth-submit">
-      Request a new link
-      <Icon icon="lucide:arrow-right" width="16" height="16" />
-    </a>
+<div class="auth">
+  <h1 class="display h-l" tabindex="-1">Choose a new password</h1>
+  {#if !linkOk}
+    <p class="notice notice--error" role="alert">This reset link is missing part of its address. Ask for a new one.</p>
+    <Link href="/forgot-password" class="patch-btn patch-btn--plain">Get a new link</Link>
+  {:else if done}
+    <p class="notice notice--ok" role="status">Your password is changed.</p>
+    <Link href="/login" class="patch-btn">Sign in</Link>
   {:else}
-    <form class="auth-form" on:submit={handleResetPassword}>
-      {#if error}
-        <p class="error" role="alert"><Icon icon="lucide:alert-circle" width="14" height="14" /> {error}</p>
-      {/if}
-      <label>
-        <span>New password</span>
-        <div class="field-wrap">
-          <Icon icon="lucide:lock" width="16" height="16" />
-          <input
-            class="with-icon"
-            bind:value={password}
-            type="password"
-            placeholder="At least 8 characters"
-            minlength="8"
-            required
-            autocomplete="new-password"
-          />
-        </div>
-      </label>
-      <label>
-        <span>Confirm new password</span>
-        <div class="field-wrap">
-          <Icon icon="lucide:lock-keyhole" width="16" height="16" />
-          <input
-            class="with-icon"
-            bind:value={passwordConfirm}
-            type="password"
-            placeholder="Type it again"
-            minlength="8"
-            required
-            autocomplete="new-password"
-          />
-        </div>
-      </label>
-      <button type="submit" class="btn-coral btn-lg auth-submit" disabled={submitting}>
-        {#if submitting}
-          <Icon icon="lucide:loader-2" width="18" height="18" class="spin" />
-          Saving…
-        {:else}
-          Set new password
-          <Icon icon="lucide:arrow-right" width="16" height="16" />
-        {/if}
-      </button>
+    <form class="auth__form" onsubmit={reset}>
+      <div class="field">
+        <label for="pw">New password</label>
+        <input id="pw" class="input" type="password" autocomplete="new-password" minlength="8" required bind:value={password} />
+      </div>
+      <div class="field">
+        <label for="pw2">The same again</label>
+        <input id="pw2" class="input" type="password" autocomplete="new-password" required bind:value={confirm} />
+      </div>
+      {#if error}<p class="notice notice--error" role="alert">{error}</p>{/if}
+      <button class="patch-btn" type="submit" disabled={submitting}>{submitting ? 'Saving...' : 'Save password'}</button>
     </form>
   {/if}
-</AuthPageShell>
-
-<style>
-  .auth-head { margin-bottom: 22px; }
-  h1 {
-    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
-    font-size: clamp(2rem, 3vw, 2.6rem);
-    font-weight: 800;
-    color: var(--color-text);
-    margin: 0 0 8px;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-  }
-  p { margin: 0; color: var(--color-text-secondary); font-size: 16px; font-weight: 500; line-height: 1.5; }
-
-  .success {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 16px;
-    background: color-mix(in srgb, #059669 10%, transparent);
-    color: #047857;
-    border-radius: 14px;
-    margin-bottom: 16px;
-  }
-  .success > div { display: flex; flex-direction: column; gap: 4px; }
-  .success strong { font-size: 14px; font-weight: 700; }
-  .success span { font-size: 13px; font-weight: 500; line-height: 1.5; color: rgba(4, 120, 87, 0.85); }
-
-  .auth-form { display: grid; gap: 12px; }
-  label { display: grid; gap: 6px; }
-  label span { font-size: 13px; font-weight: 700; color: var(--color-text); }
-  .field-wrap { position: relative; }
-  .field-wrap :global(svg) { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--color-text-tertiary); pointer-events: none; }
-  .with-icon { padding-left: 40px; }
-  input {
-    width: 100%;
-    box-sizing: border-box;
-    height: 48px;
-    border: 1px solid var(--card-border-strong);
-    border-radius: 12px;
-    padding: 0 14px;
-    background: var(--color-surface);
-    color: var(--color-text);
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 500;
-    transition: all 150ms ease;
-  }
-  input:focus { border-color: var(--color-primary-readable); background: var(--color-surface); box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12); outline: none; }
-  .auth-submit { margin-top: 8px; width: 100%; }
-  .error { margin: 0 0 16px; padding: 10px 12px; background: var(--color-error-container); color: var(--color-error); font-size: 13px; font-weight: 600; border-radius: 10px; display: inline-flex; align-items: center; gap: 6px; }
-
-</style>
+</div>

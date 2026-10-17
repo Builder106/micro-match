@@ -80,98 +80,42 @@ relevant server modules ([src/lib/server/verifications.ts](src/lib/server/verifi
 ```sh
 bun run dev             # dev server with HMR
 bun run check           # svelte-check + tsc
-bun run test            # vitest (unit + API + component)
+bun run test            # vitest (server modules, API, page loaders)
 bun run test:watch      # vitest watch mode
+bun run test:functional # Playwright: the real flows
+bun run test:responsiveness # Playwright: overflow at 320 to 1440 px
+bun run test:visual     # Playwright: visual baselines (add --update-snapshots after a deliberate change)
 bun run test:coverage   # v8 coverage → coverage/index.html
-bun run test:e2e        # Playwright (run `bunx playwright install` once first)
-bun run test:e2e:ui     # Playwright UI mode
 bun run lint            # eslint
 bun run format          # prettier write
 bun run build           # production build
 bun run seed            # (re)seed the demo NGO + tasks
 bun run verify:libretranslate # live LibreTranslate health and auth check
-bun run demo            # seed, record the demo suite, convert to GIFs
 ```
 
-CI should at minimum run `bun run check`and`bun run test`.
+CI runs check, lint, unit tests with coverage, the build and the three browser suites; the required gate needs all of them.
 
-## Recording the demos
+## Seeding
 
-The GIFs in the README come from `e2e/demo/` — a separate Playwright suite from
-the QA one in `e2e/smoke.spec.ts`. It shares the step helpers but has its own
-config (`playwright.demo.config.ts`), runs single-worker with `slowMo`, and is
-never part of CI. Only touch it when you're regenerating the README recordings.
+`bun run seed` creates the demo NGO and its tasks, and is safe to rerun.
+`filterTasksForFeed()` auto-archives any task whose `lastActivityAt` is more
+than 30 days old, so demo tasks drop out of the feed about a month after the
+last seed. (See `JOURNAL.md`, 2026-07-16.)
 
-```sh
-bun run demo
-```
-
-That reseeds, records, and converts in one go. A few things worth knowing before
-you run it:
-
-**Reseeding is mandatory, not hygiene.** `bun run demo`calls`bun run seed`
-first on purpose. Two separate things break without it:
-
-- `filterTasksForFeed()`auto-archives any task with a`lastActivityAt` more
-
-  than 30 days stale. Demo tasks never get organic activity, so the feed quietly
-  empties out about a month after the last seed with no error anywhere. (See
-  `JOURNAL.md`, 2026-07-16.)
-
-- `04-closed-loop` needs the demo volunteer to hold *zero* badges. The awarder
-
-  skips any label the volunteer already has, so on a second run the approval
-  mints nothing and the payoff shot is empty — while every assertion still
-  passes. The seed clears the volunteer's claims and badges each run.
-
-**The loop demo needs sign-in-able accounts.** Set `SEED_DEMO_PASSWORD` in
-`.env` to a strong random value; the seed then gives the demo NGO and volunteer
-a password, and `04`/`06` can sign in through the real login form. Leave it
-unset and the seed skips those fixtures — the other scenarios still record fine,
-but the two authenticated ones will fail with a clear message.
-
-Don't hardcode that password. These accounts live on the same Appwrite project
-as the deployed site, and the NGO one can approve claims and mint badges.
-
-**Why the NGO account is the seeded one.** `/api/claims/[id]/approve` rejects a
-reviewer who doesn't own the task, so the approving account has to be the org
-that owns the seeded tasks. A separate reviewer account can't stand in.
-
-**Writing a new scenario.** Plain Playwright `.spec.ts`, not Gherkin — that's
-deliberate. Number the file so it sorts into narrative order (specs run
-alphabetically, single worker). Then:
-
-- `slowMo`only pauses *between actions*. It doesn't cover`page.goto()`, and
-
-  assertions resolve the instant the element exists. Call `dwellForDemo(page)`
-  at every "thing just appeared" beat or it flashes past unreadably.
-
-- Use `slowFill()`instead of`.fill()` so typing animates.
-- Call `waitForAuthHydration()`before clicking anything on`/login` or
-
-  `/signup`. Those handlers are Svelte `on:` bindings — click before hydration
-  and the login form does a native GET that puts the password in the URL.
-
-- Prefer `toBeInViewport()`over`toBeVisible()` for a payoff shot.
-
-  `scrollIntoViewIfNeeded()` scrolls the *minimum* distance, so anchoring on a
-  section heading happily parks the thing you're showing off just below the fold
-  with the assertion still green.
-
-- Don't pass `--reporter` on the command line. It replaces the config's reporter
-
-  array, and the custom one in `e2e/demo/reporter.ts` is what converts the webm
-  to mp4 — override it and the recording silently never appears.
+Set `SEED_DEMO_PASSWORD` in `.env` to give the demo NGO and volunteer a
+password so they can sign in. Don't hardcode it: these accounts live on the
+same Appwrite project as the deployed site, and the NGO account can approve
+claims and mint badges.
 
 ## Project layout
 
 ```text
 src/
-├── app.css                       # global brand classes, scrollbar, dark-mode tokens
+├── app.html                      # document shell; sets html.js and html.motion before paint
 ├── app.d.ts                      # SvelteKit ambient types
-├── hooks.server.ts               # session cookie → locals.userRole
+├── hooks.server.ts               # locale routing, session cookie → locals.userRole
+├── hooks.ts                      # locale reroute
 ├── lib/
-│   ├── components/               # shared Svelte components (TaskCard, VerificationCard, …)
 │   ├── server/                   # server-only modules
 │   │   ├── appwrite.ts           # tasks, claims, badges DB + tasks-isVerified backfill
 │   │   ├── auth.ts               # role detection from JWT / cookies
@@ -182,29 +126,30 @@ src/
 │   │   ├── propublica.ts         # US 501(c)(3) lookup by EIN
 │   │   ├── teams.ts              # ngo / volunteer / admin team helpers
 │   │   └── verifications.ts      # ngoVerifications CRUD + prefs sync
+│   ├── components/               # Svelte components
+│   │   ├── world/                # the quilt the site is made of: blocks, panel, corner tags
+│   │   └── art/                  # Glaxnimate artwork (needle, pin, scissors, swatch)
+│   ├── quilt/                    # quilt logic: log cabin layout, block patterns, fabrics, icons, map
+│   ├── i18n/                     # locale-aware formatters
+│   ├── locale.ts                 # supported locales and localized paths
 │   ├── types.ts                  # shared TS types (Task, Claim, Badge, …)
+│   ├── site.ts, feed.ts, …       # small pure helpers with unit tests
 │   └── utils/tagColors.ts        # tag→{bg,color} palette
-├── routes/                       # SvelteKit pages + API endpoints
-│   ├── +layout.svelte            # app shell, font load, account.get gate
-│   ├── admin/verifications/      # admin queue page (gated by admins team)
-│   ├── api/                      # endpoint handlers
-│   ├── badges/{manage,analytics}/
-│   ├── dashboard/                # routes to NGODashboard or VolunteerDashboard
-│   ├── org/                      # NGO post-a-task form
-│   ├── profile/                  # user profile + role picker + verification card
-│   ├── task/[id]/                # task detail + claim submission
-│   └── tasks/                    # public feed
-├── tests/
-│   ├── api/                      # endpoint tests (vitest, node)
-│   ├── components/               # component tests (vitest, jsdom)
-│   └── setup.ts                  # cleanup hooks
-├── e2e/                          # Playwright specs
-└── static/                       # logo, favicon, lottie animations
+├── engine/                       # camera, panel unfold/fold, panel scroll, idle input (GSAP)
+├── styles/                       # tokens.css, base.css, world.css (global on purpose)
+├── routes/                       # page loaders (+page.server.ts) and API endpoints
+│   ├── +layout.svelte            # the quilt, the panel and the navigation lifecycle
+│   └── api/                      # endpoint handlers
+└── tests/
+    ├── api/                      # endpoint tests
+    ├── pages/                    # page loader tests
+    └── setup.ts                  # localStorage shim
 ```
 
-The split between `src/tests/api/`(vitest, node env) and`src/tests/components/`
-(vitest, jsdom env, browser-condition Svelte resolution) is configured in
-`vite.config.ts`via vitest's`projects` array.
+Unit tests run in vitest's node environment (`vite.config.ts`). Browser
+suites live in `e2e/` and run through `playwright.config.ts`. Design
+decisions, the structure plan and the art direction are in `DESIGN.md`;
+Glaxnimate source art is in `design/glaxnimate/`.
 
 ## Style + conventions
 
@@ -227,10 +172,14 @@ The split between `src/tests/api/`(vitest, node env) and`src/tests/components/`
   unavoidable, link to a tracking issue.
 
 - **No emojis in code, comments, or commits.** README and docs are fine.
-- **Brand-forward editorial visual language.** Inner pages use the `brand-card`,
-
-  `btn-coral`, `btn-outline-dark`, `coral-gradient`, `tag` classes from
-  `src/app.css` and the Plus Jakarta Sans display face. New pages should match.
+- **The quilt is the interface.** A new public page is a block on the quilt:
+  add it to `BLOCKS` in `src/lib/quilt/world.ts` and route it there. Use the
+  shared classes in `src/styles/base.css` (`patch-btn`, `stitch-link`, `part`,
+  `field`, `input`) and the tokens in `tokens.css`. Read `DESIGN.md` first.
+- **Internal links go through `Link.svelte`** (or `go()` in scripts) so the
+  locale prefix is kept.
+- **Never invent content.** No made-up people, quotes, counts or partners; the
+  quilt shows real approved claims only.
 
 ## Pull requests
 

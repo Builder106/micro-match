@@ -71,7 +71,7 @@ export const POST: RequestHandler = async (event) => {
 
   if (displayName !== undefined && displayName.length > 0) {
     try {
-      await users.updateName(userId, displayName);
+      await users.updateName({ userId, name: displayName });
     } catch (err) {
       if (env.NODE_ENV !== 'production') console.error('updateName failed', err);
       return json({ error: 'Could not update name' }, { status: 500 });
@@ -82,12 +82,12 @@ export const POST: RequestHandler = async (event) => {
   // (role, verificationStatus, etc).
   if (bio !== undefined || orgName !== undefined || avatarFileId !== undefined) {
     try {
-      const me = await users.get<import('$lib/types').UserPreferences>(userId);
+      const me = await users.get<import('$lib/types').UserPreferences>({ userId });
       const next: import('$lib/types').UserPreferences = { ...(me?.prefs ?? {}) };
       if (bio !== undefined) next.bio = bio;
       if (orgName !== undefined) next.orgName = orgName;
       if (avatarFileId !== undefined) next.avatarFileId = avatarFileId;
-      await users.updatePrefs(userId, next);
+      await users.updatePrefs({ userId, prefs: next });
     } catch (err) {
       if (env.NODE_ENV !== 'production') console.error('updatePrefs failed', err);
       return json({ error: 'Could not update profile' }, { status: 500 });

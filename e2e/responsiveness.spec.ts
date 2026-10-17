@@ -1,98 +1,70 @@
 import { expect, test, type Page } from '@playwright/test';
+import { signInAs } from './harness';
 
-const PAGES = ['/', '/tasks', '/how-it-works', '/for-ngos', '/for-volunteers', '/impact', '/login', '/signup', '/contact', '/help', '/docs/api'];
-const VIEWPORTS = [{ name: 'narrow', width: 320, height: 800 }, { name: 'mobile', width: 375, height: 812 }, { name: 'tablet', width: 768, height: 1024 }, { name: 'desktop', width: 1440, height: 900 }] as const;
-const REDUCED_MOTION_PAGES = ['/en', '/en/how-it-works', '/en/for-ngos', '/en/for-volunteers', '/en/tasks'];
-const REDUCED_MOTION_VIEWPORTS = [{ name: 'narrow', width: 320, height: 800 }, { name: 'desktop', width: 1440, height: 900 }] as const;
+// No horizontal overflow at 320, 375, 768 and 1440 px, and the phone's way around (the
+// Contents tag, which replaces a menu) opens and folds back.
 
-async function expectNoOverflow(page: Page, route: string, width: number): Promise<void> {
-  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), { message: `${route} overflows at ${width}px` }).toBe(true);
+const PUBLIC = ['/en', '/en/how-it-works', '/en/for-volunteers', '/en/for-nonprofits', '/en/impact', '/en/about', '/en/contact', '/en/help', '/en/docs', '/en/docs/api', '/en/privacy', '/en/contents', '/en/tasks', '/en/login', '/en/signup', '/en/not-a-block'];
+const SIGNED_IN = [
+  { path: '/en/dashboard', role: 'volunteer' as const },
+  { path: '/en/dashboard', role: 'ngo' as const },
+  { path: '/en/org', role: 'ngo' as const },
+  { path: '/en/badges/manage', role: 'ngo' as const }
+];
+const WIDTHS = [320, 375, 768, 1440];
+
+async function noOverflow(page: Page, label: string) {
+  await expect
+    .poll(() => page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth), { message: `${label} overflows` })
+    .toBeLessThanOrEqual(0);
+  const panel = page.locator('.panel__scroll');
+  if (await panel.count()) {
+    await expect.poll(() => panel.evaluate((el) => el.scrollWidth - el.clientWidth), { message: `${label} panel overflows` }).toBeLessThanOrEqual(0);
+  }
 }
 
-async function expectFocusableControl(page: Page): Promise<void> {
-  const control = page.locator('a:visible, button:visible, input:visible, select:visible, textarea:visible').first();
-  if (await control.count()) { await control.focus(); await expect(control).toBeFocused(); }
+for (const width of WIDTHS) {
+  test.describe(`${width}px`, () => {
+    test.use({ viewport: { width, height: width < 768 ? 800 : 900 } });
+
+    for (const path of PUBLIC) {
+      test(`${path} has no horizontal overflow`, async ({ page }) => {
+        await page.goto(path);
+        await noOverflow(page, `${path} at ${width}px`);
+      });
+    }
+
+    for (const { path, role } of SIGNED_IN) {
+      test(`${path} as ${role} has no horizontal overflow`, async ({ page, context }) => {
+        await signInAs(context, role, `resp${width}`);
+        await page.goto(path);
+        await noOverflow(page, `${path} (${role}) at ${width}px`);
+      });
+    }
+  });
 }
 
-test.describe.configure({ mode: 'serial' });
-for (const viewport of VIEWPORTS) test.describe(`Responsive layout: ${viewport.name}`, () => {
-  test.use({ viewport: { width: viewport.width, height: viewport.height } });
-  for (const route of PAGES) test(`${route} has no overflow and keyboard focus`, async ({ page }) => {
-    await page.goto(`/en${route === '/' ? '' : route}`, { waitUntil: 'networkidle' }); await expectNoOverflow(page, route, viewport.width); await expectFocusableControl(page);
+test.describe('phone way around', () => {
+  test.use({ viewport: { width: 375, height: 800 }, hasTouch: true, isMobile: true });
+
+  test('the Contents tag opens a panel and Fold back returns to the quilt', async ({ page }) => {
+    await page.goto('/en');
+    await page.getByRole('link', { name: 'Contents' }).first().tap();
+    await expect(page).toHaveURL(/\/en\/contents$/);
+    await expect(page.getByRole('heading', { level: 1, name: 'Contents' })).toBeVisible();
+    await page.getByRole('link', { name: 'Fold back' }).tap();
+    await expect(page).toHaveURL(/\/en$/);
+    await expect(page.locator('.panel')).toHaveCount(0);
+  });
+
+  test('blocks read as a vertical path and open as full-screen sheets', async ({ page }) => {
+    await page.goto('/en');
+    const order = await page.locator('.quilt-world > .block').evaluateAll((els) =>
+      els.map((el) => ({ id: (el as HTMLElement).dataset.block, top: el.getBoundingClientRect().top })).sort((a, b) => a.top - b.top).map((b) => b.id)
+    );
+    expect(order.slice(0, 3)).toEqual(['title', 'community', 'tasks']);
+    await page.getByRole('link', { name: 'Help', exact: true }).tap();
+    const box = await page.locator('.panel').boundingBox();
+    expect(box?.width).toBeGreaterThan(355);
   });
 });
-
-for (const route of REDUCED_MOTION_PAGES) for (const viewport of REDUCED_MOTION_VIEWPORTS) {
-  test(`reduced motion disables animation on ${route} at ${viewport.name}`, async ({ page }) => {
-    await page.setViewportSize({ width: viewport.width, height: viewport.height });
-    await page.emulateMedia({ reducedMotion: 'reduce' });
-    await page.goto(route, { waitUntil: 'networkidle' });
-
-    const violations = await page.evaluate(() => {
-      const declarations: Array<{ selector: string; pseudoElement: string; property: string; value: string }> = [];
-      const pseudoElements = ['', '::before', '::after'];
-      const elements = [...document.querySelectorAll<HTMLElement>('*')];
-
-      for (const element of elements) {
-        const selector = element.tagName.toLowerCase() + (element.id ? `#${element.id}` : '') + (element.className && typeof element.className === 'string' ? `.${element.className.trim().split(/\s+/).join('.')}` : '');
-        for (const pseudoElement of pseudoElements) {
-          const style = getComputedStyle(element, pseudoElement || undefined);
-          if (style.animationName !== 'none') declarations.push({ selector, pseudoElement, property: 'animationName', value: style.animationName });
-          if (style.transitionDuration !== '0s') declarations.push({ selector, pseudoElement, property: 'transitionDuration', value: style.transitionDuration });
-        }
-      }
-
-      const animations = document.getAnimations().map((animation) => ({
-        effect: animation.effect?.constructor.name ?? 'unknown',
-        playState: animation.playState,
-        target: animation.effect instanceof KeyframeEffect && animation.effect.target instanceof Element ? animation.effect.target.tagName.toLowerCase() : 'unknown'
-      }));
-      return { declarations, animations };
-    });
-
-    expect(violations, `Reduced-motion violations on ${route} at ${viewport.width}px`).toEqual({ declarations: [], animations: [] });
-  });
-}
-
-test('forced colors keeps the page usable', async ({ page }) => {
-  await page.emulateMedia({ forcedColors: 'active' }); await page.goto('/en/tasks', { waitUntil: 'networkidle' }); await expect(page.locator('main')).toBeVisible(); await expectNoOverflow(page, '/tasks', 1440); await expectFocusableControl(page);
-});
-
-test('mobile menu opens, closes, and restores focus', async ({ page }) => {
-  await page.setViewportSize({ width: 320, height: 800 }); await page.emulateMedia({ reducedMotion: 'reduce' }); await page.goto('/en', { waitUntil: 'networkidle' }); const toggle = page.locator('.menu-toggle'); await expect(toggle).toBeVisible();
-  await toggle.click(); await expect(toggle).toHaveAttribute('aria-expanded', 'true'); await page.keyboard.press('Escape'); await expect(toggle).toHaveAttribute('aria-expanded', 'false'); await expect(toggle).toBeFocused();
-});
-
-for (const width of [320, 375]) {
-  test(`localized task detail has no overflow at ${width}px`, async ({ page }, testInfo) => {
-    const namespace = `responsive-${width}-${testInfo.project.name}-${testInfo.workerIndex}`;
-    const seed = await page.request.post('/api/test/a11y', { data: { action: 'seed', namespace } });
-    expect(seed.ok()).toBe(true);
-    const body = await seed.json() as { taskId?: string };
-    expect(body.taskId).toBeTruthy();
-    const taskId = body.taskId as string;
-    await page.route(`**/api/tasks/${taskId}/translation?lang=es`, (route) => route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({ task: { title: 'Revisar un documento público', shortDescription: 'Revisa un documento.', description: 'Descripción traducida.', tags: ['accesibilidad'], language: 'English', translation: { locale: 'es', status: 'translated' } } })
-    }));
-    await page.goto(`/es/task/${taskId}`, { waitUntil: 'networkidle' });
-    await expect(page.locator('.td-translate')).toBeVisible();
-    await expectNoOverflow(page, `/es/task/${taskId}`, width);
-  });
-}
-
-for (const width of [320, 375]) for (const route of ['/en', '/ar']) {
-  test(`mobile brand remains accessible and contained on ${route} at ${width}px`, async ({ page }) => {
-    await page.setViewportSize({ width, height: 812 });
-    await page.goto(route, { waitUntil: 'networkidle' });
-
-    const brand = page.locator('.header-brand');
-    const logo = brand.locator('img');
-    await expect(brand).toBeVisible();
-    await expect(brand).toHaveAccessibleName('MicroMatch');
-    await expect(logo).toHaveAttribute('alt', '');
-    await expect.poll(() => logo.evaluate((element) => Math.round(element.getBoundingClientRect().width))).toBe(36);
-    await expectNoOverflow(page, route, width);
-  });
-}

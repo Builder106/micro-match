@@ -1,425 +1,261 @@
 <script lang="ts">
-  /* eslint-disable svelte/no-navigation-without-resolve */
-  import Icon from "@iconify/svelte";
   import { onMount } from 'svelte';
-  import { localizedHref, type Locale } from '$lib/locale';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
+  import Seo from '$lib/components/Seo.svelte';
+  import Link from '$lib/components/Link.svelte';
+  import PatchPreview from '$lib/components/PatchPreview.svelte';
   import { getTaskDetailCopy } from '$lib/translation';
-  import { getTagStyle } from '$lib/utils/tagColors';
+  import { deadlineLabel, minutesLabel } from '$lib/time';
+  import { callApi } from '$lib/api';
+  import { go } from '$lib/go';
+  import type { Locale } from '$lib/locale';
   import type { Task } from '$lib/types';
+  import type { PageData } from './$types';
 
-  export let data: {
-    task: Task;
-    isOwner: boolean;
-    orgName: string | null;
-    translatedTo: string | null;
-  };
+  let { data }: { data: PageData } = $props();
+  const taskDescription = (t: Task) => `${t.shortDescription} ${minutesLabel(t.estimatedMinutes)} volunteer task on MicroMatch.`.trim();
 
-  $: id = $page.params.id;
-  let translatedTask: Task | null = null;
-  $: orgName = data.orgName ?? 'Community organization';
-  $: signedIn = $page.data.userRole && $page.data.userRole !== 'anonymous';
-  $: currentLocale = ($page.data.locale as Locale | undefined) ?? 'en';
-  function resolve(pathname: string) { return localizedHref(pathname, currentLocale); }
-  $: copy = getTaskDetailCopy(currentLocale === 'en' ? null : currentLocale);
-  $: viewOriginalLabel = copy.viewOriginal;
-  $: viewTranslationLabel = copy.viewTranslation;
-  $: translationUnavailableLabel = copy.translationUnavailable;
+  const locale = $derived((page.data.locale as Locale | undefined) ?? 'en');
+  const copy = $derived(getTaskDetailCopy(locale === 'en' ? null : locale));
+  const signedIn = $derived((page.data.userRole ?? 'anonymous') !== 'anonymous');
 
-  let isTranslating = false;
-  let showOriginal = false;
-  let translationStatus: 'translated' | 'fallback' | null = null;
-  let translationTarget: string | null = null;
-  let translationRequest = 0;
+  // Task text comes in its original language; other site locales fetch a translation after load.
+  let translated = $state<Task | null>(null);
+  let translationStatus = $state<'translated' | 'fallback' | null>(null);
+  let translating = $state(false);
+  let showOriginal = $state(false);
 
-  async function loadTranslation(to: string | null) {
-    const request = ++translationRequest;
-    translationTarget = to;
-    translationStatus = null;
-
-    if (!to || to === 'en') {
-      isTranslating = false;
-      return;
+  async function loadTranslation(to: string) {
+    translating = true;
+    const res = await callApi<{ task?: Task & { translation?: { status?: 'translated' | 'fallback' } } }>(
+      `/api/tasks/${data.task.id}/translation?lang=${encodeURIComponent(to)}`
+    );
+    translating = false;
+    if (res.ok && res.data.task) {
+      translated = res.data.task;
+      translationStatus = res.data.task.translation?.status ?? 'fallback';
+    } else {
+      translationStatus = 'fallback';
     }
-
-    isTranslating = true;
-    try {
-      const response = await fetch(`/api/tasks/${id}/translation?lang=${encodeURIComponent(to)}`);
-      if (!response.ok) {
-        if (request === translationRequest) translationStatus = 'fallback';
-        return;
-      }
-
-      const result = (await response.json()) as {
-        task?: Task & { translation?: { status?: 'translated' | 'fallback' } };
-      };
-      if (request === translationRequest && result.task) {
-        translatedTask = result.task;
-        translationStatus = result.task.translation?.status ?? 'fallback';
-      } else if (request === translationRequest) {
-        translationStatus = 'fallback';
-      }
-    } catch {
-      // Preserve the original task when a translation request cannot finish.
-      if (request === translationRequest) translationStatus = 'fallback';
-    } finally {
-      if (request === translationRequest) isTranslating = false;
-    }
-  }
-
-  function toggleTranslation() {
-    if (showOriginal) {
-      showOriginal = false;
-      if (translationStatus !== 'translated' || !translatedTask) {
-        void loadTranslation(translationTarget ?? currentLocale);
-      }
-      return;
-    }
-
-    if (isTranslating) {
-      translationRequest += 1;
-      isTranslating = false;
-      translationStatus = null;
-    }
-    showOriginal = !showOriginal;
   }
 
   onMount(() => {
-    const target = data.translatedTo ?? currentLocale;
+    const target = data.translatedTo ?? locale;
     if (target !== 'en') void loadTranslation(target);
   });
 
-  let deleting = false;
-  async function deleteTask() {
-    if (!confirm('Delete this task? Volunteers can no longer claim it. Existing claims are preserved.')) return;
+  const task = $derived(!showOriginal && translationStatus === 'translated' && translated ? translated : data.task);
+  const deadline = $derived(deadlineLabel(task.deadline));
+  const claimable = $derived(task.status === 'active' && deadline?.tone !== 'late');
+  const closedNote = $derived(
+    task.status === 'completed' ? 'This task is complete.' : task.status === 'expired' || deadline?.tone === 'late' ? 'This task has closed.' : task.status === 'moderated' ? 'This task is under review.' : ''
+  );
+
+  let deleting = $state(false);
+  let deleteError = $state('');
+  async function remove() {
+    if (!confirm('Delete this task? Volunteers can no longer claim it. Existing claims are kept.')) return;
     deleting = true;
-    try {
-      const res = await fetch(`/api/tasks/${id}`, { method: 'DELETE' });
-      if (res.ok) {
-        window.location.href = resolve('/tasks');
-      } else {
-        alert('Failed to delete task.');
-      }
-    } finally {
-      deleting = false;
-    }
+    const res = await callApi(`/api/tasks/${data.task.id}`, { method: 'DELETE', fallback: 'Could not delete the task.' });
+    deleting = false;
+    if (res.ok) await go('/tasks', locale, { invalidateAll: true });
+    else deleteError = res.error;
   }
-
-  function formatDeadline(d: string | undefined): { text: string; tone: 'soon' | 'late' | 'normal' } | null {
-    if (!d) return null;
-    const date = new Date(d);
-    if (Number.isNaN(date.getTime())) return null;
-    const diffMs = date.getTime() - Date.now();
-    const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-    if (days < 0) return { text: `Expired ${date.toLocaleDateString()}`, tone: 'late' };
-    if (days === 0) return { text: 'Due today', tone: 'soon' };
-    if (days === 1) return { text: 'Due tomorrow', tone: 'soon' };
-    if (days <= 7) return { text: `Due in ${days} days`, tone: 'soon' };
-    return { text: `Due ${date.toLocaleDateString()}`, tone: 'normal' };
-  }
-  $: task = showOriginal || translationStatus !== 'translated' || !translatedTask ? data.task : translatedTask;
-  $: deadline = formatDeadline(task.deadline);
-
-  function statusInfo(s?: string) {
-    switch (s) {
-      case 'completed': return { label: 'Completed', color: '#2563EB', bg: '#DBEAFE', icon: 'lucide:flag' };
-      case 'expired':   return { label: 'Expired',   color: '#DC2626', bg: '#FEE2E2', icon: 'lucide:alarm-clock-off' };
-      case 'moderated': return { label: 'Under review', color: '#D97706', bg: '#FEF3C7', icon: 'lucide:shield-alert' };
-      default: return null;
-    }
-  }
-  $: status = statusInfo(task.status);
-
-  $: claimable = task.status === 'active' && (deadline?.tone !== 'late');
 </script>
 
-<svelte:head><title>{task.title} · MicroMatch</title></svelte:head>
+<Seo title="{data.task.title} | MicroMatch" description={taskDescription(data.task)} />
 
-<div class="td-page">
-  <a href={resolve('/tasks')} class="td-back">
-    <Icon icon="lucide:arrow-left" width="14" height="14" />
-    {copy.backToFeed}
-  </a>
+<div class="task">
+  <article class="task__main">
+    <p class="crumbs"><Link href="/tasks" class="link">All tasks</Link></p>
+    <h1 class="display h-l" tabindex="-1">{task.title}</h1>
+    <p class="lede">{task.shortDescription}</p>
 
-  <!-- ───── Hero ───── -->
-  <section class="td-hero brand-card">
-    <div class="td-hero-blob" aria-hidden="true"></div>
-
-    <div class="td-hero-top">
-      <div class="td-avatar"><Icon icon="lucide:heart-handshake" width="28" height="28" /></div>
-      <div class="td-org">
-        <small>{copy.postedBy}</small>
-        <strong>{orgName}</strong>
-        {#if task.isVerified}
-          <span class="td-verified" title="Verification confirmed">
-            <Icon icon="lucide:badge-check" width="14" height="14" /> {copy.verified}
-          </span>
-        {:else}
-          <span class="td-unverified" title="Org has not been verified">
-            <Icon icon="lucide:shield-alert" width="14" height="14" /> {copy.unverified}
-          </span>
+    {#if locale !== 'en'}
+      <div class="translation">
+        {#if translating}
+          <span>{copy.translating}</span>
+        {:else if translationStatus === 'translated'}
+          <span>{copy.translationNotice}</span>
+          <button type="button" class="link" onclick={() => (showOriginal = !showOriginal)}>
+            {showOriginal ? copy.viewTranslation : copy.viewOriginal}
+          </button>
+        {:else if translationStatus === 'fallback'}
+          <span>{copy.translationUnavailable}</span>
         {/if}
-      </div>
-      {#if status}
-        <span class="td-status" style="background: {status.bg}; color: {status.color};">
-          <Icon icon={status.icon} width="12" height="12" /> {status.label}
-        </span>
-      {/if}
-    </div>
-
-    <h1>{task.title}</h1>
-    <p class="td-short">{task.shortDescription}</p>
-
-    <div class="td-meta">
-        {#if typeof task.estimatedMinutes === 'number'}
-          <span class="td-chip td-chip-time">
-            <Icon icon="lucide:clock" width="14" height="14" /> {task.estimatedMinutes} {copy.minutes}
-          </span>
-        {/if}
-        {#if task.language}
-          <span class="td-chip td-chip-lang">
-            <Icon icon="lucide:globe" width="14" height="14" /> {task.language}
-            {#if translationStatus === 'translated'}<span class="td-chip-translation">({copy.autoTranslated})</span>{/if}
-          </span>
-        {/if}
-        {#if task.maxVolunteers}
-          <span class="td-chip td-chip-cap">
-            <Icon icon="lucide:users" width="14" height="14" /> {copy.max} {task.maxVolunteers}
-          </span>
-        {/if}
-        {#if deadline}
-          <span class="td-chip" class:tone-soon={deadline.tone === 'soon'} class:tone-late={deadline.tone === 'late'} class:tone-normal={deadline.tone === 'normal'}>
-            <Icon icon="lucide:calendar-clock" width="14" height="14" /> {deadline.text}
-          </span>
-        {/if}
-        {#each task.tags as tag (tag)}
-          {@const s = getTagStyle(tag)}
-          <span class="td-chip" style="background: {s.bg}; color: {s.color};">#{tag}</span>
-        {/each}
-    </div>
-  </section>
-
-  <!-- ───── Description ───── -->
-  <section class="td-card brand-card">
-    <header class="td-card-head">
-      <h2>{copy.theMission}</h2>
-      {#if translationTarget && translationTarget !== 'en' && (showOriginal || isTranslating || translationStatus === 'translated')}
-        <button class="td-translate" type="button" on:click={toggleTranslation} aria-pressed={showOriginal}>
-        <Icon icon="lucide:languages" width="14" height="14" />
-        {showOriginal ? viewTranslationLabel : viewOriginalLabel}
-        </button>
-      {/if}
-    </header>
-    {#if isTranslating}
-      <div class="td-translating" role="status">
-        <span class="spin"><Icon icon="lucide:loader-2" width="13" height="13" /></span>
-        {copy.translating}
-      </div>
-    {:else if translationStatus === 'translated' && !showOriginal}
-      <div class="td-translated-note">
-        <Icon icon="lucide:info" width="13" height="13" />
-        {copy.translationNotice}
-      </div>
-    {:else if translationStatus === 'fallback'}
-      <div class="td-translated-note" role="status">
-        <Icon icon="lucide:info" width="13" height="13" />
-        {translationUnavailableLabel}
       </div>
     {/if}
-    {#if task.description}
-      <div class="td-prose">
-        {#each task.description.split(/\n\n+/) as para (para)}
-          <p>{para}</p>
-        {/each}
-      </div>
-    {:else}
-      <p class="td-prose td-prose-empty">{copy.noDescription}</p>
-    {/if}
-  </section>
 
-  <!-- ───── Action footer ───── -->
-  <footer class="td-actions">
+    <section class="brief" aria-labelledby="brief">
+      <h2 id="brief" class="h-m">The brief</h2>
+      {#if task.description}
+        <p class="brief__text">{task.description}</p>
+      {:else}
+        <p class="muted">{copy.noDescription}</p>
+      {/if}
+    </section>
+
+    <section class="send" aria-labelledby="send">
+      <h2 id="send" class="h-m">What you send back</h2>
+      <ol class="ticks">
+        <li>A link to what you made: a document, a shared folder, a pull request or a design file.</li>
+        <li>A short note on how you did it and anything they should check.</li>
+        <li>A person at {data.orgName ?? 'the nonprofit'} reads both and approves the claim, or rejects it if it is not what they needed.</li>
+      </ol>
+    </section>
+
     {#if data.isOwner}
-      <div class="td-owner-row">
-        <Icon icon="lucide:user" width="14" height="14" />
-        You posted this task.
-      </div>
-      <div class="td-action-buttons">
-        <button on:click={deleteTask} disabled={deleting} class="td-delete">
-          {#if deleting}
-            <Icon icon="lucide:loader-2" width="14" height="14" class="spin" />
-            Deleting…
-          {:else}
-            <Icon icon="lucide:trash-2" width="14" height="14" />
-            Delete task
-          {/if}
-        </button>
-      </div>
-    {:else if !claimable}
-      <div class="td-not-claimable">
-        <Icon icon="lucide:lock" width="14" height="14" />
-        {#if task.status === 'expired' || deadline?.tone === 'late'}
-          This task is no longer accepting volunteers — the deadline has passed.
-        {:else if task.status === 'completed'}
-          This task is marked completed.
-        {:else if task.status === 'moderated'}
-          This task is under review and temporarily paused.
-        {:else}
-          This task isn't currently accepting claims.
-        {/if}
-      </div>
-      <a href={resolve('/tasks')} class="btn-outline-dark">Browse other tasks</a>
-    {:else if !signedIn}
-      <div class="td-signin-cta">
-        <Icon icon="lucide:user-plus" width="14" height="14" />
-        {copy.signInToClaimTask}
-      </div>
-      <a href={resolve(`/login?next=/task/${id}`)} class="btn-coral btn-lg">
-        {copy.signInToClaim}
-        <Icon icon="lucide:arrow-right" width="16" height="16" />
-      </a>
-    {:else}
-      <div class="td-cta-meta">
-        <Icon icon="lucide:hand-heart" width="14" height="14" />
-        {copy.readyToHelp}
-      </div>
-      <a href={resolve(`/task/${id}/claim`)} class="btn-coral btn-lg">
-        {copy.claimTask}
-        <Icon icon="lucide:arrow-right" width="16" height="16" />
-      </a>
+      <section class="owner" aria-labelledby="owner">
+        <h2 id="owner" class="h-m">You posted this</h2>
+        <p class="muted">Claims on it wait in your reviews.</p>
+        <div class="ctas">
+          <Link href="/dashboard" class="patch-btn patch-btn--small">Open your reviews</Link>
+          <button type="button" class="patch-btn patch-btn--plain patch-btn--small" onclick={remove} disabled={deleting}>
+            {deleting ? 'Deleting...' : 'Delete task'}
+          </button>
+        </div>
+        {#if deleteError}<p class="notice notice--error" role="alert">{deleteError}</p>{/if}
+      </section>
     {/if}
-  </footer>
+  </article>
+
+  <aside class="tag-card" aria-label="About this task">
+    <dl>
+      <div><dt>Takes</dt><dd class="num big">{minutesLabel(task.estimatedMinutes)}</dd></div>
+      <div><dt>Posted by</dt><dd>{data.orgName ?? 'A nonprofit on MicroMatch'}{#if task.isVerified}<span class="verified">, verified</span>{/if}</dd></div>
+      {#if deadline}<div><dt>Deadline</dt><dd class:late={deadline.tone === 'late'}>{deadline.text}</dd></div>{/if}
+      {#if task.maxVolunteers}<div><dt>Volunteers</dt><dd>Up to {task.maxVolunteers}</dd></div>{/if}
+      {#if task.language}<div><dt>Written in</dt><dd>{task.language}</dd></div>{/if}
+      {#if task.tags.length}
+        <div>
+          <dt>Tags</dt>
+          <dd class="tag-list">{#each task.tags as t (t)}<span class="fabric-tag">{t.replace(/^#/, '')}</span>{/each}</dd>
+        </div>
+      {/if}
+    </dl>
+
+    <div class="earn">
+      <PatchPreview color={data.patch?.color} icon={data.patch?.icon} size="5.5rem" />
+      <p>
+        {#if data.patch?.label}
+          Finish it and it is sewn in as a <strong>{data.patch.label}</strong> patch.
+        {:else}
+          Finish it and it is sewn in as a plain patch: this nonprofit has not designed one yet.
+        {/if}
+      </p>
+    </div>
+
+    {#if claimable}
+      {#if signedIn}
+        <Link href="/task/{task.id}/claim" class="patch-btn">{copy.claimTask}</Link>
+      {:else}
+        <Link href="/login?next=/task/{task.id}/claim" class="patch-btn">{copy.signInToClaim}</Link>
+      {/if}
+    {:else}
+      <p class="notice">{closedNote}</p>
+    {/if}
+  </aside>
 </div>
 
 <style>
-  .td-page { display: flex; flex-direction: column; gap: 20px; max-width: 820px; margin: 0 auto; }
-
-  .td-back {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    align-self: flex-start;
-    background: var(--color-background);
-    color: var(--color-text-secondary);
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 700;
-    padding: 6px 12px;
-    border-radius: 9999px;
-    transition: all .15s;
+  .task {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(16rem, 20rem);
+    gap: clamp(1.5rem, 4vw, 3.5rem);
+    align-items: start;
   }
-  .td-back:hover { color: var(--color-text); background: color-mix(in srgb, var(--color-text) 5%, transparent); }
-
-  /* Hero */
-  .td-hero { position: relative; overflow: hidden; padding: 32px 36px; display: flex; flex-direction: column; gap: 16px; }
-  .td-hero-blob { position: absolute; top: -50%; right: -10%; width: 320px; height: 320px; border-radius: 50%; background: rgba(255, 107, 107, 0.16); filter: blur(80px); pointer-events: none; }
-  @media (max-width: 768px) { .td-hero-blob { display: none; } }
-  :global(html[dir='rtl']) .td-hero-blob { display: none; }
-
-  .td-hero-top { position: relative; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-  .td-avatar { width: 56px; height: 56px; border-radius: 18px; background: #FFE5DC; color: var(--color-primary-readable); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .td-org { display: flex; flex-direction: column; flex: 1; min-width: 0; }
-  .td-org small { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-secondary); }
-  .td-org strong { font-size: 16px; font-weight: 700; color: var(--color-text); }
-  .td-verified, .td-unverified { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 9999px; font-size: 11px; font-weight: 700; align-self: flex-start; margin-top: 4px; }
-  .td-verified { background: var(--color-success-container); color: var(--color-success); }
-  .td-unverified { background: var(--color-error-container); color: var(--color-error); }
-  .td-status { display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: 700; flex-shrink: 0; }
-
-  .td-hero h1 { position: relative; font-size: clamp(1.5rem, 2.5vw + 0.5rem, 2.25rem); font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; margin: 0; }
-  .td-short { position: relative; font-size: 17px; font-weight: 500; line-height: 1.6; color: color-mix(in srgb, var(--color-text) 75%, transparent); margin: 0; max-width: 640px; }
-
-  .td-meta { position: relative; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
-  .td-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 5px 12px;
-    border-radius: 9999px;
-    font-size: 13px;
-    font-weight: 700;
-    background: color-mix(in srgb, var(--color-text) 5%, transparent);
-    color: color-mix(in srgb, var(--color-text) 70%, transparent);
+  .task__main {
+    display: grid;
+    gap: 1rem;
+    max-width: 44rem;
   }
-  .td-chip-time { background: rgba(255, 107, 107, 0.12); color: var(--color-primary-readable); }
-  .td-chip-lang { background: var(--color-info-container); color: var(--color-info); }
-  .td-chip-translation { font-weight: 600; }
-  .td-chip-cap { background: var(--color-surface-variant); color: var(--color-text-secondary); }
-  .td-chip.tone-soon { background: #FEF3C7; color: #D97706; }
-  .td-chip.tone-late { background: #FEE2E2; color: #DC2626; }
-  .td-chip.tone-normal { background: #F1F5F9; color: #475569; }
-
-  /* Description card */
-  .td-card { padding: 28px 32px; }
-  .td-card-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
-  .td-card-head h2 { font-size: 20px; font-weight: 700; margin: 0; }
-
-  .td-translate {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    border-radius: 9999px;
-    background: color-mix(in srgb, var(--color-text) 5%, transparent);
-    color: var(--color-text-secondary);
-    font-size: 13px;
-    font-weight: 600;
-    transition: background .15s;
-    border: 0;
-    font: inherit;
-    cursor: pointer;
+  .crumbs {
+    font-size: var(--t-s);
   }
-  .td-translate:disabled { cursor: not-allowed; opacity: 0.6; }
-  .td-translate:hover { background: color-mix(in srgb, var(--color-text) 8%, transparent); }
-
-  .td-translated-note { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; background: #FEF3C7; color: #713F12; border-radius: 10px; font-size: 12px; font-weight: 600; margin-bottom: 16px; }
-  .td-translating { display: inline-flex; align-items: center; gap: 6px; color: color-mix(in srgb, var(--color-text) 65%, transparent); font-size: 12px; font-weight: 700; margin-bottom: 16px; }
-
-  .td-prose { display: flex; flex-direction: column; gap: 14px; }
-  .td-prose p { font-size: 15px; line-height: 1.7; color: var(--color-text); margin: 0; white-space: pre-wrap; }
-  .td-prose-empty { color: color-mix(in srgb, var(--color-text) 50%, transparent); font-style: italic; }
-
-  /* Action footer */
-  .td-actions {
+  .translation {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
     flex-wrap: wrap;
-    padding: 20px 24px;
-    background: var(--color-surface);
-    border: 1px solid var(--card-border-strong);
-    border-radius: 24px;
-    box-shadow: var(--elev-1);
+    gap: 0.75rem;
+    font-size: var(--t-s);
+    color: var(--c-muted);
   }
-  .td-cta-meta, .td-owner-row, .td-not-claimable, .td-signin-cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 14px;
+  .brief {
+    display: grid;
+    gap: 0.6rem;
+    padding-top: 1.5rem;
+    border-top: 1.5px dashed var(--c-line);
+  }
+  .send {
+    display: grid;
+    gap: 0.75rem;
+    padding-top: 1.5rem;
+    border-top: 1.5px dashed var(--c-line);
+  }
+  .brief__text {
+    white-space: pre-line;
+  }
+  .owner {
+    display: grid;
+    gap: 0.6rem;
+    padding: 1.25rem;
+    border-radius: var(--radius);
+    background: rgb(242 184 75 / 0.18);
+  }
+  .tag-card {
+    position: sticky;
+    top: 0;
+    display: grid;
+    gap: 1.1rem;
+    padding: 1.4rem;
+    background: #fff;
+    border-radius: var(--radius);
+    box-shadow: inset 0 0 0 1.5px var(--c-fg), 0 6px 0 -2px rgb(28 31 59 / 0.15);
+    rotate: 0.4deg;
+  }
+  dl {
+    display: grid;
+    gap: 0.75rem;
+  }
+  dt {
+    font-size: var(--t-xs);
+    color: var(--c-muted);
+  }
+  dd {
+    margin: 0;
+  }
+  .big {
+    font-family: var(--f-display);
+    font-weight: 760;
+    font-size: 2rem;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+  }
+  .verified {
+    color: var(--c-ok);
     font-weight: 600;
-    color: var(--color-text-secondary);
   }
-  .td-not-claimable { color: var(--color-warning); }
-  .td-action-buttons { display: flex; gap: 10px; }
-  .td-delete {
-    display: inline-flex;
+  .late {
+    color: var(--c-danger);
+  }
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+  .earn {
+    display: flex;
+    gap: 0.9rem;
     align-items: center;
-    gap: 6px;
-    padding: 9px 16px;
-    border-radius: 9999px;
-    border: 1px solid color-mix(in srgb, var(--color-error) 30%, transparent);
-    background: transparent;
-    color: var(--color-error);
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all .15s;
+    padding-top: 1rem;
+    border-top: 1.5px dashed var(--c-line);
+    font-size: 0.92rem;
   }
-  .td-delete:hover { background: color-mix(in srgb, var(--color-error) 10%, transparent); }
-  .td-delete:disabled { opacity: 0.5; cursor: not-allowed; }
-  .spin { animation: spin .75s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  @keyframes td-shimmer { to { background-position: -200% 0; } }
+  @media (max-width: 999px) {
+    .task {
+      grid-template-columns: 1fr;
+    }
+    .tag-card {
+      position: static;
+    }
+  }
 </style>

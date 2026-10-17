@@ -171,11 +171,15 @@ describe('badgeDefs (Appwrite mode)', () => {
       taskId: undefined,
       description: undefined
     }]);
-    expect(mocks.listRows).toHaveBeenCalledWith('db', 'badge-defs', [
+    expect(mocks.listRows).toHaveBeenCalledWith({
+      databaseId: 'db',
+      tableId: 'badge-defs',
+      queries: [
       'equal(orgID,org-1)',
       'orderDesc($createdAt)',
       'limit(200)'
-    ]);
+    ]
+    });
   });
 
   it('returns an empty Appwrite list when row lookup fails', async () => {
@@ -200,8 +204,13 @@ describe('badgeDefs (Appwrite mode)', () => {
     const defaulted = await createBadgeDefinition({
       orgId: 'org-1', label: 'Helper', color: '#FF6B6B', criteria: 'task-completion'
     });
-    expect(mocks.createRow).toHaveBeenCalledWith('db', 'badge-defs', 'new-id', {
+    expect(mocks.createRow).toHaveBeenCalledWith({
+      databaseId: 'db',
+      tableId: 'badge-defs',
+      rowId: 'new-id',
+      data: {
       orgID: 'org-1', label: 'Helper', color: '#FF6B6B', icon: '', criteria: 'task-completion', taskID: '', description: ''
+    }
     });
     expect(defaulted).toMatchObject({ id: 'def-1', orgId: 'org-1', icon: '', taskId: '', description: '' });
 
@@ -222,7 +231,7 @@ describe('badgeDefs (Appwrite mode)', () => {
     await expect(deleteBadgeDefinition('def-1', 'org-1')).resolves.toBe(false);
     await expect(deleteBadgeDefinition('def-1', 'org-1')).resolves.toBe(true);
     await expect(deleteBadgeDefinition('def-1', 'org-1')).resolves.toBe(false);
-    expect(mocks.deleteRow).toHaveBeenCalledWith('db', 'badge-defs', 'def-1');
+    expect(mocks.deleteRow).toHaveBeenCalledWith({ databaseId: 'db', tableId: 'badge-defs', rowId: 'def-1' });
   });
 
   it('gets an Appwrite row and returns undefined when it cannot be read', async () => {

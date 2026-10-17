@@ -1,288 +1,269 @@
-# MicroMatch Design System & Style Guide
+# MicroMatch design: the community quilt
 
-Welcome to the **MicroMatch Design System**. This document defines the design architecture, visual language, component patterns, and token specs that govern the user interface for MicroMatch.
+This file is the source of truth for the new frontend. Read it before changing a page.
 
----
+## Brief
 
-## 📄 Overview & Brand Identity
+- **Subject:** MicroMatch, a free, non-commercial student project launching first at Wesleyan.
+  Nonprofits post tasks that take 5 to 30 minutes. Volunteers claim a task and submit proof (a
+  link plus notes). A person at the nonprofit approves or rejects each claim. Approval awards
+  the badges that nonprofit designed.
+- **Audience:** students and busy people with a spare quarter hour; small nonprofit teams
+  with a backlog and no time to recruit.
+- **Job:** get a visitor to open the task feed, or get a nonprofit to post its first task.
+- **Language:** English only this round, at `/en` routes.
+- **Out of scope this round:** the WCAG audit, reduced-motion handling and localization.
+  Semantic markup stays correct because the next round audits it.
 
-**MicroMatch** is a micro-volunteering marketplace pairing non-governmental organizations (NGOs) with volunteers for bite-sized, high-impact tasks (5 to 30 minutes).
+## Concept card
 
-### Core Aesthetic Principles
-
-1. **Warm Cream & Coral Palette**: Approaching volunteering with optimism, warmth, and energy. We replace cold corporate blues with warm creams (`#FDFCF8`), coral primaries (`#FF6B6B`), and peach accents (`#FDBA74`).
-2. **Clarity & Speed**: Volunteers engage in micro-moments. Interface elements must be high-contrast, scannable, and friction-free with immediate task filters (`≤15m`, `≤20m`, `≤30m`).
-3. **Verified Trust & Recognition**: Verified badges, progress rings, and org-owned achievement tokens celebrate volunteer contributions.
-4. **Adaptive Dark Mode**: Seamless support for light and dark color schemes (`.light`and`.dark` root classes), maintaining warm card borders and readable text hierarchy across environments.
-
----
-
-## 🎨 Color Architecture
-
-Color tokens are structured into primary brand colors, surface tones, typography scales, feedback states, and tag-specific palettes.
-
-### Primary & Brand Colors
-
-| Token Name                  | Hex / CSS Value | Description                                            |
-| ---                         | ---             | ---                                                    |
-| `--color-primary`           | `#FF6B6B`       | Brand coral fills, primary buttons, and decorative accents |
-| `--color-primary-variant`   | `#E85555`       | Deeper coral for button hover states                   |
-| `--color-primary-light`     | `#FF9E5E`       | Light coral for gradients and scrollbar hover states   |
-| `--color-primary-readable`  | `#881337` light / `#FDA4AF` dark | Readable coral-family text and meaningful icons |
-| `--color-on-primary`        | `#000000`       | Dark text/icon color on bright coral backgrounds       |
-| `--color-secondary`         | `#FDBA74`       | Warm peach accent                                      |
-| `--color-secondary-variant` | `#FB923C`       | Deep peach accent variant                              |
-| `--color-secondary-light`   | `#FED7AA`       | Soft peach surface highlight                           |
-
-### Accent Ramp (Coral / Warm Red)
-
-| Token Name                | Hex       | Usage                                       |
-| ---                       | ---       | ---                                         |
-| `--color-accent-blue-50`  | `#FFF5F0` | Canvas gradient stop, chip hover background |
-| `--color-accent-blue-100` | `#FFE5DC` | Chip background tint                        |
-| `--color-accent-blue-200` | `#FFD1C2` | Border highlight, scrollbar thumb           |
-| `--color-accent-blue-500` | `#FF6B6B` | Primary accent base                         |
-| `--color-accent-blue-600` | `#E85555` | Darker accent state                         |
-| `--color-accent-blue-700` | `#881337` | Readable coral-family text and icon accent  |
-
-### Surface & Background Tokens
-
-#### Light Mode
-
-| Token Name                  | Hex                      | Description                            |
-| ---                         | ---                      | ---                                    |
-| `--color-background`        | `#FDFCF8`                | Primary page canvas                    |
-| `--color-surface`           | `#FFFFFF`                | Base card and container background     |
-| `--color-surface-variant`   | `#FAF7F0`                | Muted surface (chips, secondary cards) |
-| `--color-surface-container` | `#F5F0E8`                | Elevated container surface             |
-| `--color-outline`           | `#B8AA96`                | Warm divider and border color          |
-| `--color-outline-variant`   | `#D8CCB9`                | Subtle warm container outline          |
-| `--color-control-outline`   | `#8B8074`                | Control boundary with at least 3:1 contrast on light surfaces |
-| `--card-border`             | `rgba(139, 128, 116, 0.16)` | Light mode card border              |
-| `--card-border-strong`      | `rgba(139, 128, 116, 0.24)` | Strong light mode card border       |
-
-#### Dark Mode
-
-| Token Name                  | Hex                         | Description                     |
-| ---                         | ---                         | ---                             |
-| `--color-background`        | `#0F172A`                   | Slate dark canvas               |
-| `--color-surface`           | `#1E293B`                   | Base dark card background       |
-| `--color-surface-variant`   | `#334155`                   | Dark muted surface              |
-| `--color-surface-container` | `#475569`                   | Elevated dark container surface |
-| `--color-outline`           | `#475569`                   | Dark divider and border color   |
-| `--color-outline-variant`   | `#334155`                   | Dark subtle container outline   |
-| `--color-control-outline`   | `#A8B6C9`                   | Control boundary with at least 3:1 contrast on dark surfaces |
-| `--card-border`             | `rgba(241, 245, 249, 0.10)` | Dark mode card border           |
-| `--card-border-strong`      | `rgba(241, 245, 249, 0.16)` | Strong dark mode card border    |
-
-### Text & Feedback Colors
-
-| Token                    | Light Hex | Dark Hex  | Role                                           |
-| ---                      | ---       | ---       | ---                                            |
-| `--color-text`           | `#0F172A` | `#F1F5F9` | Primary headings and body text                 |
-| `--color-text-secondary` | `#334155` | `#E2E8F0` | Secondary labels and supporting prose          |
-| `--color-text-tertiary`  | `#334155` | `#E2E8F0` | Captions, metadata, and timestamps             |
-| `--color-success`        | `#059669` | `#059669` | Approved claims, verified chips, success state |
-| `--color-warning`        | `#D97706` | `#D97706` | Pending verification, warning alerts           |
-| `--color-error`          | `#DC2626` | `#DC2626` | Rejected claims, errors, destructive alerts    |
-
-### Dynamic Tag Palette
-
-Tags adapt automatically based on category keywords (`getTagStyle`):
-
-| Category Key                     | Background | Text Color |
-| ---                              | ---        | ---        |
-| `spanish`, `french`              | `#F3E8FF`  | `#7C3AED`  |
-| `health`, `environment`, `excel` | `#D1FAE5`  | `#059669`  |
-| `translation`, `history`         | `#DBEAFE`  | `#2563EB`  |
-| `design`, `research`             | `#FCE7F3`  | `#DB2777`  |
-| `data`, `education`              | `#FEF3C7`  | `#D97706`  |
-| `default`                        | `#F1F5F9`  | `#475569`  |
-
----
-
-## 🔤 Typography
-
-MicroMatch utilizes a dual-font strategy:
-
-- **Headings & Brand Titles**: [Plus Jakarta Sans](https://fonts.google.com/specimen/Plus+Jakarta+Sans) (weights 500, 600, 700, 800) for geometric, modern clarity.
-- **Body & UI Controls**: [Inter](https://fonts.google.com/specimen/Inter) / [Roboto](https://fonts.google.com/specimen/Roboto) (weights 300, 400, 500, 600, 700) for legibility at small sizes.
-
-### Type Scale
-
-| CSS Token     | Size   | Weight      | Typical Usage                                 |
-| ---           | ---    | ---         | ---                                           |
-| `--text-xs`   | `12px` | `500`/`700` | Micro-labels, tag pills, timestamps           |
-| `--text-sm`   | `14px` | `400`/`500` | Secondary buttons, body small, filter options |
-| `--text-base` | `16px` | `400`       | Standard body prose, form inputs              |
-| `--text-lg`   | `18px` | `500`/`600` | Subheadings, card titles, section links       |
-| `--text-xl`   | `20px` | `600`       | Section headers (`h3`)                        |
-| `--text-2xl`  | `24px` | `600`       | Page subheaders (`h2`)                        |
-| `--text-3xl`  | `30px` | `700`       | Primary page headers (`h1`)                   |
-| `--text-4xl`  | `36px` | `800`       | Hero banners and landing titles               |
-
-### Line Heights & Weights
-
-- **Line Heights**: `--leading-tight` (`1.2`), `--leading-normal` (`1.5`), `--leading-relaxed` (`1.6`).
-- **Font Weights**: `--font-light` (`300`), `--font-normal` (`400`), `--font-medium` (`500`), `--font-semibold` (`600`), `--font-bold` (`700`).
-
----
-
-## 📐 Spacing, Elevation & Radii
-
-MicroMatch implements an 8px spatial grid for layout consistency.
-
-### Spatial Scale
-
-| Token        | Size   | Typical Use                             |
-| ---          | ---    | ---                                     |
-| `--space-1`  | `4px`  | Micro gaps between icons and labels     |
-| `--space-2`  | `8px`  | Small element padding, chip gap         |
-| `--space-3`  | `12px` | Input internal padding, card gaps       |
-| `--space-4`  | `16px` | Standard container margin / padding     |
-| `--space-5`  | `20px` | Section margins, dashboard card padding |
-| `--space-6`  | `24px` | Large container padding                 |
-| `--space-8`  | `32px` | Grid column spacing                     |
-| `--space-10` | `40px` | Hero section gaps                       |
-| `--space-12` | `48px` | Major section vertical padding          |
-| `--space-16` | `64px` | Page section separation                 |
-
-### Border Radii
-
-- `--radius-xs`: `4px` (Focus rings, micro-badges)
-- `--radius-sm`: `8px` (Inputs, skeletons)
-- `--radius-md`: `12px` (Buttons, small cards)
-- `--radius-lg`: `16px` (Standard task cards)
-- `--radius-xl`: `24px` (Modals, hero cards)
-- `--radius-2xl`: `32px` (Brand feature cards)
-- `--radius-full`: `9999px` (Pill buttons, chips, avatars)
-
-### Elevation & Shadows
-
-We use neutral slate alpha shadows to prevent dark color pollution on warm surfaces:
-
-- `--elev-0`: `none`
-- `--elev-1`: `0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04)`
-- `--elev-2`: `0 4px 12px rgba(15, 23, 42, 0.08), 0 2px 4px rgba(15, 23, 42, 0.05)`
-- `--elev-3`: `0 12px 24px rgba(15, 23, 42, 0.10), 0 6px 8px rgba(15, 23, 42, 0.06)`
-- `--elev-4`: `0 20px 40px rgba(15, 23, 42, 0.14), 0 10px 12px rgba(15, 23, 42, 0.08)`
-- `--elev-5`: `0 32px 64px rgba(15, 23, 42, 0.18), 0 16px 20px rgba(15, 23, 42, 0.10)`
-
----
-
-## 🧩 Component Library & Patterns
-
-### 1. Buttons
-
-```html
-<!-- Primary Gradient Button -->
-<button class="btn-primary">Claim Task</button>
-
-<!-- Secondary Outlined Button -->
-<button class="btn-secondary">View Details</button>
-
-<!-- Coral Pill Button (Landing/Marketing) -->
-<button class="btn-coral">Get Started</button>
-
-<!-- Dark Pill Button -->
-<button class="btn-dark-pill">Sign In</button>
+```
+Idea:        The whole site is one community quilt. Every page is a block sewn into it,
+             and the middle of the quilt grows a patch for every task a person approved.
+Metaphor:    A sampler friendship quilt: every block uses a different traditional pattern
+             and keeps a plain center square where its maker signed it. At its heart is a
+             log cabin block that grows from real approvals.
+Signature:   Opening a block lifts it off the quilt and unfolds it into a panel of cloth;
+             its place on the quilt becomes a chalked hole until you fold it back. The
+             community block stitches itself together from live data.
+Emotion:     A quilting bee in a church hall: unhurried, generous, many hands, one warm thing.
+Motion verb: Pinned, then stitched. Pieces settle like fabric laid on a table, then a
+             running stitch sews them in. Blocks lift and unfold; they never slide in as cards.
+Screenshot:  The quilt filling the screen: the signed title block beside the live log cabin,
+             sampler blocks around them, one block lifted out and open.
+Structure:   The site is the quilt (one 2D canvas). You move by panning it (drag, scroll,
+             arrow keys, the minimap) on desktop, and by reading it top to bottom on a phone.
+             One unit is a block; opening it unfolds a panel at its own URL.
+Escape hatch: /contents, the quilt's contents page: every block as a plain link.
 ```
 
-- **Primary**: Coral gradient (`linear-gradient(135deg, #FF6B6B, #E85555)`), black bold text, elevates on hover.
-- **Secondary**: Outlined border in primary coral with clean surface fill, fills coral on hover.
-- **Coral Pill**: Full rounded (`9999px`), glow shadow on hover (`0 16px 40px rgba(255, 107, 107, 0.35)`).
+### Structure plan
 
-### 2. Cards & Containers
+```
+DESKTOP: the viewport is a window onto one quilt (5 x 4 cells, sashing, cornerstones, binding)
 
-```html
-<!-- Interactive Task Card -->
-<div class="card hover-lift">
-  <!-- Content -->
-</div>
+  [tag: logo, MicroMatch, where you are]                    [Contents] [Sign in | Your block]
+  ┌──────────────┬──────────────┬──────────────┬──────────────┬──────────────┐
+  │ Your block   │ Tasks (flying geese, 2 wide)│ How it works │ For volunteers│
+  ├──────────────┼──────────────┴──────────────┼──────────────┴──────────────┤
+  │ For          │ TITLE BLOCK (2 x 2)         │ COMMUNITY BLOCK (2 x 2)     │
+  │ nonprofits   │ "Small tasks, sewn into     │ live log cabin of approved  │
+  ├──────────────┤  something warm." + CTAs    │ claims, chalked next strip  │
+  │ About        │                             │                             │
+  ├──────────────┼──────────────┬──────────────┼──────────────┬──────────────┤
+  │ Contact      │ Help         │ Docs         │ API          │ Quilt label  │
+  └──────────────┴──────────────┴──────────────┴──────────────┴──────────────┘
+                                                                     [minimap]
 
-<!-- Brand Card -->
-<div class="brand-card">
-  <!-- Content -->
-</div>
+  Opening a block: it lifts, flies to the right and unfolds into a panel of cloth.
+  The quilt pans so the chalked hole it left stays visible on the left.
+  ┌───────────── quilt ─────────────┬────────────── panel ───────────────┐
+  │  ... blocks ...  [ chalked hole ]│ [swatch] How it works   [Fold back]│
+  │                                  │  page content (scrolls inside)     │
+  └──────────────────────────────────┴────────────────────────────────────┘
+  Panel sizes: read (public pages), work (feed, dashboard, editors), narrow (auth).
 
-<!-- Glass Container -->
-<div class="glass">
-  <!-- Content -->
-</div>
+PHONE: the same blocks as a vertical path, two columns, native scroll
+  [tag]                                 [Contents]
+  TITLE (full width) / COMMUNITY (full width) / TASKS (full width)
+  How it works | For volunteers / For nonprofits | Your block / About | Help /
+  Docs | API / Contact | Quilt label
+  Opening a block: a full-screen sheet unfolds from the block; "Fold back" returns.
 ```
 
-- `.card`: Surface background, `--radius-lg`, subtle 1px border, backdrop blur (`8px`), elevates `-2px` on hover.
-- `.brand-card`: Surface background with `--radius-2xl` (`28px`), soft ambient drop shadow.
-- `.glass`: Translucent surface (`rgba(255, 255, 255, 0.25)`), `backdrop-filter: blur(16px)`.
+- **Blocks and their patterns:** Tasks: flying geese. How it works: nine patch. For
+  volunteers: friendship star. For nonprofits: churn dash. Your block: courthouse steps.
+  About: rail fence. Contact: Ohio star. Help: pinwheel. Docs: hourglass. API: half-square
+  triangles. Community: log cabin (live). Title: a pieced border around a large signed center.
+  Quilt label: plain muslin with stitched writing, as on the back corner of a real quilt.
+- **Routes to blocks:** `/tasks` and `/task/*` open Tasks. `/dashboard`, `/profile`, `/org`,
+  `/badges/*`, `/admin/*` and the auth pages open Your block. `/impact` opens the community
+  block. `/privacy`, `/terms` and `/cookies` open the quilt label. `/contents` opens a panel
+  with no hole. The 404 opens over a cut-out hole with a loose thread.
+- **No navbar, no footer.** Orientation comes from the top-left tag (in the quilt's terms:
+  "You're at the How it works block"), the minimap and the hole. Legal and contact links live
+  on the quilt label block and on `/contents`.
+- **Web contracts kept:** every block has its own URL with server-rendered HTML; the camera's
+  first position is computed in CSS from the route, so a deep link paints in place; the back
+  button folds the panel; blocks are real links in reading order; keyboard focus pans the
+  camera to the focused block; the page itself never scroll-jacks (the desktop quilt is a
+  fixed canvas, panels and phone pages scroll natively).
 
-### 3. Chips & Tags
+### Anchors in real product facts
 
-```html
-<!-- Interactive Filter Chip -->
-<button class="chip chip-primary" aria-pressed="true">≤15 min</button>
+- Each nonprofit designs its badges (`badgeDefinitions`: label, color, icon, rule). A patch's
+  fabric color and embroidered icon come from the badge definition that applies to the task:
+  a task-specific badge first, then the nonprofit's any-task badge. A nonprofit with no badge
+  yet produces a plain, undyed muslin patch. That is honest, and it nudges them to design one.
+- A patch is sewn in only when a person at the nonprofit approves the claim
+  (`claims.status === 'approved'`). Pending claims are "pinned": dashed outline, not sewn.
+- The quilt is built from real approved claims through `src/lib/server/quilt.ts`. Nothing is
+  invented to fill it. No names, faces or counts appear that the data does not hold.
+- The log cabin pattern is a real quilt block. Tradition says its center square is red for
+  the hearth. On the site the first patch takes whatever color its nonprofit chose, and the
+  copy says so instead of pretending.
 
-<!-- Dynamic Tag Pill -->
-<span class="tag" style="background: {bg}; color: {color}">#spanish</span>
-```
+### Where the concept reaches
 
-- `.chip`: Inline-flex pill, supports `aria-pressed="true"` active state with coral gradient.
-- `.tag`: Category hashtag pill formatted dynamically via `getTagStyle`.
+| Surface | Expression |
+|---|---|
+| Home | the whole quilt; the title and community blocks at its center |
+| Every public page | a block unfolded into a reading panel, its hole chalked on the quilt |
+| Impact (community block) | the whole live quilt large, with honest counts written as sentences |
+| Volunteer dashboard | "Your block": a log cabin block of only your approved claims; pending claims are pinned beside it |
+| Nonprofit dashboard | claims waiting to be sewn in; approving one plays the stitch on that patch |
+| Badge editor | "Design a patch": fabric, embroidered icon, rule, with a live patch preview |
+| Claim page | the patch this task will become, if the nonprofit has designed one |
+| 404 | a hole cut in the quilt with a loose thread |
 
-### 4. Iconography & Iconify System
+## Art direction
 
-MicroMatch uses **[@iconify/svelte](https://iconify.design)** as its unified, cross-framework vector icon engine across all components and pages.
+### Palette (natural dyes on muslin)
 
-```svelte
-<script>
-  import Icon from '@iconify/svelte';
-</script>
+Quilts were dyed with three classic plant dyes: indigo (blue), madder (red) and weld
+(yellow). The palette keeps the brand's cream ground and coral, and reads the coral as
+madder.
 
-<Icon icon="heroicons:sparkles-20-solid" width="18" height="18" />
-```
+| Role | Name | Hex | Use |
+|---|---|---|---|
+| ground | muslin | `#FDFCF8` | page ground (the existing brand cream, kept) |
+| ink | indigo thread | `#1C1F3B` | text, binding, curtain, footer field |
+| muted | faded indigo | `#575B76` | secondary text |
+| line | basting | `rgb(28 31 59 / 0.16)` | hairlines, pinned outlines |
+| accent | madder | `#FF6B6B` | primary actions (text on it is `#000`) |
+| highlight | weld | `#F2B84B` | the chalked next strip, selection, focus ring |
 
-#### Official Icon Sets & Standard Roles
+Patch fabrics come from badge data. The badge editor offers a swatch book (madder, weld,
+indigo, sage, rose, sky, plum, moss, marigold, slate) and accepts any hex. Thread color on a
+patch is chosen by luminance (`threadFor()`), so icons stay legible on any fabric.
 
-| Icon Family Prefix | Usage & Context                                     | Recommended Icon Identifiers                                                                           |
-| ---                | ---                                                 | ---                                                                                                    |
-| `heroicons:*`      | Core UI navigation, status badges, buttons, cards   | `heroicons:sparkles-20-solid`, `heroicons:code-bracket-20-solid`, `heroicons:building-office-20-solid` |
-| `lucide:*`         | Technical indicators, status checks, workflow steps | `lucide:user-check`, `lucide:bar-chart-2`, `lucide:help-circle`, `lucide:cpu`                          |
-| `mdi:*`            | Secondary navigation & form utility icons           | `mdi:arrow-right`, `mdi:account-group-outline`, `mdi:office-building-outline`                          |
-| `logos:*`          | OAuth identity providers & tech stack badges        | `logos:google-icon`, `logos:svelte-icon`                                                               |
+**Why keep cream and coral:** both are the product's existing identity. The quilt needs a
+light cloth to sit on, and the coral reads naturally as madder. Pairing them with indigo ink
+and a weld highlight, instead of a terracotta accent and a serif, keeps the ground warm
+without the generic cream-and-clay editorial look.
 
-#### Icon Size & Container Tokens
+**Single theme.** The site ships one committed light theme. The footer is an indigo field
+with cream text, a deliberate chapter change, not a dark mode.
 
-- **Inline Chips / Badges**: `14px` (`<Icon width="14" height="14" />`)
-- **Buttons, Navigation & Tiles**: `18px` (`<Icon width="18" height="18" />`)
-- **Card Headers & Feature Icons**: `22px`-`24px` (`<Icon width="24" height="24" />`)
-- **Icon Container Badges**: `.icon-wrap`, `.step-icon-badge`, `.tile-icon-badge` with themed glow tints (`.coral-glow`, `.indigo-glow`, `.rose-glow`, `.teal-glow`).
+### Type
 
----
+- **Display and UI:** Bricolage Grotesque (variable: weight, width, optical size; Google,
+  OFL). At large optical sizes its ink traps and uneven counters read as hand cut. Headings
+  use weight 700 to 800, width 90 to 100, optical size 96, tracking -0.03em to -0.045em,
+  leading 0.92.
+- **Text:** Host Grotesk (variable; Google, OFL). Calm and slightly humanist for long
+  reading and forms.
+- Self-hosted woff2, Latin subset only, two files. Never loaded from Google at runtime.
+- Numbers in tabular figures when they count something.
 
-## ⚡ Motion & Transitions
+Scale (`src/styles/tokens.css`): mega `clamp(3.1rem, 1rem + 8.4vw, 9.5rem)`, xl
+`clamp(2.4rem, 1.3rem + 4.6vw, 5.5rem)`, l `clamp(1.6rem, 1.2rem + 1.8vw, 2.75rem)`,
+m `clamp(1.2rem, 1.08rem + 0.55vw, 1.5rem)`, body `clamp(1rem, 0.96rem + 0.2vw, 1.125rem)`.
 
-Animations maintain a responsive feel using cubic-bezier easing `cubic-bezier(0.4, 0, 0.2, 1)`.
+### Grid and rhythm
 
-- `.animate-slide-up`: 400ms translate from `+20px`to`0px` with fade-in.
-- `.animate-fade-in`: 300ms opacity transition (`0`to`1`).
-- `.animate-scale-in`: 300ms scale transition (`0.9`to`1.0`).
-- `.skeleton`: 1.5s infinite shimmer sweep over surface variant background.
-- `.spin`: 1s linear infinite rotation for loading spinners.
+- 12 columns on desktop, gutter `clamp(1rem, 0.6rem + 1.6vw, 2.5rem)`, outer margin equals
+  the gutter. Content hangs from three lines: column 1, column 6 and column 8.
+- 4 columns on phones. The quilt goes full bleed minus the gutter.
+- Section rhythm varies: tight (8u), normal (16u), airy (28u) and full viewport. No two
+  adjacent sections share a mood.
 
----
+### Shape
 
-## ♿ Accessibility & Theme Adaptivity
+One radius: `3px`, the soft corner of cut cloth. Buttons, chips, swatches and patches all use
+it. Patches add a hand-cut wobble (a slight rotation and uneven seams) instead of a larger
+radius.
 
-The design system follows a WCAG 2.2 AAA-oriented target. The audit and evidence matrix remain the source of truth for conformance status.
+### Motion language
 
-1. **Touch Targets**: Aim for a minimum `44px x 44px` interactive area for touch controls.
-2. **Focus Visibility**: Every keyboard focus state must remain visible against its actual background and must not be hidden by sticky or fixed content.
-3. **Safe Areas**: Top and bottom padding respond to mobile environment insets (`env(safe-area-inset-top)` and `env(safe-area-inset-bottom)`).
-4. **Enhanced Contrast**: Use bright coral for decorative and non-text brand visuals. Use readable coral, navy, or dark status foregrounds for meaningful text and controls. Target at least `7:1` for normal text and `4.5:1` for large text where the AAA contrast criterion applies. Check non-text controls, focus indicators, charts, and theme variants separately.
-5. **Adaptation**: Content must remain usable at 200% and 400% zoom, at a 320px CSS viewport, with increased text spacing, and with reduced motion.
-6. **Semantic interaction**: Dialogs, menus, selects, tabs, forms, errors, and status messages must expose their name, role, state, and value to assistive technology.
+- Ease family: the engine's `expo.out` for settles, `power2.inOut` for stitches and the
+  curtain. Hover feedback 0.3 to 0.45 s.
+- **Settle:** `y: 14px → 0`, `rotate: -1.6deg → 0`, 0.9 s, `expo.out`. Large pieces move
+  slower than small ones.
+- **Stitch:** running stitches (dashed strokes) draw on through a mask, 0.5 to 1.2 s.
+- **Primary buttons are patches:** madder cloth with a running stitch inset. On hover the
+  patch lifts 2px, turns -0.6deg and the stitch runs (the dash offset travels like a needle
+  working). Press settles it flat.
+- **Nav links:** a running stitch draws under the link on hover; the current page keeps it.
+- **Inline links:** a stitched (dashed) underline at rest that closes into a solid seam on
+  hover.
+- **Opening a block (the signature):** the block lifts off the quilt and flies to the panel's
+  place, unfolding as it goes (0.8 s, `expo.out`); its pattern shows on the panel's face during
+  the flight, then the page settles in. Its place on the quilt becomes a chalked hole.
+  Folding back reverses it into the hole. Panel to panel, the content lifts away and the new
+  one settles in while the camera pans to the new block's hole.
+- **First visit:** the blocks are laid down one by one (transform-only CSS keyframes).
+- **Idle:** the chalked next strip's running stitch keeps marching slowly, and the whole
+  quilt hangs a few pixels toward the pointer like cloth on a frame. It runs on the GSAP
+  ticker and pauses off screen. Visual tests hold it still with a `mm-still` flag.
+- **Panels:** public reading panels scroll with Lenis inside the panel; app panels (feed,
+  task, claim, dashboard, editors, auth) scroll natively and keep motion to what reports a
+  change: the patch preview, approving a claim (a stitch runs across the review).
+- No loader. MicroMatch is a product, so the hero shows up at once. The hero text intro is a
+  transform-only CSS keyframe gated on `html.motion`, which an inline script sets before
+  paint. Without JavaScript all text is visible.
 
----
+### Hover treatments (one per role)
 
-## ⚙️ Design Tokens JSON Reference
+| Role | Treatment |
+|---|---|
+| Primary CTA | patch lift plus a running stitch |
+| Secondary CTA | outlined patch whose stitch closes into a solid binding |
+| Corner tags and account tabs | running-stitch underline draws on; the current tab is filled |
+| Blocks on the quilt | the block lifts and turns slightly; opening it unfolds the panel |
+| Task swatches and cards | the swatch lifts and turns slightly; its pinked edge stays put |
+| Quilt patches | lift and show a fabric label with the badge and the task length |
+| Utility links (legal, footer small print) | color only |
 
-The design system is programmatically exported to [`design-tokens.json`](file:///Users/yinkavaughan/My%20Drive%20%28yvaughan@wesleyan.edu%29/CS/projects/swe/micro-match/design-tokens.json), formatted according to W3C Design Tokens Community Group specifications.
+## Composition plans (views inside the structure)
+
+- **The quilt at rest (home):** the camera centers the title and community blocks; sampler
+  blocks frame them on every side so the quilt reads as larger than the window. Each sampler
+  block is its pattern in two or three fabrics with a signed muslin center: title in display
+  type, one line of real copy, a small stitched icon.
+- **Reading panel:** cloth panel, right side, `min(58vw, 54rem)` wide. A selvedge strip on
+  top carries the block's swatch and name and the "Fold back" button. Content is a reading
+  column; long pages use one illustration that changes state (how it works) or an index list
+  (help, docs).
+- **Work panel:** wider (`calc(100vw - 8rem)`, capped). Feed: filter rail plus a wall of pinked
+  task swatches. Dashboards: the volunteer's own block beside claims; the nonprofit's review
+  list beside its block. Editors: form beside a live patch preview.
+- **Narrow panel:** auth forms beside a single patch.
+- **Phone:** blocks become a two-column path; panels are full-screen sheets.
+
+## Genericness test
+
+| A generic model would... | Changed to |
+|---|---|
+| a navbar over a hero, stacked sections and a footer | the site is one quilt; pages are blocks that unfold; corner tags and a minimap orient |
+| show a patchwork grid of equal squares, like a calendar | a sampler of traditional block patterns around a wonky log cabin that grows from the center |
+| use cream, terracotta and a serif | brand cream with indigo ink, madder and weld (the three natural dyes); a grotesk |
+| show stats in KPI tiles | counts written into sentences, sewn on fabric labels |
+| use color-swap hovers | blocks lift; running stitches draw and travel |
+| fill the empty quilt with sample patches | an empty frame with one square chalked in |
+| put legal links in a footer | a quilt label block, as quilters sew one on with the maker details |
+
+## Drawn assets
+
+Drawn with the Glaxnimate MCP server and kept in `design/glaxnimate/` (see its README).
+Components inline the path data from `src/lib/quilt/art.ts`, and patches are composed at
+runtime from that data plus each badge's real color and icon.
+
+## Technical notes
+
+- The quilt (`src/lib/components/world/`) lives in the root layout and persists across
+  navigation. Routes render inside the panel. On desktop the quilt is a fixed canvas moved by
+  one camera on the GSAP ticker; on phones it is a native-scroll two-column grid. Same DOM,
+  CSS switches the form at 900px.
+- The camera's first position is pure CSS (`--bx`, `--by` in pitch units from the route), so
+  server-rendered pages paint in place; JavaScript takes over from that position.
+- Engine (`src/engine/`): camera (pan, drag, wheel, keys, focus), panel (unfold, fold, swap,
+  Lenis inside public reading panels), idle input, Glaxnimate helpers. App panels scroll
+  natively.
+- Navigation: `beforeNavigate` starts the fold or content swap, `onNavigate` awaits it,
+  `afterNavigate` unfolds the new panel and pans the camera.
+- `box-sizing: border-box` lives in the global stylesheet. JavaScript-added classes and
+  slotted-child styles use `:global()`.
+- Copy: UI strings live in `messages/en.json`. Long-form prose (legal text, docs, help
+  answers) stays in its page component, in English.
+- Idle motion: on (the community block's chalked strip and a slight sway of the quilt).

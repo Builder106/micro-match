@@ -1,6 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
 import { getTaskById } from '$lib/server/appwrite';
+import { getPatchDesignForTask } from '$lib/server/quilt';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
   const userRole = locals.userRole ?? 'anonymous';
@@ -10,6 +11,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
   const task = await getTaskById(params.id);
   if (!task) throw error(404, 'Task not found');
   return {
+    patch: await getPatchDesignForTask(task),
     task: {
       id: task.id,
       title: task.title,

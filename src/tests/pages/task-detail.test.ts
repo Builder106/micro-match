@@ -4,7 +4,9 @@ const { envState, mocks } = vi.hoisted(() => ({
   envState: {} as Record<string, string | undefined>,
   mocks: {
     getTaskById: vi.fn(),
-    usersGet: vi.fn()
+    usersGet: vi.fn(),
+    getVerificationByUserId: vi.fn(),
+    getPatchDesignForTask: vi.fn()
   }
 }));
 
@@ -12,6 +14,8 @@ vi.mock('$env/dynamic/private', () => ({
   env: new Proxy(envState, { get: (_, key: string) => envState[key] })
 }));
 vi.mock('$lib/server/appwrite', () => ({ getTaskById: mocks.getTaskById }));
+vi.mock('$lib/server/verifications', () => ({ getVerificationByUserId: mocks.getVerificationByUserId }));
+vi.mock('$lib/server/quilt', () => ({ getPatchDesignForTask: mocks.getPatchDesignForTask }));
 vi.mock('node-appwrite', () => ({
   Client: class { setEndpoint() { return this; } setProject() { return this; } setKey() { return this; } },
   Users: class { get = mocks.usersGet; }
@@ -147,5 +151,28 @@ describe('/task/[id] load', () => {
     expect(result.task.title).toBe('Hello');
     expect(result.task.description).toBe('World');
     expect(result.translatedTo).toBeNull();
+  });
+
+  describe('the nonprofit name and patch', () => {
+    beforeEach(() => {
+      mocks.getTaskById.mockResolvedValue({ id: 'task-1', orgId: 'org-1', title: 'T', shortDescription: 'S', tags: [] });
+      mocks.getPatchDesignForTask.mockResolvedValue({ color: '#FF6B6B', thread: '#1C1F3B', icon: 'heart', label: 'Helper' });
+    });
+
+    it('uses the registered name from an approved verification, and returns the patch', async () => {
+      mocks.getVerificationByUserId.mockResolvedValue({ status: 'approved', orgName: 'Riverside clinic' });
+      const result = requireLoadResult(await load(makeEvent()));
+      expect(result.orgName).toBe('Riverside clinic');
+      expect(result.patch).toMatchObject({ label: 'Helper' });
+    });
+
+    it('ignores a pending verification or a failed lookup', async () => {
+      mocks.getVerificationByUserId.mockResolvedValue({ status: 'pending', orgName: 'Not yet' });
+      expect(requireLoadResult(await load(makeEvent())).orgName).toBeNull();
+      mocks.getVerificationByUserId.mockImplementation(async () => {
+        throw new Error('down');
+      });
+      expect(requireLoadResult(await load(makeEvent())).orgName).toBeNull();
+    });
   });
 });

@@ -84,7 +84,7 @@ describe('POST /api/profile/avatar', () => {
     const res = await POST(makeEvent({ userId: 'user-1' }));
     const body = await res.json();
 
-    expect(mocks.createFile).toHaveBeenCalledWith('avatars', 'file-id', expect.anything(), expect.any(Array));
+    expect(mocks.createFile).toHaveBeenCalledWith({ bucketId: 'avatars', fileId: 'file-id', file: expect.anything(), permissions: expect.any(Array) });
     expect(body).toEqual({ fileId: 'file-1', url: 'https://cdn/file-1' });
   });
 

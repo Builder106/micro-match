@@ -1,5 +1,19 @@
 # JOURNAL — MicroMatch
 
+## 2026-10-16 - Rebuilt the frontend as one community quilt #decision
+
+The new frontend is a single quilt instead of a navbar, a hero, sections and a footer. Every
+page is a block in a sampler quilt; opening one lifts it out and unfolds it into a panel at its
+own URL, leaving a chalked hole until it folds back. The middle of the quilt is a log cabin
+block built only from approved claims, each patch in the color and icon of the badge its
+nonprofit designed, and it starts as an empty frame with one chalked square. The first pass
+kept a conventional page skeleton around a quilt hero; it was rejected as cookie-cutter, and
+the awwwards skill now makes a concept decide the site's structure before any wireframe.
+English only this round; the WCAG audit, reduced-motion handling and localization come next.
+The layout loader now supplies the quilt and a task preview to every route, and the task,
+claim, dashboard and impact loaders add patch data. Browser suites (functional,
+responsiveness, visual) run against the in-memory store and are part of the CI gate.
+
 ## 2026-09-27 - Compile Paraglide before the CI build #fix
 
 The build job has its own checkout, so it cannot use the messages generated

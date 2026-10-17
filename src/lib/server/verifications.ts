@@ -67,7 +67,7 @@ export async function getVerificationByUserId(userId: string): Promise<NgoVerifi
   if (!useAppwrite) return Array.from(inMemory.values()).find((v) => v.userId === userId);
   return withAppwrite(async ({ tables, dbId, table, Query }) => {
     try {
-      const res = await tables.listRows<DbVerificationRow>(dbId, table, [Query.equal('userID', userId), Query.limit(1)]);
+      const res = await tables.listRows<DbVerificationRow>({ databaseId: dbId, tableId: table, queries: [Query.equal('userID', userId), Query.limit(1)] });
       const row = res.rows[0];
       return row ? fromRow(row) : undefined;
     } catch {
@@ -86,7 +86,7 @@ export async function listVerifications(filter?: { status?: NgoVerification['sta
     const queries = [Query.limit(200), Query.orderDesc('submittedAt')];
     if (filter?.status) queries.push(Query.equal('status', filter.status));
     try {
-      const res = await tables.listRows<DbVerificationRow>(dbId, table, queries);
+      const res = await tables.listRows<DbVerificationRow>({ databaseId: dbId, tableId: table, queries });
       return res.rows.map(fromRow);
     } catch {
       return [];
@@ -124,7 +124,7 @@ export async function upsertVerification(input: {
 
   return withAppwrite(async ({ tables, dbId, table, ID, Query }) => {
     // Find existing row for this user
-    const existing = await tables.listRows<DbVerificationRow>(dbId, table, [Query.equal('userID', input.userId), Query.limit(1)]);
+    const existing = await tables.listRows<DbVerificationRow>({ databaseId: dbId, tableId: table, queries: [Query.equal('userID', input.userId), Query.limit(1)] });
     const payload: Omit<DbVerificationRow, keyof import('node-appwrite').Models.Row> = {
       userID: input.userId,
       orgName: input.orgName,
@@ -140,10 +140,10 @@ export async function upsertVerification(input: {
 
     if (existing.rows[0]) {
       const id = existing.rows[0].$id;
-      const updated = await tables.updateRow<DbVerificationRow>(dbId, table, id, payload);
+      const updated = await tables.updateRow<DbVerificationRow>({ databaseId: dbId, tableId: table, rowId: id, data: payload });
       return fromRow(updated);
     }
-    const created = await tables.createRow<DbVerificationRow>(dbId, table, ID.unique(), payload);
+    const created = await tables.createRow<DbVerificationRow>({ databaseId: dbId, tableId: table, rowId: ID.unique(), data: payload });
     return fromRow(created);
   });
 }
@@ -171,14 +171,19 @@ export async function setVerificationStatus(
   }
 
   return withAppwrite(async ({ tables, dbId, table, Query }) => {
-    const existing = await tables.listRows<DbVerificationRow>(dbId, table, [Query.equal('userID', userId), Query.limit(1)]);
+    const existing = await tables.listRows<DbVerificationRow>({ databaseId: dbId, tableId: table, queries: [Query.equal('userID', userId), Query.limit(1)] });
     const row = existing.rows[0];
     if (!row) return undefined;
-    const updated = await tables.updateRow<DbVerificationRow>(dbId, table, row.$id, {
+    const updated = await tables.updateRow<DbVerificationRow>({
+      databaseId: dbId,
+      tableId: table,
+      rowId: row.$id,
+      data: {
       status,
       reason: status === 'rejected' ? (reason ?? '') : '',
       reviewedBy: reviewerId,
       reviewedAt: now
+    }
     });
     return fromRow(updated);
   });
@@ -193,10 +198,10 @@ export async function withdrawVerification(userId: string): Promise<boolean> {
   }
   return withAppwrite(async ({ tables, dbId, table, Query }) => {
     try {
-      const existing = await tables.listRows<DbVerificationRow>(dbId, table, [Query.equal('userID', userId), Query.limit(1)]);
+      const existing = await tables.listRows<DbVerificationRow>({ databaseId: dbId, tableId: table, queries: [Query.equal('userID', userId), Query.limit(1)] });
       const row = existing.rows[0];
       if (!row) return false;
-      await tables.deleteRow(dbId, table, row.$id);
+      await tables.deleteRow({ databaseId: dbId, tableId: table, rowId: row.$id });
       return true;
     } catch {
       return false;
@@ -214,7 +219,7 @@ export async function getUserEmail(userId: string): Promise<string | null> {
       .setProject(env.APPWRITE_PROJECT_ID!)
       .setKey(env.APPWRITE_API_KEY!);
     const users = new Users(client);
-    const u = await users.get(userId);
+    const u = await users.get({ userId });
     return u?.email ?? null;
   } catch {
     return null;
@@ -230,9 +235,9 @@ export async function setUserVerificationPref(userId: string, status: 'pending' 
       .setProject(env.APPWRITE_PROJECT_ID!)
       .setKey(env.APPWRITE_API_KEY!);
     const users = new Users(client);
-    const current = await users.get(userId);
+    const current = await users.get({ userId });
     const prefs = { ...(current?.prefs ?? {}), verificationStatus: status ?? '' };
-    await users.updatePrefs(userId, prefs);
+    await users.updatePrefs({ userId, prefs });
   } catch (err) {
     console.warn('Could not update user prefs:', err);
   }

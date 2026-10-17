@@ -39,6 +39,13 @@ export default [
     }
   },
 
+  // Type-aware: flag calls to APIs marked @deprecated
+  {
+    files: ['src/**/*.ts', 'src/**/*.svelte', 'scripts/**/*.ts'],
+    languageOptions: { parserOptions: { projectService: true, tsconfigRootDir: import.meta.dirname, extraFileExtensions: ['.svelte'] } },
+    rules: { '@typescript-eslint/no-deprecated': 'error' }
+  },
+
   // Project-wide rule tweaks
   {
     rules: {

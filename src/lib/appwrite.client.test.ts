@@ -79,7 +79,7 @@ describe('appwrite.client', () => {
   it('signInEmail delegates to account.createEmailPasswordSession', async () => {
     mocks.createEmailPasswordSession.mockResolvedValue({ $id: 'sess-1' });
     const result = await signInEmail('jane@example.com', 'hunter2');
-    expect(mocks.createEmailPasswordSession).toHaveBeenCalledWith('jane@example.com', 'hunter2');
+    expect(mocks.createEmailPasswordSession).toHaveBeenCalledWith({ email: 'jane@example.com', password: 'hunter2' });
     expect(result).toEqual({ $id: 'sess-1' });
   });
 
@@ -90,9 +90,9 @@ describe('appwrite.client', () => {
 
     await signUpEmail('jane@example.com', 'hunter2', 'Jane', 'ngo');
 
-    expect(mocks.create).toHaveBeenCalledWith('unique-id', 'jane@example.com', 'hunter2', 'Jane');
-    expect(mocks.createEmailPasswordSession).toHaveBeenCalledWith('jane@example.com', 'hunter2');
-    expect(mocks.updatePrefs).toHaveBeenCalledWith({ role: 'ngo' });
+    expect(mocks.create).toHaveBeenCalledWith({ userId: 'unique-id', email: 'jane@example.com', password: 'hunter2', name: 'Jane' });
+    expect(mocks.createEmailPasswordSession).toHaveBeenCalledWith({ email: 'jane@example.com', password: 'hunter2' });
+    expect(mocks.updatePrefs).toHaveBeenCalledWith({ prefs: { role: 'ngo' } });
   });
 
   it('signUpEmail defaults role to volunteer', async () => {
@@ -101,24 +101,24 @@ describe('appwrite.client', () => {
 
     await signUpEmail('jane@example.com', 'hunter2');
 
-    expect(mocks.updatePrefs).toHaveBeenCalledWith({ role: 'volunteer' });
+    expect(mocks.updatePrefs).toHaveBeenCalledWith({ prefs: { role: 'volunteer' } });
   });
 
   it('createRecovery/updateRecovery delegate to the account SDK', async () => {
     await createRecovery('jane@example.com', 'https://micromatch.tech/reset');
-    expect(mocks.createRecovery).toHaveBeenCalledWith('jane@example.com', 'https://micromatch.tech/reset');
+    expect(mocks.createRecovery).toHaveBeenCalledWith({ email: 'jane@example.com', url: 'https://micromatch.tech/reset' });
 
     await updateRecovery('user-1', 'secret', 'new-password');
-    expect(mocks.updateRecovery).toHaveBeenCalledWith('user-1', 'secret', 'new-password');
+    expect(mocks.updateRecovery).toHaveBeenCalledWith({ userId: 'user-1', secret: 'secret', password: 'new-password' });
   });
 
   it('signInWithGoogle builds success/failure URLs from window.location.origin', () => {
     signInWithGoogle();
-    expect(mocks.createOAuth2Token).toHaveBeenCalledWith(
-      'google',
-      'https://micromatch.tech/api/auth/oauth/callback',
-      'https://micromatch.tech/login?error=oauth'
-    );
+    expect(mocks.createOAuth2Token).toHaveBeenCalledWith({
+      provider: 'google',
+      success: 'https://micromatch.tech/api/auth/oauth/callback',
+      failure: 'https://micromatch.tech/login?error=oauth'
+    });
   });
 
   it('getJWT returns the jwt string, or null on error', async () => {
@@ -274,7 +274,7 @@ describe('appwrite.client', () => {
 
     const url = getAvatarUrl('file-1', 64);
 
-    expect(mocks.getFilePreview).toHaveBeenCalledWith('avatars-bucket', 'file-1', 64, 64);
+    expect(mocks.getFilePreview).toHaveBeenCalledWith({ bucketId: 'avatars-bucket', fileId: 'file-1', width: 64, height: 64 });
     expect(url).toBe('https://cdn/avatars/file-1');
   });
 
@@ -283,7 +283,7 @@ describe('appwrite.client', () => {
     mocks.getFilePreview.mockReturnValue('https://cdn/avatars/file-1');
 
     expect(getAvatarUrl('file-1')).toBe('https://cdn/avatars/file-1');
-    expect(mocks.getFilePreview).toHaveBeenCalledWith('avatars-bucket', 'file-1', 128, 128);
+    expect(mocks.getFilePreview).toHaveBeenCalledWith({ bucketId: 'avatars-bucket', fileId: 'file-1', width: 128, height: 128 });
   });
 
   it('getAvatarUrl returns empty string if getFilePreview throws', () => {
