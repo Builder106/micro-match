@@ -8,6 +8,9 @@ export default defineConfig({
     sveltekit(),
     paraglideVitePlugin(paraglideOptions)
   ],
+  // Bundle the motion libraries into the server build. Left external, Vercel's Node runtime
+  // loads gsap as CommonJS, which has no named exports, and every page fails to render.
+  ssr: { noExternal: ['gsap', 'lenis'] },
   test: {
     fileParallelism: false,
     // Coverage applies across all projects
