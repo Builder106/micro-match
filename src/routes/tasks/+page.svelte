@@ -17,7 +17,6 @@
   // Keep the URL in step with the filters, so a filtered feed can be shared or bookmarked.
   $effect(() => {
     const search = paramsFromFilters(filters);
-    // eslint-disable-next-line svelte/no-navigation-without-resolve -- the pathname already carries its locale prefix
     if (search !== page.url.search) replaceState(`${page.url.pathname}${search}`, {});
   });
 
