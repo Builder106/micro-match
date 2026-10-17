@@ -128,4 +128,22 @@ describe('+layout.server load', () => {
     expect(result.openTasks.preview).toEqual([{ id: 't1', title: 'translated' }]);
     expect(result.locale).toBe('es');
   });
+  it('renders an empty quilt instead of failing when the quilt and tasks cannot load', async () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    mocks.getQuiltPatches.mockRejectedValue(new Error('appwrite down'));
+    mocks.getTasks.mockRejectedValue(new Error('appwrite down'));
+    const result = requireLoadResult(await load(createServerLoadEvent({ url: 'http://localhost:5173/en' })));
+    expect(result.quilt).toEqual(emptyQuilt.quilt);
+    expect(result.openTasks).toEqual(emptyQuilt.openTasks);
+    expect(error).toHaveBeenCalledTimes(2);
+    error.mockRestore();
+  });
+
+  it('shows untranslated task titles when translation fails', async () => {
+    const tasks = [{ id: 't1', title: 'Original' }];
+    mocks.getTasks.mockResolvedValue(tasks);
+    mocks.translateTasks.mockRejectedValue(new Error('translator down'));
+    const result = requireLoadResult(await load(createServerLoadEvent({ url: 'http://localhost:5173/en' })));
+    expect(result.openTasks.preview).toEqual(tasks);
+  });
 });
