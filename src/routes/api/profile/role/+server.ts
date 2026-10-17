@@ -61,7 +61,7 @@ export const POST: RequestHandler = async (event) => {
 
   let oldRole: string;
   try {
-    const me = await users.get(userId);
+    const me = await users.get({ userId });
     oldRole = String(me?.prefs?.role ?? '');
   } catch {
     return json({ error: 'User not found' }, { status: 404 });
@@ -79,10 +79,10 @@ export const POST: RequestHandler = async (event) => {
 
   // 2. Update prefs.role (read-modify-write so we don't clobber other prefs).
   try {
-    const me = await users.get<import('$lib/types').UserPreferences>(userId);
+    const me = await users.get<import('$lib/types').UserPreferences>({ userId });
     const nextPrefs: import('$lib/types').UserPreferences = { ...(me?.prefs ?? {}), role: newRole };
     if (downgrading) nextPrefs.verificationStatus = '';
-    await users.updatePrefs(userId, nextPrefs);
+    await users.updatePrefs({ userId, prefs: nextPrefs });
   } catch (err) {
     console.error('updatePrefs failed', err);
     return json({ error: 'Could not update profile' }, { status: 500 });

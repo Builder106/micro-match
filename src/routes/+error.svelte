@@ -1,100 +1,64 @@
-<!-- eslint-disable svelte/no-navigation-without-resolve -->
 <script lang="ts">
-  import Icon from '@iconify/svelte';
   import { page } from '$app/state';
-  import { localizedHref, type Locale } from '$lib/locale';
-  import * as m from '$lib/paraglide/messages.js';
+  import Seo from '$lib/components/Seo.svelte';
+  import Link from '$lib/components/Link.svelte';
+  import Needle from '$lib/components/art/Needle.svelte';
 
-  const locale = $derived((page.data?.locale as Locale | undefined) ?? 'en');
-  const homeHref = $derived(localizedHref('/', locale));
-  const tasksHref = $derived(localizedHref('/tasks', locale));
+  const missing = $derived(page.status === 404);
 </script>
 
-<svelte:head>
-  <title>{page.status} · MicroMatch</title>
-  <meta name="description" content={m.not_found_body()} />
-</svelte:head>
+<Seo title="{missing ? 'A missing block' : 'Something came unstitched'} | MicroMatch" description="This page is not part of the MicroMatch quilt." noindex />
 
-<main class="error-page">
-  <div class="error-orbit error-orbit-coral"></div>
-  <div class="error-orbit error-orbit-blue"></div>
-  <section class="error-card" aria-labelledby="error-title">
-    <div class="error-mark" aria-hidden="true">
-      <Icon icon="lucide:compass" width="32" height="32" />
-    </div>
-    <p class="error-code">{m.error_404()}</p>
-    <h1 id="error-title">{m.not_found_title()}</h1>
-    <p class="error-body">{m.not_found_body()}</p>
-    <div class="error-actions">
-      <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-      <a class="btn-coral btn-lg" href={homeHref}>{m.back_home()}</a>
-      <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-      <a class="btn-outline btn-lg" href={tasksHref}>{m.browse_tasks()}</a>
-    </div>
-  </section>
-</main>
+<div class="missing">
+  <div class="hole" aria-hidden="true">
+    <Needle class="hole__needle" />
+    <svg class="hole__thread" viewBox="0 0 380 60"><path d="M10 40C60 26 86 54 130 40S204 18 242 36 320 52 370 34" /></svg>
+  </div>
+  <h1 class="display h-xl" tabindex="-1">{missing ? 'This block was never sewn' : 'Something came unstitched'}</h1>
+  <p class="lede">
+    {#if missing}
+      There is no page here. It may have moved, or the link has a typo.
+    {:else}
+      The server dropped a stitch ({page.status}). Try again in a moment.
+    {/if}
+  </p>
+  <div class="ctas">
+    <Link href="/" class="patch-btn">Back to the quilt</Link>
+    <Link href="/contents" class="patch-btn patch-btn--plain">See every block</Link>
+  </div>
+</div>
 
 <style>
-  .error-page {
-    position: relative;
-    min-height: min(760px, calc(100vh - 88px));
+  .missing {
     display: grid;
-    place-items: center;
-    overflow: hidden;
-    padding: 48px 24px;
-    background: var(--color-background);
+    gap: 1.25rem;
+    max-width: 38rem;
   }
-
-  .error-orbit {
+  .hole {
+    position: relative;
+    width: 11rem;
+    aspect-ratio: 1;
+    border-radius: 3px;
+    background: repeating-linear-gradient(45deg, rgb(28 31 59 / 0.06) 0 2px, transparent 2px 9px), #ded3bd;
+    outline: 3px dashed var(--c-weld);
+    outline-offset: -8px;
+    box-shadow: inset 0 6px 14px rgb(28 31 59 / 0.18);
+    margin-bottom: 1rem;
+  }
+  .hole :global(.hole__needle) {
     position: absolute;
-    width: 420px;
-    height: 420px;
-    border-radius: 50%;
-    filter: blur(100px);
-    pointer-events: none;
-    opacity: 0.38;
+    width: 55%;
+    right: -18%;
+    top: -14%;
   }
-
-  .error-orbit-coral { top: -160px; right: -80px; background: #fecdd3; }
-  .error-orbit-blue { bottom: -180px; left: -100px; background: #bfdbfe; }
-
-  .error-card {
-    position: relative;
-    z-index: 1;
-    width: min(100%, 620px);
-    padding: clamp(32px, 6vw, 64px);
-    text-align: center;
-    background: color-mix(in srgb, white 88%, transparent);
-    border: 1px solid color-mix(in srgb, var(--color-outline) 55%, transparent);
-    border-radius: 28px;
-    box-shadow: 0 24px 70px rgba(15, 23, 42, 0.12);
-  }
-
-  .error-mark {
-    display: grid;
-    place-items: center;
-    width: 72px;
-    height: 72px;
-    margin: 0 auto 24px;
-    color: var(--color-primary-readable);
-    background: #ffe4e6;
-    border-radius: 22px;
-  }
-
-  .error-code {
-    margin: 0 0 8px;
-    color: var(--color-primary-readable);
-    font-size: 0.85rem;
-    font-weight: 800;
-    letter-spacing: 0.18em;
-  }
-
-  h1 { margin: 0; font-size: clamp(2rem, 4vw, 3.2rem); }
-  .error-body { max-width: 440px; margin: 16px auto 0; color: var(--color-text-secondary); font-size: 1.05rem; line-height: 1.65; }
-  .error-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 32px; }
-
-  @media (max-width: 520px) {
-    .error-page { min-height: calc(100vh - 64px); padding: 24px 16px; }
-    .error-actions > a { width: 100%; }
+  .hole__thread {
+    position: absolute;
+    left: 40%;
+    bottom: -18%;
+    width: 13rem;
+    fill: none;
+    stroke: var(--c-accent);
+    stroke-width: 2.4;
+    stroke-linecap: round;
   }
 </style>

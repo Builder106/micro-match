@@ -158,7 +158,7 @@ const demoTasks: DemoTask[] = [
 ];
 
 async function findUserByEmail(email: string): Promise<{ $id: string } | null> {
-  const res = await users.list([Query.equal('email', email), Query.limit(1)]);
+  const res = await users.list({ queries: [Query.equal('email', email), Query.limit(1)] });
   const user = res.users[0];
   return user ? { $id: user.$id } : null;
 }
@@ -172,13 +172,13 @@ async function ensureDemoUser(): Promise<string> {
   // Create with a long random password — no one signs in as this account;
   // we mutate via admin SDK only.
   const password = typeof globalThis.crypto !== 'undefined' && 'randomUUID' in globalThis.crypto ? globalThis.crypto.randomUUID() : Math.random().toString(36).slice(2);
-  const created = await users.create(ID.unique(), demoEmail, undefined, password, demoName);
+  const created = await users.create({ userId: ID.unique(), email: demoEmail, password, name: demoName });
   console.log(`+ Created demo NGO user ${demoEmail} → ${created.$id}`);
   return created.$id;
 }
 
 async function ensureUserPrefs(userId: string): Promise<void> {
-  const me = await users.get(userId);
+  const me = await users.get({ userId });
   const next = {
     ...(me?.prefs ?? {}),
     role: 'ngo',
@@ -186,7 +186,7 @@ async function ensureUserPrefs(userId: string): Promise<void> {
     bio: 'Hand-picked demo tasks so first-time visitors have something to browse.',
     verificationStatus: 'verified',
   };
-  await users.updatePrefs(userId, next);
+  await users.updatePrefs({ userId, prefs: next });
   console.log(`✓ Prefs set on demo user (role=ngo, orgName=${demoName})`);
 }
 
@@ -199,7 +199,7 @@ async function ensureNgoTeamMembership(userId: string): Promise<void> {
   // Appwrite returns the existing membership rather than creating duplicates.
   // If a strict 409 is returned, swallow it.
   try {
-    await teams.createMembership(ngoTeamId, ['ngo'], undefined, userId);
+    await teams.createMembership({ teamId: ngoTeamId, roles: ['ngo'], userId });
     console.log(`✓ Demo user is in '${ngoTeamId}' team`);
   } catch (err) {
     const errObj = err as { code?: number; response?: { code?: number }; message?: string };
@@ -218,10 +218,14 @@ async function listExistingTasks(orgId: string): Promise<Map<string, string>> {
     $id: string;
     title?: string;
   }
-  const res = await tables.listRows(dbId, tasksTable, [
+  const res = await tables.listRows({
+    databaseId: dbId,
+    tableId: tasksTable,
+    queries: [
     Query.equal('orgID', orgId),
     Query.limit(100),
-  ]);
+  ]
+  });
   const rows = (res.rows ?? []) as TaskRowItem[];
   return new Map<string, string>(
     rows.map((r) => [String(r.title ?? ''), String(r.$id)]),
@@ -241,14 +245,23 @@ async function ensureTasks(orgId: string): Promise<{ created: number; refreshed:
   for (const t of demoTasks) {
     const existingId = existing.get(t.title);
     if (existingId) {
-      await tables.updateRow(dbId, tasksTable, existingId, {
+      await tables.updateRow({
+        databaseId: dbId,
+        tableId: tasksTable,
+        rowId: existingId,
+        data: {
         status: 'active',
         lastActivityAt: now,
+      }
       });
       refreshed++;
       continue;
     }
-    await tables.createRow(dbId, tasksTable, ID.unique(), {
+    await tables.createRow({
+      databaseId: dbId,
+      tableId: tasksTable,
+      rowId: ID.unique(),
+      data: {
       title: t.title,
       shortDescription: t.shortDescription,
       description: t.description,
@@ -262,6 +275,7 @@ async function ensureTasks(orgId: string): Promise<{ created: number; refreshed:
       deadline: null,
       isVerified: true,
       lastActivityAt: now,
+    }
     });
     created++;
   }
@@ -282,7 +296,7 @@ async function ensureTasks(orgId: string): Promise<{ created: number; refreshed:
  * gets at creation.
  */
 async function ensureDemoNgoPassword(userId: string): Promise<void> {
-  await users.updatePassword(userId, demoPassword!);
+  await users.updatePassword({ userId, password: demoPassword! });
   console.log(`✓ Demo NGO password set (${demoEmail} can now sign in)`);
 }
 
@@ -291,25 +305,24 @@ async function ensureVolunteerUser(): Promise<string> {
   let userId: string;
   if (existing) {
     userId = existing.$id;
-    await users.updatePassword(userId, demoPassword!);
+    await users.updatePassword({ userId, password: demoPassword! });
     console.log(`✓ Demo volunteer exists (${volunteerEmail}) → ${userId}`);
   } else {
-    const created = await users.create(
-      ID.unique(),
-      volunteerEmail,
-      undefined,
-      demoPassword!,
-      volunteerName,
-    );
+    const created = await users.create({
+      userId: ID.unique(),
+      email: volunteerEmail,
+      password: demoPassword!,
+      name: volunteerName
+    });
     userId = created.$id;
     console.log(`+ Created demo volunteer ${volunteerEmail} → ${userId}`);
   }
 
-  const me = await users.get(userId);
-  await users.updatePrefs(userId, { ...(me?.prefs ?? {}), role: 'volunteer' });
+  const me = await users.get({ userId });
+  await users.updatePrefs({ userId, prefs: { ...(me?.prefs ?? {}), role: 'volunteer' } });
 
   try {
-    await teams.createMembership(volunteerTeamId, ['volunteer'], undefined, userId);
+    await teams.createMembership({ teamId: volunteerTeamId, roles: ['volunteer'], userId });
     console.log(`✓ Demo volunteer is in '${volunteerTeamId}' team`);
   } catch (err) {
     const errObj = err as { code?: number; response?: { code?: number }; message?: string };
@@ -330,22 +343,31 @@ async function ensureVolunteerUser(): Promise<string> {
  * nothing and the loop demo has no payoff to film. Idempotent by (orgID, label).
  */
 async function ensureBadgeDefinition(orgId: string): Promise<void> {
-  const res = await tables.listRows(dbId, badgeDefsTable, [
+  const res = await tables.listRows({
+    databaseId: dbId,
+    tableId: badgeDefsTable,
+    queries: [
     Query.equal('orgID', orgId),
     Query.equal('label', badgeLabel),
     Query.limit(1),
-  ]);
+  ]
+  });
   if ((res.rows ?? []).length > 0) {
     console.log(`✓ Badge definition "${badgeLabel}" exists`);
     return;
   }
-  await tables.createRow(dbId, badgeDefsTable, ID.unique(), {
+  await tables.createRow({
+    databaseId: dbId,
+    tableId: badgeDefsTable,
+    rowId: ID.unique(),
+    data: {
     orgID: orgId,
     label: badgeLabel,
     color: '#F59E0B',
     icon: 'hugeicons:trophy-01',
     criteria: 'task-completion',
     taskID: '',
+  }
   });
   console.log(`+ Created badge definition "${badgeLabel}"`);
 }
@@ -368,21 +390,29 @@ async function resetDemoLoopState(volunteerId: string): Promise<void> {
     $id: string;
   }
 
-  const claimRows = await tables.listRows(dbId, claimsTable, [
+  const claimRows = await tables.listRows({
+    databaseId: dbId,
+    tableId: claimsTable,
+    queries: [
     Query.equal('userID', volunteerId),
     Query.limit(100),
-  ]);
+  ]
+  });
   for (const row of (claimRows.rows ?? []) as RowIdItem[]) {
-    await tables.deleteRow(dbId, claimsTable, row.$id);
+    await tables.deleteRow({ databaseId: dbId, tableId: claimsTable, rowId: row.$id });
     claims++;
   }
 
-  const badgeRows = await tables.listRows(dbId, badgesTable, [
+  const badgeRows = await tables.listRows({
+    databaseId: dbId,
+    tableId: badgesTable,
+    queries: [
     Query.equal('userID', volunteerId),
     Query.limit(100),
-  ]);
+  ]
+  });
   for (const row of (badgeRows.rows ?? []) as RowIdItem[]) {
-    await tables.deleteRow(dbId, badgesTable, row.$id);
+    await tables.deleteRow({ databaseId: dbId, tableId: badgesTable, rowId: row.$id });
     badges++;
   }
 

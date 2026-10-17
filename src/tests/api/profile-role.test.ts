@@ -77,7 +77,7 @@ describe('POST /api/profile/role', () => {
     teamIds.ngo = 'team-ngo';
     teamIds.volunteer = 'team-vol';
     mocks.usersGet.mockImplementation(async () => ({ prefs: { ...AppwriteCtors.userPrefs } }));
-    mocks.usersUpdatePrefs.mockImplementation(async (_id: string, p: Record<string, unknown>) => {
+    mocks.usersUpdatePrefs.mockImplementation(async ({ prefs: p }: { userId: string; prefs: Record<string, unknown> }) => {
       Object.keys(AppwriteCtors.userPrefs).forEach((k) => delete AppwriteCtors.userPrefs[k]);
       Object.assign(AppwriteCtors.userPrefs, p);
     });
@@ -209,7 +209,7 @@ describe('POST /api/profile/role', () => {
     const res = await POST(makeEvent({ userId: 'u1', body: { newRole: 'ngo' } }));
 
     expect(res.status).toBe(200);
-    expect(mocks.usersUpdatePrefs).toHaveBeenCalledWith('u1', { role: 'ngo' });
+    expect(mocks.usersUpdatePrefs).toHaveBeenCalledWith({ userId: 'u1', prefs: { role: 'ngo' } });
   });
 
   it('does not add a membership when the target team is not configured', async () => {

@@ -8,6 +8,9 @@ export default defineConfig({
     sveltekit(),
     paraglideVitePlugin(paraglideOptions)
   ],
+  // Bundle the motion libraries into the server build. Left external, Vercel's Node runtime
+  // loads gsap as CommonJS, which has no named exports, and every page fails to render.
+  ssr: { noExternal: ['gsap', 'lenis'] },
   test: {
     fileParallelism: false,
     // Coverage applies across all projects
@@ -32,13 +35,7 @@ export default defineConfig({
         statements: 100
       }
     },
-    // Two projects so server logic and Svelte components can each get the
-    // module resolution they need:
-    //   - "server"     : node + default conditions for /api/* and lib/server/*
-    //   - "components" : jsdom + browser conditions so Svelte resolves to its
-    //                    client entry (otherwise mount() throws "not available
-    //                    on the server" because Svelte 5 ships separate
-    //                    server/client entries via export conditions).
+    // Server logic and loaders run in node. Component tests return with the new frontend.
     projects: [
       {
         extends: true,
@@ -46,17 +43,6 @@ export default defineConfig({
           name: 'server',
           environment: 'node',
           include: ['src/**/*.{test,spec}.{ts,js}'],
-          exclude: ['src/tests/components/**'],
-          setupFiles: ['./src/tests/setup.ts']
-        }
-      },
-      {
-        extends: true,
-        resolve: { conditions: ['browser'] },
-        test: {
-          name: 'components',
-          environment: 'jsdom',
-          include: ['src/tests/components/**/*.{test,spec}.{ts,js}'],
           setupFiles: ['./src/tests/setup.ts']
         }
       }

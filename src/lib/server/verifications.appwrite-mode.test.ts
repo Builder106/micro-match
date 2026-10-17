@@ -79,7 +79,7 @@ describe('verifications (Appwrite-backed mode)', () => {
     mocks.listRows.mockResolvedValueOnce({ rows: [row] });
     const all = await listVerifications({ status: 'pending' });
 
-    expect(mocks.listRows).toHaveBeenCalledWith('db', 'verifications', expect.arrayContaining(['equal(status,pending)']));
+    expect(mocks.listRows).toHaveBeenCalledWith({ databaseId: 'db', tableId: 'verifications', queries: expect.arrayContaining(['equal(status,pending)']) });
     expect(all).toEqual([expect.objectContaining({ id: 'v1' })]);
   });
 
@@ -88,11 +88,11 @@ describe('verifications (Appwrite-backed mode)', () => {
 
     await listVerifications();
 
-    expect(mocks.listRows).toHaveBeenCalledWith(
-      'db',
-      'verifications',
-      ['limit(200)', 'orderDesc(submittedAt)']
-    );
+    expect(mocks.listRows).toHaveBeenCalledWith({
+      databaseId: 'db',
+      tableId: 'verifications',
+      queries: ['limit(200)', 'orderDesc(submittedAt)']
+    });
   });
 
   it('listVerifications returns [] when the query throws', async () => {
@@ -124,12 +124,17 @@ describe('verifications (Appwrite-backed mode)', () => {
 
     const created = await upsertVerification({ userId: 'user-1', orgName: 'Org', country: 'US', taxId: '123' });
 
-    expect(mocks.createRow).toHaveBeenCalledWith('db', 'verifications', 'new-id', expect.objectContaining({
+    expect(mocks.createRow).toHaveBeenCalledWith({
+      databaseId: 'db',
+      tableId: 'verifications',
+      rowId: 'new-id',
+      data: expect.objectContaining({
       docFileId: null,
       reason: '',
       reviewedBy: '',
       reviewedAt: ''
-    }));
+    })
+    });
     expect(created).toEqual(expect.objectContaining({
       docFileId: undefined,
       reason: undefined,
@@ -145,7 +150,7 @@ describe('verifications (Appwrite-backed mode)', () => {
 
     const updated = await upsertVerification({ userId: 'user-1', orgName: 'New Org', country: 'US', taxId: '123' });
 
-    expect(mocks.updateRow).toHaveBeenCalledWith('db', 'verifications', 'v1', expect.objectContaining({ orgName: 'New Org' }));
+    expect(mocks.updateRow).toHaveBeenCalledWith({ databaseId: 'db', tableId: 'verifications', rowId: 'v1', data: expect.objectContaining({ orgName: 'New Org' }) });
     expect(updated.orgName).toBe('New Org');
   });
 
@@ -166,17 +171,22 @@ describe('verifications (Appwrite-backed mode)', () => {
 
     await setVerificationStatus('user-1', 'rejected', 'admin-1');
 
-    expect(mocks.updateRow).toHaveBeenCalledWith('db', 'verifications', 'v1', expect.objectContaining({
+    expect(mocks.updateRow).toHaveBeenCalledWith({
+      databaseId: 'db',
+      tableId: 'verifications',
+      rowId: 'v1',
+      data: expect.objectContaining({
       status: 'rejected',
       reason: ''
-    }));
+    })
+    });
   });
 
   it('withdrawVerification deletes the matching row and returns true/false accordingly', async () => {
     mocks.listRows.mockResolvedValueOnce({ rows: [row] });
     mocks.deleteRow.mockResolvedValueOnce(undefined);
     expect(await withdrawVerification('user-1')).toBe(true);
-    expect(mocks.deleteRow).toHaveBeenCalledWith('db', 'verifications', 'v1');
+    expect(mocks.deleteRow).toHaveBeenCalledWith({ databaseId: 'db', tableId: 'verifications', rowId: 'v1' });
 
     mocks.listRows.mockResolvedValueOnce({ rows: [] });
     expect(await withdrawVerification('ghost')).toBe(false);
@@ -206,7 +216,7 @@ describe('verifications (Appwrite-backed mode)', () => {
 
     await setUserVerificationPref('user-1', 'approved');
 
-    expect(mocks.usersUpdatePrefs).toHaveBeenCalledWith('user-1', { role: 'ngo', verificationStatus: 'approved' });
+    expect(mocks.usersUpdatePrefs).toHaveBeenCalledWith({ userId: 'user-1', prefs: { role: 'ngo', verificationStatus: 'approved' } });
   });
 
   it('setUserVerificationPref supports absent prefs and clearing the status', async () => {
@@ -215,7 +225,7 @@ describe('verifications (Appwrite-backed mode)', () => {
 
     await setUserVerificationPref('user-1', null);
 
-    expect(mocks.usersUpdatePrefs).toHaveBeenCalledWith('user-1', { verificationStatus: '' });
+    expect(mocks.usersUpdatePrefs).toHaveBeenCalledWith({ userId: 'user-1', prefs: { verificationStatus: '' } });
   });
 
   it('setUserVerificationPref swallows errors', async () => {

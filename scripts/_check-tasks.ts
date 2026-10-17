@@ -16,7 +16,7 @@ async function main() {
     isVerified?: boolean;
     title?: string;
   }
-  const res = await t.listRows(dbId, tasksTable, [Query.limit(20)]);
+  const res = await t.listRows({ databaseId: dbId, tableId: tasksTable, queries: [Query.limit(20)] });
   const rows = (res.rows ?? []) as TaskRowItem[];
   console.log(`total=${res.total}, rows=${rows.length}`);
   for (const r of rows.slice(0, 10)) {

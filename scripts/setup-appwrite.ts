@@ -4,7 +4,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { Client, Databases, Storage, Teams, TablesDB, type Compression } from 'node-appwrite';
+import { Client, Storage, Teams, TablesDB, type Compression } from 'node-appwrite';
 
 interface AppwriteDatabaseConfig {
   $id: string;
@@ -76,7 +76,6 @@ const client = new Client()
   .setProject(projectId)
   .setKey(apiKey);
 
-const databases = new Databases(client);
 const storage = new Storage(client);
 const teams = new Teams(client);
 const tables = new TablesDB(client);
@@ -87,44 +86,44 @@ async function setupAppwrite() {
   // 1. Setup Databases
   for (const db of config.databases || []) {
     try {
-      await databases.get(db.$id);
+      await tables.get({ databaseId: db.$id });
       console.log(`Database "${db.name}" (${db.$id}) already exists.`);
     } catch {
       console.log(`Creating database "${db.name}" (${db.$id})...`);
-      await databases.create(db.$id, db.name, db.enabled);
+      await tables.create({ databaseId: db.$id, name: db.name, enabled: db.enabled });
     }
   }
 
   // 2. Setup Storage Buckets
   for (const bucket of config.buckets || []) {
     try {
-      await storage.getBucket(bucket.$id);
+      await storage.getBucket({ bucketId: bucket.$id });
       console.log(`Storage bucket "${bucket.name}" (${bucket.$id}) already exists.`);
     } catch {
       console.log(`Creating storage bucket "${bucket.name}" (${bucket.$id})...`);
-      await storage.createBucket(
-        bucket.$id,
-        bucket.name,
-        bucket.$permissions || [],
-        bucket.fileSecurity || false,
-        bucket.enabled || true,
-        bucket.maximumFileSize,
-        bucket.allowedFileExtensions,
-        (bucket.compression as Compression) || undefined,
-        bucket.encryption,
-        bucket.antivirus
-      );
+      await storage.createBucket({
+        bucketId: bucket.$id,
+        name: bucket.name,
+        permissions: bucket.$permissions || [],
+        fileSecurity: bucket.fileSecurity || false,
+        enabled: bucket.enabled || true,
+        maximumFileSize: bucket.maximumFileSize,
+        allowedFileExtensions: bucket.allowedFileExtensions,
+        compression: (bucket.compression as Compression) || undefined,
+        encryption: bucket.encryption,
+        antivirus: bucket.antivirus
+      });
     }
   }
 
   // 3. Setup Teams
   for (const team of config.teams || []) {
     try {
-      await teams.get(team.$id);
+      await teams.get({ teamId: team.$id });
       console.log(`Team "${team.name}" (${team.$id}) already exists.`);
     } catch {
       console.log(`Creating team "${team.name}" (${team.$id})...`);
-      await teams.create(team.$id, team.name);
+      await teams.create({ teamId: team.$id, name: team.name });
     }
   }
 
@@ -132,12 +131,12 @@ async function setupAppwrite() {
   for (const table of config.tables || []) {
     const dbId = table.databaseId || 'micromatch';
     try {
-      await tables.getTable(dbId, table.$id);
+      await tables.getTable({ databaseId: dbId, tableId: table.$id });
       console.log(`Table "${table.name}" (${table.$id}) already exists.`);
     } catch {
       try {
         console.log(`Creating table "${table.name}" (${table.$id}) in database "${dbId}"...`);
-        await tables.createTable(dbId, table.$id, table.name, [], table.enabled ?? true);
+        await tables.createTable({ databaseId: dbId, tableId: table.$id, name: table.name, permissions: [], rowSecurity: table.enabled ?? true });
       } catch (err) {
         console.warn(`Note: Could not automatically create table "${table.$id}" via SDK:`, (err as Error).message);
         console.warn(`Tip: You can push full schema including columns and indexes via Appwrite CLI:`);

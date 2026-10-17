@@ -1,217 +1,139 @@
 <script lang="ts">
-  /* eslint-disable svelte/no-navigation-without-resolve */
-   import '@smui/top-app-bar';
-   import '@smui/button';
-   import '../app.css';
+  import '$styles/tokens.css';
+  import '$styles/base.css';
+  import '$styles/world.css';
+  import { tick } from 'svelte';
+  import { page } from '$app/state';
+  import { afterNavigate, beforeNavigate, onNavigate } from '$app/navigation';
+  import QuiltWorld from '$lib/components/world/QuiltWorld.svelte';
+  import Panel from '$lib/components/world/Panel.svelte';
+  import CornerTags from '$lib/components/world/CornerTags.svelte';
+  import { block, blockForPath, panelKindForPath, type BlockId } from '$lib/quilt/world';
+  import { canonicalPath } from '$lib/site';
+  import { contentIn, contentOut, fold, unfold, resetPanelScroll, smoothPanel, stopSmoothPanel } from '$engine';
+  import * as m from '$lib/paraglide/messages.js';
 
-   import TopAppBar from '@smui/top-app-bar';
-   import Button from '@smui/button';
-   import Icon from '@iconify/svelte';
-   import ThemeToggle from '$lib/components/ThemeToggle.svelte';
-   import Sidebar from '$lib/components/Sidebar.svelte';
-   import { onMount } from 'svelte';
-   import { page } from '$app/stores';
-   import { get } from 'svelte/store';
-   import { account, getJWT } from '$lib/appwrite.client';
-   import { localizedHref, stripLocale, type Locale } from '$lib/locale';
-   import * as m from '$lib/paraglide/messages.js';
-  const authPaths = ['/login', '/signup', '/forgot-password', '/reset-password'];
-  const publicPaths = ['/about', '/contact', '/cookies', '/docs', '/help', '/privacy', '/terms', '/how-it-works', '/for-ngos', '/for-volunteers', '/tasks', '/impact'];
+  let { children, data } = $props();
 
-  $: ogTitle = m.site_meta_title({}, { locale: currentLocale });
-  $: ogDescription = m.site_meta_description({}, { locale: currentLocale });
-  $: ogImageAlt = m.site_meta_title({}, { locale: currentLocale });
-  $: origin = $page.data.origin ?? $page.url.origin;
-  $: ogUrl = origin + $page.url.pathname;
-  $: ogImage = origin + '/social-preview.png';
-  $: pathname = $page.url.pathname;
-  $: currentPath = stripLocale(pathname);
-  $: currentLocale = ($page.data.locale as Locale | undefined) ?? 'en';
-  type StaticMessage = (inputs?: Record<string, never>, options?: { locale?: Locale }) => string;
-  function t(message: StaticMessage) { return message({}, { locale: currentLocale }); }
-  $: isLanding = currentPath === '/';
-  $: isAuthPath = authPaths.includes(currentPath);
-  $: isPublicPath = publicPaths.some((p) => currentPath === p || currentPath.startsWith(p + '/'));
-  function resolve(pathname: string, _options?: Record<string, string | number | boolean | null>) { return localizedHref(pathname, currentLocale); }
-  $: userRole = $page.data.userRole ?? 'anonymous';
-  $: isSignedIn = userRole !== 'anonymous';
-  $: showAppChrome = !isLanding && !isAuthPath && (!isPublicPath || (currentPath === '/tasks' && isSignedIn)) && isSignedIn;
+  const kind = $derived(panelKindForPath(page.url.pathname));
+  const currentBlock = $derived(blockForPath(page.url.pathname));
+  const signedIn = $derived(data.userRole !== 'anonymous');
 
+  const names: Record<BlockId, () => string> = {
+    title: m.block_title_name,
+    community: m.block_community_title,
+    tasks: m.block_tasks_title,
+    how: m.block_how_title,
+    volunteers: m.block_volunteers_title,
+    nonprofits: m.block_nonprofits_title,
+    account: m.block_account_title,
+    about: m.block_about_title,
+    contact: m.block_contact_title,
+    help: m.block_help_title,
+    docs: m.block_docs_title,
+    api: m.block_api_title,
+    label: m.block_label_name
+  };
+  const blockName = $derived(currentBlock ? names[currentBlock]() : page.status >= 400 ? m.missing_name() : m.tag_contents());
+  const where = $derived(
+    page.status >= 400
+      ? m.where_missing()
+      : currentBlock
+        ? m.where_block({ name: names[currentBlock]() })
+        : canonicalPath(page.url.pathname) === '/contents'
+          ? m.where_contents()
+          : m.tag_on_quilt()
+  );
 
- 
-  // Add Google Fonts
-   
-   onMount(() => {
-     const links = [
-       'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
-       'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap',
-       'https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap'
-     ];
-     links.forEach(href => {
-       const link = document.createElement('link');
-       link.href = href;
-       link.rel = 'stylesheet';
-       document.head.appendChild(link);
-     });
+  // The block lifted out of the quilt. It changes after the flight, not before, so the panel
+  // can unfold from the block's real place and fold back into its hole.
+  let openId = $state<BlockId | null>(blockForPath(page.url.pathname));
+  let world = $state<ReturnType<typeof QuiltWorld>>();
+  let panel = $state<HTMLElement>();
+  let scroller = $state<HTMLElement>();
+  let content = $state<HTMLElement>();
 
-         (async () => {
-      // Skip the account/JWT round-trip on auth pages and when there's no session
-      // hint at all — `account.get()` would 401 and pollute the console for users
-      // who aren't logged in (which is, by definition, the case on /login).
-      const onAuthPage = authPaths.includes(stripLocale(window.location.pathname));
-      const hasRoleCookie = /(?:^|;\s*)mm_role=/.test(document.cookie || '');
-      const hadSessionFlag = (() => { try { return localStorage.getItem('mm_has_session') === '1'; } catch { return false; } })();
-      if (onAuthPage || (!hasRoleCookie && !hadSessionFlag)) return;
+  const desktop = () => matchMedia('(min-width: 900px)').matches;
+  const samePage = (a?: URL | null, b?: URL | null) => !!a && !!b && a.pathname === b.pathname;
+  let pending: Promise<unknown> | null = null;
 
-      try {
-        const user = await account.get();
-        try { localStorage.setItem('mm_has_session', '1'); } catch {}
-        const jwt = await getJWT();
-        if (jwt) {
-          const response = await fetch('/api/auth/session', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ jwt })
-          });
-          
-          if (response.ok) {
-            await response.json();
-            
-            // If user doesn't have a role set, redirect to profile
-            const prefs = user?.prefs ?? {};
-            const authPath = stripLocale(window.location.pathname);
-            if (!prefs.role && authPath !== '/profile' && authPath !== '/login' && authPath !== '/signup') {
-              window.location.href = resolve('/profile');
-            }
+  beforeNavigate((nav) => {
+    if (!nav.to || nav.willUnload || samePage(nav.from?.url, nav.to.url) || !panel) return;
+    const toPanel = panelKindForPath(nav.to.url.pathname);
+    stopSmoothPanel();
+    pending = toPanel ? contentOut(panel) : fold(panel, world?.rectOf(openId) ?? null);
+  });
 
-            // Ensure UI reflects role immediately after session creation.
-            // If server-rendered role differs from cookie-hinted role, reload once.
-            try {
-              const cookie = document.cookie || '';
-              const match = cookie.match(/(?:^|;\s*)mm_role=([^;]+)/);
-              const hinted = match ? decodeURIComponent(match[1]) : '';
-              const valid = hinted === 'ngo' || hinted === 'volunteer' || hinted === 'user';
-              if (valid && hinted !== (get(page).data.userRole || '')) {
-                // Avoid loops: mark a one-time reload flag
-                const reloaded = sessionStorage.getItem('mm_role_refreshed');
-                if (!reloaded) {
-                  sessionStorage.setItem('mm_role_refreshed', '1');
-                  window.location.reload();
-                }
-              } else {
-                try { sessionStorage.removeItem('mm_role_refreshed'); } catch {}
-              }
-            } catch {}
-          }
-        }
-      } catch (err) {
-        // Silent error handling for auth setup
+  onNavigate(async () => {
+    if (pending) await pending;
+    pending = null;
+  });
+
+  afterNavigate(async (nav) => {
+    const path = page.url.pathname;
+    const toKind = panelKindForPath(path);
+    const id = blockForPath(path);
+    const fresh = nav.type === 'enter';
+    if (!fresh && samePage(nav.from?.url, nav.to?.url)) return;
+    const fromKind = nav.from ? panelKindForPath(nav.from.url.pathname) : null;
+
+    if (!toKind) {
+      openId = null;
+      world?.lookAt(path, 0);
+      document.querySelector<HTMLElement>(`[data-block="${nav.from ? blockForPath(nav.from.url.pathname) : ''}"] a`)?.focus({ preventScroll: true });
+      return;
+    }
+
+    await tick();
+    const room = desktop() ? (panel?.offsetWidth ?? 0) + 16 : 0;
+    world?.lookAt(path, room, fresh);
+    if (!fresh && panel) {
+      if (fromKind) {
+        openId = id;
+        if (scroller) resetPanelScroll(scroller);
+        void contentIn(panel);
+      } else {
+        const from = world?.rectOf(id) ?? null;
+        openId = id;
+        void unfold(panel, from);
       }
-    })();
-   });
- </script>
- 
- <svelte:head>
- 	<link rel="icon" href="/favicon.ico" sizes="any" />
- 	<link rel="icon" href="/logo.png" type="image/png" />
- 	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
- 	<title>MicroMatch</title>
- 	<meta name="description" content={ogDescription} />
+      panel.querySelector<HTMLElement>('h1')?.focus({ preventScroll: true });
+    } else {
+      openId = id;
+    }
+    if (toKind === 'read' && desktop() && scroller && content) smoothPanel(scroller, content);
+  });
 
- 	<meta property="og:type" content="website" />
- 	<meta property="og:site_name" content="MicroMatch" />
- 	<meta property="og:title" content={ogTitle} />
- 	<meta property="og:description" content={ogDescription} />
- 	<meta property="og:url" content={ogUrl} />
- 	<meta property="og:image" content={ogImage} />
- 	<meta property="og:image:width" content="1280" />
- 	<meta property="og:image:height" content="640" />
- 	<meta property="og:image:alt" content={ogImageAlt} />
+  function onKey(e: KeyboardEvent) {
+    if (e.key !== 'Escape' || !kind || e.defaultPrevented) return;
+    if ((e.target as HTMLElement).closest('dialog, [role="dialog"]')) return;
+    document.querySelector<HTMLAnchorElement>('[data-fold]')?.click();
+  }
+</script>
 
- 	<meta name="twitter:card" content="summary_large_image" />
- 	<meta name="twitter:title" content={ogTitle} />
- 	<meta name="twitter:description" content={ogDescription} />
- 	<meta name="twitter:image" content={ogImage} />
- 	<meta name="twitter:image:alt" content={ogImageAlt} />
- </svelte:head>
- 
-{#if showAppChrome}
-<TopAppBar style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(16px); box-shadow: var(--elev-1); z-index: 10; border-bottom: 1px solid var(--color-outline-variant);">
-   <svelte:fragment slot="navigation">
-       <Button variant="text" href={resolve('/tasks', {})} aria-label={t(m.nav_feed)} style="color: var(--color-primary-readable); font-weight: var(--font-medium);">
-       <Icon icon="mdi:home" width="24" height="24"/>
-     </Button>
-   </svelte:fragment>
-   <svelte:fragment slot="title">
-     <div style="display: flex; align-items: center; gap: var(--space-2);">
-       <img src="/logo.png" alt="MicroMatch Logo" width="32" height="32" style="display: block;" />
-        <span style="font-weight: var(--font-bold); font-size: var(--text-xl); color: var(--color-primary-readable);">MicroMatch</span>
-     </div>
-   </svelte:fragment>
-   <svelte:fragment slot="actions">
-    <ThemeToggle compact={true} />
-    {#if $page.data.userRole === 'ngo'}
-      <Button variant="text" href={resolve('/org', {})} aria-label="Post task" class="btn-primary" style="padding: var(--space-2) var(--space-4); font-size: var(--text-sm);">
-        <Icon icon="mdi:plus-circle-outline" width="24" height="24"/>
-        <span style="margin-left: var(--space-1);">{t(m.nav_post_task)}</span>
-      </Button>
-    {/if}
-   </svelte:fragment>
- </TopAppBar>
-{/if}
- 
- <div class="page-shell">
-   {#if showAppChrome}
-      <Sidebar />
-   {/if}
- {#if isLanding || isAuthPath || isPublicPath}
-    <div style="flex: 1 1 auto; width: 100%;">
-      <slot />
-    </div>
+<svelte:window onkeydown={onKey} />
+
+<a class="skip-link" href="#main">{m.skip_to_content()}</a>
+<CornerTags {where} {signedIn} role={data.userRole} hasPanel={!!kind} />
+
+<main id="main" tabindex="-1" class:has-panel={!!kind} data-kind={kind ?? undefined}>
+  {#if kind}
+    <Panel {kind} def={currentBlock ? block(currentBlock) : null} where={blockName} bind:panel bind:scroller bind:content>
+      {@render children()}
+    </Panel>
   {:else}
-    <main class="container" style="padding: var(--space-5) var(--space-4); flex: 1 1 auto; max-width: 1060px;">
-      <slot />
-    </main>
+    {@render children()}
   {/if}
-  {#if showAppChrome}
-    <nav class="bottom-nav">
-    <div style="display: flex; gap: var(--space-6); justify-content: space-around; padding: var(--space-4) 0;">
-      <a href={resolve('/tasks', {})} style="display: flex; flex-direction: column; align-items: center; text-align: center; text-decoration: none; color: inherit;">
-        <div class:card-elevated={$page.url.pathname === '/tasks'} class:animate-scale-in={$page.url.pathname === '/tasks'} style="display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 40px; border-radius: var(--radius-xl); background: var(--color-primary); color: var(--color-on-primary); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);">
-          <Icon icon="mdi:view-dashboard-outline" width="20" height="20"/>
-        </div>
-        <small style="display: block; color: var(--color-primary-readable); margin-top: var(--space-2); font-weight: var(--font-medium); font-size: var(--text-xs);">{t(m.nav_feed)}</small>
-      </a>
-      <a href={resolve('/dashboard', {})} style="display: flex; flex-direction: column; align-items: center; text-align: center; text-decoration: none; color: inherit;">
-        <div class="hover-lift" style="width: 56px; height: 40px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--radius-xl); background: var(--color-surface-variant); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);">
-          <Icon icon="mdi:seal-variant" width="20" height="20" style="color: var(--color-text-secondary);"/>
-        </div>
-        <small style="display: block; color: var(--color-text-secondary); margin-top: var(--space-2); font-weight: var(--font-medium); font-size: var(--text-xs);">{t(m.nav_dashboard)}</small>
-      </a>
-      {#if $page.data.userRole === 'ngo'}
-        <a href={resolve('/badges/manage', {})} style="display: flex; flex-direction: column; align-items: center; text-align: center; text-decoration: none; color: inherit;">
-          <div class="hover-lift" style="width: 56px; height: 40px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--radius-xl); background: var(--color-surface-variant); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);">
-            <Icon icon="mdi:shield-edit" width="20" height="20" style="color: var(--color-text-secondary);"/>
-          </div>
-          <small style="display: block; color: var(--color-text-secondary); margin-top: var(--space-2); font-weight: var(--font-medium); font-size: var(--text-xs);">{t(m.nav_manage_badges)}</small>
-        </a>
-        <a href={resolve('/badges/analytics', {})} style="display: flex; flex-direction: column; align-items: center; text-align: center; text-decoration: none; color: inherit;">
-          <div class="hover-lift" style="width: 56px; height: 40px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--radius-xl); background: var(--color-surface-variant); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);">
-            <Icon icon="mdi:chart-line" width="20" height="20" style="color: var(--color-text-secondary);"/>
-          </div>
-          <small style="display: block; color: var(--color-text-secondary); margin-top: var(--space-2); font-weight: var(--font-medium); font-size: var(--text-xs);">{t(m.nav_analytics)}</small>
-        </a>
-      {/if}
-      {#if $page.data.userRole === 'ngo'}
-        <a href={resolve('/org', {})} style="display: flex; flex-direction: column; align-items: center; text-align: center; text-decoration: none; color: inherit;">
-          <div class="hover-lift" style="width: 56px; height: 40px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--radius-xl); background: var(--color-surface-variant); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);">
-            <Icon icon="mdi:plus-circle-outline" width="20" height="20" style="color: var(--color-text-secondary);"/>
-          </div>
-          <small style="display: block; color: var(--color-text-secondary); margin-top: var(--space-2); font-weight: var(--font-medium); font-size: var(--text-xs);">{t(m.nav_post_task)}</small>
-        </a>
-      {/if}
-    </div>
-    </nav>
-  {/if}
-</div>
+
+  <QuiltWorld
+    bind:this={world}
+    patches={data.quilt.patches}
+    total={data.quilt.total}
+    tasks={data.openTasks.preview}
+    taskCount={data.openTasks.count}
+    {signedIn}
+    role={data.userRole}
+    {openId}
+    hasPanel={!!kind}
+  />
+</main>

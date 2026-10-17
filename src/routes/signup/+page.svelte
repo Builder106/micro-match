@@ -1,342 +1,132 @@
 <script lang="ts">
-  import Icon from '@iconify/svelte';
-  import { signInWithGoogle, signUpEmail } from '$lib/appwrite.client';
-  import { goto } from '$app/navigation';
-  import { resolve } from '$app/paths';
-  import AuthPageShell from '$lib/components/AuthPageShell.svelte';
-  let email = $state('');
-  let password = $state('');
+  import { page } from '$app/state';
+  import Seo from '$lib/components/Seo.svelte';
+  import Link from '$lib/components/Link.svelte';
+  import PatchPreview from '$lib/components/PatchPreview.svelte';
+  import { go } from '$lib/go';
+  import type { Locale } from '$lib/locale';
+
+  const locale = $derived((page.data.locale as Locale | undefined) ?? 'en');
+  const fromQuery = page.url.searchParams.get('role');
+
+  let role = $state<'volunteer' | 'ngo' | null>(fromQuery === 'ngo' || fromQuery === 'volunteer' ? fromQuery : null);
   let firstName = $state('');
   let lastName = $state('');
-  let role = $state<'volunteer' | 'ngo'>('volunteer');
-  let step = $state<1 | 2>(1);
-  let error = $state<string | null>(null);
+  let email = $state('');
+  let password = $state('');
+  let error = $state('');
   let submitting = $state(false);
-  async function handleSignup(e: Event) {
+
+  async function create(e: SubmitEvent) {
     e.preventDefault();
-    error = null;
+    if (!role) return;
+    if (password.length < 8) {
+      error = 'Use at least 8 characters for your password.';
+      return;
+    }
+    error = '';
     submitting = true;
     try {
-      const name = `${firstName} ${lastName}`.trim();
-      await signUpEmail(email, password, name || undefined, role);
-      goto(resolve('/dashboard', {}));
+      const client = await import('$lib/appwrite.client');
+      await client.signUpEmail(email, password, `${firstName} ${lastName}`.trim() || undefined, role);
+      await client.refreshSessionCookie();
+      await client.assignTeamForCurrentRole();
+      await go(role === 'ngo' ? '/org' : '/dashboard', locale, { invalidateAll: true });
     } catch {
-      error = 'Sign up failed. Please check your details or try Google.';
+      error = 'We could not create that account. The email may already be in use.';
     } finally {
       submitting = false;
     }
   }
 </script>
 
-<AuthPageShell animation="/animations/brainstorming.json" wideContent>
-  <div class="auth-head">
-    {#if step === 2}
-      <button class="back-btn" type="button" onclick={() => (step = 1)}>
-        <Icon icon="mdi:arrow-left" width="16" height="16" />
-        Back
-      </button>
-    {/if}
-    <h1>{step === 1 ? 'Choose your path' : 'Create your account'}</h1>
-    <p>{step === 1 ? "Tell us how you'd like to use MicroMatch." : 'Just a few details to set up your civic hub.'}</p>
-  </div>
+<Seo title="Join | MicroMatch" description="Join MicroMatch as a volunteer to do 5 to 30 minute tasks, or as a nonprofit to post them." />
 
-  {#if step === 1}
+<div class="auth">
+  {#if !role}
+    <h1 class="display h-l" tabindex="-1">Which side of the quilt?</h1>
+    <p class="muted">You can switch later from your profile.</p>
     <div class="roles">
-      <button class="role-card volunteer" type="button" onclick={() => { role = 'volunteer'; step = 2; }}>
-        <span class="role-icon">
-          <Icon icon="mdi:account-group-outline" width="28" height="28" />
-        </span>
-        <span class="role-copy">
-          <strong>I'm a Volunteer</strong>
-          <span>Complete micro-tasks, build streaks, and unlock civic badges.</span>
-        </span>
+      <button type="button" class="role" onclick={() => (role = 'volunteer')}>
+        <PatchPreview color="#F2B84B" icon="heart" size="3.6rem" />
+        <span><strong>I want to volunteer</strong><span>Pick tasks that take 5 to 30 minutes and send your work.</span></span>
       </button>
-      <button class="role-card ngo" type="button" onclick={() => { role = 'ngo'; step = 2; }}>
-        <span class="role-icon">
-          <Icon icon="mdi:office-building-outline" width="28" height="28" />
-        </span>
-        <span class="role-copy">
-          <strong>I represent an NGO</strong>
-          <span>Post modular needs, verify submissions, and mobilize volunteers.</span>
-        </span>
+      <button type="button" class="role" onclick={() => (role = 'ngo')}>
+        <PatchPreview color="#5E7D4F" icon="house" size="3.6rem" />
+        <span><strong>I run a nonprofit</strong><span>Post small tasks, review the work and design your patches.</span></span>
       </button>
     </div>
-    <p class="foot">
-      Already have an account?
-      <a href={resolve('/login', {})}>Sign in</a>
-    </p>
+    <p class="small">Already have an account? <Link href="/login" class="link">Sign in</Link></p>
   {:else}
-    <form onsubmit={(e) => { e.preventDefault(); signInWithGoogle(); }}>
-      <button type="submit" class="google-btn">
-        <Icon icon="logos:google-icon" />
-        Sign up with Google
-      </button>
-    </form>
-
-    <div class="divider">
-      <span></span>
-      <small>Or continue with email</small>
-      <span></span>
-    </div>
-
-    <form class="auth-form" onsubmit={handleSignup}>
-      {#if error}
-        <p class="error" role="alert"><Icon icon="lucide:alert-circle" width="14" height="14" /> {error}</p>
-      {/if}
-      <div class="name-grid">
-        <label>
-          <span>First name</span>
-          <input bind:value={firstName} type="text" placeholder="Jane" autocomplete="given-name" required />
-        </label>
-        <label>
-          <span>Last name</span>
-          <input bind:value={lastName} type="text" placeholder="Doe" autocomplete="family-name" required />
-        </label>
+    <button type="button" class="link small back" onclick={() => (role = null)}>Choose a different role</button>
+    <h1 class="display h-l" tabindex="-1">{role === 'ngo' ? 'Join as a nonprofit' : 'Join as a volunteer'}</h1>
+    <form class="auth__form" onsubmit={create}>
+      <div class="pair">
+        <div class="field">
+          <label for="first">First name</label>
+          <input id="first" class="input" autocomplete="given-name" bind:value={firstName} />
+        </div>
+        <div class="field">
+          <label for="last">Last name</label>
+          <input id="last" class="input" autocomplete="family-name" bind:value={lastName} />
+        </div>
       </div>
-      <label>
-        <span>Email address</span>
-        <input bind:value={email} type="email" placeholder="jane@example.com" required autocomplete="email" />
-      </label>
-      <label>
-        <span>Create password</span>
-        <input bind:value={password} type="password" placeholder="At least 8 characters" minlength="8" required autocomplete="new-password" />
-      </label>
-      <button type="submit" class="btn-coral btn-lg auth-submit" disabled={submitting}>
-        {#if submitting}
-          <Icon icon="lucide:loader-2" width="18" height="18" class="spin" />
-          Creating account…
-        {:else}
-          Join MicroMatch
-          <Icon icon="lucide:arrow-right" width="16" height="16" />
-        {/if}
-      </button>
-      <p class="legal-notice">
-        By registering, you agree to our <a href={resolve('/terms', {})}>Terms of Service</a> and <a href={resolve('/privacy', {})}>Privacy Policy</a>.
-      </p>
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" class="input" type="email" autocomplete="email" required bind:value={email} />
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" class="input" type="password" autocomplete="new-password" minlength="8" required bind:value={password} />
+        <span class="hint">At least 8 characters.</span>
+      </div>
+      {#if role === 'ngo'}<p class="small muted">Next you verify your organization. Your tasks appear in the feed once an admin approves it.</p>{/if}
+      {#if error}<p class="notice notice--error" role="alert">{error}</p>{/if}
+      <button class="patch-btn" type="submit" disabled={submitting}>{submitting ? 'Creating your account...' : 'Create my account'}</button>
+      <p class="small muted">By joining you agree to the <Link href="/terms" class="link">terms</Link> and the <Link href="/privacy" class="link">privacy policy</Link>.</p>
     </form>
   {/if}
-</AuthPageShell>
+</div>
 
 <style>
-  .auth-head {
-    margin-bottom: 22px;
-  }
-  .back-btn {
-    border: 0;
-    background: transparent;
-    color: var(--color-text-secondary);
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    cursor: pointer;
-    font-weight: 700;
-    margin-bottom: 14px;
-    font-size: 0.95rem;
-  }
-  h1 {
-    font-size: clamp(2.35rem, 3.5vw, 3.4rem);
-    font-weight: 800;
-    color: var(--color-text);
-    margin: 0 0 8px;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-  }
-  p {
-    margin: 0;
-    color: var(--color-text-secondary);
-    font-size: 1.08rem;
-    font-weight: 500;
-  }
   .roles {
     display: grid;
-    gap: 16px;
+    gap: 0.75rem;
   }
-  .role-card {
-    border: 2px solid var(--card-border-strong);
-    border-radius: 20px;
-    background: var(--color-surface);
-    color: var(--color-text);
+  .role {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    padding: 1rem 1.1rem;
     text-align: left;
-    padding: 18px;
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    cursor: pointer;
-    font-family: inherit;
-    transition: all 150ms ease;
+    border-radius: var(--radius);
+    box-shadow: inset 0 0 0 1.5px var(--c-line);
+    transition: box-shadow 0.3s, translate 0.35s cubic-bezier(0.16, 1, 0.3, 1), rotate 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .role-card:hover {
-    border-color: var(--color-primary-readable);
-    transform: translateY(-2px);
-    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
-  }
-  .role-card.volunteer .role-icon { background: rgba(234, 88, 12, 0.15); color: #EA580C; }
-  .role-card.ngo .role-icon { background: rgba(37, 99, 235, 0.15); color: #2563EB; }
-  .role-icon {
-    width: 52px;
-    height: 52px;
-    border-radius: 16px;
+  .role > span {
     display: grid;
-    place-items: center;
-    flex: 0 0 auto;
+    gap: 0.2rem;
+    font-size: 0.92rem;
+    color: var(--c-muted);
   }
-  .role-copy {
-    display: grid;
-    gap: 5px;
-  }
-  .role-copy strong {
+  .role strong {
+    font-family: var(--f-display);
     font-size: 1.15rem;
-    line-height: 1.2;
-    color: var(--color-text);
-    font-weight: 700;
+    color: var(--c-fg);
   }
-  .role-copy span {
-    color: var(--color-text-secondary);
-    line-height: 1.5;
-    font-size: 14px;
-    font-weight: 500;
+  @media (hover: hover) {
+    .role:hover {
+      box-shadow: inset 0 0 0 1.5px var(--c-fg);
+      translate: 0 -2px;
+      rotate: -0.4deg;
+    }
   }
-  .google-btn {
-    width: 100%;
-    height: 48px;
-    border-radius: 14px;
-    border: 1px solid var(--card-border-strong);
-    background: var(--color-surface);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--color-text);
-    cursor: pointer;
-    transition: all 150ms ease;
-  }
-  .google-btn:hover {
-    border-color: var(--color-primary-readable);
-    background: var(--color-surface-variant);
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
-  }
-  .divider {
-    margin: 18px 0 16px;
+  .pair {
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    gap: 12px;
-    align-items: center;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
   }
-  .divider span {
-    height: 1px;
-    background: var(--card-border-strong);
-  }
-  .divider small {
-    font-weight: 700;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--color-text-tertiary);
-  }
-  .auth-form {
-    display: grid;
-    gap: 12px;
-  }
-  .name-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
-  label {
-    display: grid;
-    gap: 6px;
-  }
-  label span {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--color-text);
-  }
-  input {
-    width: 100%;
-    box-sizing: border-box;
-    height: 48px;
-    border: 1px solid var(--card-border-strong);
-    border-radius: 12px;
-    padding: 0 14px;
-    background: var(--color-surface);
-    color: var(--color-text);
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 500;
-    transition: all 150ms ease;
-  }
-  input:focus {
-    border-color: var(--color-primary-readable);
-    background: var(--color-surface);
-    box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12);
-    outline: none;
-  }
-  .auth-submit { margin-top: 8px; width: 100%; }
-  .error {
-    margin: 0;
-    padding: 10px 12px;
-    background: var(--color-error-container);
-    color: var(--color-error);
-    font-size: 13px;
-    font-weight: 600;
-    border-radius: 10px;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .legal-notice {
-    margin-top: 14px;
-    text-align: center;
-    font-size: 12px;
-    color: var(--color-text-tertiary);
-    font-weight: 500;
-  }
-  .legal-notice a {
-    color: var(--color-text);
-    text-decoration: underline;
-    font-weight: 600;
-  }
-  .foot {
-    margin-top: 22px;
-    text-align: center;
-    font-size: 0.95rem;
-    color: var(--color-text-secondary);
-  }
-  .foot a {
-    color: var(--color-text);
-    text-decoration: underline;
-    text-decoration-color: var(--card-border-strong);
-    text-decoration-thickness: 2px;
-    text-underline-offset: 5px;
-    font-weight: 800;
-    margin-left: 4px;
-  }
-  @media (min-width: 740px) {
-    .name-grid {
-      grid-template-columns: 1fr 1fr;
-    }
-  }
-  @media (min-width: 1024px) {
-    h1 {
-      font-size: clamp(2.25rem, 2.4vw, 2.6rem);
-    }
-    p {
-      font-size: 1.125rem;
-    }
-    .role-copy strong {
-      font-size: 1.45rem;
-    }
-    .role-copy span {
-      font-size: 1rem;
-    }
-    label span {
-      font-size: 0.9rem;
-    }
-    .foot {
-      font-size: 0.95rem;
-    }
+  .back {
+    justify-self: start;
   }
 </style>

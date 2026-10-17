@@ -70,3 +70,6 @@ artifacts/
 
 # Docs
 PLAN.md
+
+# Visual QA screenshots
+.shots/

@@ -55,7 +55,7 @@ describe('POST /api/profile/update', () => {
     mocks.accountGet.mockResolvedValue({ $id: 'user-1' });
     const res = await POST(makeEvent({ authorization: 'Bearer good-jwt', body: { displayName: 'Jane' } }));
     expect(res.status).toBe(200);
-    expect(mocks.usersUpdateName).toHaveBeenCalledWith('user-1', 'Jane');
+    expect(mocks.usersUpdateName).toHaveBeenCalledWith({ userId: 'user-1', name: 'Jane' });
 
     mocks.accountGet.mockResolvedValue({});
     const resNoId = await POST(makeEvent({ authorization: 'Bearer good-jwt', body: { displayName: 'Jane' } }));
@@ -76,7 +76,7 @@ describe('POST /api/profile/update', () => {
 
   it('updates the display name via users.updateName', async () => {
     const res = await POST(makeEvent({ userId: 'user-1', body: { displayName: '  Jane Doe  ' } }));
-    expect(mocks.usersUpdateName).toHaveBeenCalledWith('user-1', 'Jane Doe');
+    expect(mocks.usersUpdateName).toHaveBeenCalledWith({ userId: 'user-1', name: 'Jane Doe' });
     expect(res.status).toBe(200);
   });
 
@@ -113,8 +113,11 @@ describe('POST /api/profile/update', () => {
 
     const res = await POST(makeEvent({ userId: 'user-1', body: { bio: 'Hello', orgName: 'Acme', avatarFileId: 'file-1' } }));
 
-    expect(mocks.usersUpdatePrefs).toHaveBeenCalledWith('user-1', {
+    expect(mocks.usersUpdatePrefs).toHaveBeenCalledWith({
+      userId: 'user-1',
+      prefs: {
       role: 'ngo', verificationStatus: 'approved', bio: 'Hello', orgName: 'Acme', avatarFileId: 'file-1'
+    }
     });
     expect(res.status).toBe(200);
   });
@@ -125,16 +128,19 @@ describe('POST /api/profile/update', () => {
     const res = await POST(makeEvent({ userId: 'user-1', body: { bio: 'Hello' } }));
 
     expect(res.status).toBe(200);
-    expect(mocks.usersUpdatePrefs).toHaveBeenCalledWith('user-1', { bio: 'Hello' });
+    expect(mocks.usersUpdatePrefs).toHaveBeenCalledWith({ userId: 'user-1', prefs: { bio: 'Hello' } });
   });
 
   it('updates orgName without adding an omitted bio', async () => {
     const res = await POST(makeEvent({ userId: 'user-1', body: { orgName: 'Acme' } }));
 
     expect(res.status).toBe(200);
-    expect(mocks.usersUpdatePrefs).toHaveBeenCalledWith('user-1', {
+    expect(mocks.usersUpdatePrefs).toHaveBeenCalledWith({
+      userId: 'user-1',
+      prefs: {
       role: 'ngo',
       orgName: 'Acme'
+    }
     });
   });
 

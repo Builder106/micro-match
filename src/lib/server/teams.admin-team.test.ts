@@ -33,7 +33,7 @@ describe('isUserAdmin (ADMIN_TEAM_ID configured)', () => {
   it('checks membership in the configured admin team', async () => {
     mocks.listMemberships.mockResolvedValue({ total: 1, memberships: [{ $id: 'm1' }] });
     expect(await isUserAdmin('user-1')).toBe(true);
-    expect(mocks.listMemberships).toHaveBeenCalledWith('admins-team', expect.any(Array));
+    expect(mocks.listMemberships).toHaveBeenCalledWith({ teamId: 'admins-team', queries: expect.any(Array) });
   });
 
   it('returns false when the user has no membership in the admin team', async () => {

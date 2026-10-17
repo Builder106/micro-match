@@ -93,7 +93,8 @@ export type DashboardDataValue =
   | null
   | undefined
   | Task[]
-  | Array<Claim & { task?: { id: string; title: string; estimatedMinutes?: number } }>;
+  | Array<Claim & { task?: { id: string; title: string; estimatedMinutes?: number } }>
+  | import('$lib/quilt/patches').QuiltPatch[];
 
 export interface VolunteerUserData {
   myClaims?: Array<Claim & { task?: { id: string; title: string; estimatedMinutes?: number } }>;

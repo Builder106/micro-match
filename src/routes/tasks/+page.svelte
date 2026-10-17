@@ -1,487 +1,267 @@
 <script lang="ts">
-  import TaskCard from "$lib/components/TaskCard.svelte";
-  import FabCompose from "$lib/components/FabCompose.svelte";
-  import PublicShell from "$lib/components/PublicShell.svelte";
-  import CustomSelect from "$lib/components/CustomSelect.svelte";
-  import Icon from "@iconify/svelte";
-  import LottieAnimation from '$lib/components/LottieAnimation.svelte';
   import { page } from '$app/state';
-  import { localizedHref, type Locale } from '$lib/locale';
-  import * as m from '$lib/paraglide/messages.js';
+  import { replaceState } from '$app/navigation';
+  import Seo from '$lib/components/Seo.svelte';
+  import Link from '$lib/components/Link.svelte';
+  import TaskSwatch from '$lib/components/TaskSwatch.svelte';
+  import { TIME_CAPS, applyFilters, feedTags, filtersFromParams, hasFilters, paramsFromFilters, EMPTY_FILTERS, type Filters, type TimeCap } from '$lib/feed';
+  import type { PageData } from './$types';
 
-  interface Task {
-    id: string;
-    title: string;
-    shortDescription: string;
-    description?: string;
-    tags: string[];
-    sourceTags?: string[];
-    translation: { locale: Locale; status: 'original' | 'translated' | 'fallback' };
-    estimatedMinutes?: number;
-    language?: string;
-    status?: string;
-    deadline?: string;
-    maxVolunteers?: number;
-    isVerified?: boolean;
-    orgId?: string;
-  }
+  let { data }: { data: PageData } = $props();
 
-  let { data }: { data: { tasks: Task[] } } = $props();
+  let filters = $state<Filters>(filtersFromParams(page.url.searchParams));
+  const tags = $derived(feedTags(data.tasks).slice(0, 12));
+  const shown = $derived(applyFilters(data.tasks, filters));
+  const role = $derived(page.data.userRole ?? 'anonymous');
 
-  type StaticMessage = (inputs?: Record<string, never>, options?: { locale?: Locale }) => string;
-  let currentLocale = $derived((page.data?.locale as Locale | undefined) ?? 'en');
-  function t(message: StaticMessage): string { return message({}, { locale: currentLocale }); }
+  // Keep the URL in step with the filters, so a filtered feed can be shared or bookmarked.
+  $effect(() => {
+    const search = paramsFromFilters(filters);
+    if (search !== page.url.search) replaceState(`${page.url.pathname}${search}`, {});
+  });
 
-  const sortOptions = $derived([
-    { value: 'recommended', label: t(m.tasks_sort_recommended) },
-    { value: 'shortest', label: t(m.tasks_sort_shortest) },
-    { value: 'az', label: t(m.tasks_sort_az) }
-  ]);
-
-  let q = $state("");
-  let tasks = $derived(data.tasks);
-
-  let selectedTags = $state<string[]>([]);
-  let maxMinutes = $state<number | null>(null);
-  let sortBy = $state<'recommended' | 'shortest' | 'az'>('recommended');
-
-  const toggleTag = (tag: string) => {
-    selectedTags = selectedTags.includes(tag)
-      ? selectedTags.filter((t) => t !== tag)
-      : [...selectedTags, tag];
-  };
-
-  const clearFilters = () => {
-    selectedTags = [];
-    maxMinutes = null;
-    q = "";
-    sortBy = 'recommended';
-  };
-
-  type QuickTag = 'translation' | 'design' | 'data' | 'excel' | 'spanish';
-  const quickTags: QuickTag[] = ['translation', 'design', 'data', 'excel', 'spanish'];
-  const quickTagLabels: Record<QuickTag, StaticMessage> = {
-    translation: m.tasks_tag_translation,
-    design: m.tasks_tag_design,
-    data: m.tasks_tag_data,
-    excel: m.tasks_tag_excel,
-    spanish: m.tasks_tag_spanish
-  };
-  const timeOptions = [15, 20, 30];
-
-  const filtered = $derived(tasks.filter((t) => {
-    const qLower = q.toLowerCase();
-    const matchesQuery =
-      qLower === '' ||
-      t.title.toLowerCase().includes(qLower) ||
-      t.shortDescription.toLowerCase().includes(qLower) ||
-      [...t.tags, ...(t.sourceTags ?? [])].some((tg) => tg.toLowerCase().includes(qLower));
-
-    const matchesTags =
-      selectedTags.length === 0 || selectedTags.every((tg) => (t.sourceTags ?? t.tags).includes(tg));
-
-    const matchesTime =
-      maxMinutes === null ||
-      (typeof t.estimatedMinutes === 'number' && t.estimatedMinutes <= maxMinutes);
-
-    return matchesQuery && matchesTags && matchesTime;
-  }));
-
-  const sorted = $derived([...filtered].sort((a, b) => {
-    if (sortBy === 'shortest') {
-      const am = typeof a.estimatedMinutes === 'number' ? a.estimatedMinutes : Number.MAX_SAFE_INTEGER;
-      const bm = typeof b.estimatedMinutes === 'number' ? b.estimatedMinutes : Number.MAX_SAFE_INTEGER;
-      return am - bm;
-    }
-    if (sortBy === 'az') return a.title.localeCompare(b.title);
-    return 0;
-  }));
-
-  const hasActiveFilters = $derived(q !== '' || selectedTags.length > 0 || maxMinutes !== null || sortBy !== 'recommended');
-  const ngoCount = $derived(new Set(tasks.map(t => t.orgId).filter(Boolean)).size);
-
-  let userRole = $derived(page.data?.userRole ?? 'anonymous');
-  let isSignedIn = $derived(userRole !== 'anonymous');
-  const taskHref = (id: string) => localizedHref(`/task/${id}`, currentLocale);
+  const setMax = (cap: TimeCap | null) => (filters = { ...filters, max: cap });
+  const toggleTag = (tag: string) =>
+    (filters = { ...filters, tags: filters.tags.includes(tag) ? filters.tags.filter((t) => t !== tag) : [...filters.tags, tag] });
+  const clear = () => (filters = { ...EMPTY_FILTERS });
 </script>
 
-{#if isSignedIn}
-  <div class="feed-page feed-page-app">
-    <!-- ───── Header ───── -->
-    <header class="feed-head">
-      <h1>{t(m.tasks_title_lead)} <span class="coral-gradient">{t(m.tasks_title_accent)}</span></h1>
-      <p>
-        {m.tasks_open({ count: tasks.length }, { locale: currentLocale })}{#if ngoCount > 0} {m.tasks_summary_across({ count: ngoCount }, { locale: currentLocale })}{/if} <span class="pipe-sep">|</span> {t(m.tasks_summary_prompt)}
-      </p>
-    </header>
+<Seo
+  title="Tasks | MicroMatch"
+  description="Open volunteer tasks from verified nonprofits, each 5 to 30 minutes. Search, filter by 15, 20 or 30 minutes, or pick a tag."
+/>
 
-    <!-- ───── Search ───── -->
-    <div class="search">
-      <Icon icon="lucide:search" width="20" height="20" class="search-icon" />
-      <input
-        type="search"
-        id="task-search"
-        name="task-search"
-        bind:value={q}
-        placeholder={t(m.tasks_search_placeholder)}
-        aria-label={t(m.tasks_search_label)}
-      />
-      {#if q}
-        <button type="button" class="search-clear" onclick={() => q = ''} aria-label={t(m.tasks_clear_search)}>
-          <Icon icon="lucide:x" width="16" height="16" />
-        </button>
-      {/if}
-    </div>
-
-    <!-- ───── Filters ───── -->
-    <div class="filters">
-      <div class="filter-row">
-        <span class="filter-label">{t(m.tasks_filter_time)}</span>
-        {#each timeOptions as minutes (minutes)}
-          <button
-            type="button"
-            class="filter-chip"
-            class:active={maxMinutes === minutes}
-            onclick={() => (maxMinutes = maxMinutes === minutes ? null : minutes)}
-          >
-            <Icon icon="lucide:clock" width="13" height="13" /> ≤ {minutes} {t(m.minutes_short)}
-          </button>
-        {/each}
-      </div>
-
-      <div class="filter-row">
-        <span class="filter-label">{t(m.tasks_filter_tags)}</span>
-        {#each quickTags as tag (tag)}
-          <button
-            type="button"
-            class="filter-chip filter-chip-tag"
-            class:active={selectedTags.includes(tag)}
-            onclick={() => toggleTag(tag)}
-          >
-            #{t(quickTagLabels[tag])}
-          </button>
-        {/each}
-      </div>
-
-      <div class="filter-row filter-controls">
-        <div class="sort">
-          <span class="sort-label">{t(m.tasks_sort_label)}</span>
-          <CustomSelect bind:value={sortBy} ariaLabel={t(m.tasks_sort_label)} options={sortOptions} />
-        </div>
-        {#if hasActiveFilters}
-          <button type="button" class="filter-clear" onclick={clearFilters}>
-            <Icon icon="lucide:x" width="14" height="14" /> {t(m.tasks_clear_filters)}
-          </button>
-        {/if}
-      </div>
-    </div>
-
-    <!-- ───── Results ───── -->
-    {#if sorted.length === 0}
-      <div class="feed-empty">
-        <div class="empty-mascot">
-          <LottieAnimation src="/animations/empty_state_mascot.json">
-            <Icon icon="lucide:search-x" width="80" height="80" />
-          </LottieAnimation>
-        </div>
-        {#if hasActiveFilters}
-          <h2>{t(m.tasks_empty_filtered_title)}</h2>
-          <p>{t(m.tasks_empty_filtered_body)}</p>
-          <button type="button" class="btn-dark-pill" onclick={clearFilters}>
-            <Icon icon="lucide:rotate-ccw" width="14" height="14" />
-            {t(m.tasks_clear_filters)}
-          </button>
-        {:else}
-          <h2>{t(m.home_empty_title)}</h2>
-          <p>{t(m.home_empty_body)}</p>
-        {/if}
-      </div>
-    {:else}
-      <div class="feed-grid">
-        {#each sorted as t (t.id)}
-          <TaskCard
-            id={t.id}
-            title={t.title}
-            shortDescription={t.shortDescription}
-            tags={t.tags}
-            estimatedMinutes={t.estimatedMinutes}
-            language={t.language}
-            href={taskHref(t.id)}
-            status={t.status}
-            deadline={t.deadline}
-            maxVolunteers={t.maxVolunteers}
-            isVerified={t.isVerified}
-          />
-        {/each}
-      </div>
-    {/if}
-  </div>
-
-  {#if page.data.userRole === 'ngo'}
-    <FabCompose />
-  {/if}
-{:else}
-  <PublicShell activeTab="tasks">
-    <div class="feed-page">
-      <!-- ───── Header ───── -->
-      <header class="feed-head">
-        <h1>{t(m.tasks_title_lead)} <span class="coral-gradient">{t(m.tasks_title_accent)}</span></h1>
-        <p>
-          {m.tasks_open({ count: tasks.length }, { locale: currentLocale })}{#if ngoCount > 0} {m.tasks_summary_across({ count: ngoCount }, { locale: currentLocale })}{/if} <span class="pipe-sep">|</span> {t(m.tasks_summary_prompt)}
-        </p>
-      </header>
-
-      <!-- ───── Search ───── -->
-      <div class="search">
-        <Icon icon="lucide:search" width="20" height="20" class="search-icon" />
-        <input
-          type="search"
-          id="task-search-public"
-          name="task-search"
-          bind:value={q}
-          placeholder={t(m.tasks_search_placeholder)}
-          aria-label={t(m.tasks_search_label)}
-        />
-        {#if q}
-          <button type="button" class="search-clear" onclick={() => q = ''} aria-label={t(m.tasks_clear_search)}>
-            <Icon icon="lucide:x" width="16" height="16" />
-          </button>
-        {/if}
-      </div>
-
-      <!-- ───── Filters ───── -->
-      <div class="filters">
-        <div class="filter-row">
-          <span class="filter-label">{t(m.tasks_filter_time)}</span>
-          {#each timeOptions as minutes (minutes)}
-            <button
-              type="button"
-              class="filter-chip"
-              class:active={maxMinutes === minutes}
-              onclick={() => (maxMinutes = maxMinutes === minutes ? null : minutes)}
-            >
-              <Icon icon="lucide:clock" width="13" height="13" /> ≤ {minutes} {t(m.minutes_short)}
-            </button>
-          {/each}
-        </div>
-
-        <div class="filter-row">
-          <span class="filter-label">{t(m.tasks_filter_tags)}</span>
-          {#each quickTags as tag (tag)}
-            <button
-              type="button"
-              class="filter-chip filter-chip-tag"
-              class:active={selectedTags.includes(tag)}
-              onclick={() => toggleTag(tag)}
-            >
-              #{t(quickTagLabels[tag])}
-            </button>
-          {/each}
-        </div>
-
-        <div class="filter-row filter-controls">
-          <div class="sort">
-            <span class="sort-label">{t(m.tasks_sort_label)}</span>
-            <CustomSelect bind:value={sortBy} ariaLabel={t(m.tasks_sort_label)} options={sortOptions} />
-          </div>
-          {#if hasActiveFilters}
-            <button type="button" class="filter-clear" onclick={clearFilters}>
-              <Icon icon="lucide:x" width="14" height="14" /> {t(m.tasks_clear_filters)}
-            </button>
-          {/if}
-        </div>
-      </div>
-
-      <!-- ───── Results ───── -->
-      {#if sorted.length === 0}
-        <div class="feed-empty">
-          <div class="empty-mascot">
-            <LottieAnimation src="/animations/empty_state_mascot.json">
-              <Icon icon="lucide:search-x" width="80" height="80" />
-            </LottieAnimation>
-          </div>
-          {#if hasActiveFilters}
-            <h2>{t(m.tasks_empty_filtered_title)}</h2>
-            <p>{t(m.tasks_empty_filtered_body)}</p>
-            <button type="button" class="btn-dark-pill" onclick={clearFilters}>
-              <Icon icon="lucide:rotate-ccw" width="14" height="14" />
-              {t(m.tasks_clear_filters)}
-            </button>
-          {:else}
-            <h2>{t(m.home_empty_title)}</h2>
-            <p>{t(m.home_empty_body)}</p>
-          {/if}
-        </div>
+<div class="feed">
+  <header class="feed__head">
+    <h1 class="display h-l" tabindex="-1">Tasks</h1>
+    <p class="muted">
+      {#if data.tasks.length === 0}
+        No tasks are open right now.
       {:else}
-        <div class="feed-grid">
-          {#each sorted as t (t.id)}
-            <TaskCard
-              id={t.id}
-              title={t.title}
-              shortDescription={t.shortDescription}
-              tags={t.tags}
-              estimatedMinutes={t.estimatedMinutes}
-              language={t.language}
-              href={taskHref(t.id)}
-              status={t.status}
-              deadline={t.deadline}
-              maxVolunteers={t.maxVolunteers}
-              isVerified={t.isVerified}
-            />
+        {data.tasks.length} open, all from verified nonprofits. Pick one that fits the time you have.
+      {/if}
+    </p>
+  </header>
+
+  {#if data.tasks.length > 0}
+    <form class="rail" role="search" onsubmit={(e) => e.preventDefault()}>
+      <label class="field rail__search">
+        <span class="sr-only">Search tasks</span>
+        <input class="input" type="search" placeholder="Search tasks" bind:value={filters.q} />
+      </label>
+
+      <fieldset class="rail__group">
+        <legend>Time you have</legend>
+        <div class="seg">
+          <label class:is-on={filters.max === null}><input type="radio" name="max" checked={filters.max === null} onchange={() => setMax(null)} />Any</label>
+          {#each TIME_CAPS as cap (cap)}
+            <label class:is-on={filters.max === cap}>
+              <input type="radio" name="max" checked={filters.max === cap} onchange={() => setMax(cap)} />Up to {cap} min
+            </label>
           {/each}
         </div>
-      {/if}
-    </div>
+      </fieldset>
 
-    {#if page.data.userRole === 'ngo'}
-      <FabCompose />
-    {/if}
-  </PublicShell>
-{/if}
+      {#if tags.length}
+        <fieldset class="rail__group">
+          <legend>Tags</legend>
+          <div class="chips">
+            {#each tags as t (t.tag)}
+              <button type="button" class="chip" aria-pressed={filters.tags.includes(t.tag)} onclick={() => toggleTag(t.tag)}>
+                {t.tag} <span class="num">{t.count}</span>
+              </button>
+            {/each}
+          </div>
+        </fieldset>
+      {/if}
+
+      <label class="field rail__sort">
+        <span class="label">Order</span>
+        <select class="input" bind:value={filters.sort}>
+          <option value="newest">As posted</option>
+          <option value="shortest">Shortest first</option>
+          <option value="az">A to Z</option>
+        </select>
+      </label>
+
+      {#if hasFilters(filters)}
+        <button type="button" class="patch-btn patch-btn--plain patch-btn--small" onclick={clear}>Clear filters</button>
+      {/if}
+    </form>
+
+    <section class="wall" aria-label="Open tasks">
+      <p class="sr-only" aria-live="polite">{shown.length} tasks shown</p>
+      {#if shown.length}
+        <ul>
+          {#each shown as task (task.id)}
+            <li><TaskSwatch {task} /></li>
+          {/each}
+        </ul>
+      {:else}
+        <div class="none">
+          <h2 class="h-m">Nothing fits those filters</h2>
+          <p class="muted">Try a longer time, fewer tags or a shorter search.</p>
+          <button type="button" class="patch-btn patch-btn--small" onclick={clear}>Clear filters</button>
+        </div>
+      {/if}
+    </section>
+  {:else}
+    <div class="none none--empty">
+      <p>Nonprofits post new tasks as small jobs come up. Check back soon{role === 'ngo' ? ', or post one yourself' : ''}.</p>
+      <div class="ctas">
+        {#if role === 'ngo'}
+          <Link href="/org" class="patch-btn">Post a task</Link>
+        {:else}
+          <Link href="/for-nonprofits" class="patch-btn patch-btn--plain">Run a nonprofit? Post one</Link>
+        {/if}
+      </div>
+    </div>
+  {/if}
+</div>
 
 <style>
-  .feed-page { display: flex; flex-direction: column; gap: 24px; max-width: 1040px; margin: 0 auto; padding: 32px 20px 80px; }
-  .feed-page-app { padding: 8px 0 60px; }
-
-  /* Header */
-  .feed-head h1 { font-size: clamp(1.75rem, 3vw + 0.5rem, 2.75rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 12px; }
-  .feed-head p { color: var(--color-text-secondary); font-size: 16px; font-weight: 500; line-height: 1.6; margin: 0; max-width: 640px; }
-
-  /* Search */
-  .search {
-    position: relative;
-    display: flex;
-    align-items: center;
-    background: var(--color-surface);
-    border: 1px solid var(--color-control-outline);
-    border-radius: 9999px;
-    padding: 4px 4px 4px 20px;
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
-    transition: all .2s;
-  }
-  .search:focus-within {
-    border-color: var(--color-primary-readable);
-    box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12), 0 4px 12px rgba(15, 23, 42, 0.04);
-  }
-  .search :global(.search-icon) { color: var(--color-text-subtle); flex-shrink: 0; }
-  .search input {
-    flex: 1;
-    border: none;
-    outline: none;
-    background: transparent;
-    padding: 14px 12px;
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--color-text);
-    font-family: inherit;
-  }
-  .search input::placeholder { color: var(--color-text-subtle); opacity: 1; }
-  .search-clear {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: 1px solid var(--color-control-outline);
-    background: var(--color-surface-variant);
-    color: var(--color-text-secondary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all .15s;
-  }
-  .search-clear:hover { background: color-mix(in srgb, var(--color-text) 14%, transparent); color: var(--color-text); }
-
-  /* Filters */
-  .filters { display: flex; flex-direction: column; gap: 10px; }
-  .filter-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-  .filter-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-secondary); margin-right: 4px; min-width: 36px; }
-  .filter-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 7px 14px;
-    border-radius: 9999px;
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    border: 1px solid var(--color-control-outline);
-    background: var(--color-surface);
-    color: var(--color-text);
-    transition: all .15s;
-  }
-  .filter-chip:hover { border-color: var(--color-primary-readable); color: var(--color-text); }
-  .filter-chip.active {
-    background: var(--color-primary);
-    color: var(--color-action-on-coral);
-    border-color: var(--color-primary-readable);
-    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.25);
-  }
-  .filter-chip-tag.active {
-    background: var(--color-text);
-    color: var(--color-surface);
-    border-color: var(--color-text);
-  }
-
-  .filter-controls { margin-top: 4px; justify-content: flex-end; }
-  .sort {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--color-surface);
-    border: 1px solid var(--color-control-outline);
-    border-radius: 9999px;
-    padding: 4px 36px 4px 14px;
-    transition: border-color .15s;
-  }
-  .sort:focus-within { border-color: var(--color-primary-readable); }
-  .sort-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-secondary); }
-  .sort :global(.custom-select) { width: auto; min-width: 156px; }
-  .sort :global(.custom-select-trigger) { min-height: 38px; padding: 0 4px; border: 0; background: transparent; font-size: 13px; font-weight: 700; }
-  .sort :global(.custom-select-trigger:hover), .sort :global(.custom-select.open .custom-select-trigger) { border: 0; background: transparent; }
-  .sort :global(.custom-select-menu) { width: 190px; right: 0; left: auto; }
-  .filter-clear {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 7px 14px;
-    border-radius: 9999px;
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    border: 1px solid var(--color-control-outline);
-    background: transparent;
-    color: var(--color-text-secondary);
-    transition: all .15s;
-  }
-  .filter-clear:hover { color: var(--color-error); border-color: color-mix(in srgb, var(--color-error) 30%, transparent); }
-
-  /* Results grid */
-  .feed-grid {
+  .feed {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 20px;
+    grid-template-columns: minmax(14rem, 17rem) 1fr;
+    gap: 1.5rem clamp(1.5rem, 3vw, 3rem);
+    align-items: start;
   }
-  @media (min-width: 640px) { .feed-grid { grid-template-columns: repeat(2, 1fr); } }
-  @media (min-width: 1024px) { .feed-grid { grid-template-columns: repeat(3, 1fr); } }
-
-  /* Empty state */
-  .feed-empty {
-    background: var(--color-surface);
-    border-radius: 32px;
-    border: 1px solid var(--card-border-strong);
-    padding: 64px 32px;
-    text-align: center;
+  .feed__head {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: 0.4rem;
+  }
+  .rail {
+    position: sticky;
+    top: 0;
+    display: grid;
+    gap: 1.25rem;
+  }
+  .rail__group {
+    border: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.5rem;
+  }
+  .rail__group legend,
+  .rail__sort .label {
+    font-family: var(--f-display);
+    font-weight: 650;
+    font-size: 0.95rem;
+    margin-bottom: 0.4rem;
+  }
+  .seg {
+    display: grid;
+    gap: 0.35rem;
+  }
+  .seg label {
+    position: relative;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 16px;
-    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.07);
+    min-height: 2.5rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--radius);
+    box-shadow: inset 0 0 0 1.5px var(--c-line);
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: box-shadow 0.2s, background-color 0.2s, translate 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .empty-mascot { width: 160px; height: 160px; display: flex; align-items: center; justify-content: center; color: var(--color-primary-light); margin-bottom: 8px; }
-  .empty-mascot :global(.lottie-animation) { width: 100%; height: 100%; }
-  .feed-empty h2 { font-size: 24px; font-weight: 800; margin: 0; }
-  .feed-empty p { color: var(--color-text-secondary); font-size: 15px; font-weight: 500; max-width: 420px; margin: 0 0 8px; line-height: 1.6; }
+  .seg input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .seg label.is-on {
+    background: var(--c-fg);
+    color: var(--c-bg);
+    box-shadow: none;
+  }
+  .seg label:has(input:focus-visible) {
+    outline: 2px solid var(--c-fg);
+    outline-offset: 2px;
+  }
+  @media (hover: hover) {
+    .seg label:not(.is-on):hover {
+      box-shadow: inset 0 0 0 1.5px var(--c-fg);
+      translate: 3px 0;
+    }
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+  .chip {
+    display: inline-flex;
+    gap: 0.4rem;
+    align-items: baseline;
+    min-height: 2.2rem;
+    padding: 0.35rem 0.7rem;
+    border-radius: var(--radius);
+    box-shadow: inset 0 0 0 1.5px var(--c-line);
+    font-size: 0.88rem;
+    transition: box-shadow 0.2s, background-color 0.2s;
+  }
+  .chip .num {
+    color: var(--c-muted);
+    font-size: 0.78rem;
+  }
+  .chip[aria-pressed='true'] {
+    background: var(--c-weld);
+    box-shadow: inset 0 0 0 1.5px var(--c-fg);
+  }
+  @media (hover: hover) {
+    .chip:hover {
+      box-shadow: inset 0 0 0 1.5px var(--c-fg);
+    }
+  }
+  .wall ul {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(15.5rem, 100%), 1fr));
+    gap: 1.25rem 1rem;
+  }
+  .none {
+    display: grid;
+    gap: 0.75rem;
+    justify-items: start;
+    padding: 2rem;
+    border-radius: var(--radius);
+    background: rgb(28 31 59 / 0.04);
+  }
+  .none--empty {
+    grid-column: 1 / -1;
+    max-width: 40rem;
+  }
+  @media (max-width: 899px) {
+    .feed {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .none {
+      padding: 1.25rem;
+    }
+    .rail {
+      position: static;
+    }
+    .rail {
+      gap: 0.9rem;
+    }
+    .seg,
+    .chips {
+      display: flex;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-mask: linear-gradient(90deg, #000 calc(100% - 2.5rem), #0000);
+      mask: linear-gradient(90deg, #000 calc(100% - 2.5rem), #0000);
+      padding-right: 2rem;
+      padding: 0.25rem 0;
+    }
+    .seg label,
+    .chip {
+      flex: none;
+      white-space: nowrap;
+    }
+  }
 </style>

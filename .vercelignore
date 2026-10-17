@@ -6,7 +6,6 @@ trailer/
 tools/
 
 # Test suites and snapshots
-e2e/
 src/tests/
 
 # Internal documentation and specs
