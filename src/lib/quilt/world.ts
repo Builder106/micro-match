@@ -110,6 +110,30 @@ export function focusForPath(pathname: string): Point {
   return id ? blockCenter(block(id)) : HOME_FOCUS;
 }
 
+/**
+ * The quilting line: one cell-long stretch of sashing for every block edge, shared edges once.
+ * `x`, `y` is the cell the seam borders on its top (h) or left (v) side. A seam runs away from
+ * the home focus, because a quilt is quilted from the center out.
+ */
+export type Seam = { x: number; y: number; dir: 'h' | 'v'; reverse: boolean; dist: number };
+
+export function seams(): Seam[] {
+  const owner = (c: number, r: number) =>
+    BLOCKS.find((b) => c >= b.col && c < b.col + b.w && r >= b.row && r < b.row + b.h)?.id ?? null;
+  const out: Seam[] = [];
+  for (let r = 0; r <= GRID.rows; r++) {
+    for (let c = 0; c <= GRID.cols; c++) {
+      if (c < GRID.cols && owner(c, r - 1) !== owner(c, r)) {
+        out.push({ x: c, y: r, dir: 'h', reverse: c + 0.5 < HOME_FOCUS.x, dist: Math.hypot(c + 0.5 - HOME_FOCUS.x, r - HOME_FOCUS.y) });
+      }
+      if (r < GRID.rows && owner(c - 1, r) !== owner(c, r)) {
+        out.push({ x: c, y: r, dir: 'v', reverse: r + 0.5 < HOME_FOCUS.y, dist: Math.hypot(c - HOME_FOCUS.x, r + 0.5 - HOME_FOCUS.y) });
+      }
+    }
+  }
+  return out;
+}
+
 export type Metrics = { cell: number; sash: number };
 
 /** Pitch units to pixels on the quilt. A pitch is one cell plus one strip of sashing. */

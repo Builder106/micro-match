@@ -338,6 +338,23 @@ main[data-kind='work'] .minimap, main[data-kind='narrow'] .minimap { display: no
 .quilt-view.has-panel::after { background: rgb(235 227 211 / 0.42); }
 main[data-kind='work'] .quilt-view.has-panel::after, main[data-kind='narrow'] .quilt-view.has-panel::after { background: rgb(235 227 211 / 0.62); }
 
+/* The quilting line: a running stitch down the middle of the sashing, block edge to block edge. */
+.seam { position: absolute; pointer-events: none; --thread: rgb(28 31 59 / 0.4); }
+.seam--h {
+  left: calc(var(--x) * var(--pitch) + var(--sash));
+  top: calc(var(--y) * var(--pitch) + var(--sash) / 2 - 1px);
+  width: var(--cell);
+  height: 2px;
+  background: repeating-linear-gradient(90deg, var(--thread) 0 7px, transparent 7px 12px);
+}
+.seam--v {
+  left: calc(var(--x) * var(--pitch) + var(--sash) / 2 - 1px);
+  top: calc(var(--y) * var(--pitch) + var(--sash));
+  width: 2px;
+  height: var(--cell);
+  background: repeating-linear-gradient(180deg, var(--thread) 0 7px, transparent 7px 12px);
+}
+
 /* ---------- first visit: the quilt is pieced together (transform only, one shot) ---------- */
 @keyframes lay-down { from { transform: translateY(-18px) rotate(-2.5deg) scale(0.96); } to { transform: none; } }
 html.motion .quilt-world .block { animation: lay-down 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: calc(var(--o) * 45ms + 80ms); }
@@ -352,7 +369,7 @@ html.motion .quilt-world .block { animation: lay-down 0.9s cubic-bezier(0.16, 1,
     grid-template-rows: none;
     box-shadow: 0 0 0 6px var(--c-fg), 0 20px 40px -16px rgb(28 31 59 / 0.35);
   }
-  .cornerstone, .minimap { display: none; }
+  .cornerstone, .seam, .minimap { display: none; }
   .block { grid-column: auto; grid-row: auto; order: var(--o); aspect-ratio: 1; }
   .block--title, .block--community, .block.is-wide { grid-column: 1 / -1; aspect-ratio: auto; }
   .block--title .block__face, .block--community .block__face, .block.is-wide .block__face { position: relative; }

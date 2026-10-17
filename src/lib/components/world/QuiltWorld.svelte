@@ -11,7 +11,7 @@
   import LabelBlock from './LabelBlock.svelte';
   import Link from '../Link.svelte';
   import { createCamera, type Camera } from '$engine/camera';
-  import { BLOCKS, GRID, block, focusForPath, toPixels, worldSize, type BlockId, type Point } from '$lib/quilt/world';
+  import { BLOCKS, GRID, block, focusForPath, seams, toPixels, worldSize, type BlockId, type Point } from '$lib/quilt/world';
   import type { PatchIcon } from '$lib/quilt/icons';
   import type { QuiltPatch } from '$lib/quilt/patches';
   import * as m from '$lib/paraglide/messages.js';
@@ -48,6 +48,7 @@
     x: i % (GRID.cols + 1),
     y: Math.floor(i / (GRID.cols + 1))
   }));
+  const quilting = seams();
 
   let view = $state<HTMLElement>();
   let world = $state<HTMLElement>();
@@ -120,6 +121,9 @@
   >
     {#each crossings as c (`${c.x}-${c.y}`)}
       <span class="cornerstone" style:--x={c.x} style:--y={c.y} aria-hidden="true"></span>
+    {/each}
+    {#each quilting as s (`${s.dir}${s.x}-${s.y}`)}
+      <span class="seam seam--{s.dir}" class:is-rev={s.reverse} style:--x={s.x} style:--y={s.y} style:--d={s.dist} aria-hidden="true"></span>
     {/each}
 
     <TitleBlock {isHome} />

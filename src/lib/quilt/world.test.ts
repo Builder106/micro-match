@@ -1,5 +1,22 @@
 import { describe, it, expect } from 'vitest';
-import { BLOCKS, GRID, HOME_FOCUS, block, blockCenter, blockForPath, cameraFor, clampCamera, focusForPath, panelKindForPath, phonePath, toPixels, worldSize } from './world';
+import { BLOCKS, GRID, HOME_FOCUS, block, blockCenter, blockForPath, cameraFor, clampCamera, focusForPath, panelKindForPath, phonePath, seams, toPixels, worldSize } from './world';
+
+describe('seams', () => {
+  const all = seams();
+  it('quilts every block edge once and never through a block', () => {
+    const grid = GRID.cols * (GRID.rows + 1) + GRID.rows * (GRID.cols + 1);
+    const inside = BLOCKS.reduce((s, b) => s + (b.w - 1) * b.h + (b.h - 1) * b.w, 0);
+    expect(all).toHaveLength(grid - inside);
+    expect(new Set(all.map((s) => `${s.dir}${s.x},${s.y}`)).size).toBe(all.length);
+    expect(all.some((s) => s.dir === 'v' && s.x === 2 && s.y === 1)).toBe(false);
+  });
+  it('runs outward from the home focus', () => {
+    const left = all.find((s) => s.dir === 'h' && s.x === 0 && s.y === 0)!;
+    const right = all.find((s) => s.dir === 'h' && s.x === 4 && s.y === 0)!;
+    expect([left.reverse, right.reverse]).toEqual([true, false]);
+    expect(Math.min(...all.map((s) => s.dist))).toBeLessThan(1);
+  });
+});
 
 describe('the quilt map', () => {
   it('tiles the grid exactly once', () => {
