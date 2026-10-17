@@ -165,10 +165,32 @@ jobs:
           path: test-results/
           retention-days: 7
 
+  vercel-function:
+    name: Vercel function smoke
+    needs: [check, lint]
+    runs-on: ubuntu-24.04
+    env:
+      PUBLIC_APPWRITE_ENDPOINT: ''
+      PUBLIC_APPWRITE_PROJECT_ID: ''
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - uses: actions/cache@v6
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+      - run: bun install --frozen-lockfile
+      - run: bun run paraglide:compile
+      - run: bun run build
+      - run: bun run test:vercel
+
   ci-gate:
     name: CI required gate
     if: ${{ always() }}
-    needs: [check, lint, test, build, functional, responsiveness, visual]
+    needs: [check, lint, test, build, functional, responsiveness, visual, vercel-function]
     runs-on: ubuntu-24.04
     steps:
       - name: Require selected CI checks
@@ -180,8 +202,9 @@ jobs:
           FUNCTIONAL: ${{ needs.functional.result }}
           RESPONSIVENESS: ${{ needs.responsiveness.result }}
           VISUAL: ${{ needs.visual.result }}
+          VERCEL_FUNCTION: ${{ needs.vercel-function.result }}
         run: |
-          for result in "$CHECK" "$LINT" "$TEST" "$BUILD" "$FUNCTIONAL" "$RESPONSIVENESS" "$VISUAL"; do
+          for result in "$CHECK" "$LINT" "$TEST" "$BUILD" "$FUNCTIONAL" "$RESPONSIVENESS" "$VISUAL" "$VERCEL_FUNCTION"; do
             if [ "$result" != success ]; then exit 1; fi
           done
 

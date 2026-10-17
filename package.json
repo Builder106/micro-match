@@ -19,6 +19,7 @@
     "test:functional": "playwright test --project=functional",
     "test:responsiveness": "playwright test --project=responsiveness",
     "test:visual": "playwright test --project=visual",
+    "test:vercel": "node scripts/ci/vercel-smoke.mjs",
     "seed": "bun run scripts/seed.ts",
     "verify:libretranslate": "bun run scripts/verify-libretranslate.ts",
     "verify:staging": "bun run scripts/verify-staging.ts",
