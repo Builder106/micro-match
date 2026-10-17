@@ -192,7 +192,14 @@ radius.
   the flight, then the page settles in. Its place on the quilt becomes a chalked hole.
   Folding back reverses it into the hole. Panel to panel, the content lifts away and the new
   one settles in while the camera pans to the new block's hole.
-- **First visit:** the blocks are laid down one by one (transform-only CSS keyframes).
+- **First visit (home, once per session):** the quilt is laid out, pinned, then quilted from
+  the center out, the way a real quilt is finished. Each block is carried in from its own side
+  of the frame with a lifted shadow, nearest the heart first. The title block never fades, so
+  the hero paints at once. Then the cornerstones press in like pins, a running stitch draws
+  down every seam of the sashing (it stays as the quilting line), and the corner tags and
+  minimap settle last. About 2 s in all, CSS keyframes gated on `html.enter`, which the inline
+  script sets only on the home route, without reduced motion, and once per session. On a phone
+  the blocks are laid from above in reading order. Other first loads keep the short lay-down.
 - **Idle:** the chalked next strip's running stitch keeps marching slowly, and the whole
   quilt hangs a few pixels toward the pointer like cloth on a frame. It runs on the GSAP
   ticker and pauses off screen. Visual tests hold it still with a `mm-still` flag.

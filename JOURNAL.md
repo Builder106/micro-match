@@ -1,5 +1,17 @@
 # JOURNAL — MicroMatch
 
+## 2026-10-17 - The home quilt now has a real entrance #decision
+
+The old entrance was a 45 ms stagger of small tilts and nobody noticed it. The first home
+visit in a session now plays the motion verb from the design: blocks are carried in from
+their own sides, nearest the center first, the cornerstones press in like pins, and a running
+stitch spreads out along the sashing, since quilters work from the center out to push
+wrinkles to the edges. The stitch stays afterwards as the quilt's quilting line, so the
+resting quilt changed a little too; the visual baselines still pass under the 2% threshold.
+A zoom on the whole table was tried and dropped, because it read as a camera move rather than
+cloth being laid down. The entrance is skipped under reduced motion and on later visits in
+the same session.
+
 ## 2026-10-16 - Rebuilt the frontend as one community quilt #decision
 
 The new frontend is a single quilt instead of a navbar, a hero, sections and a footer. Every
