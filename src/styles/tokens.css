@@ -18,8 +18,11 @@
 }
 
 :root {
-  /* The site follows the system color scheme. */
+  /* The site follows the system scheme; the quilt label's toggle pins one through
+     <meta name="color-scheme">, mapped back to the property here. */
   color-scheme: light dark;
+  &:has(> head > meta[name='color-scheme'][content='light']) { color-scheme: light; }
+  &:has(> head > meta[name='color-scheme'][content='dark']) { color-scheme: dark; }
 
   /* Color: natural dyes on muslin. Browsers without light-dark() keep these light values. */
   --c-bg: #fdfcf8; /* muslin, the brand cream */

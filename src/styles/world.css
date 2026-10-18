@@ -229,8 +229,17 @@ p.title__headline span { display: inline; }
 .label__tag::before { content: ''; position: absolute; inset: 5px; border: 1.5px dashed color-mix(in srgb, var(--c-fg) 40%, transparent); pointer-events: none; }
 .label__title { font-family: var(--f-display); font-weight: 700; font-size: 1rem; margin-bottom: 0.35rem; }
 .label__tag ul { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0.2rem 0.85rem; margin-top: 0.6rem; }
-.label__tag a { position: relative; z-index: 2; display: inline-block; padding-block: 0.45rem; text-decoration: underline 1px; text-underline-offset: 0.18em; }
-@media (hover: hover) { .label__tag a:hover { color: var(--c-danger); } }
+.label__tag a, .theme-toggle { position: relative; z-index: 2; display: inline-block; padding-block: 0.45rem; text-decoration: underline 1px; text-underline-offset: 0.18em; }
+@media (hover: hover) { .label__tag a:hover, .theme-toggle:hover { color: var(--c-danger); } }
+/* The toggle names the scheme it switches to. Which one is on screen is read from the same
+   meta the root color-scheme follows, so the label is right before any script runs. */
+.theme-toggle__light { display: none; }
+:root:has(> head > meta[name='color-scheme'][content='dark']) .theme-toggle__dark { display: none; }
+:root:has(> head > meta[name='color-scheme'][content='dark']) .theme-toggle__light { display: inline; }
+@media (prefers-color-scheme: dark) {
+  :root:not(:has(> head > meta[name='color-scheme'][content='light'])) .theme-toggle__dark { display: none; }
+  :root:not(:has(> head > meta[name='color-scheme'][content='light'])) .theme-toggle__light { display: inline; }
+}
 
 /* ---------- corner tags ---------- */
 .tags {

@@ -4,6 +4,12 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
+    <script>
+      // A scheme pinned from the quilt label's toggle, applied before paint.
+      try {
+        document.querySelector('meta[name="color-scheme"]').content = localStorage.getItem('mm-color-scheme') ?? 'light dark';
+      } catch {}
+    </script>
     <meta name="theme-color" content="#fdfcf8" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#14162b" media="(prefers-color-scheme: dark)" />
     <link rel="icon" href="%sveltekit.assets%/favicon.ico" sizes="any" />

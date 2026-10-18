@@ -455,6 +455,8 @@
   "label_title": "Made by many hands",
   "label_body": "MicroMatch, {year}. A free, non-commercial student project.",
   "label_contents": "Contents",
+  "label_theme_dark": "Dark mode",
+  "label_theme_light": "Light mode",
   "missing_name": "A missing block",
   "quilt_label_one": "The MicroMatch quilt, one patch",
   "minimap_jump": "Look at another part of the quilt",

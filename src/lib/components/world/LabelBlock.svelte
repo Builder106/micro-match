@@ -2,6 +2,7 @@
   // The quilt label: quilters sew a label on the back corner with who made it and when.
   // Here it carries the small print: legal pages, the contents page, the source code.
   import Link from '../Link.svelte';
+  import ThemeToggle from '../ThemeToggle.svelte';
   import { block } from '$lib/quilt/world';
   import * as m from '$lib/paraglide/messages.js';
 
@@ -29,6 +30,7 @@
         <li><Link href="/cookies">{m.footer_link_cookies()}</Link></li>
         <li><Link href="/contents">{m.label_contents()}</Link></li>
         <li><a href="https://github.com/Builder106/micro-match" rel="noopener">GitHub</a></li>
+        <li><ThemeToggle /></li>
       </ul>
     </div>
   </div>
