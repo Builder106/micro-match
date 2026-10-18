@@ -1,5 +1,24 @@
 # JOURNAL — MicroMatch
 
+## 2026-10-18 - The quilt gets a dark theme, by lamplight #decision
+
+This reverses the single-theme rule in DESIGN.md. The site now follows the
+system color scheme. The dark theme is modeled on Amish quilts, which piece
+saturated dyes on a dark ground. Muslin and indigo are the only fabrics that
+change: muslin goes dark and indigo turns cream. Madder, weld, the other dyes
+and every badge patch keep their color, because they come from real data.
+Colors are `light-dark()` tokens. Browsers without it keep the light theme,
+not a half-dark mix. About sixty hard-coded indigo alphas were split by role.
+Hairlines and tints now mix from `--c-fg`; shadows mix from `--c-shade`,
+which is black in the dark theme, so they don't glow on the dark wall.
+
+The override is a two-state toggle on the quilt label, next to the small
+print, not in the corner tags: most visitors never change the scheme. It
+writes `<meta name="color-scheme">`, and the CSS reads that meta both for
+`color-scheme` and for the toggle's label, so the label is correct before
+hydration. Choosing the scheme the system already uses clears the pin. All
+48 light visual baselines still match.
+
 ## 2026-10-18 - Give server tests their own Vite config #fix
 
 Vitest failed during startup when it loaded the SvelteKit Vite plugin:

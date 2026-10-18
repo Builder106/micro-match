@@ -142,8 +142,22 @@ light cloth to sit on, and the coral reads naturally as madder. Pairing them wit
 and a weld highlight, instead of a terracotta accent and a serif, keeps the ground warm
 without the generic cream-and-clay editorial look.
 
-**Single theme.** The site ships one committed light theme. The footer is an indigo field
-with cream text, a deliberate chapter change, not a dark mode.
+**By lamplight (dark theme).** The site follows the system color scheme. The dark theme
+reads as an Amish quilt: saturated dyes pieced on a dark ground. The wall, sashing and signed
+centers go to night indigo (`#0D0F21`, `#1D2140`, `#181B34`). In the piecing, muslin turns dark
+and indigo turns cream (`clothFill()` in `src/lib/quilt/world.ts`); madder, weld and the other
+dyes keep their color, and so do patches, which come from badge data. Text is muslin thread
+(`#F1ECE1`), and the binding is a lighter indigo (`#34407C`) so the quilt's edge still shows on
+the dark wall. The quilt label stays a cream label in both themes (`color-scheme: light`).
+Colors are `light-dark()` tokens in `tokens.css` and `world.css`. Browsers without
+`light-dark()` keep the light theme. Hairlines and tints mix from `--c-fg`, and shadows mix
+from `--c-shade` (black in the dark theme), so neither turns into a glow.
+
+A two-state toggle on the quilt label, with the other small print, pins the opposite of the
+scheme on screen. When the choice matches the system, it goes back to following the system.
+It writes `<meta name="color-scheme">`, and an inline script in `src/app.html` restores the
+choice from `localStorage` (`mm-color-scheme`) before paint. It stays out of the corner tags
+because most visitors never change it.
 
 ### Type
 
