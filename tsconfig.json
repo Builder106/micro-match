@@ -15,6 +15,7 @@
     "scripts/**/*",
     "svelte.config.js",
     "vite.config.ts",
+    "vitest.config.ts",
     ".svelte-kit/ambient.d.ts"
   ],
   "exclude": ["node_modules", "dist"],
