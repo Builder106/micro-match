@@ -167,11 +167,11 @@ html.lenis, html.lenis body { height: auto; }
 .input {
   width: 100%; min-height: 3rem; padding: 0.7rem 0.9rem;
   background: var(--c-paper); color: var(--c-fg);
-  border: 1.5px solid color-mix(in srgb, var(--c-fg) 32%, transparent); border-radius: var(--radius);
+  border: 1.5px solid color-mix(in srgb, var(--c-fg) 50%, transparent); border-radius: var(--radius);
   transition: border-color 0.2s, box-shadow 0.2s;
 }
-.input::placeholder { color: color-mix(in srgb, var(--c-muted) 80%, transparent); }
-.input:hover { border-color: color-mix(in srgb, var(--c-fg) 55%, transparent); }
+.input::placeholder { color: var(--c-muted); }
+.input:hover { border-color: color-mix(in srgb, var(--c-fg) 70%, transparent); }
 .input:focus-visible { outline: none; border-color: var(--c-fg); box-shadow: 0 0 0 4px rgb(242 184 75 / 0.55); }
 textarea.input { min-height: 8rem; resize: vertical; line-height: 1.5; }
 .notice { padding: 0.8rem 1rem; border-radius: var(--radius); background: rgb(242 184 75 / 0.22); }
