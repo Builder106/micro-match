@@ -66,8 +66,8 @@ const apiKey = process.env.APPWRITE_API_KEY;
 
 if (!projectId || !apiKey) {
   console.error('Error: APPWRITE_PROJECT_ID and APPWRITE_API_KEY must be set in environment.');
-  console.error('Example for staging:');
-  console.error('  APPWRITE_PROJECT_ID=micromatch-staging APPWRITE_API_KEY=your_key bun scripts/setup-appwrite.ts');
+  console.error('Example for the existing project:');
+  console.error('  APPWRITE_PROJECT_ID=micromatch-prod APPWRITE_API_KEY=your_key bun scripts/setup-appwrite.ts');
   process.exit(1);
 }
 
@@ -140,7 +140,7 @@ async function setupAppwrite() {
       } catch (err) {
         console.warn(`Note: Could not automatically create table "${table.$id}" via SDK:`, (err as Error).message);
         console.warn(`Tip: You can push full schema including columns and indexes via Appwrite CLI:`);
-        console.warn(`  appwrite client --endpoint ${endpoint} --project-id ${projectId} --key ${apiKey}`);
+        console.warn(`  appwrite client --endpoint ${endpoint} --project-id ${projectId} --key <api_key>`);
         console.warn(`  appwrite push tables`);
       }
     }
