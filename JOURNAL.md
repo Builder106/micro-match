@@ -1,5 +1,15 @@
 # JOURNAL — MicroMatch
 
+## 2026-10-18 - Accessibility target lowered from AAA to AA #decision
+
+The audit target is now WCAG 2.2 Level AA. Chasing AAA's 7:1 enhanced
+contrast is what produced the black CTA text and the toned-down "readable"
+coral tokens in earlier rounds, and W3C doesn't recommend AAA for whole
+sites. The audit guide is renamed to `docs/WCAG-2.2-AA-AUDIT-GUIDE.md` and
+its axe setup drops the AAA tags and rules. The evidence matrix no longer
+lists the eight AAA criteria. AA contrast still applies to text and to
+meaningful UI; the quilt's fabric and patches are decorative and exempt.
+
 ## 2026-10-18 - The quilt gets a dark theme, by lamplight #decision
 
 This reverses the single-theme rule in DESIGN.md. The site now follows the

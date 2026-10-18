@@ -1,4 +1,4 @@
-# WCAG 2.2 AAA-Oriented Accessibility Audit Guide
+# WCAG 2.2 AA Accessibility Audit Guide
 
 This guide defines a repeatable accessibility audit for web projects. It is
 written to work with any framework, browser automation tool, hosting model,
@@ -6,11 +6,18 @@ and authentication system.
 
 ## What this audit means
 
-An AAA-oriented audit applies the strongest practical review standard across
-all applicable WCAG 2.2 Level A, AA, and AAA success criteria. It does not
-create a formal AAA conformance claim by itself. Automation finds only a
-subset of accessibility problems, and some AAA criteria require human
-judgment or depend on the content being published.
+The audit targets WCAG 2.2 Level AA: every applicable Level A and AA success
+criterion. It does not create a formal AA conformance claim by itself.
+Automation finds only a subset of accessibility problems, and some criteria
+require human judgment or depend on the content being published.
+
+Level AAA is not a target. W3C does not recommend it as a requirement for
+whole sites, and its 7:1 enhanced contrast ratio would push the brand coral
+and the quilt's dyes out of text and the fills behind it. AA contrast still
+applies: 4.5:1 for normal text, 3:1 for large text and for meaningful non-text
+UI such as control boundaries, focus indicators and informative icons.
+Decorative fabric, patches, illustrations and backgrounds have no contrast
+requirement.
 
 Before making a formal claim, review every applicable criterion, document the
 result for every included page and state, and provide evidence from automated,
@@ -79,10 +86,9 @@ theme, locale, commit, and test-data version with each evidence set.
 ### 2. Run automated checks
 
 Run an accessibility engine such as axe against every inventory item and
-important state. Include the WCAG 2.0, 2.1, and 2.2 A and AA tags, the AAA
-tagset, and the tool's best-practice rules. Enable any AAA rules that the tool
-ships disabled by default, such as enhanced contrast and equivalent-link
-purpose checks.
+important state. Include the WCAG 2.0, 2.1, and 2.2 A and AA tags and the
+tool's best-practice rules. Do not add the AAA tagset or enable enhanced
+contrast.
 
 Automated violations are blocking failures. Automated `incomplete` results
 are blocking manual-review items. Store the complete JSON result, browser
@@ -97,8 +103,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { test, expect } from '@playwright/test';
 
 const tags = [
-  'wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa',
-  'wcag2aaa', 'best-practice'
+  'wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'
 ];
 
 test('accessibility gate', async ({ page }) => {
@@ -106,13 +111,6 @@ test('accessibility gate', async ({ page }) => {
 
   const results = await new AxeBuilder({ page })
     .withTags(tags)
-    .options({
-      rules: {
-        'color-contrast-enhanced': { enabled: true },
-        'identical-links-same-purpose': { enabled: true },
-        'meta-refresh-no-exceptions': { enabled: true }
-      }
-    })
     .analyze();
 
   expect(results.violations, JSON.stringify(results.violations, null, 2))
@@ -122,7 +120,7 @@ test('accessibility gate', async ({ page }) => {
 });
 ```
 
-The example is a starting point, not a complete AAA test. Add route discovery,
+The example is a starting point, not a complete AA test. Add route discovery,
 state setup, viewport and theme projects, reduced-motion emulation, and JSON
 artifact handling for the target application.
 
@@ -149,16 +147,17 @@ violation, incomplete result, unresolved review item, unchecked matrix row,
 blank evidence metadata, or undocumented exception remains. Run the validator
 with `--mode=pr` in pull requests and `--mode=release` for release evidence.
 
-The matrix must use the WCAG 2.2 criterion levels. In particular, 1.3.6
-Identify Purpose and 2.5.5 Target Size (Enhanced) are AAA criteria. WCAG 2.2
-does not include the retired 4.1.1 Parsing criterion; do not record it as an
+The matrix must use the WCAG 2.2 criterion levels and list only Level A and
+AA criteria. AAA criteria such as 1.3.6 Identify Purpose, 1.4.6 Contrast
+(Enhanced) and 2.5.5 Target Size (Enhanced) are out of scope. WCAG 2.2 does
+not include the retired 4.1.1 Parsing criterion; do not record it as an
 active criterion.
 
 ## POUR review checklist
 
 ### Perceivable
 
-Review all applicable Level A, AA, and AAA criteria in the 1.x groups.
+Review all applicable Level A and AA criteria in the 1.x groups.
 
 - **Text alternatives:** Give informative images meaningful alternatives,
   mark decorative images as decorative, and provide equivalent alternatives
@@ -170,7 +169,7 @@ Review all applicable Level A, AA, and AAA criteria in the 1.x groups.
   order, relationships, labels, instructions, and programmatic names in the
   accessibility tree. Confirm that CSS and responsive layouts do not change
   the intended reading order.
-- **Distinguishable presentation:** Test text contrast, enhanced contrast,
+- **Distinguishable presentation:** Test text contrast at the AA ratios,
   non-text contrast, focus indicators, link identification, text spacing,
   hover and focus content, reflow, orientation, text resizing, and content
   shown on top of other content. Do not rely on color, sound, shape, or
@@ -182,7 +181,7 @@ Review all applicable Level A, AA, and AAA criteria in the 1.x groups.
 
 ### Operable
 
-Review all applicable Level A, AA, and AAA criteria in the 2.x groups.
+Review all applicable Level A and AA criteria in the 2.x groups.
 
 - **Keyboard:** Every action must be reachable and usable with a keyboard.
   Check logical tab order, no keyboard trap, shortcut discoverability,
@@ -200,12 +199,12 @@ Review all applicable Level A, AA, and AAA criteria in the 2.x groups.
 - **Input modalities:** Test touch, mouse, pen, keyboard, speech input, and
   assistive technology. Check pointer cancellation, labels in names, target
   size, dragging alternatives, multipoint gestures, motion input, and
-  orientation. A practical AAA-oriented target is at least 44 by 44 CSS
-  pixels unless a documented exception applies.
+  orientation. Targets must be at least 24 by 24 CSS pixels, or have enough
+  spacing, unless a 2.5.8 exception applies.
 
 ### Understandable
 
-Review all applicable Level A, AA, and AAA criteria in the 3.x groups.
+Review all applicable Level A and AA criteria in the 3.x groups.
 
 - **Readable content:** Set the document language, identify language changes,
   expand abbreviations, explain unusual words, and use headings and plain
@@ -225,7 +224,7 @@ Review all applicable Level A, AA, and AAA criteria in the 3.x groups.
 
 ### Robust
 
-Review all applicable Level A, AA, and AAA criteria in the 4.x groups.
+Review all applicable Level A and AA criteria in the 4.x groups.
 
 - Validate HTML and inspect the accessibility tree for valid names, roles,
   states, values, and relationships.
@@ -323,7 +322,7 @@ Copy and adapt this checklist to accessibility-sensitive pull requests:
 
 ```text
 Scope inventory updated: [ ]
-Automated A, AA, AAA, and best-practice checks run: [ ]
+Automated A, AA, and best-practice checks run: [ ]
 Automated violations: [count]
 Automated incomplete results manually dispositioned: [count]
 Keyboard review complete: [ ]
@@ -335,13 +334,13 @@ Exceptions documented with rationale: [ ]
 Release impact and remediation issue: [link or N/A]
 ```
 
-The pull request must not claim that the product is WCAG 2.2 AAA conformant
+The pull request must not claim that the product is WCAG 2.2 AA conformant
 unless every applicable criterion has completed evidence and the conformance
 claim has been reviewed by the responsible accessibility authority.
 
 ## Release gate
 
-A release is ready for an AAA-oriented target only when:
+A release is ready for the AA target only when:
 
 1. Every public and authenticated surface is in the scope inventory.
 2. Automated violations are zero, and no incomplete result lacks a manual
@@ -355,9 +354,9 @@ A release is ready for an AAA-oriented target only when:
 
 Recommended wording for an incomplete or ongoing audit is:
 
-> This project follows a WCAG 2.2 AAA-oriented accessibility audit process.
+> This project follows a WCAG 2.2 AA accessibility audit process.
 > Automated and manual results are tracked in the accessibility evidence
-> matrix. This statement is not a formal WCAG 2.2 AAA conformance claim.
+> matrix. This statement is not a formal WCAG 2.2 AA conformance claim.
 
 Use a formal conformance claim only after the applicable WCAG conformance
 requirements, scope, technology assumptions, and evidence have been reviewed.
