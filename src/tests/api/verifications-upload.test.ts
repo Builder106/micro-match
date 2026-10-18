@@ -85,6 +85,16 @@ describe('POST /api/verifications/upload', () => {
     expect(res.status).toBe(500);
   });
 
+  it('allows a shared bucket when file permissions are private', async () => {
+    envState.APPWRITE_AVATARS_BUCKET_ID = 'verif-bucket';
+    const res = await POST(makeEvent({ userId: 'user-1' }));
+    expect(res.status).toBe(200);
+    expect(mocks.createFile).toHaveBeenCalledWith(expect.objectContaining({
+      bucketId: 'verif-bucket',
+      permissions: expect.not.arrayContaining(['read:any'])
+    }));
+  });
+
   it('returns 400 when no file is present', async () => {
     const res = await POST(makeEvent({ userId: 'user-1', file: 'missing' }));
     expect(res.status).toBe(400);

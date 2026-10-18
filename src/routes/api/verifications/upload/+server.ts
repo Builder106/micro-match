@@ -6,7 +6,7 @@ import { ADMIN_TEAM_ID } from '$lib/server/teams';
 /**
  * POST /api/verifications/upload
  *   Multipart: file=<File>
- *   Stores a verification doc in Appwrite Storage (verifications bucket) with
+ *   Stores a verification doc in the configured Appwrite bucket with
  *   permissions readable only by the uploader and the admin team.
  *   Returns { fileId } — the caller then submits the verification record.
  */
