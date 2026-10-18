@@ -28,18 +28,18 @@ MicroMatch is built as a SvelteKit full-stack application backed by Appwrite for
 
 ---
 
-### Environment Topology & Staging Isolation
+### Environment Topology
 
-MicroMatch operates a two-tier environment topology separating production traffic from release candidate testing:
+MicroMatch uses one Appwrite project for Production and Vercel Preview. The `staging` Preview branch uses separate QA tables and teams.
 
 | Environment | Branch | Appwrite Project ID | Frontend Deployment | Purpose |
 | :--- | :--- | :--- | :--- | :--- |
 | **Production** | `main` | `micromatch-prod` | `micromatch.app` | Live production service |
-| **Staging** | `staging` | `micromatch-staging` | Vercel Preview (`staging` branch alias) | Dedicated QA, schema validation, and seed testing |
+| **Preview** | `staging` | `micromatch-prod` | Vercel Preview (`staging` branch alias) | Release candidate checks |
 
-- **Data Isolation**: Production and staging maintain isolated Appwrite projects. Staging uses `micromatch-staging` in SFO (`https://sfo.cloud.appwrite.io/v1`), keeping dummy volunteer proofs, test NGO accounts, and automated seeding fixtures separated from real user records.
+- **Shared resources**: Preview and Production share the database, Auth users, and private storage bucket. Their table and team IDs differ. Use dedicated QA accounts and file permissions for Preview writes.
 - **Automated Deployment**: Pushes to `staging` run full CI checks and trigger Vercel deployment via `VERCEL_DEPLOY_HOOK_STAGING`.
-- **Environment Scoping**: Vercel injects staging environment variables for preview deployments triggered by the `staging` branch (see [`.env.staging.example`](file:///Users/yinkavaughan/My%20Drive%20%28yvaughan@wesleyan.edu%29/CS/projects/swe/micro-match/.env.staging.example)).
+- **Environment Scoping**: Vercel injects Preview environment variables for deployments triggered by the `staging` branch. See [Appwrite schema](appwrite-schema.md) for the resource IDs and verification check.
 - **Configuration Contract**: Both scopes require matching Appwrite resource IDs, public Appwrite settings, and `PUBLIC_APP_URL`. Plunk requires server-only `PLUNK_SECRET_KEY` and `PLUNK_FROM_ADDRESS`; `PLUNK_API_URL` and `PLUNK_FROM_NAME` are optional. LibreTranslate requires its endpoint and API key. These requirements do not imply that deployment dashboards have been configured.
 
 ---

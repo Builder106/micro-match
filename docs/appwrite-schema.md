@@ -97,15 +97,34 @@ Custom badge templates defined by NGOs.
 ### `avatars`
 
 * **ID**: `avatars`
-* **File Security**: Disabled (public read)
-* **Allowed Extensions**: `jpg`, `png`, `svg`
-* **Maximum File Size**: 50 MB
+* **File Security**: Enabled
+* **Bucket permissions**: No bucket-wide read permission
+* **Avatar file permissions**: Public read, set on each avatar file
+* **Allowed Extensions**: `jpg`, `jpeg`, `png`, `svg`, `webp`, `pdf` when shared with verification uploads
+* **Maximum File Size**: At least 10 MB
+
+### Verification documents
+
+Set `APPWRITE_VERIFICATIONS_BUCKET_ID=avatars` to use the existing bucket. Verification uploads grant read access only to the owner and admin team. Keep file security enabled and bucket-wide read permissions empty; otherwise file permissions cannot protect the documents.
+
+---
+
+## Existing Project Migration
+
+MicroMatch uses one Appwrite project, `micromatch-prod`. The production table now has an `evergreen` column, and its eight curated rows are set to `true`. For a new installation:
+
+1. Add an optional Boolean `evergreen` column to the `tasks` table. The app treats unset values as `false`; the seed script sets it to `true` on the eight curated tasks.
+2. Enable file security on the upload bucket and remove bucket-wide read permissions. Check these settings in the Appwrite Console; the runtime key does not need bucket metadata access.
+3. Set `APPWRITE_VERIFICATIONS_BUCKET_ID=avatars` in both server environments. Set `APPWRITE_PROJECT_ID=micromatch-prod` and `PUBLIC_APPWRITE_PROJECT_ID=micromatch-prod` in Production and Preview.
+4. Run `verify:staging` with Preview credentials. It checks the expected QA table and team IDs, their access, the `evergreen` column, and bucket access. Check bucket security separately in the Console.
+
+The setup script creates missing table shells but does not add columns to existing tables. Add the column in the Appwrite Console or with a schema migration before running the seed script. `appwrite.config.json` is a local, gitignored file; a fresh checkout needs its own schema configuration before using the setup script or CLI push commands below.
 
 ---
 
 ## Automated Provisioning
 
-### 1. Production Project Provisioning
+### Existing project
 
 Ensure `APPWRITE_PROJECT_ID=micromatch-prod` and `APPWRITE_API_KEY` are exported in your environment:
 
@@ -113,34 +132,13 @@ Ensure `APPWRITE_PROJECT_ID=micromatch-prod` and `APPWRITE_API_KEY` are exported
 bun scripts/setup-appwrite.ts
 ```
 
-### 2. Staging Project Provisioning
+### Preview within the same project
 
-To provision a fresh isolated staging project (`micromatch-staging`):
+Keep the same endpoint and project ID in Production and Preview. The `staging` Preview branch uses `tasks_qa`, `claims_qa`, `badges_qa`, `ngoVerifications_qa`, and `badgeDefinitions_qa`, plus `ngo_qa`, `volunteer_qa`, and `admins_qa` teams. Production uses the corresponding unsuffixed IDs. Auth users and storage files still belong to the same Appwrite project, so use dedicated test accounts and private file permissions. Run the seed only with dedicated QA identities.
 
-1. Create `micromatch-staging` in [Appwrite Cloud Console](https://cloud.appwrite.io) (Region: San Francisco).
-2. Generate an API Key with `databases.*`, `collections.*`, `documents.*`, `tables.*`, `files.*`, `buckets.*`, `users.*`, and `teams.*` scopes.
-3. Provision databases, tables, buckets, and teams:
+To check the configured Preview resources:
 
 ```bash
-APPWRITE_PROJECT_ID=micromatch-staging APPWRITE_API_KEY=<staging_key> bun scripts/setup-appwrite.ts
-```
-
-Or push the complete schema directly using the Appwrite CLI:
-
-```bash
-appwrite client --endpoint https://sfo.cloud.appwrite.io/v1 --project-id micromatch-staging --key <staging_key>
-appwrite push all
-```
-
-4. Verify staging readiness:
-
-```bash
-APPWRITE_PROJECT_ID=micromatch-staging APPWRITE_API_KEY=<staging_key> bun run verify:staging
-```
-
-5. Seed demo fixtures for staging QA:
-
-```bash
-APPWRITE_PROJECT_ID=micromatch-staging APPWRITE_API_KEY=<staging_key> bun run seed
+APPWRITE_PROJECT_ID=micromatch-prod APPWRITE_API_KEY=<preview_key> bun run verify:staging
 ```
 

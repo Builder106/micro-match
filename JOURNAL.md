@@ -1,5 +1,47 @@
 # JOURNAL — MicroMatch
 
+## 2026-10-18 - Give server tests their own Vite config #fix
+
+Vitest failed during startup when it loaded the SvelteKit Vite plugin:
+Rolldown tried to resolve `node:module` in its dependency optimizer. A minimal
+Vitest config ran the same tests, while adding only the SvelteKit plugin
+reproduced the error. Server tests now use `vitest.config.ts` with source
+aliases and Node's `process.env` for the dynamic private environment module;
+`vite.config.ts` keeps the production SvelteKit and SSR settings. The Linux
+coverage gate passed all 766 tests in 81 files at its configured thresholds.
+Typecheck, lint, and production build also passed.
+
+## 2026-10-17 - Isolate Preview data within the existing Appwrite project #decision
+
+Created five QA tables (`tasks_qa`, `claims_qa`, `badges_qa`,
+`ngoVerifications_qa`, and `badgeDefinitions_qa`) by copying the live table
+schemas. Created `ngo_qa`, `volunteer_qa`, and `admins_qa` teams. Vercel's
+`staging` Preview branch now has its own table and team ID entries; the
+production entries are Production-only. Both environments keep the one
+`micromatch-prod` project. Auth accounts and the private `avatars` bucket remain
+shared, so QA must use dedicated accounts and file permissions. A new Preview
+deployment is required for the Vercel variable changes to take effect. Preview
+deployment `8aQi64VEPPQhtgDpkipmT8J4FWw1` is Ready on the existing `ef16e09`
+commit, and the staging task API returned an empty QA feed. Linux lint, typecheck, and build passed after regenerating SvelteKit types.
+Vitest 5.0.1 initially failed at startup resolving `node:module` in Rolldown;
+the following entry records the fix and passing gate.
+
+## 2026-10-17 - Keep curated tasks visible in one Appwrite project #decision
+
+The public feed went empty again while all eight seed tasks remained active in Appwrite. Their
+last activity was more than 30 days old. Reseeding refreshed them, and the live task API
+returned all eight. Curated tasks now need an `evergreen` Boolean column so routine inactivity
+does not hide or archive them. The production `tasks` table now has the column, and all eight
+curated rows are marked evergreen. The updated seed preserves that flag on later runs.
+
+The project has one storage bucket. Its existing `avatars` bucket has file
+security enabled and no bucket-wide permissions, so avatar files can be public and NGO proof
+files private through their individual permissions. The bucket settings were checked in the
+Console; the runtime key keeps its current file scopes without broader bucket access.
+MicroMatch will keep only `micromatch-prod`. Preview now has separate QA tables and
+teams inside that project. Auth users and storage remain shared. The earlier staging project entries
+below recorded a proposed configuration, not a project that was created.
+
 ## 2026-10-17 - The home quilt now has a real entrance #decision
 
 The old entrance was a 45 ms stagger of small tilts and nobody noticed it. The first home

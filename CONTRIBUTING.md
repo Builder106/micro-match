@@ -43,9 +43,10 @@ bun run dev
 The dev server listens on `http://localhost:5173`.
 
 For deployed environments, `main` uses Production variables and
-`micromatch-prod`; the `staging` branch uses the Vercel Preview scope and
-`micromatch-staging`. Each scope requires matching Appwrite endpoint, project,
-API key, database, table, bucket, and team IDs, plus public Appwrite settings
+`micromatch-prod`; the `staging` branch uses the Vercel Preview scope and the
+same Appwrite project. Preview uses separate QA tables and teams. Each scope
+requires an Appwrite endpoint, project ID, API key, database, table, bucket,
+and team IDs, plus public Appwrite settings
 and `PUBLIC_APP_URL`. Transactional email requires server-only
 `PLUNK_SECRET_KEY` and `PLUNK_FROM_ADDRESS`; `PLUNK_API_URL` and
 `PLUNK_FROM_NAME` are optional. LibreTranslate uses
@@ -66,7 +67,7 @@ through the Console):
 | `badgeDefinitions`   | `APPWRITE_BADGE_DEFS_TABLE_ID`                                          | Org-owned templates                                         |
 | `ngoVerifications`   | `APPWRITE_VERIFICATIONS_TABLE_ID`                                       | NGO verification queue                                      |
 | Avatars bucket       | `APPWRITE_AVATARS_BUCKET_ID`, `PUBLIC_APPWRITE_AVATARS_BUCKET_ID`       | File previews use the public variable in client code        |
-| Verification bucket | `APPWRITE_VERIFICATIONS_BUCKET_ID`                                     | File-level permissions; accepts PDF, PNG, and JPEG          |
+| Verification uploads | `APPWRITE_VERIFICATIONS_BUCKET_ID`                                    | Set to `avatars`; file permissions keep documents private  |
 | `volunteers` team    | `APPWRITE_VOLUNTEER_TEAM_ID`                                            | Created on first profile save                               |
 | `ngos` team          | `APPWRITE_NGO_TEAM_ID`                                                  | Same                                                        |
 | `admins` team        | `APPWRITE_ADMIN_TEAM_ID`                                                | Manually add yourself to access `/admin/verifications`      |
