@@ -2,7 +2,7 @@
   // The pieced cloth of one sampler block: its traditional pattern in the block's fabrics,
   // a faint weave, and a running quilting stitch just inside the edge.
   import { patternPieces, piecePath } from '$lib/quilt/blocks';
-  import type { BlockDef } from '$lib/quilt/world';
+  import { clothFill, type BlockDef } from '$lib/quilt/world';
 
   let { def, class: className = '' }: { def: BlockDef; class?: string } = $props();
 
@@ -29,9 +29,9 @@
       <path d="M0 .75h3M0 2.25h3" stroke="#FFFFFF" stroke-opacity="0.09" stroke-width=".5" />
     </pattern>
   </defs>
-  <rect width={width} height={height} fill={def.fabrics[def.fabrics.length - 1]} />
+  <rect width={width} height={height} fill={clothFill(def.fabrics[def.fabrics.length - 1])} />
   {#each byFabric as layer, i (i)}
-    {#if layer.d}<path d={layer.d} fill={layer.color} />{/if}
+    {#if layer.d}<path d={layer.d} fill={clothFill(layer.color)} />{/if}
   {/each}
   <rect width={width} height={height} fill="url(#{uid}-weave)" />
   <rect
@@ -40,7 +40,7 @@
     width={width - 6}
     height={height - 6}
     fill="none"
-    stroke="#1C1F3B"
+    stroke="var(--c-fg)"
     stroke-opacity="0.28"
     stroke-width="0.7"
     stroke-dasharray="2.6 2.2"

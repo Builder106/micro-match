@@ -135,7 +135,7 @@
     gap: 0.9rem;
     padding: 1.3rem 1.4rem;
     border-radius: var(--radius);
-    background: #fff;
+    background: var(--c-card);
     box-shadow: inset 0 0 0 1.5px var(--c-line);
   }
   .vcard__form {

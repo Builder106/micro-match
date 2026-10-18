@@ -54,6 +54,16 @@ export const BLOCKS: BlockDef[] = [
   { id: 'label', href: null, col: 4, row: 3, w: 1, h: 1, pattern: null, fabrics: ['#1C1F3B'], phone: 13 }
 ];
 
+/**
+ * SVG fill for a piecing fabric. Muslin and indigo follow the color scheme (by lamplight the
+ * muslin goes dark and the indigo turns cream); every other dye keeps its hex.
+ */
+export function clothFill(hex: string): string {
+  if (hex === '#FBF3EA') return 'var(--cloth-muslin)';
+  if (hex === '#1C1F3B') return 'var(--cloth-indigo)';
+  return hex;
+}
+
 const BY_ID = new Map(BLOCKS.map((b) => [b.id, b]));
 
 export function block(id: BlockId): BlockDef {

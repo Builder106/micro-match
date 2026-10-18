@@ -228,7 +228,7 @@
     justify-items: start;
     padding: 2rem;
     border-radius: var(--radius);
-    background: rgb(28 31 59 / 0.04);
+    background: color-mix(in srgb, var(--c-fg) 4%, transparent);
   }
   .none--empty {
     grid-column: 1 / -1;

@@ -38,7 +38,7 @@
   .patch {
     flex: none;
     overflow: visible;
-    filter: drop-shadow(0 3px 0 rgb(28 31 59 / 0.18));
+    filter: drop-shadow(0 3px 0 color-mix(in srgb, var(--c-shade) 18%, transparent));
   }
   .patch--pinned {
     rotate: -3deg;

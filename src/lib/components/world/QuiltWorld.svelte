@@ -11,7 +11,7 @@
   import LabelBlock from './LabelBlock.svelte';
   import Link from '../Link.svelte';
   import { createCamera, type Camera } from '$engine/camera';
-  import { BLOCKS, GRID, block, focusForPath, seams, toPixels, worldSize, type BlockId, type Point } from '$lib/quilt/world';
+  import { BLOCKS, GRID, block, clothFill, focusForPath, seams, toPixels, worldSize, type BlockId, type Point } from '$lib/quilt/world';
   import type { PatchIcon } from '$lib/quilt/icons';
   import type { QuiltPatch } from '$lib/quilt/patches';
   import * as m from '$lib/paraglide/messages.js';
@@ -178,7 +178,7 @@
           style:--r={b.row}
           style:--w={b.w}
           style:--h={b.h}
-          style:background={b.id === 'title' ? 'var(--c-accent)' : b.id === 'community' ? 'var(--c-weld)' : b.fabrics[0]}
+          style:background={b.id === 'title' ? 'var(--c-accent)' : b.id === 'community' ? 'var(--c-weld)' : clothFill(b.fabrics[0])}
         ></span>
       {/each}
       <span class="minimap__view" bind:this={mapView}></span>

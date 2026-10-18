@@ -83,7 +83,7 @@
   }
   @media (hover: hover) {
     .caps :global(.cap:hover) {
-      box-shadow: inset 0 0 0 1.5px var(--c-fg), 0 7px 0 -2px rgb(28 31 59 / 0.18);
+      box-shadow: inset 0 0 0 1.5px var(--c-fg), 0 7px 0 -2px color-mix(in srgb, var(--c-shade) 18%, transparent);
       translate: 0 -4px;
       rotate: -0.5deg;
     }

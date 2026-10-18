@@ -260,14 +260,14 @@
     border-radius: var(--radius);
     background: var(--c-paper);
     color: var(--c-fg);
-    box-shadow: 0 0 0 1.5px var(--c-fg), 0 20px 50px rgb(28 31 59 / 0.35);
+    box-shadow: 0 0 0 1.5px var(--c-fg), 0 20px 50px color-mix(in srgb, var(--c-shade) 35%, transparent);
   }
   .confirm[open] {
     display: grid;
     gap: 1rem;
   }
   .confirm::backdrop {
-    background: rgb(28 31 59 / 0.45);
+    background: color-mix(in srgb, var(--c-shade) 45%, transparent);
   }
   @media (max-width: 899px) {
     .profile {

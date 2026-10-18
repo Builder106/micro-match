@@ -39,7 +39,7 @@
     display: grid;
     background: var(--c-paper);
     border-radius: 0 0 var(--radius) var(--radius);
-    box-shadow: inset 0 0 0 1.5px var(--c-line), 0 2px 0 rgb(28 31 59 / 0.06);
+    box-shadow: inset 0 0 0 1.5px var(--c-line), 0 2px 0 color-mix(in srgb, var(--c-shade) 6%, transparent);
     transition: translate 0.4s cubic-bezier(0.16, 1, 0.3, 1), rotate 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s;
   }
   @media (hover: hover) {
@@ -47,7 +47,7 @@
     .swatch-card:has(:global(.swatch-card__link:hover)) {
       translate: 0 -4px;
       rotate: -0.6deg;
-      box-shadow: inset 0 0 0 1.5px var(--c-fg), 0 8px 0 -2px rgb(28 31 59 / 0.18);
+      box-shadow: inset 0 0 0 1.5px var(--c-fg), 0 8px 0 -2px color-mix(in srgb, var(--c-shade) 18%, transparent);
     }
   }
   .swatch-card:has(:global(.swatch-card__link:focus-visible)) {
@@ -126,6 +126,6 @@
     font-size: var(--t-xs);
     padding: 0.1rem 0.5rem;
     border-radius: var(--radius);
-    background: rgb(28 31 59 / 0.06);
+    background: color-mix(in srgb, var(--c-fg) 6%, transparent);
   }
 </style>

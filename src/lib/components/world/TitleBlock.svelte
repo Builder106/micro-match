@@ -3,7 +3,7 @@
   // It is the home page's heading; on other routes the same words are not a heading.
   import Link from '../Link.svelte';
   import { sawtoothBorder, piecePath } from '$lib/quilt/blocks';
-  import { block } from '$lib/quilt/world';
+  import { block, clothFill } from '$lib/quilt/world';
   import * as m from '$lib/paraglide/messages.js';
 
   let { isHome }: { isHome: boolean } = $props();
@@ -32,9 +32,9 @@
 >
   <div class="block__face">
     <svg class="title__border" viewBox="0 0 {W} {H}" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-      <rect width={W} height={H} fill="#FBF3EA" />
+      <rect width={W} height={H} fill="var(--cloth-muslin)" />
       {#each layers as layer, i (i)}
-        {#if layer.d}<path d={layer.d} fill={layer.color} />{/if}
+        {#if layer.d}<path d={layer.d} fill={clothFill(layer.color)} />{/if}
       {/each}
     </svg>
     <div class="title__sig">

@@ -141,7 +141,7 @@
         <path d="M0 1.5h6M0 4.5h6" stroke="#FFFFFF" stroke-opacity="0.1" stroke-width="1" />
       </pattern>
       <pattern id="{uid}-quilting" width="28" height="28" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-        <path d="M0 14h28" stroke="#1C1F3B" stroke-opacity="0.09" stroke-width="1.2" stroke-dasharray="4 4" />
+        <path d="M0 14h28" stroke="var(--c-fg)" stroke-opacity="0.09" stroke-width="1.2" stroke-dasharray="4 4" />
       </pattern>
       {#each pieces as p (p.piece.index)}
         <mask id="{uid}-m{p.piece.index}" maskUnits="userSpaceOnUse">
@@ -238,13 +238,13 @@
   .quilt--fit .quilt__svg {
     overflow: hidden;
     border-radius: 4px;
-    box-shadow: 0 0 0 7px var(--c-fg);
+    box-shadow: 0 0 0 7px var(--c-binding);
   }
   .quilt__binding {
-    fill: var(--c-fg);
+    fill: var(--c-binding);
   }
   .quilt__backing {
-    fill: #fbf8f1;
+    fill: var(--c-backing);
   }
   .quilt__quilting {
     fill: none;
@@ -264,7 +264,7 @@
   }
   .quilt__patch.is-active {
     translate: 0 -3px;
-    filter: drop-shadow(0 4px 0 rgb(28 31 59 / 0.28));
+    filter: drop-shadow(0 4px 0 color-mix(in srgb, var(--c-shade) 28%, transparent));
   }
   .quilt__patch:focus-visible {
     filter: drop-shadow(0 0 0 var(--c-weld)) drop-shadow(0 0 3px var(--c-weld));
@@ -306,7 +306,7 @@
     background: var(--c-paper);
     color: var(--c-fg);
     border-radius: var(--radius);
-    box-shadow: 0 0 0 1.5px var(--c-fg), 0 8px 0 -3px rgb(28 31 59 / 0.25);
+    box-shadow: 0 0 0 1.5px var(--c-fg), 0 8px 0 -3px color-mix(in srgb, var(--c-shade) 25%, transparent);
     font-size: var(--t-xs);
     line-height: 1.35;
     pointer-events: none;
@@ -317,7 +317,7 @@
     height: 1rem;
     margin-top: 0.1rem;
     border-radius: 2px;
-    box-shadow: inset 0 0 0 1px rgb(28 31 59 / 0.3);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c-fg) 30%, transparent);
   }
   .quilt__tag-text {
     display: grid;

@@ -253,7 +253,7 @@
     gap: 0.7rem;
     padding: 1.15rem 1.25rem;
     border-radius: var(--radius);
-    background: #fff;
+    background: var(--c-card);
     box-shadow: inset 0 0 0 1.5px var(--c-line);
     transition: box-shadow 0.4s, opacity 0.4s;
   }
@@ -261,7 +261,7 @@
     box-shadow: inset 0 0 0 2px var(--c-ok);
     background:
       linear-gradient(90deg, var(--c-ok) 55%, transparent 0) 0.8rem 0.5rem / 9px 2px no-repeat,
-      #fff;
+      var(--c-card);
     animation: stitch-across 0.9s cubic-bezier(0.65, 0, 0.35, 1) both;
   }
   @keyframes stitch-across {

@@ -18,7 +18,10 @@
 }
 
 :root {
-  /* Color: natural dyes on muslin */
+  /* The site follows the system color scheme. */
+  color-scheme: light dark;
+
+  /* Color: natural dyes on muslin. Browsers without light-dark() keep these light values. */
   --c-bg: #fdfcf8; /* muslin, the brand cream */
   --c-fg: #1c1f3b; /* indigo thread */
   --c-muted: #575b76; /* faded indigo */
@@ -26,10 +29,26 @@
   --c-accent: #ff6b6b; /* madder, the brand coral */
   --c-on-accent: #000;
   --c-weld: #f2b84b; /* weld: chalk, highlights, focus */
-  --c-curtain: var(--c-fg);
+  --c-curtain: #1c1f3b;
   --c-paper: #fffefb; /* a lighter cloth for raised surfaces */
+  --c-card: #fff; /* swatches and cards pinned on the paper */
+  --c-shade: #1c1f3b; /* shadows */
   --c-danger: #b4232a;
   --c-ok: #2f6b45;
+
+  /* By lamplight: an Amish quilt, saturated dyes pieced on a dark ground. */
+  @supports (color: light-dark(#000, #fff)) {
+    --c-bg: light-dark(#fdfcf8, #14162b);
+    --c-fg: light-dark(#1c1f3b, #f1ece1);
+    --c-muted: light-dark(#575b76, #a9abc3);
+    --c-line: light-dark(rgb(28 31 59 / 0.16), rgb(241 236 225 / 0.2));
+    --c-curtain: light-dark(#1c1f3b, #2b2f5c);
+    --c-paper: light-dark(#fffefb, #1b1e38);
+    --c-card: light-dark(#fff, #252949);
+    --c-shade: light-dark(#1c1f3b, #000);
+    --c-danger: light-dark(#b4232a, #ff9089);
+    --c-ok: light-dark(#2f6b45, #84cb9d);
+  }
 
   /* Type */
   --f-display: 'Bricolage', 'Avenir Next', system-ui, sans-serif;

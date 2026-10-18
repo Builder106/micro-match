@@ -100,7 +100,7 @@
     height: 2.2rem;
     border-radius: var(--radius);
     background: var(--s);
-    box-shadow: inset 0 0 0 1px rgb(28 31 59 / 0.25);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c-fg) 25%, transparent);
     cursor: pointer;
     transition: translate 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   }

@@ -209,7 +209,7 @@
     padding: 1.4rem;
     background: #fff;
     border-radius: var(--radius);
-    box-shadow: inset 0 0 0 1.5px var(--c-fg), 0 6px 0 -2px rgb(28 31 59 / 0.15);
+    box-shadow: inset 0 0 0 1.5px var(--c-fg), 0 6px 0 -2px color-mix(in srgb, var(--c-shade) 15%, transparent);
     rotate: 0.4deg;
   }
   dl {

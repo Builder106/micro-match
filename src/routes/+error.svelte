@@ -39,10 +39,10 @@
     width: 11rem;
     aspect-ratio: 1;
     border-radius: 3px;
-    background: repeating-linear-gradient(45deg, rgb(28 31 59 / 0.06) 0 2px, transparent 2px 9px), #ded3bd;
+    background: repeating-linear-gradient(45deg, color-mix(in srgb, var(--c-fg) 6%, transparent) 0 2px, transparent 2px 9px), var(--c-hole);
     outline: 3px dashed var(--c-weld);
     outline-offset: -8px;
-    box-shadow: inset 0 6px 14px rgb(28 31 59 / 0.18);
+    box-shadow: inset 0 6px 14px color-mix(in srgb, var(--c-shade) 18%, transparent);
     margin-bottom: 1rem;
   }
   .hole :global(.hole__needle) {
