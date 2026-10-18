@@ -234,9 +234,8 @@ async function listExistingTasks(orgId: string): Promise<Map<string, string>> {
 
 // getTasks() drops any row whose lastActivityAt is 30+ days stale (auto-archive,
 // see filterTasksForFeed in src/lib/server/appwrite.ts). Demo tasks never get
-// organic activity, so re-running this script must bump lastActivityAt on
-// existing rows too — otherwise the feed silently goes empty ~30 days after
-// the last seed run, with no error anywhere to point at why.
+// organic activity, so they're marked evergreen, which exempts them from that
+// rule. Re-running this script also marks rows seeded before the flag existed.
 async function ensureTasks(orgId: string): Promise<{ created: number; refreshed: number }> {
   const existing = await listExistingTasks(orgId);
   let created = 0;
@@ -252,6 +251,7 @@ async function ensureTasks(orgId: string): Promise<{ created: number; refreshed:
         data: {
         status: 'active',
         lastActivityAt: now,
+        evergreen: true,
       }
       });
       refreshed++;
@@ -275,6 +275,7 @@ async function ensureTasks(orgId: string): Promise<{ created: number; refreshed:
       deadline: null,
       isVerified: true,
       lastActivityAt: now,
+      evergreen: true,
     }
     });
     created++;

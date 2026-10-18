@@ -32,6 +32,7 @@ Stores micro-volunteering task listings posted by NGOs.
 | `status` | String | Enum (`active`, `archived`, `completed`) | Current task lifecycle status |
 | `deadline` | Datetime | Optional | Target completion deadline |
 | `isVerified` | Boolean | Default:`false` | Whether posting NGO is verified 501(c)(3) |
+| `evergreen` | Boolean | Optional; unset means `false` in the app | Curated task that stays in the feed without activity (skips the 30-day auto-archive) |
 
 #### Indexes
 

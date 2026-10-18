@@ -14,6 +14,8 @@ export type Task = {
   deadline?: string;
   isVerified?: boolean;
   lastActivityAt?: string;
+  // Curated tasks that stay in the feed without organic activity.
+  evergreen?: boolean;
 };
 
 export type Claim = {

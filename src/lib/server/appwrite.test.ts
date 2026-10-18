@@ -84,6 +84,10 @@ describe('appwrite (in-memory mode) — tasks', () => {
       title: 'Stale', shortDescription: 's', tags: [],
       lastActivityAt: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000).toISOString()
     });
+    await createTask({
+      title: 'Evergreen', shortDescription: 's', tags: [], evergreen: true,
+      lastActivityAt: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000).toISOString()
+    });
 
     const feed = await getTasks();
     const titles = feed.map((t) => t.title);
@@ -93,6 +97,7 @@ describe('appwrite (in-memory mode) — tasks', () => {
     expect(titles).not.toContain('PastDeadline');
     expect(titles).not.toContain('Unverified');
     expect(titles).not.toContain('Stale');
+    expect(titles).toContain('Evergreen');
     // sanity: ids referenced so lint doesn't flag unused
     expect([active.id, inactive.id, pastDeadline.id, unverified.id, stale.id]).toHaveLength(5);
   });
@@ -138,12 +143,17 @@ describe('appwrite (in-memory mode) — tasks', () => {
       lastActivityAt: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000).toISOString()
     });
     const fresh = await createTask({ title: 'Fresh', shortDescription: 's', tags: [], lastActivityAt: new Date().toISOString() });
+    const evergreen = await createTask({
+      title: 'Evergreen', shortDescription: 's', tags: [], evergreen: true,
+      lastActivityAt: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000).toISOString()
+    });
 
     const count = await autoArchiveTasks();
 
     expect(count).toBe(1);
     expect((await getTaskById(stale.id))?.status).toBe('expired');
     expect((await getTaskById(fresh.id))?.status).toBe('active');
+    expect((await getTaskById(evergreen.id))?.status).toBe('active');
   });
 
   it('setTasksVerifiedForOrg updates isVerified for every task owned by the org', async () => {

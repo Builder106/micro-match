@@ -63,6 +63,7 @@ type DbTaskRow = import('node-appwrite').Models.Row & {
   deadline?: string | null;
   isVerified?: boolean;
   lastActivityAt?: string;
+  evergreen?: boolean | null;
 };
 
 type DbClaimRow = import('node-appwrite').Models.Row & {
@@ -124,7 +125,8 @@ export async function getTasks(filters?: { orgId?: string; includeInactive?: boo
       maxVolunteers: d.maxVolunteers ?? undefined,
       deadline: d.deadline ?? undefined,
       isVerified: d.isVerified ?? true,
-      lastActivityAt: d.lastActivityAt
+      lastActivityAt: d.lastActivityAt,
+      evergreen: d.evergreen ?? false
     }));
     
     // Apply additional filtering for volunteer limits and auto-archive
@@ -201,8 +203,8 @@ async function filterTasksForFeed(tasks: Task[]): Promise<Task[]> {
     if (task.isVerified === false) continue;
     
     // Skip tasks that haven't had activity in 30+ days (auto-archive)
-    // Only apply this if the task has a lastActivityAt timestamp
-    if (task.lastActivityAt && new Date(task.lastActivityAt) < thirtyDaysAgo) continue;
+    // Only apply this if the task has a lastActivityAt timestamp and isn't evergreen
+    if (!task.evergreen && task.lastActivityAt && new Date(task.lastActivityAt) < thirtyDaysAgo) continue;
     
     // Skip tasks that have reached their volunteer limit
     if (task.maxVolunteers) {
@@ -766,7 +768,7 @@ export async function autoArchiveTasks(): Promise<number> {
   if (!useAppwrite) {
     // In-memory fallback
     for (const [id, task] of inMemory.tasks) {
-      if (task.lastActivityAt && new Date(task.lastActivityAt) < thirtyDaysAgo && task.status === 'active') {
+      if (!task.evergreen && task.lastActivityAt && new Date(task.lastActivityAt) < thirtyDaysAgo && task.status === 'active') {
         inMemory.tasks.set(id, { ...task, status: 'expired' });
         archivedCount++;
       }
@@ -777,7 +779,7 @@ export async function autoArchiveTasks(): Promise<number> {
   return withAppwrite(async ({ tables, dbId, tasksTable, Query }) => {
     try {
       // Find all active tasks with no activity in 30+ days
-      const inactiveTasks = await tables.listRows({
+      const inactiveTasks = await tables.listRows<DbTaskRow>({
         databaseId: dbId,
         tableId: tasksTable,
         queries: [
@@ -789,6 +791,7 @@ export async function autoArchiveTasks(): Promise<number> {
       
       // Update each inactive task
       for (const task of inactiveTasks.rows) {
+        if (task.evergreen) continue;
         try {
           await tables.updateRow({
             databaseId: dbId,

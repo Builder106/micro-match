@@ -122,6 +122,19 @@ describe('appwrite (Appwrite-backed mode) — tasks', () => {
     expect(mocks.listRows).toHaveBeenCalledTimes(1);
   });
 
+  it('keeps stale evergreen tasks in the feed and drops stale ordinary ones', async () => {
+    mocks.listRows.mockResolvedValue({
+      rows: [
+        { ...taskRow, $id: 'curated', evergreen: true },
+        { ...taskRow, $id: 'dead' }
+      ]
+    });
+
+    const tasks = await getTasks();
+    expect(tasks.map((t) => t.id)).toEqual(['curated']);
+    expect(tasks[0].evergreen).toBe(true);
+  });
+
   it('getTasks filters out tasks that reached volunteer limit', async () => {
     const taskWithLimit = {
       ...taskRow,
@@ -302,6 +315,15 @@ describe('appwrite (Appwrite-backed mode) — tasks', () => {
     mocks.updateRow.mockResolvedValueOnce({});
 
     expect(await autoArchiveTasks()).toBe(1);
+  });
+
+  it('autoArchiveTasks leaves evergreen rows active', async () => {
+    mocks.listRows.mockResolvedValueOnce({ rows: [{ $id: 'curated', evergreen: true }, { $id: 'dead' }] });
+    mocks.updateRow.mockResolvedValueOnce({});
+
+    expect(await autoArchiveTasks()).toBe(1);
+    expect(mocks.updateRow).toHaveBeenCalledTimes(1);
+    expect(mocks.updateRow).toHaveBeenCalledWith(expect.objectContaining({ rowId: 'dead' }));
   });
 
   it('autoArchiveTasks returns 0 when the query itself fails', async () => {
