@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { BLOCKS, GRID, HOME_FOCUS, block, blockCenter, blockForPath, cameraFor, clampCamera, focusForPath, panelKindForPath, phonePath, seams, toPixels, worldSize } from './world';
+import { BLOCKS, GRID, HOME_FOCUS, block, blockCenter, blockForPath, cameraFor, clampCamera, clothFill, focusForPath, panelKindForPath, phonePath, seams, toPixels, worldSize } from './world';
 
 describe('seams', () => {
   const all = seams();
@@ -84,5 +84,13 @@ describe('camera math', () => {
     expect(clampCamera({ x: 500, y: -5000 }, view, world, 100)).toEqual({ x: 100, y: -900 });
     expect(clampCamera({ x: -300, y: -300 }, view, world, 100)).toEqual({ x: -300, y: -300 });
     expect(clampCamera({ x: 0, y: 0 }, { w: 3000, h: 800 }, world, 100)).toEqual({ x: 500, y: 0 });
+  });
+});
+
+describe('clothFill', () => {
+  it('lets muslin and indigo follow the color scheme and keeps every other dye', () => {
+    expect(clothFill('#FBF3EA')).toBe('var(--cloth-muslin)');
+    expect(clothFill('#1C1F3B')).toBe('var(--cloth-indigo)');
+    expect(clothFill('#FF6B6B')).toBe('#FF6B6B');
   });
 });
