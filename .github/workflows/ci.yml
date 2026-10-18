@@ -71,6 +71,8 @@ jobs:
           path: ~/.bun/install/cache
           key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
       - run: bun install --frozen-lockfile
+      - run: bun run paraglide:compile
+      - run: bunx svelte-kit sync
       - run: bun run test:coverage
 
   build:
