@@ -1,5 +1,28 @@
 # JOURNAL — MicroMatch
 
+## 2026-10-18 - Prune the unit suite to tests that pin behavior #decision
+
+Ran every unit test on its own with coverage and compared what each one
+reaches. 302 of the 767 reached nothing another test didn't, but most of
+those still pin an outcome V8 can't tell apart, like `isOwner` true versus
+false or a forged `mm_role` cookie, so they stay.
+
+Removed 48. The suites for `capacityPlan`, `i18n/formatters`, and
+`taskTranslationClient` went along with the modules, since nothing imports
+them anymore. `/api/tasks/translation` stays because `/docs/api` documents
+it. A second locale suite and a second Appwrite badge-definition suite only
+repeated the first ones. The two catch-all in-memory tests at the end of the
+Appwrite-mode file duplicated the focused ones, and one `isUserAdmin` test
+only checked that the result was a boolean.
+
+The per-test runs also showed the 100% gate leaning on test order. Two a11y
+harness tests needed an earlier test to set `PLAYWRIGHT_A11Y_HARNESS`, the
+badge analytics test needed badges other tests had awarded, the
+purge-on-create session test never called `createSession`, and the
+verification sort only ran during `beforeEach` cleanup. Each now sets up its
+own state. The suite passes in shuffled order too: 722 tests in 75 files at
+100% on all four metrics, with lint and svelte-check clean.
+
 ## 2026-10-18 - Accessibility target lowered from AAA to AA #decision
 
 The audit target is now WCAG 2.2 Level AA. Chasing AAA's 7:1 enhanced
