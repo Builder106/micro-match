@@ -42,7 +42,12 @@ for (const size of SIZES) {
   test.describe(size.name, () => {
     test.use({ viewport: size.viewport, isMobile: size.isMobile, hasTouch: size.isMobile });
     test.beforeEach(async ({ page }) => {
-      await page.addInitScript(() => localStorage.setItem('mm-still', '1'));
+      // Hold idle motion still, and skip the first-visit entrance so home is shot at rest
+      // instead of mid-animation.
+      await page.addInitScript(() => {
+        localStorage.setItem('mm-still', '1');
+        sessionStorage.setItem('mm-entered', '1');
+      });
     });
 
     for (const [name, path] of PAGES) {
