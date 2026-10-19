@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { createMockCookies, createRequestEvent } from '../helpers/createLoadEvent';
 
 const { mocks } = vi.hoisted(() => ({
@@ -48,7 +48,10 @@ function makeEvent(opts: { body?: unknown } = {}) {
 }
 
 describe('POST /api/test/a11y', () => {
+  const originalHarness = process.env.PLAYWRIGHT_A11Y_HARNESS;
+
   beforeEach(() => {
+    process.env.PLAYWRIGHT_A11Y_HARNESS = '1';
     Object.values(mocks).forEach((m) => m.mockReset());
     mocks.createTask.mockResolvedValue({ id: 'task-a11y-1' });
     mocks.getTaskById.mockResolvedValue(null);
@@ -60,18 +63,17 @@ describe('POST /api/test/a11y', () => {
     mocks.createSession.mockReturnValue({ id: 'sess-a11y-1' });
   });
 
+  afterEach(() => {
+    if (originalHarness === undefined) delete process.env.PLAYWRIGHT_A11Y_HARNESS;
+    else process.env.PLAYWRIGHT_A11Y_HARNESS = originalHarness;
+  });
+
   it('throws 404 when harness is disabled', async () => {
-    const orig = process.env.PLAYWRIGHT_A11Y_HARNESS;
     delete process.env.PLAYWRIGHT_A11Y_HARNESS;
-    try {
-      await expect(POST(makeEvent({ body: { action: 'seed' } }))).rejects.toMatchObject({ status: 404 });
-    } finally {
-      if (orig) process.env.PLAYWRIGHT_A11Y_HARNESS = orig;
-    }
+    await expect(POST(makeEvent({ body: { action: 'seed' } }))).rejects.toMatchObject({ status: 404 });
   });
 
   it('handles seed action by creating fixtures and returning taskId', async () => {
-    process.env.PLAYWRIGHT_A11Y_HARNESS = '1';
     const event = makeEvent({ body: { action: 'seed', namespace: 'chromium-0' } });
 
     const res = await POST(event);
@@ -142,7 +144,6 @@ describe('POST /api/test/a11y', () => {
   });
 
   it('isolates concurrent namespaces and makes repeated seeding idempotent', async () => {
-    process.env.PLAYWRIGHT_A11Y_HARNESS = '1';
     let taskNumber = 0;
     mocks.createTask.mockImplementation(async () => ({ id: `task-${++taskNumber}` }));
 
@@ -160,7 +161,6 @@ describe('POST /api/test/a11y', () => {
   });
 
   it('rejects missing and malformed namespaces', async () => {
-    process.env.PLAYWRIGHT_A11Y_HARNESS = '1';
     await expect(POST(makeEvent({ body: { action: 'seed' } }))).rejects.toMatchObject({ status: 400 });
     await expect(POST(makeEvent({ body: { action: 'seed', namespace: '../shared' } }))).rejects.toMatchObject({ status: 400 });
   });

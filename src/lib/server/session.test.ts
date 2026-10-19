@@ -50,8 +50,11 @@ describe('session store', () => {
 
   it('purges expired sessions as a side effect of creating a new one', () => {
     const expiring = createSession({ userId: 'u7', email: 'g@example.com', role: 'user', ttlSeconds: 60 });
-    vi.spyOn(Date, 'now').mockReturnValue(expiring.expiresAt + 1);
+    const clock = vi.spyOn(Date, 'now').mockReturnValue(expiring.expiresAt + 1);
+    createSession({ userId: 'u8', email: 'h@example.com', role: 'user' });
+    clock.mockRestore();
 
+    // The clock is real again, so only a purge can explain the miss.
     expect(getSession(expiring.id)).toBeNull();
   });
 

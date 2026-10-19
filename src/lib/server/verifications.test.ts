@@ -152,6 +152,20 @@ describe('verifications (in-memory mode)', () => {
     expect(rejected.map((v) => v.userId)).toEqual(['c']);
   });
 
+  it('listVerifications returns the newest submissions first', async () => {
+    vi.useFakeTimers();
+    try {
+      vi.setSystemTime(new Date('2026-01-01T00:00:00.000Z'));
+      await upsertVerification({ userId: 'old', orgName: 'Old', country: 'US', taxId: '1' });
+      vi.setSystemTime(new Date('2026-02-01T00:00:00.000Z'));
+      await upsertVerification({ userId: 'new', orgName: 'New', country: 'US', taxId: '2' });
+    } finally {
+      vi.useRealTimers();
+    }
+
+    expect((await listVerifications()).map((v) => v.userId)).toEqual(['new', 'old']);
+  });
+
   it('preserves docFileId across status transitions', async () => {
     await upsertVerification({
       userId: 'doc-user',
