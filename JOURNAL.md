@@ -13,9 +13,13 @@ like film sprockets).
 The tag draws the bare M inline instead of loading an image, so its indigo
 half can follow the text color into the dark theme. The favicons, the touch
 icon and the JSON-LD logo are rendered from the SVGs in `static/`. `og.png`
-and `social-preview.png` are new captures of the home quilt. The social
-preview's HTML template went in the clean-slate redesign, and a capture of
-the real page can't fall out of step with it.
+is a new capture of the home quilt.
+
+A capture didn't work for the repo card. Cropped to 1280 x 640 it cut
+blocks in half, put the minimap over the community caption and shrank the
+mark to a few pixels. `social-preview.png` is its own card now, drawn in
+`design/social-preview.html` from the sampler geometry, with the title
+block widened to three cells so the name and headline lead.
 
 ## 2026-10-18 - Prune the unit suite to tests that pin behavior #decision
 

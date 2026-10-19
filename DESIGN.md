@@ -204,9 +204,13 @@ into one. All three forms are drawn in `design/glaxnimate/brand.svg`:
   the way indigo does in the piecing. The madder half stays madder.
 
 The wordmark is "MicroMatch" in the corner tag's type, Bricolage at weight 760. `og.png`
-(1200 x 630) and `social-preview.png` (1280 x 640) are captures of the home quilt in the light
-theme with idle motion held still. Recapture them when the title block or the tag changes. The
-social preview is uploaded by hand in the repository settings.
+(1200 x 630) is a capture of the home quilt in the light theme with idle motion held still.
+Recapture it when the title block or the tag changes.
+
+`social-preview.png` (1280 x 640) is the GitHub repository card, drawn in
+`design/social-preview.html`: a title block three cells wide with the mark, the headline and the
+lede, framed by sampler blocks that run off every edge. Render it with a 1280 x 640 screenshot
+once the fonts load, and upload it by hand in the repository settings.
 
 ### Motion language
 

@@ -1,0 +1,116 @@
+<!doctype html>
+<!--
+  The GitHub social preview card (1280 x 640). Render it to static/social-preview.png with a
+  1280 x 640 viewport screenshot once the fonts have loaded. The quilt is drawn from the
+  sampler geometry in glaxnimate/sampler-blocks.svg and the mark from glaxnimate/brand.svg.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>MicroMatch social preview</title>
+<style>
+  @font-face { font-family: 'Bricolage'; src: url('../static/fonts/bricolage-200_800-normal.woff2') format('woff2'); font-weight: 200 800; font-stretch: 75% 100%; }
+  @font-face { font-family: 'Host'; src: url('../static/fonts/host-300_800-normal.woff2') format('woff2'); font-weight: 300 800; }
+  html, body { margin: 0; }
+  body { width: 1280px; height: 640px; overflow: hidden; position: relative; background: #ebe3d3; color: #1c1f3b; }
+  svg.quilt { position: absolute; inset: 0; }
+  .sig {
+    position: absolute; left: 106px; top: 86px; width: 744px; height: 468px; box-sizing: border-box;
+    padding: 44px 48px; display: grid; align-content: space-between;
+    background: #fffdf8; box-shadow: inset 0 0 0 1px rgb(28 31 59 / 0.08);
+  }
+  .brand { display: flex; align-items: center; gap: 14px; font: 760 34px/1 'Bricolage', sans-serif; letter-spacing: -0.03em; }
+  .brand svg { width: 52px; height: 52px; }
+  h1 span { display: block; }
+  h1 {
+    margin: 0; font: 800 76px/0.92 'Bricolage', sans-serif; font-stretch: 92%;
+    font-variation-settings: 'opsz' 96; letter-spacing: -0.045em;
+  }
+  p { margin: 0; font: 400 22px/1.45 'Host', sans-serif; color: #575b76; max-width: 46ch; }
+</style>
+</head>
+<body>
+<svg class="quilt" width="1280" height="640" viewBox="0 0 1280 640" aria-hidden="true">
+  <defs>
+    <pattern id="weave" width="6" height="6" patternUnits="userSpaceOnUse"><path d="M1.5 0v6M4.5 0v6" stroke="#1C1F3B" stroke-opacity="0.07" /><path d="M0 1.5h6M0 4.5h6" stroke="#FDFCF8" stroke-opacity="0.12" /></pattern>
+  </defs>
+  <g id="quilt"></g>
+</svg>
+
+<div class="sig">
+  <div class="brand">
+    <svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="4" fill="#FDFCF8" /><rect x="5" y="5" width="54" height="54" rx="2" fill="none" stroke="#1C1F3B" stroke-width="1.6" stroke-dasharray="3.6 2.9" /><g transform="translate(12 14)"><path d="M0 36V0h11l9 15v18l-9-15v18z" fill="#FF6B6B" /><path d="M40 36V0H29l-9 15v18l9-15v18z" fill="#1C1F3B" /></g></svg>
+    MicroMatch
+  </div>
+  <h1><span>Small tasks, sewn into</span> <span>something warm.</span></h1>
+  <p>Nonprofits post tasks that take 5 to 30 minutes. Do one, a person there checks it, and it is sewn into the quilt.</p>
+</div>
+
+<script>
+  // Sampler blocks from glaxnimate/sampler-blocks.svg, each on a 100 x 100 grid.
+  const BLOCKS = {
+    ninePatch: [['M0 0L33.33 0L33.33 33.33L0 33.33ZM66.67 0L100 0L100 33.33L66.67 33.33ZM33.33 33.33L66.67 33.33L66.67 66.67L33.33 66.67ZM0 66.67L33.33 66.67L33.33 100L0 100ZM66.67 66.67L100 66.67L100 100L66.67 100Z', '#3B4A8C']],
+    railFence: [['M0 0L50 0L50 16.67L0 16.67ZM50 0L66.67 0L66.67 50L50 50ZM0 50L16.67 50L16.67 100L0 100ZM50 50L100 50L100 66.67L50 66.67Z', '#FF6B6B'], ['M0 16.67L50 16.67L50 33.33L0 33.33ZM66.67 0L83.33 0L83.33 50L66.67 50ZM16.67 50L33.33 50L33.33 100L16.67 100ZM50 66.67L100 66.67L100 83.33L50 83.33Z', '#F4A6B8']],
+    pinwheel: [['M0 0L50 0L50 50ZM100 100L50 100L50 50Z', '#F2B84B'], ['M100 0L100 50L50 50ZM0 100L0 50L50 50Z', '#F08A3C']],
+    geese: [['M0 0L50 50L0 100ZM50 0L100 50L50 100Z', '#FF6B6B'], ['M0 0L50 0L50 50ZM0 100L50 100L50 50ZM50 0L100 0L100 50ZM50 100L100 100L100 50Z', '#F2B84B']],
+    churnDash: [['M0 0L33.33 0L0 33.33ZM66.67 0L100 0L100 33.33ZM0 66.67L33.33 100L0 100ZM100 66.67L100 100L66.67 100ZM33.33 0L66.67 0L66.67 16.67L33.33 16.67ZM33.33 83.33L66.67 83.33L66.67 100L33.33 100ZM0 33.33L16.67 33.33L16.67 66.67L0 66.67ZM83.33 33.33L100 33.33L100 66.67L83.33 66.67Z', '#5E7D4F'], ['M33.33 33.33L66.67 33.33L66.67 66.67L33.33 66.67Z', '#8DAA8B']],
+    friendshipStar: [['M66.67 0L66.67 33.33L33.33 33.33ZM66.67 33.33L100 66.67L66.67 66.67ZM33.33 66.67L66.67 66.67L33.33 100ZM0 33.33L33.33 33.33L33.33 66.67Z', '#F08A3C'], ['M33.33 33.33L66.67 33.33L66.67 66.67L33.33 66.67Z', '#F2B84B']],
+    ohioStar: [['M66.67 0L66.67 33.33L50 16.67ZM33.33 33.33L33.33 0L50 16.67ZM66.67 66.67L66.67 100L50 83.33ZM33.33 100L33.33 66.67L50 83.33ZM0 33.33L33.33 33.33L16.67 50ZM33.33 66.67L0 66.67L16.67 50ZM66.67 33.33L100 33.33L83.33 50ZM100 66.67L66.67 66.67L83.33 50Z', '#5D6B7A'], ['M33.33 33.33L66.67 33.33L66.67 66.67L33.33 66.67Z', '#7FB7D9']],
+    courthouse: [['M0 0L100 0L100 14.29L0 14.29ZM0 85.71L100 85.71L100 100L0 100ZM28.57 28.57L71.43 28.57L71.43 42.86L28.57 42.86ZM28.57 57.14L71.43 57.14L71.43 71.43L28.57 71.43ZM42.86 42.86L57.14 42.86L57.14 57.14L42.86 57.14Z', '#7A4E7E'], ['M0 14.29L14.29 14.29L14.29 85.71L0 85.71ZM85.71 14.29L100 14.29L100 85.71L85.71 85.71ZM14.29 28.57L28.57 28.57L28.57 71.43L14.29 71.43ZM71.43 28.57L85.71 28.57L85.71 71.43L71.43 71.43ZM28.57 42.86L42.86 42.86L42.86 57.14L28.57 57.14ZM57.14 42.86L71.43 42.86L71.43 57.14L57.14 57.14Z', '#F4A6B8']],
+    hourglass: [['M0 0L50 0L25 25ZM50 50L0 50L25 25ZM50 50L100 50L75 75ZM100 100L50 100L75 75Z', '#3B4A8C'], ['M100 0L100 50L75 25ZM50 50L50 0L75 25ZM50 50L50 100L25 75ZM0 100L0 50L25 75Z', '#8DAA8B']],
+    triangles: [['M25 0L50 25L25 25ZM50 0L75 0L75 25ZM0 25L25 50L0 50ZM25 25L50 25L50 50ZM75 25L100 25L100 50ZM0 50L25 50L25 75ZM50 50L75 50L75 75ZM75 50L100 75L75 75ZM25 75L50 75L50 100ZM50 75L75 100L50 100Z', '#7A4E7E'], ['M0 0L25 0L25 25ZM75 0L100 25L75 25ZM50 25L75 50L50 50ZM25 50L50 75L25 75ZM0 75L25 100L0 100ZM75 75L100 75L100 100Z', '#7FB7D9']]
+  };
+  // The title block (3 x 2 cells) sits whole inside the card; the sampler runs off every edge.
+  const CELL = 260, SASH = 16, PITCH = CELL + SASH, X0 = 72, Y0 = 52;
+  const LAYOUT = {
+    '-1,-1': 'pinwheel', '0,-1': 'geese', '1,-1': 'ohioStar', '2,-1': 'railFence', '3,-1': 'hourglass', '4,-1': 'churnDash',
+    '-1,0': 'courthouse', '3,0': 'friendshipStar', '4,0': 'triangles',
+    '-1,1': 'churnDash', '3,1': 'hourglass', '4,1': 'pinwheel',
+    '-1,2': 'ninePatch', '0,2': 'triangles', '1,2': 'railFence', '2,2': 'geese', '3,2': 'ohioStar', '4,2': 'friendshipStar'
+  };
+  const NS = 'http://www.w3.org/2000/svg';
+  const root = document.getElementById('quilt');
+  const el = (name, attrs, parent = root) => {
+    const node = document.createElementNS(NS, name);
+    for (const [k, v] of Object.entries(attrs)) node.setAttribute(k, v);
+    parent.appendChild(node);
+    return node;
+  };
+  const span = 6 * PITCH + SASH;
+  el('rect', { x: X0 - 2 * PITCH - SASH, y: Y0 - 2 * PITCH - SASH, width: span + PITCH, height: span, fill: '#f6efe2' });
+  for (const [key, name] of Object.entries(LAYOUT)) {
+    const [c, r] = key.split(',').map(Number);
+    const g = el('g', { transform: `translate(${X0 + c * PITCH} ${Y0 + r * PITCH}) scale(${CELL / 100})` });
+    el('rect', { width: 100, height: 100, fill: '#FBF3EA' }, g);
+    for (const [d, fill] of BLOCKS[name]) el('path', { d, fill }, g);
+  }
+  // Weave over the cloth, the quilting line down every sash, and madder cornerstones. The
+  // title block goes on last, over its own inner sash.
+  el('rect', { width: 1280, height: 640, fill: 'url(#weave)' });
+  for (let k = -2; k <= 5; k++) {
+    const x = X0 + k * PITCH - SASH / 2, y = Y0 + k * PITCH - SASH / 2;
+    el('path', { d: `M${x} 0V640`, stroke: '#1C1F3B', 'stroke-opacity': 0.3, 'stroke-width': 1.4, 'stroke-dasharray': '7 6' });
+    el('path', { d: `M0 ${y}H1280`, stroke: '#1C1F3B', 'stroke-opacity': 0.3, 'stroke-width': 1.4, 'stroke-dasharray': '7 6' });
+  }
+  for (let c = -2; c <= 5; c++) for (let r = -2; r <= 3; r++) {
+    el('rect', { x: X0 + c * PITCH - SASH, y: Y0 + r * PITCH - SASH, width: SASH, height: SASH, fill: '#FF6B6B' });
+  }
+  // Sawtooth border of the title block: half-square triangles, madder and indigo by turns.
+  const W = 3 * CELL + 2 * SASH, H = 2 * CELL + SASH, BAND = H / 16, NW = 24, BW = W / NW;
+  const tb = el('g', { transform: `translate(${X0} ${Y0})` });
+  el('rect', { width: W, height: H, fill: '#FBF3EA' }, tb);
+  const tooth = (i) => (i % 2 ? '#1C1F3B' : '#FF6B6B');
+  for (let i = 0; i < NW; i++) {
+    const a = i * BW, b = a + BW;
+    el('path', { d: `M${a} 0L${b} 0L${b} ${BAND}Z`, fill: tooth(i) }, tb);
+    el('path', { d: `M${W - a} ${H}L${W - b} ${H}L${W - b} ${H - BAND}Z`, fill: tooth(i) }, tb);
+  }
+  for (let i = 0; i < 16; i++) {
+    const a = i * BAND, b = a + BAND;
+    el('path', { d: `M${W} ${a}L${W} ${b}L${W - BAND} ${b}Z`, fill: tooth(i) }, tb);
+    el('path', { d: `M0 ${H - a}L0 ${H - b}L${BAND} ${H - b}Z`, fill: tooth(i) }, tb);
+  }
+  el('rect', { width: W, height: H, fill: 'url(#weave)' }, tb);
+</script>
+</body>
+</html>
