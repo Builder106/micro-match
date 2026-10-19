@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="static/logo.svg" alt="" width="88" />
+
 <h1>MicroMatch</h1>
 
 <br />

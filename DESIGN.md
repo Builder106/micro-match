@@ -188,6 +188,26 @@ One radius: `3px`, the soft corner of cut cloth. Buttons, chips, swatches and pa
 it. Patches add a hand-cut wobble (a slight rotation and uneven seams) instead of a larger
 radius.
 
+### Mark
+
+The mark is an M pieced from two halves, madder on the left and indigo on the right, meeting
+at one seam at the bottom of the V. It reads the name literally: two pieces matched and sewn
+into one. All three forms are drawn in `design/glaxnimate/brand.svg`:
+
+- **Patch** (`#mark`; `static/logo.svg`, `logo.png`, `apple-touch-icon.png`): the M on a
+  muslin patch with a running-stitch inset, the same stitch the corner tags and patch buttons
+  use. The touch icon drops the corner radius because iOS rounds it.
+- **Small** (`#mark-small`; `favicon.svg`, `favicon.ico`): no stitch and a larger M, because
+  stitches turn to noise below 32px.
+- **Bare** (`#mark-bare`; `src/lib/components/art/Mark.svelte`): the M alone, in the corner
+  tag beside the wordmark. Its indigo half is `currentColor`, so by lamplight it turns cream
+  the way indigo does in the piecing. The madder half stays madder.
+
+The wordmark is "MicroMatch" in the corner tag's type, Bricolage at weight 760. `og.png`
+(1200 x 630) and `social-preview.png` (1280 x 640) are captures of the home quilt in the light
+theme with idle motion held still. Recapture them when the title block or the tag changes. The
+social preview is uploaded by hand in the repository settings.
+
 ### Motion language
 
 - Ease family: the engine's `expo.out` for settles, `power2.inOut` for stitches and the

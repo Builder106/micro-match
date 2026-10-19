@@ -1,5 +1,22 @@
 # JOURNAL — MicroMatch
 
+## 2026-10-18 - New mark for the quilt #decision
+
+The quilt redesign kept the old logo, a soft gradient hand holding a person
+with a checkmark, and it sat in the corner tag looking like it came from
+another site. The new mark is an M pieced from a madder half and an indigo
+half that meet at one seam: two pieces matched and sewn together. Before it,
+I tried a half-square triangle (it read as a contrast icon), a tiny log
+cabin (muddy below 32px) and a one-color M with stitched rails (it looked
+like film sprockets).
+
+The tag draws the bare M inline instead of loading an image, so its indigo
+half can follow the text color into the dark theme. The favicons, the touch
+icon and the JSON-LD logo are rendered from the SVGs in `static/`. `og.png`
+and `social-preview.png` are new captures of the home quilt. The social
+preview's HTML template went in the clean-slate redesign, and a capture of
+the real page can't fall out of step with it.
+
 ## 2026-10-18 - Prune the unit suite to tests that pin behavior #decision
 
 Ran every unit test on its own with coverage and compared what each one
