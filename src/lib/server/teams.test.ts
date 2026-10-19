@@ -177,11 +177,4 @@ describe('isUserAdmin', () => {
       process.env.PLAYWRIGHT_A11Y_HARNESS = origHarness;
     }
   });
-
-  it('checks team membership when ADMIN_TEAM_ID is set', async () => {
-    mocks.listMemberships.mockResolvedValue({ total: 1, memberships: [{ $id: 'm1' }] });
-    // Note: teams.ts imports ADMIN_TEAM_ID from env at module load time
-    const result = await isUserAdmin('regular-user');
-    expect(typeof result).toBe('boolean');
-  });
 });

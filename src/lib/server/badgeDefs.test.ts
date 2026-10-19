@@ -231,6 +231,7 @@ describe('badgeDefs (Appwrite mode)', () => {
     await expect(deleteBadgeDefinition('def-1', 'org-1')).resolves.toBe(false);
     await expect(deleteBadgeDefinition('def-1', 'org-1')).resolves.toBe(true);
     await expect(deleteBadgeDefinition('def-1', 'org-1')).resolves.toBe(false);
+    expect(mocks.deleteRow).toHaveBeenCalledTimes(1);
     expect(mocks.deleteRow).toHaveBeenCalledWith({ databaseId: 'db', tableId: 'badge-defs', rowId: 'def-1' });
   });
 

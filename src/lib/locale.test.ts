@@ -90,8 +90,14 @@ describe('locale utilities', () => {
     it('falls back to accept-language header', () => {
       expect(negotiateLocale(new Request('http://localhost', { headers: { 'accept-language': 'fr' } }))).toBe('fr');
     });
+    it('ignores an invalid cookie locale in favor of the header', () => {
+      const request = new Request('http://localhost', { headers: { 'accept-language': 'pt-BR, pt;q=0.9' } });
+      expect(negotiateLocale(request, 'invalid')).toBe('pt');
+    });
     it('falls back to default if everything else fails', () => {
       expect(negotiateLocale(new Request('http://localhost'))).toBe('en');
+      const unmatched = new Request('http://localhost', { headers: { 'accept-language': 'xx-YY, zz;q=0.9' } });
+      expect(negotiateLocale(unmatched)).toBe('en');
     });
   });
 
@@ -99,6 +105,9 @@ describe('locale utilities', () => {
     it('adds locale to path', () => {
       expect(localizedPath('/foo', 'es')).toBe('/es/foo');
       expect(localizedPath('/', 'es')).toBe('/es');
+    });
+    it('replaces an existing locale prefix', () => {
+      expect(localizedPath('/es/tasks', 'fr')).toBe('/fr/tasks');
     });
   });
 

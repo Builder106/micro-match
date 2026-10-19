@@ -88,11 +88,14 @@ describe('appwrite (in-memory mode) — tasks', () => {
       title: 'Evergreen', shortDescription: 's', tags: [], evergreen: true,
       lastActivityAt: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000).toISOString()
     });
+    // In-memory mode does not track claims per task, so a volunteer limit never hides a task.
+    await createTask({ title: 'Limited', shortDescription: 's', tags: [], maxVolunteers: 1 });
 
     const feed = await getTasks();
     const titles = feed.map((t) => t.title);
 
     expect(titles).toContain('Active');
+    expect(titles).toContain('Limited');
     expect(titles).not.toContain('Inactive');
     expect(titles).not.toContain('PastDeadline');
     expect(titles).not.toContain('Unverified');
@@ -237,12 +240,15 @@ describe('appwrite (in-memory mode) — badges', () => {
   });
 
   it('getBadgeAnalytics summarizes the badges awarded in in-memory mode', async () => {
+    await awardBadge({ userId: 'user-old', label: 'Older', awardedAt: '2099-01-01T00:00:00.000Z' });
+    await awardBadge({ userId: 'user-new', label: 'Newer', awardedAt: '2099-02-01T00:00:00.000Z' });
     const all = await getBadges();
     const analytics = await getBadgeAnalytics();
     expect(analytics.totalBadgesAwarded).toBe(all.length);
     expect(analytics.totalVolunteersEngaged).toBe(new Set(all.map((b) => b.userId)).size);
     expect(analytics.topBadgeTypes.length).toBeGreaterThan(0);
     expect(analytics.recentAwards.length).toBe(Math.min(10, all.length));
+    expect(analytics.recentAwards.slice(0, 2).map((a) => a.date)).toEqual(['2099-02-01', '2099-01-01']);
   });
 
   it('summarizeBadges returns the empty shape for no badges', () => {
