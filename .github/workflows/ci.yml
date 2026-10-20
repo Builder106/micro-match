@@ -145,6 +145,28 @@ jobs:
           path: test-results/
           retention-days: 7
 
+  accessibility:
+    name: Browser accessibility (WCAG 2.2 AA)
+    needs: [check, lint]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/cache@v6
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+      - run: bun install --frozen-lockfile
+      - run: bun run paraglide:compile
+      - run: bunx playwright install --with-deps chromium
+      - run: bun run test:a11y
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: accessibility-results-${{ github.run_id }}
+          path: test-results/
+          retention-days: 14
+
   visual:
     name: Browser visual baselines
     needs: [check, lint]
@@ -192,7 +214,7 @@ jobs:
   ci-gate:
     name: CI required gate
     if: ${{ always() }}
-    needs: [check, lint, test, build, functional, responsiveness, visual, vercel-function]
+    needs: [check, lint, test, build, functional, responsiveness, accessibility, visual, vercel-function]
     runs-on: ubuntu-24.04
     steps:
       - name: Require selected CI checks
@@ -203,10 +225,11 @@ jobs:
           BUILD: ${{ needs.build.result }}
           FUNCTIONAL: ${{ needs.functional.result }}
           RESPONSIVENESS: ${{ needs.responsiveness.result }}
+          ACCESSIBILITY: ${{ needs.accessibility.result }}
           VISUAL: ${{ needs.visual.result }}
           VERCEL_FUNCTION: ${{ needs.vercel-function.result }}
         run: |
-          for result in "$CHECK" "$LINT" "$TEST" "$BUILD" "$FUNCTIONAL" "$RESPONSIVENESS" "$VISUAL" "$VERCEL_FUNCTION"; do
+          for result in "$CHECK" "$LINT" "$TEST" "$BUILD" "$FUNCTIONAL" "$RESPONSIVENESS" "$ACCESSIBILITY" "$VISUAL" "$VERCEL_FUNCTION"; do
             if [ "$result" != success ]; then exit 1; fi
           done
 

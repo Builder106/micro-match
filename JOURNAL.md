@@ -1,5 +1,26 @@
 # JOURNAL — MicroMatch
 
+## 2026-10-19 - The first WCAG 2.2 AA audit of the quilt #decision
+
+A new `accessibility` Playwright project runs axe on every route in all seven
+locales, light and dark, signed in as each role, and in the states that change
+the page: dialogs open, errors shown, filters emptied to nothing. It also checks
+what axe can't: keyboard paths, whether focus shows and stays in view, 24px
+targets, reflow at 200 and 400 percent, text spacing, forced colors and the
+edges of form controls. Axe can't read text over the pieced fabric and reports
+it as incomplete, so the suite measures those nodes from the rendered pixels
+instead of turning the rule off.
+
+The biggest change it forced: the quilt behind an open panel is now inert. It
+was dimmed to about 2:1 but its links still took focus and clicks, which failed
+contrast and let keyboard users wander off the panel into blocks they could
+barely see. The other fixes were smaller. A card stayed white in the dark
+theme. Focus never reached the panel heading because the panel body started
+`visibility: hidden`. Inputs lost their focus ring in forced colors. Several
+targets were under 24px. A patch's label couldn't be dismissed. Untranslated
+task text had no language. Every criterion in the matrix now has a status and
+evidence except the VoiceOver and NVDA sign-offs, which need a person.
+
 ## 2026-10-19 - Motion that stops #decision
 
 With a reduced-motion preference the entrance and the lay-down are off, panels

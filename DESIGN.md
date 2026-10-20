@@ -11,9 +11,11 @@ This file is the source of truth for the new frontend. Read it before changing a
 - **Audience:** students and busy people with a spare quarter hour; small nonprofit teams
   with a backlog and no time to recruit.
 - **Job:** get a visitor to open the task feed, or get a nonprofit to post its first task.
-- **Language:** English only this round, at `/en` routes.
-- **Out of scope this round:** the WCAG audit, reduced-motion handling and localization.
-  Semantic markup stays correct because the next round audits it.
+- **Language:** seven locales at prefixed routes (`/en`, `/es`, `/fr`, `/de`, `/pt`, `/zh`,
+  `/ar`, right to left). Legal pages stay in English under a translated note.
+- **Accessibility and motion:** WCAG 2.2 AA, tracked in `docs/accessibility-matrix.md`.
+  Reduced motion turns the flights and the entrance into fades; ambient motion rests five
+  seconds after the last input. The quilt behind an open panel is inert.
 
 ## Concept card
 
