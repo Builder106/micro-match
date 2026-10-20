@@ -66,6 +66,43 @@
   const delay = $derived(Math.min(55, 1300 / Math.max(1, patches.length)));
 
   let active = $state<number | null>(null);
+  // Leaving a patch waits a moment, so the pointer can cross to its label and stay there.
+  let leaving: ReturnType<typeof setTimeout> | undefined;
+  // After Escape, a label stays dismissed until the pointer really moves, so the patch that is
+  // uncovered under a still pointer does not bring it straight back.
+  let dismissedAt: { x: number; y: number } | null = null;
+  let pointer = { x: 0, y: 0 };
+  const hover = (i: number) => {
+    if (dismissedAt) return;
+    clearTimeout(leaving);
+    active = i;
+  };
+  const unhover = (i: number) => {
+    clearTimeout(leaving);
+    leaving = setTimeout(() => active === i && (active = null), 300);
+  };
+
+  // Escape dismisses a patch's label without moving the pointer or focus (WCAG 1.4.13). It is
+  // caught on the way down and marked handled, so an open panel does not also fold back.
+  $effect(() => {
+    const dismiss = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape' || active === null) return;
+      clearTimeout(leaving);
+      active = null;
+      dismissedAt = { ...pointer };
+      e.preventDefault();
+    };
+    const track = (e: PointerEvent) => {
+      pointer = { x: e.clientX, y: e.clientY };
+      if (dismissedAt && Math.hypot(pointer.x - dismissedAt.x, pointer.y - dismissedAt.y) > 6) dismissedAt = null;
+    };
+    addEventListener('keydown', dismiss, { capture: true });
+    addEventListener('pointermove', track, { passive: true });
+    return () => {
+      removeEventListener('keydown', dismiss, { capture: true });
+      removeEventListener('pointermove', track);
+    };
+  });
   const activePatch = $derived(active === null ? null : pieces[active]);
 
   let root: HTMLElement;
@@ -171,8 +208,8 @@
             role="button"
             tabindex="0"
             aria-label={p.patch.minutes ? m.quilt_patch_label_minutes({ name: p.patch.label ?? m.quilt_muslin_patch(), count: p.patch.minutes }) : (p.patch.label ?? m.quilt_muslin_patch())}
-            onpointerenter={() => (active = i)}
-            onpointerleave={() => active === i && (active = null)}
+            onpointerenter={() => hover(i)}
+            onpointerleave={() => unhover(i)}
             onfocus={() => (active = i)}
             onblur={() => active === i && (active = null)}
           >
@@ -209,6 +246,9 @@
   {#if activePatch}
     <div
       class="quilt__tag"
+      role="presentation"
+      onpointerenter={() => active !== null && hover(active)}
+      onpointerleave={() => active !== null && unhover(active)}
       aria-hidden="true"
       style:left="{((activePatch.piece.center.x - box.x) / box.w) * 100}%"
       style:top="{((activePatch.piece.center.y - box.y) / box.h) * 100}%"
@@ -311,7 +351,7 @@
     box-shadow: 0 0 0 1.5px var(--c-fg), 0 8px 0 -3px color-mix(in srgb, var(--c-shade) 25%, transparent);
     font-size: var(--t-xs);
     line-height: 1.35;
-    pointer-events: none;
+    pointer-events: auto; /* hoverable, so the pointer can rest on it (WCAG 1.4.13) */
   }
   .quilt__tag-swatch {
     flex: none;

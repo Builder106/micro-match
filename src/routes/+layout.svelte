@@ -80,6 +80,8 @@
     if (!toKind) {
       openId = null;
       world?.lookAt(path, 0);
+      // The quilt stops being inert once the panel is gone; focus the block after that update.
+      await tick();
       document.querySelector<HTMLElement>(`[data-block="${nav.from ? blockForPath(nav.from.url.pathname) : ''}"] a`)?.focus({ preventScroll: true });
       return;
     }

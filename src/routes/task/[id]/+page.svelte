@@ -210,7 +210,7 @@
     display: grid;
     gap: 1.1rem;
     padding: 1.4rem;
-    background: #fff;
+    background: var(--c-card);
     border-radius: var(--radius);
     box-shadow: inset 0 0 0 1.5px var(--c-fg), 0 6px 0 -2px color-mix(in srgb, var(--c-shade) 15%, transparent);
     rotate: 0.4deg;

@@ -58,8 +58,9 @@
 <section class="part" aria-labelledby="feed">
   <h2 id="feed">{m.api_feed_title()}</h2>
   <p><Rich text={m.api_feed_body()} /></p>
-  <!-- Code always reads left to right. -->
-  <pre dir="ltr"><code>{sample}</code></pre>
+  <!-- A scrollable code sample has to be reachable by keyboard; code always reads left to right. -->
+  <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+  <pre dir="ltr" tabindex="0" role="region" aria-label={m.api_sample_label()}><code>{sample}</code></pre>
 </section>
 
 {#each endpoints as group (group.id)}

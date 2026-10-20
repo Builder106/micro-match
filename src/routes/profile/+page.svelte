@@ -216,6 +216,7 @@
     display: grid;
     place-items: center;
     background: var(--c-weld);
+    color: #1c1f3b; /* weld keeps its color in the dark theme, so its ink does too */
     font-family: var(--f-display);
     font-weight: 760;
     font-size: 2rem;

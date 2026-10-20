@@ -2,6 +2,8 @@
   // The site itself: one sampler quilt. On desktop it is a fixed canvas the camera pans; on
   // phones the same blocks flow as a two-column path that scrolls natively. The first camera
   // position is set in CSS from the route (--bx, --by), so server-rendered pages paint in place.
+  // While a panel is open the quilt behind it is dimmed and inert: it can still be dragged and
+  // read as background, but focus and clicks stay with the panel and the corner tags.
   import { onMount } from 'svelte';
   import { gsap } from 'gsap';
   import { page } from '$app/state';
@@ -14,9 +16,9 @@
   import { BLOCKS, GRID, block, clothFill, focusForPath, seams, toPixels, worldSize, type BlockId, type Point } from '$lib/quilt/world';
   import type { PatchIcon } from '$lib/quilt/icons';
   import type { QuiltPatch } from '$lib/quilt/patches';
+  import { taskLang } from '$lib/translation';
   import * as m from '$lib/paraglide/messages.js';
 
-  import { taskLang } from '$lib/translation';
   type TaskPreview = { id: string; title: string; estimatedMinutes?: number; language?: string; translation?: { status: string } };
   type Props = {
     patches: QuiltPatch[];
@@ -119,6 +121,7 @@
     style:--by={focus.y}
     role="group"
     aria-label={m.world_label()}
+    inert={hasPanel}
   >
     {#each crossings as c (`${c.x}-${c.y}`)}
       <span class="cornerstone" style:--x={c.x} style:--y={c.y} aria-hidden="true"></span>

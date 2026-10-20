@@ -174,7 +174,7 @@ html.lenis, html.lenis body { height: auto; }
 }
 .input::placeholder { color: var(--c-muted); }
 .input:hover { border-color: color-mix(in srgb, var(--c-fg) 70%, transparent); }
-.input:focus-visible { outline: none; border-color: var(--c-fg); box-shadow: 0 0 0 4px rgb(242 184 75 / 0.55); }
+.input:focus-visible { outline: 2px solid transparent; /* shows in forced colors, where box-shadow is dropped */ border-color: var(--c-fg); box-shadow: 0 0 0 4px rgb(242 184 75 / 0.55); }
 textarea.input { min-height: 8rem; resize: vertical; line-height: 1.5; }
 .notice { padding: 0.8rem 1rem; border-radius: var(--radius); background: rgb(242 184 75 / 0.22); }
 .notice--error { background: color-mix(in srgb, var(--c-danger) 10%, transparent); color: var(--c-danger); }
@@ -208,6 +208,7 @@ html.motion .intro-settle { animation: settle 0.9s cubic-bezier(0.16, 1, 0.3, 1)
 .part > h2 { font-family: var(--f-display); font-size: var(--t-m); font-weight: 700; letter-spacing: -0.015em; line-height: 1.15; }
 .part > p, .part > ul, .part > ol { max-width: 38rem; }
 .part ul.plain, .part ol.plain { list-style: none; padding: 0; display: grid; gap: 0.6rem; }
+.part .plain a { display: inline-block; padding-block: 0.15rem; } /* at least 24px tall to tap */
 .ticks { list-style: none; padding: 0; display: grid; gap: 0.55rem; max-width: 38rem; }
 .ticks li { position: relative; padding-left: 1.6rem; }
 .ticks li::before { content: ''; position: absolute; left: 0.1rem; top: 0.62em; width: 0.9rem; height: 2px; background: linear-gradient(90deg, var(--c-accent) 55%, transparent 0) 0 0 / 5px 2px repeat-x; }

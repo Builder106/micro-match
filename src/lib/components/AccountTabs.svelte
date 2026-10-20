@@ -82,6 +82,7 @@
     color: var(--c-bg);
   }
   .acct__out {
+    min-height: 1.6rem;
     font-size: 0.92rem;
     color: var(--c-muted);
     text-decoration: underline 1px;

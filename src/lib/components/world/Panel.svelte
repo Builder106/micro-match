@@ -45,7 +45,9 @@
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18" /></svg>
       </Link>
     </div>
-    <div class="panel__scroll" bind:this={scroller}>
+    <!-- The panel scrolls on its own, so the keyboard has to be able to reach it. -->
+    <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+    <div class="panel__scroll" bind:this={scroller} tabindex="0" role="region" aria-label={where}>
       <div class="panel__content" bind:this={content}>
         {@render children()}
       </div>

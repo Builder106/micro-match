@@ -268,7 +268,7 @@ p.title__headline span { display: inline; }
 }
 .tag--ways { rotate: 0.7deg; padding-left: 0.95rem; }
 .tag::after { content: ''; position: absolute; inset: 4px; border: 1px dashed color-mix(in srgb, var(--c-fg) 32%, transparent); border-radius: 2px; pointer-events: none; }
-.tag__home { display: inline-flex; align-items: center; gap: 0.5rem; font-family: var(--f-display); font-weight: 760; font-size: 1.12rem; letter-spacing: -0.03em; }
+.tag__home { display: inline-flex; align-items: center; min-height: 1.6rem; gap: 0.5rem; font-family: var(--f-display); font-weight: 760; font-size: 1.12rem; letter-spacing: -0.03em; }
 .tag__mark { width: 1.6rem; height: 1.44rem; flex: none; transition: rotate 0.45s cubic-bezier(0.16, 1, 0.3, 1); }
 @media (hover: hover) { .tag__home:hover .tag__mark { rotate: -10deg; } }
 .tag__where { font-size: 0.86rem; color: var(--c-muted); padding-left: 0.85rem; border-left: 1.5px dashed var(--c-line); white-space: nowrap; }

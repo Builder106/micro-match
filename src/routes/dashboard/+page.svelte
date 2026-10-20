@@ -203,6 +203,11 @@
 {/if}
 
 <style>
+  /* A standalone link, so it gets a full-height tap target. */
+  .ngo__block :global(.link) {
+    display: inline-block;
+    padding-block: 0.15rem;
+  }
   .vol__grid,
   .ngo__grid {
     display: grid;
