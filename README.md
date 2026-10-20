@@ -23,6 +23,59 @@ Nonprofits and community organizations often need quick help with specific tasks
 
 Volunteers pick tasks that match their skills, submit their work, and earn verified digital badges for their portfolio. Nonprofits get tasks completed quickly by motivated contributors without endless administrative overhead.
 
+## 🎬 Demo
+
+<details open>
+<summary>The quilt: the whole site on one cloth</summary>
+
+![The home page settling into the quilt, with the community block of approved patches beside the title block](docs/demos/quilt.gif)
+
+</details>
+
+<details>
+<summary>Every block opens</summary>
+
+![The camera flying into a block, which unfolds into the page on how a patch is made](docs/demos/unfold.gif)
+
+</details>
+
+<details>
+<summary>A volunteer claims a task and sends their work</summary>
+
+![The task feed, a translation task, and the form where the volunteer sends a link to their work and pins it for review](docs/demos/claim.gif)
+
+</details>
+
+<details>
+<summary>A person at the nonprofit approves it</summary>
+
+![A nonprofit's reviews page: the reviewer approves the claim and its patch is sewn into their tasks' quilt](docs/demos/approve.gif)
+
+</details>
+
+<details>
+<summary>The patch is sewn into the community block</summary>
+
+![The approved patch stitching into the middle of the community block on the home page](docs/demos/sewn.gif)
+
+</details>
+
+<details>
+<summary>Seven languages, and a dark mode</summary>
+
+![The quilt switching to Arabic, laid out right to left, then into dark mode](docs/demos/languages.gif)
+
+</details>
+
+<details>
+<summary>On a phone</summary>
+
+![The home block on a phone, scrolling down the quilt into the task feed](docs/demos/phone.gif)
+
+</details>
+
+There's a [trailer](trailer/) and a vertical [social cut](ui-demo/), both made in HyperFrames from the same footage.
+
 ## ✨ Key Features
 
 - **Bite-sized task feed**: Filter by time (`≤15 / ≤20 / ≤30 min`), cause hashtags, or shortest duration first.

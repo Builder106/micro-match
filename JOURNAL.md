@@ -1,5 +1,32 @@
 # JOURNAL — MicroMatch
 
+## 2026-10-19 - Demo GIFs, a social cut and a trailer #decision
+
+The videos were made after the UI was frozen, so they show the quilt as it
+ships. All three come from one set of takes recorded by
+`e2e/capture/footage.mjs`. A screen recording drops frames, so the recorder
+runs the page on Playwright's fake clock and screenshots every frame. The takes
+run on the in-memory store with five fictional nonprofits and the eight seed
+tasks, so no real organization shows up and nothing touches Appwrite.
+
+The README GIFs in `docs/demos/` are cut straight from those takes. The social
+cut in `ui-demo/` is the volunteer's path on a phone, then the nonprofit's
+approval on a desk. The trailer in `trailer/` follows ASCII Arcade's pattern
+from 2026-10-18. It opens on the idea before the product: what volunteering
+usually asks for, what people have, and what nonprofits have waiting. The site
+only comes in once both sides are on the table. Both are HyperFrames 0.8.116
+compositions, and the cut list for clips and GIFs is
+`scripts/video/cut-clips.sh`.
+
+Moving from one page to the next inside a panel leaves it blank for about
+0.7 s while the old page fades out and the new one fades in. That's fine on the
+site but looks like a dropped frame in a video, so the cut list skips those
+stretches. The music is Kevin MacLeod under
+CC BY 4.0, credited in each project's `public/CREDITS.md`. The two sound
+effects are synthesized by `scripts/video/make-sfx.sh`, so there's no sample
+to license. Full-quality renders stay out of git, and each folder keeps a 720p
+copy and a preview GIF.
+
 ## 2026-10-19 - The first WCAG 2.2 AA audit of the quilt #decision
 
 A new `accessibility` Playwright project runs axe on every route in all seven
