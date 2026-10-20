@@ -1,5 +1,15 @@
 # JOURNAL — MicroMatch
 
+## 2026-10-19 - Motion that stops #decision
+
+With a reduced-motion preference the entrance and the lay-down are off, panels
+fade in place instead of flying out of their block, the camera cuts instead of
+gliding, and panels scroll natively. For everyone, the quilt's ambient motion
+(the sway toward the pointer, the chalk stitch, the needle) now runs only while
+someone is using the page and slows to a stop five seconds after the last
+input. It used to run forever, which WCAG 2.2.2 doesn't allow for motion that
+starts on its own.
+
 ## 2026-10-19 - The quilt in seven languages #decision
 
 Every page and component now reads from the Paraglide catalogs. The rebuild had

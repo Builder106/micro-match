@@ -188,6 +188,19 @@ textarea.input { min-height: 8rem; resize: vertical; line-height: 1.5; }
 html.motion .intro-line > span { animation: rise 1.05s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: calc(var(--i, 0) * 70ms + 60ms); }
 html.motion .intro-settle { animation: settle 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: calc(var(--i, 0) * 70ms + 200ms); }
 
+/* Reduced motion: no keyframes or transitions run, so everything paints in its final state.
+   The engine checks the same query for its JS motion (panel flights, camera, smooth scroll). */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* ---------- pages inside a panel ---------- */
 .page-head { display: grid; gap: 1rem; max-width: 40rem; margin-bottom: clamp(2rem, 4vw, 3.5rem); }
 .page-head h1:focus { outline: none; }

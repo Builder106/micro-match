@@ -4,6 +4,7 @@
 import { gsap } from 'gsap';
 import { clampCamera, cameraFor, worldSize, type Metrics, type Point } from '$lib/quilt/world';
 import { idle } from './idle';
+import { prefersStill } from './env';
 
 export type Camera = {
   /** Look at a point on the quilt (pixels), leaving `panelWidth` on the right for a panel. */
@@ -44,8 +45,9 @@ export function createCamera(viewport: HTMLElement, world: HTMLElement): Camera 
   };
 
   let shown = { x: NaN, y: NaN };
+  // With a reduced-motion preference the camera cuts to its target instead of gliding there.
   const tick = () => {
-    const k = 1 - Math.pow(0.86, gsap.ticker.deltaRatio());
+    const k = prefersStill() ? 1 : 1 - Math.pow(0.86, gsap.ticker.deltaRatio());
     cur.x += (target.x - cur.x) * k;
     cur.y += (target.y - cur.y) * k;
     // Idle: the quilt hangs a few pixels toward the pointer, like cloth on a frame.
