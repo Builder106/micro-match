@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Pieces: jobs that size</title>
+  </head>
+  <body>
+    <template>
+      <style>
+        /* What nonprofits have waiting: three real seed tasks as swatches of cloth with pinked
+           edges, cut but not yet sewn, laid on the table one after another. */
+        #root {
+          position: absolute;
+          inset: 0;
+          background:
+            repeating-linear-gradient(45deg, rgb(28 31 59 / 0.045) 0 1.5px, transparent 1.5px 34px),
+            #fdfcf8;
+        }
+        h2 {
+          position: absolute;
+          left: 180px;
+          top: 150px;
+          margin: 0;
+          max-width: 1500px;
+          font: 680 88px/1 "Bricolage", sans-serif;
+          font-stretch: 96%;
+          letter-spacing: -0.03em;
+          color: #1c1f3b;
+          opacity: 0;
+        }
+        .swatch {
+          position: absolute;
+          top: 430px;
+          width: 470px;
+          height: 420px;
+          padding: 54px 46px;
+          box-sizing: border-box;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          /* Pinked edges: the cut of pinking shears on every side. */
+          -webkit-mask:
+            conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / 22px 51% repeat-x,
+            conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) top / 22px 51% repeat-x;
+          mask:
+            conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / 22px 51% repeat-x,
+            conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) top / 22px 51% repeat-x;
+          opacity: 0;
+        }
+        .swatch .min {
+          font: 700 40px/1 "Host", sans-serif;
+          font-variant-numeric: tabular-nums;
+        }
+        .swatch .title {
+          margin: 0;
+          font: 680 50px/1.05 "Bricolage", sans-serif;
+          font-stretch: 94%;
+          letter-spacing: -0.02em;
+        }
+        .s1 {
+          left: 150px;
+          background: #ff6b6b;
+          color: #1c1f3b;
+        }
+        .s2 {
+          left: 725px;
+          background: #3b4a8c;
+          color: #fdfcf8;
+        }
+        .s3 {
+          left: 1300px;
+          background: #8daa8b;
+          color: #1c1f3b;
+        }
+      </style>
+
+      <div id="root" data-composition-id="pieces" data-width="1920" data-height="1080">
+        <h2>Plenty of nonprofits have jobs that size waiting.</h2>
+        <div class="swatch s1"><span class="min">15 min</span><p class="title">Translate a medical flyer into Spanish</p></div>
+        <div class="swatch s2"><span class="min">5 min</span><p class="title">Tag historical photos for an archive</p></div>
+        <div class="swatch s3"><span class="min">20 min</span><p class="title">Audit alt-text on a learning resource</p></div>
+      </div>
+
+      <script>
+        // Local time: 0 is 9.50 s in the trailer.
+        window.__timelines = window.__timelines || {};
+        const tl = gsap.timeline({ paused: true });
+        const scope = document.querySelector('[data-composition-id="pieces"]');
+        const $ = (s) => scope.querySelector(s);
+        tl.fromTo($("h2"), { opacity: 0, y: 22, rotation: -0.6 }, { opacity: 1, y: 0, rotation: 0, duration: 0.7, ease: "expo.out" }, 0.15);
+        [
+          [".s1", -3.5, 1.0],
+          [".s2", 2.6, 1.55],
+          [".s3", -1.8, 2.1]
+        ].forEach(([s, turn, at]) => {
+          tl.fromTo($(s), { opacity: 0, y: -60, rotation: turn * 2.4, scale: 1.04 }, { opacity: 1, y: 0, rotation: turn, scale: 1, duration: 0.9, ease: "expo.out" }, at);
+        });
+        // Gathered up toward the middle, ready to be pieced.
+        tl.to(scope.querySelectorAll(".swatch"), { x: (i) => [260, 0, -260][i], scale: 0.62, rotation: 0, duration: 0.8, ease: "power3.inOut" }, 4.9)
+          .to($("h2"), { opacity: 0, y: -16, duration: 0.35, ease: "power2.in" }, 5.0)
+          .to(scope.querySelectorAll(".swatch"), { opacity: 0, duration: 0.3, ease: "none" }, 5.65);
+        window.__timelines["pieces"] = tl;
+      </script>
+    </template>
+  </body>
+</html>

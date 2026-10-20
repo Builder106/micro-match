@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Captions</title>
+  </head>
+  <body>
+    <template>
+      <style>
+        /* Over the footage, each caption is a signed square like the ones on the quilt's
+           blocks: muslin, a fine basting edge, laid on at a slight turn. */
+        #root {
+          position: absolute;
+          inset: 0;
+        }
+        .caption {
+          position: absolute;
+          left: 96px;
+          bottom: 104px;
+          max-width: 1180px;
+          margin: 0;
+          padding: 26px 40px 30px;
+          background: #fdfcf8;
+          color: #1c1f3b;
+          font: 680 60px/1.05 "Bricolage", sans-serif;
+          font-stretch: 96%;
+          letter-spacing: -0.025em;
+          box-shadow: 0 0 0 2px #1c1f3b, 0 10px 0 -2px rgb(28 31 59 / 0.22);
+          opacity: 0;
+        }
+        .caption::after {
+          content: "";
+          position: absolute;
+          inset: 8px;
+          border: 1.5px dashed rgb(28 31 59 / 0.35);
+          pointer-events: none;
+        }
+        .caption em {
+          font-style: normal;
+          color: #e0484a;
+        }
+        .right {
+          left: auto;
+          right: 96px;
+        }
+      </style>
+
+      <div id="root" data-composition-id="captions" data-width="1920" data-height="1080">
+        <p class="caption c-two">MicroMatch puts the two together.</p>
+        <p class="caption c-open">Every block of the quilt opens.</p>
+        <p class="caption c-sewn">A person checks every task, then it&rsquo;s <em>sewn in</em>.</p>
+        <p class="caption right c-lang">In seven languages, by lamplight too.</p>
+      </div>
+
+      <script>
+        // Times are on the trailer's clock; this layer starts at 15.50 s.
+        window.__timelines = window.__timelines || {};
+        const tl = gsap.timeline({ paused: true });
+        const START = 15.5;
+        const scope = document.querySelector('[data-composition-id="captions"]');
+        function caption(selector, from, to, turn) {
+          const el = scope.querySelector(selector);
+          tl.fromTo(el, { opacity: 0, y: 26, rotation: turn * 2 }, { opacity: 1, y: 0, rotation: turn, duration: 0.6, ease: "expo.out" }, from - START)
+            .to(el, { opacity: 0, y: -12, duration: 0.25, ease: "power2.in" }, to - START - 0.25);
+        }
+        caption(".c-two", 16.6, 23.9, -0.8);
+        caption(".c-open", 25.1, 28.8, 0.7);
+        caption(".c-sewn", 30.3, 34.8, -0.6);
+        caption(".c-lang", 35.6, 39.4, 0.8);
+        window.__timelines["captions"] = tl;
+      </script>
+    </template>
+  </body>
+</html>
