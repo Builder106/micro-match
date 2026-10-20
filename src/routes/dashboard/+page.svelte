@@ -9,6 +9,7 @@
   import AccountTabs from '$lib/components/AccountTabs.svelte';
   import { callApi } from '$lib/api';
   import { relativeTime, minutesLabel } from '$lib/time';
+  import * as m from '$lib/paraglide/messages.js';
   import type { QuiltPatch } from '$lib/quilt/patches';
   import type { Claim, Task } from '$lib/types';
   import type { PageData } from './$types';
@@ -28,15 +29,18 @@
   const myTasks = $derived((ud.myTasks as Task[] | undefined) ?? []);
   const justPinned = $derived(page.url.searchParams.get('pinned') === '1');
 
-  const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+  const statusName = { active: m.task_status_active, completed: m.task_status_completed, expired: m.task_status_expired, moderated: m.task_status_moderated };
 
   let busy = $state<string | null>(null);
   let result = $state<Record<string, { kind: 'approved' | 'rejected' | 'error'; text: string }>>({});
 
   async function review(claim: Enriched, action: 'approve' | 'reject') {
-    if (action === 'reject' && !confirm(`Reject this claim on "${claim.task?.title ?? 'your task'}"? The volunteer sees it as not picked.`)) return;
+    if (action === 'reject' && !confirm(m.dash_reject_confirm({ task: claim.task?.title ?? m.dash_your_task() }))) return;
     busy = claim.id;
-    const res = await callApi<{ awardedBadgeIds?: string[] }>(`/api/claims/${claim.id}/${action}`, { method: 'POST', fallback: `Could not ${action} the claim.` });
+    const res = await callApi<{ awardedBadgeIds?: string[] }>(`/api/claims/${claim.id}/${action}`, {
+      method: 'POST',
+      fallback: action === 'approve' ? m.dash_approve_error() : m.dash_reject_error()
+    });
     busy = null;
     if (!res.ok) {
       result = { ...result, [claim.id]: { kind: 'error', text: res.error } };
@@ -47,62 +51,65 @@
       ...result,
       [claim.id]:
         action === 'approve'
-          ? { kind: 'approved', text: awarded ? `Sewn in. ${plural(awarded, 'badge', 'badges')} awarded.` : 'Sewn in.' }
-          : { kind: 'rejected', text: 'Rejected.' }
+          ? { kind: 'approved', text: awarded === 0 ? m.dash_sewn() : awarded === 1 ? m.dash_sewn_awarded_one() : m.dash_sewn_awarded({ count: awarded }) }
+          : { kind: 'rejected', text: m.dash_rejected() }
     };
     setTimeout(() => void invalidateAll(), 1400);
   }
 </script>
 
-<Seo title="{isNgo ? 'Your reviews' : 'Your block'} | MicroMatch" description="Your MicroMatch block: the patches you have earned, the claims waiting for review and tasks to try next." noindex />
+<Seo title="{isNgo ? m.block_account_ngo_title() : m.block_account_title()} | MicroMatch" description={m.dash_meta_description()} noindex />
 
 <AccountTabs />
 
 {#if !isNgo}
   <div class="vol">
     <header class="page-head">
-      <h1 class="display h-l" tabindex="-1">Your block</h1>
+      <h1 class="display h-l" tabindex="-1">{m.block_account_title()}</h1>
       <p class="lede">
         {#if sewn.length === 0}
-          No patches yet. Finish a task and, once a person approves it, it becomes the center square of your block.
+          {m.dash_vol_empty()}
         {:else}
-          {plural(sewn.length, 'patch', 'patches')} sewn in, about {hours} {hours === 1 ? 'hour' : 'hours'} of help.
-          {#if pinned.length}{plural(pinned.length, 'more is', 'more are')} pinned, waiting for review.{/if}
+          {m.dash_vol_sewn({
+            patches: sewn.length === 1 ? m.count_patches_one() : m.count_patches({ count: sewn.length }),
+            hours: hours === 1 ? m.count_hours_one() : m.count_hours({ count: hours })
+          })}
+          {#if pinned.length}{pinned.length === 1 ? m.dash_vol_pinned_one() : m.dash_vol_pinned({ count: pinned.length })}{/if}
         {/if}
       </p>
     </header>
-    {#if justPinned}<p class="notice notice--ok" role="status">Your work is pinned. A person at the nonprofit will review it.</p>{/if}
+    {#if justPinned}<p class="notice notice--ok" role="status">{m.dash_just_pinned()}</p>{/if}
 
     <div class="vol__grid">
       <div class="vol__block">
-        <Quilt patches={sewn} label={sewn.length === 1 ? 'Your block, one patch' : `Your block, ${sewn.length} patches`} emptyLine="Your first patch goes here" fit={sewn.length > 0} />
+        <Quilt patches={sewn} label={sewn.length === 1 ? m.dash_block_label_one() : m.dash_block_label({ count: sewn.length })} emptyLine={m.dash_block_empty()} fit={sewn.length > 0} />
       </div>
 
       <div class="vol__side">
         <section aria-labelledby="pinned">
-          <h2 id="pinned" class="h-m">Pinned, waiting for a person</h2>
+          <h2 id="pinned" class="h-m">{m.dash_pinned_title()}</h2>
           {#if pinned.length}
             <ul class="claims">
               {#each pinned as p (p.id)}
                 <li>
                   <PatchPreview color={p.color} icon={p.icon} pinned size="3rem" />
-                  <span><Link href="/task/{p.taskId}" class="link">{p.taskTitle ?? 'A task'}</Link><span class="small muted">Sent {relativeTime(p.sewnAt)}</span></span>
+                  <span><Link href="/task/{p.taskId}" class="link">{p.taskTitle ?? m.dash_a_task()}</Link><span class="small muted">{m.dash_sent({ time: relativeTime(p.sewnAt) })}</span></span>
                 </li>
               {/each}
             </ul>
           {:else}
-            <p class="muted">Nothing waiting. Work you send shows up here until it is reviewed.</p>
+            <p class="muted">{m.dash_pinned_none()}</p>
           {/if}
         </section>
 
         {#if unpicked.length}
           <section aria-labelledby="unpicked">
-            <h2 id="unpicked" class="h-m">Not picked this time</h2>
+            <h2 id="unpicked" class="h-m">{m.dash_unpicked_title()}</h2>
             <ul class="claims">
               {#each unpicked as p (p.id)}
                 <li>
                   <PatchPreview color={null} size="3rem" />
-                  <span><Link href="/task/{p.taskId}" class="link">{p.taskTitle ?? 'A task'}</Link><span class="small muted">Reviewed {relativeTime(p.sewnAt)}</span></span>
+                  <span><Link href="/task/{p.taskId}" class="link">{p.taskTitle ?? m.dash_a_task()}</Link><span class="small muted">{m.dash_reviewed({ time: relativeTime(p.sewnAt) })}</span></span>
                 </li>
               {/each}
             </ul>
@@ -112,44 +119,44 @@
     </div>
 
     <section class="part" aria-labelledby="next">
-      <h2 id="next">Tasks to try next</h2>
+      <h2 id="next">{m.dash_next_title()}</h2>
       {#if recs.length}
         <ul class="recs">{#each recs as t (t.id)}<li><TaskSwatch task={t} headingLevel="h3" /></li>{/each}</ul>
       {:else}
-        <p class="muted">You have tried everything that is open. New tasks appear as nonprofits post them.</p>
+        <p class="muted">{m.dash_next_none()}</p>
       {/if}
-      <Link href="/tasks" class="patch-btn patch-btn--plain">See every task</Link>
+      <Link href="/tasks" class="patch-btn patch-btn--plain">{m.dash_every_task()}</Link>
     </section>
   </div>
 {:else}
   <div class="ngo">
     <header class="page-head">
-      <h1 class="display h-l" tabindex="-1">Your reviews</h1>
+      <h1 class="display h-l" tabindex="-1">{m.block_account_ngo_title()}</h1>
       <p class="lede">
         {#if reviews.length === 0}
-          No claims are waiting for you.
+          {m.dash_ngo_none()}
         {:else}
-          {plural(reviews.length, 'claim is', 'claims are')} waiting for a person to read {reviews.length === 1 ? 'it' : 'them'}.
+          {reviews.length === 1 ? m.dash_ngo_waiting_one() : m.dash_ngo_waiting({ count: reviews.length })}
         {/if}
-        {plural(sewn.length, 'patch has', 'patches have')} been sewn in from your tasks.
+        {sewn.length === 1 ? m.dash_ngo_sewn_one() : m.dash_ngo_sewn({ count: sewn.length })}
       </p>
     </header>
 
     <div class="ngo__grid">
       <section aria-labelledby="waiting">
-        <h2 id="waiting" class="h-m">Waiting to be sewn in</h2>
+        <h2 id="waiting" class="h-m">{m.dash_waiting_title()}</h2>
         {#if reviews.length}
           <ul class="reviews">
             {#each reviews as c (c.id)}
               {@const r = result[c.id]}
               <li class="review" class:is-done={r && r.kind !== 'error'} class:is-sewn={r?.kind === 'approved'}>
                 <div class="review__head">
-                  <h3>{c.task?.title ?? 'A task'}</h3>
-                  <span class="small muted">{minutesLabel(c.task?.estimatedMinutes)} task, sent {relativeTime(c.createdAt)}</span>
+                  <h3>{c.task?.title ?? m.dash_a_task()}</h3>
+                  <span class="small muted">{m.dash_review_meta({ length: minutesLabel(c.task?.estimatedMinutes), time: relativeTime(c.createdAt) })}</span>
                 </div>
                 {#if c.proofUrl}
                   <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- the volunteer's external proof link -->
-                  <p><a class="link" href={c.proofUrl} target="_blank" rel="noopener noreferrer">Open their work</a> <span class="small muted proof">{c.proofUrl}</span></p>
+                  <p><a class="link" href={c.proofUrl} target="_blank" rel="noopener noreferrer">{m.dash_open_work()}</a> <span class="small muted proof">{c.proofUrl}</span></p>
                 {/if}
                 {#if c.notes}<blockquote>{c.notes}</blockquote>{/if}
                 {#if r}
@@ -157,40 +164,40 @@
                 {/if}
                 {#if !r || r.kind === 'error'}
                   <div class="ctas">
-                    <button type="button" class="patch-btn patch-btn--small" disabled={busy === c.id} onclick={() => review(c, 'approve')}>Approve and sew in</button>
-                    <button type="button" class="patch-btn patch-btn--plain patch-btn--small" disabled={busy === c.id} onclick={() => review(c, 'reject')}>Reject</button>
+                    <button type="button" class="patch-btn patch-btn--small" disabled={busy === c.id} onclick={() => review(c, 'approve')}>{m.dash_approve()}</button>
+                    <button type="button" class="patch-btn patch-btn--plain patch-btn--small" disabled={busy === c.id} onclick={() => review(c, 'reject')}>{m.action_reject()}</button>
                   </div>
                 {/if}
               </li>
             {/each}
           </ul>
         {:else}
-          <p class="muted">When a volunteer sends work on one of your tasks, it waits here for you.</p>
+          <p class="muted">{m.dash_waiting_none()}</p>
         {/if}
       </section>
 
       <aside class="ngo__block" aria-labelledby="sewn">
-        <h2 id="sewn" class="h-m">Sewn in from your tasks</h2>
-        <Quilt patches={sewn} label={sewn.length === 1 ? 'Patches from your tasks, one' : `Patches from your tasks, ${sewn.length}`} emptyLine="Your first approval goes here" fit={sewn.length > 0} />
-        <Link href="/badges/manage" class="link small">Design the patches they earn</Link>
+        <h2 id="sewn" class="h-m">{m.dash_sewn_title()}</h2>
+        <Quilt patches={sewn} label={sewn.length === 1 ? m.dash_ngo_label_one() : m.dash_ngo_label({ count: sewn.length })} emptyLine={m.dash_ngo_empty()} fit={sewn.length > 0} />
+        <Link href="/badges/manage" class="link small">{m.dash_design_link()}</Link>
       </aside>
     </div>
 
     <section class="part" aria-labelledby="mine">
-      <h2 id="mine">Your tasks</h2>
+      <h2 id="mine">{m.dash_mine_title()}</h2>
       {#if myTasks.length}
         <ul class="mine">
           {#each myTasks as t (t.id)}
             <li>
               <Link href="/task/{t.id}" class="link">{t.title}</Link>
-              <span class="small muted">{minutesLabel(t.estimatedMinutes)}, {t.status ?? 'active'}{t.isVerified ? '' : ', hidden from the feed until you are verified'}</span>
+              <span class="small muted">{minutesLabel(t.estimatedMinutes)}, {statusName[t.status ?? 'active']()}{t.isVerified ? '' : m.dash_hidden_suffix()}</span>
             </li>
           {/each}
         </ul>
       {:else}
-        <p class="muted">You have not posted a task yet.</p>
+        <p class="muted">{m.dash_mine_none()}</p>
       {/if}
-      <Link href="/org" class="patch-btn">Post a task</Link>
+      <Link href="/org" class="patch-btn">{m.nav_post_task()}</Link>
     </section>
   </div>
 {/if}

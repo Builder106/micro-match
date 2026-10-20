@@ -2,9 +2,11 @@
   import { page } from '$app/state';
   import Seo from '$lib/components/Seo.svelte';
   import Link from '$lib/components/Link.svelte';
+  import Rich from '$lib/components/Rich.svelte';
   import { go } from '$lib/go';
   import { safeNext } from '$lib/site';
   import type { Locale } from '$lib/locale';
+  import * as m from '$lib/paraglide/messages.js';
 
   const locale = $derived((page.data.locale as Locale | undefined) ?? 'en');
   const next = $derived(safeNext(page.url.searchParams.get('next')));
@@ -25,7 +27,7 @@
       await client.refreshSessionCookie();
       await go(next, locale, { invalidateAll: true });
     } catch {
-      error = 'That email and password do not match an account.';
+      error = m.login_error();
     } finally {
       submitting = false;
     }
@@ -37,28 +39,28 @@
   }
 </script>
 
-<Seo title="Sign in | MicroMatch" description="Sign in to claim tasks, send your work and see your block of patches." />
+<Seo title={m.login_meta_title()} description={m.login_meta_description()} />
 
 <div class="auth">
-  <h1 class="display h-l" tabindex="-1">Welcome back</h1>
-  <p class="muted">Sign in to claim tasks and see your block.</p>
-  {#if oauthError}<p class="notice notice--error" role="alert">Signing in with Google did not finish. Try again, or use your email.</p>{/if}
+  <h1 class="display h-l" tabindex="-1">{m.login_title()}</h1>
+  <p class="muted">{m.login_lede()}</p>
+  {#if oauthError}<p class="notice notice--error" role="alert">{m.login_google_error()}</p>{/if}
 
   <form class="auth__form" onsubmit={signIn}>
     <div class="field">
-      <label for="email">Email</label>
+      <label for="email">{m.field_email()}</label>
       <input id="email" class="input" type="email" autocomplete="email" required bind:value={email} />
     </div>
     <div class="field">
-      <label for="password">Password</label>
+      <label for="password">{m.field_password()}</label>
       <input id="password" class="input" type="password" autocomplete="current-password" required bind:value={password} />
-      <Link href="/forgot-password" class="link small">Forgot your password?</Link>
+      <Link href="/forgot-password" class="link small">{m.login_forgot()}</Link>
     </div>
     {#if error}<p class="notice notice--error" role="alert">{error}</p>{/if}
-    <button class="patch-btn" type="submit" disabled={submitting}>{submitting ? 'Signing in...' : 'Sign in'}</button>
+    <button class="patch-btn" type="submit" disabled={submitting}>{submitting ? m.login_submitting() : m.menu_sign_in()}</button>
   </form>
 
-  <div class="auth__or"><span>or</span></div>
-  <button type="button" class="patch-btn patch-btn--plain" onclick={google}>Continue with Google</button>
-  <p class="small">New here? <Link href="/signup" class="link">Join MicroMatch</Link></p>
+  <div class="auth__or"><span>{m.login_or()}</span></div>
+  <button type="button" class="patch-btn patch-btn--plain" onclick={google}>{m.login_google()}</button>
+  <p class="small"><Rich text={m.login_new()} links={{ join: '/signup' }} /></p>
 </div>

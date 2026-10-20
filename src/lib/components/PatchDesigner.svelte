@@ -4,6 +4,7 @@
   import PatchPreview from './PatchPreview.svelte';
   import { SWATCHES, normalizeHex } from '$lib/quilt/fabrics';
   import { PATCH_ICON_NAMES, PATCH_ICON_LABELS, type PatchIcon } from '$lib/quilt/icons';
+  import * as m from '$lib/paraglide/messages.js';
 
   type Props = { color?: string; icon?: PatchIcon; label?: string; idPrefix?: string };
   let { color = $bindable('#FF6B6B'), icon = $bindable<PatchIcon>('heart'), label = '', idPrefix = 'patch' }: Props = $props();
@@ -18,36 +19,36 @@
 
 <div class="designer">
   <div class="designer__preview">
-    <PatchPreview {color} {icon} size="min(11rem, 40vw)" label={label ? `Preview of the ${label} patch` : 'Patch preview'} />
+    <PatchPreview {color} {icon} size="min(11rem, 40vw)" label={label ? m.designer_preview_named({ name: label }) : m.designer_preview()} />
     {#if label}<p class="designer__name">{label}</p>{/if}
   </div>
 
   <div class="designer__controls">
     <fieldset>
-      <legend>Fabric</legend>
+      <legend>{m.designer_fabric()}</legend>
       <div class="swatches">
         {#each SWATCHES as s (s.hex)}
           <label class="swatch" style:--s={s.hex}>
             <input type="radio" name="{idPrefix}-fabric" value={s.hex} checked={color === s.hex} onchange={() => { color = s.hex; custom = s.hex; }} />
-            <span class="sr-only">{s.name}</span>
+            <span class="sr-only">{s.name()}</span>
           </label>
         {/each}
       </div>
       <label class="custom">
-        <span>Any color</span>
+        <span>{m.designer_any_color()}</span>
         <input type="color" value={normalizeHex(custom) ?? '#FF6B6B'} oninput={(e) => pickCustom(e.currentTarget.value)} />
         <code>{color}</code>
       </label>
     </fieldset>
 
     <fieldset>
-      <legend>Embroidered icon</legend>
+      <legend>{m.designer_icon()}</legend>
       <div class="icons">
         {#each PATCH_ICON_NAMES as name (name)}
-          <label class="icon-pick" title={PATCH_ICON_LABELS[name]}>
+          <label class="icon-pick" title={PATCH_ICON_LABELS[name]()}>
             <input type="radio" name="{idPrefix}-icon" value={name} checked={icon === name} onchange={() => (icon = name)} />
             <PatchPreview color="#FFFDF8" icon={name} size="2.6rem" />
-            <span class="sr-only">{PATCH_ICON_LABELS[name]}</span>
+            <span class="sr-only">{PATCH_ICON_LABELS[name]()}</span>
           </label>
         {/each}
       </div>

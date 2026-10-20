@@ -27,7 +27,9 @@ img { height: auto; }
 input, button, textarea, select { font: inherit; color: inherit; }
 button { background: none; border: 0; cursor: pointer; padding: 0; }
 a { color: inherit; text-decoration: none; }
-h1, h2, h3, h4 { font-weight: inherit; font-size: inherit; text-wrap: balance; }
+h1, h2, h3, h4 { font-weight: inherit; font-size: inherit; text-wrap: balance; overflow-wrap: break-word; }
+/* Long compounds (German above all) hyphenate; English wraps at word breaks. */
+html:not([lang='en']) :is(h1, h2, h3, h4, .sig__line) { hyphens: auto; }
 p { text-wrap: pretty; }
 ::selection { background: var(--c-weld); color: var(--c-fg); }
 :focus-visible { outline: 2px solid var(--c-fg); outline-offset: 3px; border-radius: var(--radius); box-shadow: 0 0 0 5px var(--c-weld); }

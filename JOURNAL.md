@@ -1,5 +1,25 @@
 # JOURNAL — MicroMatch
 
+## 2026-10-19 - The quilt in seven languages #decision
+
+Every page and component now reads from the Paraglide catalogs. The rebuild had
+left 396 keys from the retired frontend and 66 live ones, none of them
+translated. The catalog is now 671 keys in English, Spanish, French, German,
+Portuguese, Chinese and Arabic, and a unit test fails if a locale is missing a
+key, a placeholder or an inline tag. A link inside a sentence stays a tag in the
+message (`<feed>task feed</feed>`) so a translator can move it. Dates, relative
+times and country names come from `Intl`. The privacy, terms and cookie pages
+stay in English on purpose, marked `lang="en"` under a translated note, because
+their wording is legal text. Languages are listed on the quilt label and on the
+contents page, each named in its own language, and every page now has its own
+canonical URL with hreflang alternates instead of all of them pointing at `/en`.
+
+Longer languages crowded the quilt. German compounds now hyphenate, phone
+blocks grow when a language needs more lines, the quilt label lost its
+duplicate Contents link, and the French and German title copy got shorter until
+the title block held it at 1280 by 720. The responsiveness suite now checks
+every locale at 320px and fails when any block's text spills out of it.
+
 ## 2026-10-18 - New mark for the quilt #decision
 
 The quilt redesign kept the old logo, a soft gradient hand holding a person

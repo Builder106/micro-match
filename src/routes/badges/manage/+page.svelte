@@ -8,6 +8,7 @@
   import { iconValue, resolvePatchIcon, type PatchIcon } from '$lib/quilt/icons';
   import { swatchName } from '$lib/quilt/fabrics';
   import { relativeTime } from '$lib/time';
+  import * as m from '$lib/paraglide/messages.js';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
@@ -22,76 +23,76 @@
   let error = $state('');
   let note = $state('');
 
-  const taskTitle = (id?: string) => data.tasks.find((t) => t.id === id)?.title ?? 'a task that was removed';
+  const taskTitle = (id?: string) => data.tasks.find((t) => t.id === id)?.title ?? m.badges_removed_task();
 
   async function save(e: SubmitEvent) {
     e.preventDefault();
-    if (!label.trim()) return void (error = 'Give the patch a name.');
-    if (criteria === 'task-specific' && !taskId) return void (error = 'Pick the task this patch is for.');
+    if (!label.trim()) return void (error = m.badges_need_name());
+    if (criteria === 'task-specific' && !taskId) return void (error = m.badges_need_task());
     saving = true;
     error = '';
     const res = await callApi('/api/badges/manage', {
       body: { label: label.trim(), color, icon: iconValue(icon), criteria, taskId: criteria === 'task-specific' ? taskId : undefined, description: description.trim() || undefined },
-      fallback: 'Could not save the patch.'
+      fallback: m.badges_save_error()
     });
     saving = false;
     if (!res.ok) return void (error = res.error);
-    note = `${label.trim()} is ready. Volunteers earn it from your next approval.`;
+    note = m.badges_ready({ name: label.trim() });
     label = '';
     description = '';
     await invalidateAll();
   }
 
   async function remove(id: string, name: string) {
-    if (!confirm(`Delete "${name}"? Volunteers who earned it keep it; only the design goes.`)) return;
-    const res = await callApi(`/api/badges/manage?id=${encodeURIComponent(id)}`, { method: 'DELETE', fallback: 'Could not delete it.' });
-    note = res.ok ? `${name} deleted.` : res.error;
+    if (!confirm(m.badges_delete_confirm({ name }))) return;
+    const res = await callApi(`/api/badges/manage?id=${encodeURIComponent(id)}`, { method: 'DELETE', fallback: m.badges_delete_error() });
+    note = res.ok ? m.badges_deleted({ name }) : res.error;
     if (res.ok) await invalidateAll();
   }
 </script>
 
-<Seo title="Design a patch | MicroMatch" description="Design the patches volunteers earn for your nonprofit's tasks." noindex />
+<Seo title={m.badges_meta_title()} description={m.badges_meta_description()} noindex />
 
 <AccountTabs />
 
 <header class="page-head">
-  <h1 class="display h-l" tabindex="-1">Design a patch</h1>
-  <p class="lede">Each patch is a badge. Volunteers earn it when you approve their work, and it is sewn into the quilt in your fabric.</p>
+  <h1 class="display h-l" tabindex="-1">{m.badges_title()}</h1>
+  <p class="lede">{m.badges_lede()}</p>
 </header>
 
 <div class="studio">
   <form class="studio__form" onsubmit={save}>
-    <PatchDesigner bind:color bind:icon label={label.trim() || 'Your patch'} idPrefix="badge" />
+    <PatchDesigner bind:color bind:icon label={label.trim() || m.patch_your_patch()} idPrefix="badge" />
     <div class="field">
-      <label for="b-name">Name</label>
-      <input id="b-name" class="input" maxlength="100" bind:value={label} placeholder="Clinic translator" />
+      <label for="b-name">{m.field_name()}</label>
+      <input id="b-name" class="input" maxlength="100" bind:value={label} placeholder={m.badges_name_placeholder()} />
     </div>
     <fieldset class="field rule">
-      <legend class="label">Who earns it</legend>
-      <label><input type="radio" name="rule" value="task-completion" bind:group={criteria} /> Anyone whose work you approve on any of your tasks</label>
-      <label><input type="radio" name="rule" value="task-specific" bind:group={criteria} /> Only people who finish one task</label>
+      <legend class="label">{m.badges_rule_legend()}</legend>
+      <label><input type="radio" name="rule" value="task-completion" bind:group={criteria} /> {m.badges_rule_any()}</label>
+      <label><input type="radio" name="rule" value="task-specific" bind:group={criteria} /> {m.badges_rule_one()}</label>
       {#if criteria === 'task-specific'}
         {#if data.tasks.length}
-          <select class="input" bind:value={taskId} aria-label="Task">
-            <option value="">Pick a task</option>
+          <select class="input" bind:value={taskId} aria-label={m.badges_task_label()}>
+            <option value="">{m.badges_pick_task()}</option>
             {#each data.tasks as t (t.id)}<option value={t.id}>{t.title}</option>{/each}
           </select>
         {:else}
-          <p class="hint">Post a task first.</p>
+          <p class="hint">{m.badges_post_first()}</p>
         {/if}
       {/if}
     </fieldset>
     <div class="field">
-      <label for="b-desc">What it is for (optional)</label>
+      <label for="b-desc">{m.badges_desc()}</label>
       <textarea id="b-desc" class="input" maxlength="500" bind:value={description}></textarea>
     </div>
     {#if error}<p class="notice notice--error" role="alert">{error}</p>{/if}
     {#if note}<p class="notice notice--ok" role="status">{note}</p>{/if}
-    <button class="patch-btn" type="submit" disabled={saving}>{saving ? 'Saving...' : 'Save this patch'}</button>
+    <button class="patch-btn" type="submit" disabled={saving}>{saving ? m.status_saving() : m.badges_save()}</button>
   </form>
 
   <section class="studio__list" aria-labelledby="yours">
-    <h2 id="yours" class="h-m">Your patches</h2>
+    <h2 id="yours" class="h-m">{m.badges_yours()}</h2>
     {#if data.badges.length}
       <ul>
         {#each data.badges as b (b.id)}
@@ -100,16 +101,16 @@
             <div>
               <strong>{b.label}</strong>
               <span class="small muted">
-                {swatchName(b.color)}, {b.criteria === 'task-specific' ? `for "${taskTitle(b.taskId)}"` : b.criteria === 'task-completion' ? 'for any task' : 'rule not active yet'}{b.createdAt ? `, made ${relativeTime(b.createdAt)}` : ''}
+                {swatchName(b.color)}, {b.criteria === 'task-specific' ? m.badges_for_task({ task: taskTitle(b.taskId) }) : b.criteria === 'task-completion' ? m.badges_for_any() : m.badges_rule_inactive()}{b.createdAt ? m.badges_made({ time: relativeTime(b.createdAt) }) : ''}
               </span>
               {#if b.description}<span class="small">{b.description}</span>{/if}
             </div>
-            <button type="button" class="link small" onclick={() => remove(b.id, b.label)}>Delete</button>
+            <button type="button" class="link small" onclick={() => remove(b.id, b.label)}>{m.action_delete()}</button>
           </li>
         {/each}
       </ul>
     {:else}
-      <p class="muted">None yet. Until you design one, approved work on your tasks is sewn in as plain, undyed cloth.</p>
+      <p class="muted">{m.badges_none()}</p>
     {/if}
   </section>
 </div>

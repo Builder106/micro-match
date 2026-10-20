@@ -1,5 +1,7 @@
 // JSON calls to the app's own API, with the error shape the endpoints return
 // ({ error, reasons }) turned into one readable message.
+import * as m from '$lib/paraglide/messages.js';
+
 export type ApiResult<T> = { ok: true; data: T } | { ok: false; status: number; error: string };
 
 export function errorMessage(body: unknown, fallback: string): string {
@@ -13,7 +15,7 @@ export async function callApi<T>(
   url: string,
   init: { method?: string; body?: unknown; fallback?: string } = {}
 ): Promise<ApiResult<T>> {
-  const fallback = init.fallback ?? 'Something went wrong. Please try again.';
+  const fallback = init.fallback ?? m.api_error_generic();
   try {
     const res = await fetch(url, {
       method: init.method ?? (init.body === undefined ? 'GET' : 'POST'),
@@ -25,6 +27,6 @@ export async function callApi<T>(
     if (!res.ok) return { ok: false, status: res.status, error: errorMessage(body, fallback) };
     return { ok: true, data: body as T };
   } catch {
-    return { ok: false, status: 0, error: 'Could not reach MicroMatch. Check your connection and try again.' };
+    return { ok: false, status: 0, error: m.api_error_offline() };
   }
 }

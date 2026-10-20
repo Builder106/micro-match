@@ -1,8 +1,12 @@
 <script lang="ts">
+  import { page } from '$app/state';
   import Seo from '$lib/components/Seo.svelte';
+  import * as m from '$lib/paraglide/messages.js';
 </script>
 
-<Seo title="Privacy policy | MicroMatch" description="How MicroMatch collects, uses and protects information: its sub-processors, data handling, cookies and your rights." />
+<Seo title={m.privacy_meta_title()} description={m.privacy_meta_description()} />
+
+{#if page.data.locale && page.data.locale !== 'en'}<p class="notice">{m.legal_english_only()}</p>{/if}
 
 <article class="legal" lang="en">
   <header class="page-head">

@@ -1,19 +1,20 @@
 // Fabric colors for patches. A patch takes its color from the badge its nonprofit designed;
 // these swatches are the badge editor's suggestions, and any valid hex works.
+import * as m from '$lib/paraglide/messages.js';
 
-export type Swatch = { name: string; hex: string };
+export type Swatch = { name: () => string; hex: string };
 
 export const SWATCHES: Swatch[] = [
-  { name: 'Madder', hex: '#FF6B6B' },
-  { name: 'Weld', hex: '#F2B84B' },
-  { name: 'Indigo', hex: '#3B4A8C' },
-  { name: 'Sage', hex: '#8DAA8B' },
-  { name: 'Rose', hex: '#F4A6B8' },
-  { name: 'Sky', hex: '#7FB7D9' },
-  { name: 'Plum', hex: '#7A4E7E' },
-  { name: 'Moss', hex: '#5E7D4F' },
-  { name: 'Marigold', hex: '#F08A3C' },
-  { name: 'Slate', hex: '#5D6B7A' }
+  { name: m.fabric_madder, hex: '#FF6B6B' },
+  { name: m.fabric_weld, hex: '#F2B84B' },
+  { name: m.fabric_indigo, hex: '#3B4A8C' },
+  { name: m.fabric_sage, hex: '#8DAA8B' },
+  { name: m.fabric_rose, hex: '#F4A6B8' },
+  { name: m.fabric_sky, hex: '#7FB7D9' },
+  { name: m.fabric_plum, hex: '#7A4E7E' },
+  { name: m.fabric_moss, hex: '#5E7D4F' },
+  { name: m.fabric_marigold, hex: '#F08A3C' },
+  { name: m.fabric_slate, hex: '#5D6B7A' }
 ];
 
 /** Undyed cloth, for patches whose nonprofit has not designed a badge yet. */
@@ -52,8 +53,8 @@ export function threadFor(color: string | null | undefined): string {
 /** Name of a suggested swatch, or the hex itself for a custom color. */
 export function swatchName(color: string | null | undefined): string {
   const hex = normalizeHex(color);
-  if (!hex) return 'Muslin';
-  return SWATCHES.find((s) => s.hex === hex)?.name ?? hex;
+  if (!hex) return m.fabric_muslin();
+  return SWATCHES.find((s) => s.hex === hex)?.name() ?? hex;
 }
 
 /** A steady swatch for a tag, so tasks about the same thing share a cloth. */

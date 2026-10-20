@@ -16,7 +16,8 @@
   import type { QuiltPatch } from '$lib/quilt/patches';
   import * as m from '$lib/paraglide/messages.js';
 
-  type TaskPreview = { id: string; title: string; estimatedMinutes?: number };
+  import { taskLang } from '$lib/translation';
+  type TaskPreview = { id: string; title: string; estimatedMinutes?: number; language?: string; translation?: { status: string } };
   type Props = {
     patches: QuiltPatch[];
     total: number;
@@ -142,8 +143,8 @@
             {#each tasks as t (t.id)}
               <li>
                 <Link href="/task/{t.id}" class="tasks__swatch">
-                  <span class="tasks__min num">{t.estimatedMinutes ?? '?'} min</span>
-                  <span class="tasks__name">{t.title}</span>
+                  <span class="tasks__min num">{m.minutes_short({ count: t.estimatedMinutes ?? '?' })}</span>
+                  <span class="tasks__name" lang={taskLang(t.language, t.translation?.status === 'translated')}>{t.title}</span>
                 </Link>
               </li>
             {/each}

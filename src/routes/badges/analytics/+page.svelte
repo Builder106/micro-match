@@ -2,32 +2,33 @@
   import Seo from '$lib/components/Seo.svelte';
   import Link from '$lib/components/Link.svelte';
   import AccountTabs from '$lib/components/AccountTabs.svelte';
+  import * as m from '$lib/paraglide/messages.js';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
   const a = $derived(data.analytics);
-  const title = (id: string) => data.tasks.find((t) => t.id === id)?.title ?? 'A task';
+  const title = (id: string) => data.tasks.find((t) => t.id === id)?.title ?? m.dash_a_task();
   const top = $derived(Math.max(1, ...a.topBadgeTypes.map((t) => t.count)));
 </script>
 
-<Seo title="Patch stats | MicroMatch" description="How many patches have been awarded across MicroMatch, which ones, and when." noindex />
+<Seo title={m.stats_meta_title()} description={m.stats_meta_description()} noindex />
 
 <AccountTabs />
 
 <header class="page-head">
-  <h1 class="display h-l" tabindex="-1">Patch stats</h1>
+  <h1 class="display h-l" tabindex="-1">{m.stats_title()}</h1>
   <p class="lede">
     {#if a.totalBadgesAwarded === 0}
-      No patches have been awarded across MicroMatch yet. The numbers here appear once people approve work.
+      {m.stats_none()}
     {:else}
-      Across MicroMatch, {a.totalBadgesAwarded} patches have been awarded to {a.totalVolunteersEngaged} volunteers, about {a.averageTasksPerVolunteer} each.
+      {m.stats_lede({ patches: a.totalBadgesAwarded, volunteers: a.totalVolunteersEngaged, each: a.averageTasksPerVolunteer })}
     {/if}
   </p>
 </header>
 
 {#if a.totalBadgesAwarded > 0}
   <section class="part" aria-labelledby="kinds">
-    <h2 id="kinds">Most awarded</h2>
+    <h2 id="kinds">{m.stats_most()}</h2>
     <ul class="bars">
       {#each a.topBadgeTypes as t (t.type)}
         <li><span>{t.type}</span><span class="bar" style:--f={t.count / top} aria-hidden="true"></span><span class="num">{t.count}</span></li>
@@ -37,25 +38,25 @@
 
   {#if a.engagementTrend.length}
     <section class="part" aria-labelledby="months">
-      <h2 id="months">By month</h2>
+      <h2 id="months">{m.stats_by_month()}</h2>
       <ul class="months">
-        {#each a.engagementTrend as m (m.month)}
-          <li><strong>{m.month}</strong> {m.badges} patches to {m.volunteers} volunteers</li>
+        {#each a.engagementTrend as t (t.month)}
+          <li><strong>{t.month}</strong> {m.stats_month({ patches: t.badges, volunteers: t.volunteers })}</li>
         {/each}
       </ul>
     </section>
   {/if}
 
   <section class="part" aria-labelledby="recent">
-    <h2 id="recent">Most recent</h2>
+    <h2 id="recent">{m.stats_recent()}</h2>
     <ul class="months">
       {#each a.recentAwards as r, i (i)}
-        <li><strong>{r.badge}</strong> for <Link href="/task/{r.task}" class="link">{title(r.task)}</Link>, {r.date}</li>
+        <li><strong>{r.badge}</strong> {m.stats_for()} <Link href="/task/{r.task}" class="link">{title(r.task)}</Link>, {r.date}</li>
       {/each}
     </ul>
   </section>
 {:else}
-  <div class="ctas"><Link href="/dashboard" class="patch-btn patch-btn--plain">Open your reviews</Link></div>
+  <div class="ctas"><Link href="/dashboard" class="patch-btn patch-btn--plain">{m.task_open_reviews()}</Link></div>
 {/if}
 
 <style>

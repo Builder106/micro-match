@@ -10,6 +10,8 @@
   import { PATCH_ICONS } from '$lib/quilt/icons';
   import Needle from './art/Needle.svelte';
   import type { QuiltPatch } from '$lib/quilt/patches';
+  import * as m from '$lib/paraglide/messages.js';
+  import { getLocale } from '$lib/paraglide/runtime.js';
 
   type Props = {
     patches: QuiltPatch[];
@@ -29,7 +31,7 @@
   let {
     patches,
     label,
-    emptyLine = 'The first one could be yours',
+    emptyLine = m.quilt_empty_line(),
     intro = true,
     interactive = true,
     showNext = true,
@@ -74,7 +76,7 @@
   function sewnLabel(iso: string | null): string {
     if (!iso) return '';
     const d = new Date(iso);
-    return Number.isNaN(d.getTime()) ? '' : `Sewn in ${d.toLocaleDateString('en', { month: 'short', day: 'numeric' })}`;
+    return Number.isNaN(d.getTime()) ? '' : m.quilt_sewn_on({ day: d.toLocaleDateString(getLocale(), { month: 'short', day: 'numeric' }) });
   }
 
   onMount(() => {
@@ -168,7 +170,7 @@
             style:--i={i}
             role="button"
             tabindex="0"
-            aria-label="{p.patch.label ?? 'Undyed muslin patch'}{p.patch.minutes ? `, a ${p.patch.minutes} minute task` : ''}"
+            aria-label={p.patch.minutes ? m.quilt_patch_label_minutes({ name: p.patch.label ?? m.quilt_muslin_patch(), count: p.patch.minutes }) : (p.patch.label ?? m.quilt_muslin_patch())}
             onpointerenter={() => (active = i)}
             onpointerleave={() => active === i && (active = null)}
             onfocus={() => (active = i)}
@@ -213,9 +215,9 @@
     >
       <span class="quilt__tag-swatch" style:background={activePatch.patch.color}></span>
       <span class="quilt__tag-text">
-        <strong>{activePatch.patch.label ?? 'Undyed muslin'}</strong>
-        {#if activePatch.patch.minutes}<span>{activePatch.patch.minutes} minute task</span>{/if}
-        {#if !activePatch.patch.label}<span>No badge designed for it yet</span>{/if}
+        <strong>{activePatch.patch.label ?? m.quilt_muslin()}</strong>
+        {#if activePatch.patch.minutes}<span>{m.quilt_minute_task({ count: activePatch.patch.minutes })}</span>{/if}
+        {#if !activePatch.patch.label}<span>{m.quilt_no_badge()}</span>{/if}
         <span>{sewnLabel(activePatch.patch.sewnAt)}</span>
       </span>
     </div>

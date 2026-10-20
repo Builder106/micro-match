@@ -159,7 +159,7 @@ main[data-kind='narrow'] { --panel-w: min(36rem, 46vw); }
 .sig__link { outline: none; }
 .sig__link::after { content: ''; position: absolute; inset: 0; z-index: 1; }
 .sig__link:focus-visible::after { outline: 3px solid var(--c-weld); outline-offset: -3px; }
-.sig__line { font-size: clamp(0.8rem, 0.95vw, 0.9rem); line-height: 1.38; color: var(--c-muted); text-wrap: pretty; }
+.sig__line { font-size: clamp(0.8rem, 0.95vw, 0.9rem); line-height: 1.38; color: var(--c-muted); text-wrap: pretty; overflow-wrap: break-word; }
 
 /* Tasks: real open tasks pinned to the block as small swatches. */
 .tasks__swatches { list-style: none; padding: 0; display: grid; gap: 0.4rem; width: 100%; margin-top: 0.5rem; }
@@ -218,8 +218,8 @@ p.title__headline span { display: inline; }
   position: relative;
   color-scheme: light; /* a cream label in any light; its tokens resolve light */
   color: var(--c-fg);
-  width: 80%;
-  padding: 1.1rem 1.15rem;
+  width: 82%;
+  padding: 0.9rem 1rem;
   background: var(--cloth-muslin);
   rotate: -2.2deg;
   font-size: 0.8rem;
@@ -228,8 +228,8 @@ p.title__headline span { display: inline; }
 }
 .label__tag::before { content: ''; position: absolute; inset: 5px; border: 1.5px dashed color-mix(in srgb, var(--c-fg) 40%, transparent); pointer-events: none; }
 .label__title { font-family: var(--f-display); font-weight: 700; font-size: 1rem; margin-bottom: 0.35rem; }
-.label__tag ul { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0.2rem 0.85rem; margin-top: 0.6rem; }
-.label__tag a, .theme-toggle { position: relative; z-index: 2; display: inline-block; padding-block: 0.45rem; text-decoration: underline 1px; text-underline-offset: 0.18em; }
+.label__tag ul { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0 0.85rem; margin-top: 0.4rem; }
+.label__tag a, .theme-toggle { position: relative; z-index: 2; display: inline-block; padding-block: 0.3rem; text-decoration: underline 1px; text-underline-offset: 0.18em; }
 @media (hover: hover) { .label__tag a:hover, .theme-toggle:hover { color: var(--c-danger); } }
 /* The toggle names the scheme it switches to. Which one is on screen is read from the same
    meta the root color-scheme follows, so the label is right before any script runs. */
@@ -464,7 +464,10 @@ html.enter .minimap { animation: map-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1.15s
     --ft: calc((mod(var(--o), 2) - 0.5) * 2.4deg);
     --wait: calc(min(var(--o), 5) * 90ms);
   }
+  /* Square at least, taller when a language needs more lines: the face joins the flow. */
   .block { grid-column: auto; grid-row: auto; order: var(--o); aspect-ratio: 1; }
+  .block__face { position: relative; min-height: 100%; }
+  .block:not(.block--title, .block--community, .block--label, .is-wide) .sig { height: auto; min-height: 80%; margin-block: 8%; }
   .block--title, .block--community, .block.is-wide { grid-column: 1 / -1; aspect-ratio: auto; }
   .block--title .block__face, .block--community .block__face, .block.is-wide .block__face { position: relative; }
   .block--title .title__sig { margin: 1.4rem; padding: 1.4rem 1.2rem; }
@@ -482,6 +485,13 @@ html.enter .minimap { animation: map-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1.15s
   .block--label .block__face { position: relative; padding: 2rem 1rem; }
   .label__tag { width: min(100%, 22rem); }
   .tag { min-height: 2.6rem; }
+  .tags { left: 0.6rem; right: 0.6rem; }
   .panel { top: 4.5rem; left: 0.5rem; right: 0.5rem; bottom: 0.5rem; width: auto; }
   html:has(main.has-panel) { overflow: hidden; }
+}
+/* Narrow phones: the mark alone names home (the link keeps its label), so long sign-in
+   labels in other languages fit beside it. */
+@media (max-width: 419px) {
+  .tag__brand { display: none; }
+  .tag--ways { gap: 0.7rem; padding-inline: 0.75rem; }
 }

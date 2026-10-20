@@ -9,9 +9,11 @@ describe('verification helpers', () => {
     expect(taxIdLabel('KE')).toBe('Registration or charity number');
   });
   it('reads country codes back as names', () => {
-    expect(COUNTRIES[COUNTRIES.length - 1].code).toBe('OTHER');
+    expect(COUNTRIES[COUNTRIES.length - 1]).toBe('OTHER');
     expect(countryName('NG')).toBe('Nigeria');
+    expect(countryName('OTHER')).toBe('Somewhere else');
     expect(countryName('ZZ')).toBe('Somewhere else');
-    expect(countryName('JP')).toBe('JP');
+    expect(countryName('JP')).toBe('Japan');
+    expect(countryName('not a code')).toBe('not a code');
   });
 });

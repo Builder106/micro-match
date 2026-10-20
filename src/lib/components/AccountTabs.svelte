@@ -5,6 +5,7 @@
   import Link from './Link.svelte';
   import { appNav, isCurrent, hrefFor, type Role } from '$lib/site';
   import type { Locale } from '$lib/locale';
+  import * as m from '$lib/paraglide/messages.js';
 
   const role = $derived((page.data.userRole ?? 'anonymous') as Role);
   const items = $derived(appNav(role, Boolean(page.data.isAdmin)).filter((i) => i.href !== '/tasks'));
@@ -17,13 +18,13 @@
   }
 </script>
 
-<nav class="acct" aria-label="Your account">
+<nav class="acct" aria-label={m.contents_account()}>
   <ul>
     {#each items as item (item.href)}
       <li><Link href={item.href} class="acct__link" aria-current={isCurrent(page.url.pathname, item.href) ? 'page' : undefined}>{item.label}</Link></li>
     {/each}
   </ul>
-  <button type="button" class="acct__out" onclick={signOut}>Sign out</button>
+  <button type="button" class="acct__out" onclick={signOut}>{m.acct_sign_out()}</button>
 </nav>
 
 <style>

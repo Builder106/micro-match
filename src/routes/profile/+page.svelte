@@ -5,6 +5,7 @@
   import VerificationCard from '$lib/components/VerificationCard.svelte';
   import PatchPreview from '$lib/components/PatchPreview.svelte';
   import { callApi } from '$lib/api';
+  import * as m from '$lib/paraglide/messages.js';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
@@ -52,15 +53,15 @@
     const canvas = document.createElement('canvas');
     canvas.width = canvas.height = 512;
     canvas.getContext('2d')!.drawImage(bitmap, (bitmap.width - side) / 2, (bitmap.height - side) / 2, side, side, 0, 0, 512, 512);
-    const blob = await new Promise<Blob>((ok, fail) => canvas.toBlob((b) => (b ? ok(b) : fail(new Error('Could not read that image'))), 'image/jpeg', 0.85));
+    const blob = await new Promise<Blob>((ok, fail) => canvas.toBlob((b) => (b ? ok(b) : fail(new Error(m.profile_image_unreadable()))), 'image/jpeg', 0.85));
     return new File([blob], 'avatar.jpg', { type: 'image/jpeg' });
   }
 
   async function pickAvatar(e: Event) {
     const file = (e.currentTarget as HTMLInputElement).files?.[0];
     if (!file) return;
-    if (!file.type.startsWith('image/')) return void (error = 'Choose an image file.');
-    if (file.size > 8 * 1024 * 1024) return void (error = 'Choose an image under 8 MB.');
+    if (!file.type.startsWith('image/')) return void (error = m.profile_image_type());
+    if (file.size > 8 * 1024 * 1024) return void (error = m.profile_image_size());
     avatarBusy = true;
     error = '';
     try {
@@ -69,7 +70,7 @@
       avatarFileId = up.fileId;
       avatarUrl = up.url;
     } catch (err) {
-      error = (err as Error).message || 'Upload failed.';
+      error = (err as Error).message || m.upload_failed();
     } finally {
       avatarBusy = false;
     }
@@ -86,15 +87,15 @@
     saving = true;
     saved = false;
     error = '';
-    const update = await callApi('/api/profile/update', { body: { displayName, bio, orgName, avatarFileId }, fallback: 'Could not save your profile.' });
+    const update = await callApi('/api/profile/update', { body: { displayName, bio, orgName, avatarFileId }, fallback: m.profile_save_error() });
     if (!update.ok) {
       saving = false;
-      error = update.status === 401 ? 'Your sign-in has expired. Sign in again to save.' : update.error;
+      error = update.status === 401 ? m.profile_expired() : update.error;
       return;
     }
     const changingRole = role !== savedRole;
     if (changingRole) {
-      const res = await callApi('/api/profile/role', { body: { newRole: role }, fallback: 'Could not change your role.' });
+      const res = await callApi('/api/profile/role', { body: { newRole: role }, fallback: m.profile_role_error() });
       if (!res.ok) {
         saving = false;
         error = res.error;
@@ -110,63 +111,63 @@
   }
 </script>
 
-<Seo title="Profile | MicroMatch" description="Your MicroMatch profile: name, bio, picture and whether you volunteer or post tasks." noindex />
+<Seo title={m.profile_meta_title()} description={m.profile_meta_description()} noindex />
 
 <AccountTabs />
 
 <div class="profile">
   <form class="profile__form" onsubmit={submit}>
     <header class="page-head">
-      <h1 class="display h-l" tabindex="-1">Profile</h1>
-      {#if data.user?.email}<p class="muted">Signed in as {data.user.email}</p>{/if}
+      <h1 class="display h-l" tabindex="-1">{m.nav_profile()}</h1>
+      {#if data.user?.email}<p class="muted">{m.profile_signed_in_as({ email: data.user.email })}</p>{/if}
     </header>
 
     <div class="avatar">
       {#if avatarUrl}
-        <img src={avatarUrl} alt="You" width="88" height="88" />
+        <img src={avatarUrl} alt={m.profile_avatar_alt()} width="88" height="88" />
       {:else}
         <span class="avatar__blank" aria-hidden="true">{(displayName || data.user?.email || '?').charAt(0).toUpperCase()}</span>
       {/if}
       <label class="patch-btn patch-btn--plain patch-btn--small">
-        {avatarBusy ? 'Uploading...' : avatarUrl ? 'Change picture' : 'Add a picture'}
+        {avatarBusy ? m.status_uploading() : avatarUrl ? m.profile_change_picture() : m.profile_add_picture()}
         <input class="sr-only" type="file" accept="image/*" onchange={pickAvatar} />
       </label>
     </div>
 
     <div class="field">
-      <label for="p-name">Name</label>
+      <label for="p-name">{m.field_name()}</label>
       <input id="p-name" class="input" autocomplete="name" bind:value={displayName} />
     </div>
     <div class="field">
-      <label for="p-bio">About you</label>
-      <textarea id="p-bio" class="input" maxlength={BIO_MAX} bind:value={bio} placeholder="What you are good at, what you like helping with."></textarea>
-      <span class="hint num">{bio.length} of {BIO_MAX}</span>
+      <label for="p-bio">{m.profile_bio()}</label>
+      <textarea id="p-bio" class="input" maxlength={BIO_MAX} bind:value={bio} placeholder={m.profile_bio_placeholder()}></textarea>
+      <span class="hint num">{m.count_of({ count: bio.length, max: BIO_MAX })}</span>
     </div>
 
     <fieldset class="roles">
-      <legend class="label">On MicroMatch I...</legend>
+      <legend class="label">{m.profile_role_legend()}</legend>
       <label class="role" class:is-on={role === 'volunteer'}>
         <input type="radio" name="role" value="volunteer" bind:group={role} />
         <PatchPreview color="#F2B84B" icon="heart" size="2.6rem" />
-        <span>volunteer</span>
+        <span>{m.profile_role_volunteer()}</span>
       </label>
       <label class="role" class:is-on={role === 'ngo'}>
         <input type="radio" name="role" value="ngo" bind:group={role} />
         <PatchPreview color="#5E7D4F" icon="house" size="2.6rem" />
-        <span>run a nonprofit</span>
+        <span>{m.profile_role_ngo()}</span>
       </label>
     </fieldset>
 
     {#if role === 'ngo'}
       <div class="field">
-        <label for="p-org">Organization name</label>
+        <label for="p-org">{m.field_org_name()}</label>
         <input id="p-org" class="input" autocomplete="organization" bind:value={orgName} />
       </div>
     {/if}
 
     {#if error}<p class="notice notice--error" role="alert">{error}</p>{/if}
-    {#if saved}<p class="notice notice--ok" role="status">Saved.</p>{/if}
-    <button class="patch-btn" type="submit" disabled={saving}>{saving ? 'Saving...' : 'Save profile'}</button>
+    {#if saved}<p class="notice notice--ok" role="status">{m.status_saved()}</p>{/if}
+    <button class="patch-btn" type="submit" disabled={saving}>{saving ? m.status_saving() : m.profile_save()}</button>
   </form>
 
   {#if savedRole === 'ngo'}
@@ -175,11 +176,11 @@
 </div>
 
 <dialog class="confirm" bind:this={confirmDialog} aria-labelledby="confirm-title">
-  <h2 id="confirm-title" class="h-m">Switch to volunteering?</h2>
-  <p>Your verification application is withdrawn, and the verified mark comes off every task you posted. You can verify again later.</p>
+  <h2 id="confirm-title" class="h-m">{m.profile_switch_title()}</h2>
+  <p>{m.profile_switch_body()}</p>
   <div class="ctas">
-    <button type="button" class="patch-btn" onclick={save}>Switch to volunteering</button>
-    <button type="button" class="patch-btn patch-btn--plain" onclick={() => confirmDialog?.close()}>Keep my nonprofit role</button>
+    <button type="button" class="patch-btn" onclick={save}>{m.profile_switch_confirm()}</button>
+    <button type="button" class="patch-btn patch-btn--plain" onclick={() => confirmDialog?.close()}>{m.profile_switch_keep()}</button>
   </div>
 </dialog>
 
