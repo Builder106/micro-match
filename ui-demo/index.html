@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MicroMatch UI demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      /* The site's type: Bricolage for display, Host for body. */
+      @font-face {
+        font-family: "Bricolage";
+        src: url("public/fonts/bricolage-200_800-normal.woff2") format("woff2");
+        font-weight: 200 800;
+        font-stretch: 75% 100%;
+      }
+      @font-face {
+        font-family: "Host";
+        src: url("public/fonts/host-300_800-normal.woff2") format("woff2");
+        font-weight: 300 800;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        overflow: hidden;
+        background: #fdfcf8;
+      }
+      #root {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+      }
+      .ground {
+        position: absolute;
+        inset: 0;
+        background: #fdfcf8;
+      }
+      video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 1;
+      }
+      /* Desktop footage as a window laid on the table. */
+      #approve,
+      #sewn {
+        inset: auto;
+        left: 40px;
+        top: 760px;
+        width: 1000px;
+        height: 562.5px;
+        z-index: 3;
+        box-shadow: 0 0 0 3px #1c1f3b, 0 22px 0 -4px rgb(28 31 59 / 0.22);
+      }
+      [data-composition-src] {
+        position: absolute;
+        inset: 0;
+      }
+      #table { z-index: 2; }
+      #captions { z-index: 5; }
+      #end { z-index: 6; }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="MicroMatchUiDemo"
+      data-width="1080"
+      data-height="1920"
+      data-fps="30"
+      data-start="0"
+      data-duration="35"
+    >
+      <div class="ground"></div>
+
+      <!-- Phone footage, recorded by e2e/capture/footage.mjs and cut by scripts/video/cut-clips.sh. -->
+      <video id="path" src="public/clips/path.mp4" data-start="0" data-duration="2.5" data-track-index="0" muted playsinline></video>
+      <video id="open" src="public/clips/open.mp4" data-start="2.5" data-duration="4.3" data-track-index="0" muted playsinline></video>
+      <video id="feed" src="public/clips/feed.mp4" data-start="6.8" data-duration="1.35" data-track-index="0" muted playsinline></video>
+      <video id="task" src="public/clips/task.mp4" data-start="8.15" data-duration="2.12" data-track-index="0" muted playsinline></video>
+      <video id="form" src="public/clips/form.mp4" data-start="10.27" data-duration="7.27" data-track-index="0" muted playsinline></video>
+      <video id="pinned" src="public/clips/pinned.mp4" data-start="17.54" data-duration="2.67" data-track-index="0" muted playsinline></video>
+
+      <!-- The nonprofit's side, on the table: the approval, then the quilt. -->
+      <div id="table" data-composition-id="table" data-composition-src="compositions/table.html" data-start="20.21" data-duration="10.5" data-track-index="1" data-width="1080" data-height="1920"></div>
+      <video id="approve" src="public/clips/approve.mp4" data-start="20.21" data-duration="5.5" data-track-index="2" muted playsinline></video>
+      <video id="sewn" src="public/clips/sewn.mp4" data-start="25.71" data-duration="5" data-track-index="2" muted playsinline></video>
+
+      <div id="captions" data-track-kind="captions" data-composition-id="captions" data-composition-src="compositions/captions.html" data-start="0" data-duration="20.21" data-track-index="3" data-width="1080" data-height="1920"></div>
+      <div id="end" data-composition-id="end" data-composition-src="compositions/end.html" data-start="30.71" data-duration="4.29" data-track-index="4" data-width="1080" data-height="1920"></div>
+
+      <audio id="music" src="public/audio.mp3" data-start="0" data-duration="35" data-track-index="20"></audio>
+      <audio id="sfx-pin" src="public/sfx_pin.wav" data-start="17.44" data-duration="0.4" data-track-index="21" data-volume="0.5"></audio>
+      <audio id="sfx-sew" src="public/sfx_sew.wav" data-start="22.0" data-duration="0.5" data-track-index="21" data-volume="0.5"></audio>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo("#music", { volume: 0 }, { volume: 0.8, duration: 1, ease: "none" }, 0)
+        .to("#music", { volume: 0, duration: 1.6, ease: "none" }, 33.4);
+      window.__timelines.MicroMatchUiDemo = tl;
+    </script>
+  </body>
+</html>

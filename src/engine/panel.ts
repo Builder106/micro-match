@@ -1,7 +1,9 @@
 // A block lifting off the quilt and unfolding into a panel of cloth, and folding back.
 // The panel's face carries the block's pattern during the flight, so what flies is the block.
+// With a reduced-motion preference nothing flies, scales or turns: the panel only fades.
+// Incoming content fades by opacity, never visibility, so its heading can take focus at once.
 import { gsap } from 'gsap';
-import { ease } from './env';
+import { ease, prefersStill } from './env';
 
 type Rect = { left: number; top: number; width: number; height: number };
 
@@ -24,6 +26,10 @@ const parts = (panel: HTMLElement) => ({
 export function unfold(panel: HTMLElement, from: Rect | null): Promise<unknown> {
   const { face, body } = parts(panel);
   gsap.killTweensOf([panel, face, body]);
+  if (prefersStill()) {
+    gsap.set(face, { autoAlpha: 0 });
+    return Promise.resolve(gsap.fromTo(panel, { opacity: 0 }, { opacity: 1, duration: 0.2, ease: 'none', clearProps: 'opacity' }));
+  }
   if (!from) {
     return Promise.resolve(
       gsap.timeline().fromTo(panel, { y: 24, rotation: 0.8 }, { y: 0, rotation: 0, duration: 0.7, ease: ease.out, clearProps: 'transform' })
@@ -34,10 +40,10 @@ export function unfold(panel: HTMLElement, from: Rect | null): Promise<unknown> 
     .timeline()
     .set(panel, { transformOrigin: '0 0', ...f, rotation: -1.5 })
     .set(face, { autoAlpha: 1 })
-    .set(body, { autoAlpha: 0, y: 18 })
+    .set(body, { opacity: 0, y: 18 })
     .to(panel, { x: 0, y: 0, scaleX: 1, scaleY: 1, rotation: 0, duration: 0.82, ease: ease.out, clearProps: 'transform' })
     .to(face, { autoAlpha: 0, duration: 0.35, ease: 'power1.out' }, 0.32)
-    .to(body, { autoAlpha: 1, y: 0, duration: 0.6, ease: ease.out, clearProps: 'transform,opacity,visibility' }, 0.42);
+    .to(body, { opacity: 1, y: 0, duration: 0.6, ease: ease.out, clearProps: 'transform,opacity' }, 0.42);
   return Promise.resolve(tl);
 }
 
@@ -45,6 +51,7 @@ export function unfold(panel: HTMLElement, from: Rect | null): Promise<unknown> 
 export function fold(panel: HTMLElement, to: Rect | null): Promise<unknown> {
   const { face, body } = parts(panel);
   gsap.killTweensOf([panel, face, body]);
+  if (prefersStill()) return Promise.resolve(gsap.to(panel, { autoAlpha: 0, duration: 0.15, ease: 'none' }));
   if (!to) return Promise.resolve(gsap.to(panel, { y: 30, autoAlpha: 0, duration: 0.35, ease: ease.inOut }));
   const f = flight(panel, to);
   return Promise.resolve(
@@ -60,6 +67,7 @@ export function fold(panel: HTMLElement, to: Rect | null): Promise<unknown> {
 export function contentOut(panel: HTMLElement): Promise<unknown> {
   const { body } = parts(panel);
   if (!body) return Promise.resolve();
+  if (prefersStill()) return Promise.resolve(gsap.to(body, { autoAlpha: 0, duration: 0.12, ease: 'none' }));
   return Promise.resolve(gsap.to(body, { autoAlpha: 0, y: -10, duration: 0.22, ease: ease.soft }));
 }
 
@@ -67,7 +75,8 @@ export function contentOut(panel: HTMLElement): Promise<unknown> {
 export function contentIn(panel: HTMLElement): Promise<unknown> {
   const { body } = parts(panel);
   if (!body) return Promise.resolve();
+  if (prefersStill()) return Promise.resolve(gsap.fromTo(body, { opacity: 0 }, { opacity: 1, duration: 0.2, ease: 'none', clearProps: 'all' }));
   return Promise.resolve(
-    gsap.fromTo(body, { autoAlpha: 0, y: 16, rotation: -0.4 }, { autoAlpha: 1, y: 0, rotation: 0, duration: 0.6, ease: ease.out, clearProps: 'all' })
+    gsap.fromTo(body, { opacity: 0, y: 16, rotation: -0.4 }, { opacity: 1, y: 0, rotation: 0, duration: 0.6, ease: ease.out, clearProps: 'all' })
   );
 }

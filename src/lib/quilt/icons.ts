@@ -1,6 +1,7 @@
 // Embroidered patch icons. Path data comes from design/glaxnimate/patch-icons.svg (24 x 24,
 // stroked, round caps). Badge definitions store an icon name; this maps any name, including
 // the older Iconify names, to the icon that gets stitched on the patch.
+import * as m from '$lib/paraglide/messages.js';
 
 export const PATCH_ICONS = {
   heart:
@@ -22,17 +23,17 @@ export type PatchIcon = keyof typeof PATCH_ICONS;
 
 export const PATCH_ICON_NAMES = Object.keys(PATCH_ICONS) as PatchIcon[];
 
-export const PATCH_ICON_LABELS: Record<PatchIcon, string> = {
-  heart: 'Heart',
-  star: 'Star',
-  leaf: 'Leaf',
-  globe: 'Globe',
-  book: 'Book',
-  pencil: 'Pencil',
-  speech: 'Speech bubble',
-  house: 'House',
-  sun: 'Sun',
-  paw: 'Paw'
+export const PATCH_ICON_LABELS: Record<PatchIcon, () => string> = {
+  heart: m.icon_heart,
+  star: m.icon_star,
+  leaf: m.icon_leaf,
+  globe: m.icon_globe,
+  book: m.icon_book,
+  pencil: m.icon_pencil,
+  speech: m.icon_speech,
+  house: m.icon_house,
+  sun: m.icon_sun,
+  paw: m.icon_paw
 };
 
 // Keywords from Iconify names that earlier badge definitions used, mapped to a stitched icon.

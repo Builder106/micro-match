@@ -1,5 +1,7 @@
 <script lang="ts">
   import Seo from '$lib/components/Seo.svelte';
+  import Rich from '$lib/components/Rich.svelte';
+  import * as m from '$lib/paraglide/messages.js';
 
   const sample = `[
   {
@@ -12,67 +14,70 @@
   }
 ]`;
 
-  const endpoints = [
-    { group: 'Open to everyone', rows: [
-      ['GET', '/api/tasks', 'Open tasks from verified nonprofits.'],
-      ['GET', '/api/tasks/{id}/translation?lang=es', 'One task translated into a supported locale (es, fr, de, pt, zh, ar).'],
-      ['POST', '/api/tasks/translation', 'Several tasks translated at once. Body: { taskIds, locale }.']
+  type Row = [method: string, path: string, what: () => string, body?: string];
+  const endpoints: { id: string; group: () => string; rows: Row[] }[] = [
+    { id: 'open', group: m.api_group_open, rows: [
+      ['GET', '/api/tasks', m.api_ep_tasks],
+      ['GET', '/api/tasks/{id}/translation?lang=es', m.api_ep_translation],
+      ['POST', '/api/tasks/translation', m.api_ep_translation_batch, '{ taskIds, locale }']
     ] },
-    { group: 'Signed in', rows: [
-      ['POST', '/api/tasks/{id}/claim', 'Claim a task with proof. Body: { proofUrl, notes }.'],
-      ['GET', '/api/claims', 'Your claims. Query: status, limit (up to 100), offset.'],
-      ['GET', '/api/badges', 'Badges you have been awarded.'],
-      ['POST', '/api/profile/update', 'Update your display name, bio and organization name.'],
-      ['POST', '/api/profile/role', 'Switch role. Body: { newRole: "volunteer" | "ngo" }.'],
-      ['POST', '/api/profile/avatar', 'Upload an avatar image (form field file).']
+    { id: 'signed', group: m.api_group_signed, rows: [
+      ['POST', '/api/tasks/{id}/claim', m.api_ep_claim, '{ proofUrl, notes }'],
+      ['GET', '/api/claims', m.api_ep_claims, 'status, limit, offset'],
+      ['GET', '/api/badges', m.api_ep_badges],
+      ['POST', '/api/profile/update', m.api_ep_profile],
+      ['POST', '/api/profile/role', m.api_ep_role, '{ newRole: "volunteer" | "ngo" }'],
+      ['POST', '/api/profile/avatar', m.api_ep_avatar, 'file']
     ] },
-    { group: 'Nonprofits', rows: [
-      ['POST', '/api/tasks', 'Post a task. Body: title, shortDescription, description, tags, estimatedMinutes, language, maxVolunteers, deadline.'],
-      ['PATCH', '/api/tasks/{id}', 'Change the status of a task you posted.'],
-      ['DELETE', '/api/tasks/{id}', 'Delete a task you posted.'],
-      ['POST', '/api/claims/{id}/approve', 'Approve a claim on your task and award matching badges.'],
-      ['POST', '/api/claims/{id}/reject', 'Reject a claim on your task.'],
-      ['GET POST DELETE', '/api/badges/manage', 'List, create (label, color, icon, criteria, taskId, description) and delete your badge designs.'],
-      ['POST', '/api/verifications', 'Send or update your verification. Body: { orgName, country, taxId, docFileId }.'],
-      ['GET DELETE', '/api/verifications/me', 'Read or withdraw your verification.'],
-      ['POST', '/api/verifications/upload', 'Upload a registration document (PDF, PNG or JPEG).']
+    { id: 'ngo', group: m.api_group_ngo, rows: [
+      ['POST', '/api/tasks', m.api_ep_post, 'title, shortDescription, description, tags, estimatedMinutes, language, maxVolunteers, deadline'],
+      ['PATCH', '/api/tasks/{id}', m.api_ep_status],
+      ['DELETE', '/api/tasks/{id}', m.api_ep_delete],
+      ['POST', '/api/claims/{id}/approve', m.api_ep_approve],
+      ['POST', '/api/claims/{id}/reject', m.api_ep_reject],
+      ['GET POST DELETE', '/api/badges/manage', m.api_ep_badges_manage, 'label, color, icon, criteria, taskId, description'],
+      ['POST', '/api/verifications', m.api_ep_verify, '{ orgName, country, taxId, docFileId }'],
+      ['GET DELETE', '/api/verifications/me', m.api_ep_verify_me],
+      ['POST', '/api/verifications/upload', m.api_ep_verify_upload]
     ] },
-    { group: 'Admins', rows: [
-      ['GET', '/api/verifications', 'The verification queue, with ProPublica results for US EINs.'],
-      ['POST', '/api/verifications/{userId}/approve', 'Approve a nonprofit and mark its tasks verified.'],
-      ['POST', '/api/verifications/{userId}/reject', 'Reject with a reason. Body: { reason }.']
+    { id: 'admin', group: m.api_group_admin, rows: [
+      ['GET', '/api/verifications', m.api_ep_queue],
+      ['POST', '/api/verifications/{userId}/approve', m.api_ep_verify_approve],
+      ['POST', '/api/verifications/{userId}/reject', m.api_ep_verify_reject, '{ reason }']
     ] }
   ];
 </script>
 
-<Seo title="API | MicroMatch" description="The MicroMatch REST API: the public open-task feed as JSON, plus the endpoints for claims, badges, verification and reviews." />
+<Seo title={m.api_meta_title()} description={m.api_meta_description()} />
 
 <header class="page-head">
-  <h1 class="display h-xl" tabindex="-1">API</h1>
-  <p class="lede">The open task feed is public JSON, so anyone can show MicroMatch tasks elsewhere. Everything else needs a signed-in session.</p>
+  <h1 class="display h-xl" tabindex="-1">{m.block_api_title()}</h1>
+  <p class="lede">{m.api_lede()}</p>
 </header>
 
 <section class="part" aria-labelledby="feed">
-  <h2 id="feed">The open task feed</h2>
-  <p><code>GET /api/tasks</code> needs no key. It returns tasks that are active, not past their deadline and posted by verified nonprofits.</p>
-  <pre><code>{sample}</code></pre>
+  <h2 id="feed">{m.api_feed_title()}</h2>
+  <p><Rich text={m.api_feed_body()} /></p>
+  <!-- A scrollable code sample has to be reachable by keyboard; code always reads left to right. -->
+  <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+  <pre dir="ltr" tabindex="0" role="region" aria-label={m.api_sample_label()}><code>{sample}</code></pre>
 </section>
 
-{#each endpoints as group (group.group)}
-  <section class="part" aria-labelledby="g-{group.group}">
-    <h2 id="g-{group.group}">{group.group}</h2>
+{#each endpoints as group (group.id)}
+  <section class="part" aria-labelledby="g-{group.id}">
+    <h2 id="g-{group.id}">{group.group()}</h2>
     <dl class="eps">
-      {#each group.rows as [method, path, what] (path + method)}
+      {#each group.rows as [method, path, what, body] (path + method)}
         <div class="ep">
-          <dt><span class="ep__method">{method}</span> <code>{path}</code></dt>
-          <dd>{what}</dd>
+          <dt><span class="ep__method">{method}</span> <code dir="ltr">{path}</code></dt>
+          <dd>{what()}{#if body} <code dir="ltr">{body}</code>{/if}</dd>
         </div>
       {/each}
     </dl>
   </section>
 {/each}
 
-<p class="small muted">Errors come back as <code>{'{ "error": "...", "reasons": [] }'}</code>. Text blocked by content safety returns 400 with its reasons.</p>
+<p class="small muted"><Rich text={m.api_errors()} /> <code>{'{ "error": "...", "reasons": [] }'}</code></p>
 
 <style>
   .eps {

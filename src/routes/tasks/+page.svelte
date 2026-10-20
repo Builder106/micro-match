@@ -5,6 +5,7 @@
   import Link from '$lib/components/Link.svelte';
   import TaskSwatch from '$lib/components/TaskSwatch.svelte';
   import { TIME_CAPS, applyFilters, feedTags, filtersFromParams, hasFilters, paramsFromFilters, EMPTY_FILTERS, type Filters, type TimeCap } from '$lib/feed';
+  import * as m from '$lib/paraglide/messages.js';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
@@ -26,19 +27,16 @@
   const clear = () => (filters = { ...EMPTY_FILTERS });
 </script>
 
-<Seo
-  title="Tasks | MicroMatch"
-  description="Open volunteer tasks from verified nonprofits, each 5 to 30 minutes. Search, filter by 15, 20 or 30 minutes, or pick a tag."
-/>
+<Seo title={m.tasks_meta_title()} description={m.tasks_meta_description()} />
 
 <div class="feed">
   <header class="feed__head">
-    <h1 class="display h-l" tabindex="-1">Tasks</h1>
+    <h1 class="display h-l" tabindex="-1">{m.block_tasks_title()}</h1>
     <p class="muted">
       {#if data.tasks.length === 0}
-        No tasks are open right now.
+        {m.tasks_none_open()}
       {:else}
-        {data.tasks.length} open, all from verified nonprofits. Pick one that fits the time you have.
+        {m.tasks_open_count({ count: data.tasks.length })}
       {/if}
     </p>
   </header>
@@ -46,17 +44,17 @@
   {#if data.tasks.length > 0}
     <form class="rail" role="search" onsubmit={(e) => e.preventDefault()}>
       <label class="field rail__search">
-        <span class="sr-only">Search tasks</span>
-        <input class="input" type="search" placeholder="Search tasks" bind:value={filters.q} />
+        <span class="sr-only">{m.tasks_search()}</span>
+        <input class="input" type="search" placeholder={m.tasks_search()} bind:value={filters.q} />
       </label>
 
       <fieldset class="rail__group">
-        <legend>Time you have</legend>
+        <legend>{m.tasks_time_legend()}</legend>
         <div class="seg">
-          <label class:is-on={filters.max === null}><input type="radio" name="max" checked={filters.max === null} onchange={() => setMax(null)} />Any</label>
+          <label class:is-on={filters.max === null}><input type="radio" name="max" checked={filters.max === null} onchange={() => setMax(null)} />{m.tasks_time_any()}</label>
           {#each TIME_CAPS as cap (cap)}
             <label class:is-on={filters.max === cap}>
-              <input type="radio" name="max" checked={filters.max === cap} onchange={() => setMax(cap)} />Up to {cap} min
+              <input type="radio" name="max" checked={filters.max === cap} onchange={() => setMax(cap)} />{m.tasks_time_up_to({ count: cap })}
             </label>
           {/each}
         </div>
@@ -64,7 +62,7 @@
 
       {#if tags.length}
         <fieldset class="rail__group">
-          <legend>Tags</legend>
+          <legend>{m.field_tags()}</legend>
           <div class="chips">
             {#each tags as t (t.tag)}
               <button type="button" class="chip" aria-pressed={filters.tags.includes(t.tag)} onclick={() => toggleTag(t.tag)}>
@@ -76,21 +74,21 @@
       {/if}
 
       <label class="field rail__sort">
-        <span class="label">Order</span>
+        <span class="label">{m.tasks_order()}</span>
         <select class="input" bind:value={filters.sort}>
-          <option value="newest">As posted</option>
-          <option value="shortest">Shortest first</option>
-          <option value="az">A to Z</option>
+          <option value="newest">{m.tasks_order_newest()}</option>
+          <option value="shortest">{m.tasks_order_shortest()}</option>
+          <option value="az">{m.tasks_order_az()}</option>
         </select>
       </label>
 
       {#if hasFilters(filters)}
-        <button type="button" class="patch-btn patch-btn--plain patch-btn--small" onclick={clear}>Clear filters</button>
+        <button type="button" class="patch-btn patch-btn--plain patch-btn--small" onclick={clear}>{m.tasks_clear()}</button>
       {/if}
     </form>
 
-    <section class="wall" aria-label="Open tasks">
-      <p class="sr-only" aria-live="polite">{shown.length} tasks shown</p>
+    <section class="wall" aria-label={m.tasks_wall_label()}>
+      <p class="sr-only" aria-live="polite">{m.tasks_shown({ count: shown.length })}</p>
       {#if shown.length}
         <ul>
           {#each shown as task (task.id)}
@@ -99,20 +97,20 @@
         </ul>
       {:else}
         <div class="none">
-          <h2 class="h-m">Nothing fits those filters</h2>
-          <p class="muted">Try a longer time, fewer tags or a shorter search.</p>
-          <button type="button" class="patch-btn patch-btn--small" onclick={clear}>Clear filters</button>
+          <h2 class="h-m">{m.tasks_nothing_fits()}</h2>
+          <p class="muted">{m.tasks_nothing_fits_hint()}</p>
+          <button type="button" class="patch-btn patch-btn--small" onclick={clear}>{m.tasks_clear()}</button>
         </div>
       {/if}
     </section>
   {:else}
     <div class="none none--empty">
-      <p>Nonprofits post new tasks as small jobs come up. Check back soon{role === 'ngo' ? ', or post one yourself' : ''}.</p>
+      <p>{role === 'ngo' ? m.tasks_empty_ngo() : m.tasks_empty()}</p>
       <div class="ctas">
         {#if role === 'ngo'}
-          <Link href="/org" class="patch-btn">Post a task</Link>
+          <Link href="/org" class="patch-btn">{m.nav_post_task()}</Link>
         {:else}
-          <Link href="/for-nonprofits" class="patch-btn patch-btn--plain">Run a nonprofit? Post one</Link>
+          <Link href="/for-nonprofits" class="patch-btn patch-btn--plain">{m.tasks_empty_cta()}</Link>
         {/if}
       </div>
     </div>

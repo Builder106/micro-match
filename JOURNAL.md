@@ -1,5 +1,83 @@
 # JOURNAL — MicroMatch
 
+## 2026-10-19 - Demo GIFs, a social cut and a trailer #decision
+
+The videos were made after the UI was frozen, so they show the quilt as it
+ships. All three come from one set of takes recorded by
+`e2e/capture/footage.mjs`. A screen recording drops frames, so the recorder
+runs the page on Playwright's fake clock and screenshots every frame. The takes
+run on the in-memory store with five fictional nonprofits and the eight seed
+tasks, so no real organization shows up and nothing touches Appwrite.
+
+The README GIFs in `docs/demos/` are cut straight from those takes. The social
+cut in `ui-demo/` is the volunteer's path on a phone, then the nonprofit's
+approval on a desk. The trailer in `trailer/` follows ASCII Arcade's pattern
+from 2026-10-18. It opens on the idea before the product: what volunteering
+usually asks for, what people have, and what nonprofits have waiting. The site
+only comes in once both sides are on the table. Both are HyperFrames 0.8.116
+compositions, and the cut list for clips and GIFs is
+`scripts/video/cut-clips.sh`.
+
+Moving from one page to the next inside a panel leaves it blank for about
+0.7 s while the old page fades out and the new one fades in. That's fine on the
+site but looks like a dropped frame in a video, so the cut list skips those
+stretches. The music is Kevin MacLeod under
+CC BY 4.0, credited in each project's `public/CREDITS.md`. The two sound
+effects are synthesized by `scripts/video/make-sfx.sh`, so there's no sample
+to license. Full-quality renders stay out of git, and each folder keeps a 720p
+copy and a preview GIF.
+
+## 2026-10-19 - The first WCAG 2.2 AA audit of the quilt #decision
+
+A new `accessibility` Playwright project runs axe on every route in all seven
+locales, light and dark, signed in as each role, and in the states that change
+the page: dialogs open, errors shown, filters emptied to nothing. It also checks
+what axe can't: keyboard paths, whether focus shows and stays in view, 24px
+targets, reflow at 200 and 400 percent, text spacing, forced colors and the
+edges of form controls. Axe can't read text over the pieced fabric and reports
+it as incomplete, so the suite measures those nodes from the rendered pixels
+instead of turning the rule off.
+
+The biggest change it forced: the quilt behind an open panel is now inert. It
+was dimmed to about 2:1 but its links still took focus and clicks, which failed
+contrast and let keyboard users wander off the panel into blocks they could
+barely see. The other fixes were smaller. A card stayed white in the dark
+theme. Focus never reached the panel heading because the panel body started
+`visibility: hidden`. Inputs lost their focus ring in forced colors. Several
+targets were under 24px. A patch's label couldn't be dismissed. Untranslated
+task text had no language. Every criterion in the matrix now has a status and
+evidence except the VoiceOver and NVDA sign-offs, which need a person.
+
+## 2026-10-19 - Motion that stops #decision
+
+With a reduced-motion preference the entrance and the lay-down are off, panels
+fade in place instead of flying out of their block, the camera cuts instead of
+gliding, and panels scroll natively. For everyone, the quilt's ambient motion
+(the sway toward the pointer, the chalk stitch, the needle) now runs only while
+someone is using the page and slows to a stop five seconds after the last
+input. It used to run forever, which WCAG 2.2.2 doesn't allow for motion that
+starts on its own.
+
+## 2026-10-19 - The quilt in seven languages #decision
+
+Every page and component now reads from the Paraglide catalogs. The rebuild had
+left 396 keys from the retired frontend and 66 live ones, none of them
+translated. The catalog is now 671 keys in English, Spanish, French, German,
+Portuguese, Chinese and Arabic, and a unit test fails if a locale is missing a
+key, a placeholder or an inline tag. A link inside a sentence stays a tag in the
+message (`<feed>task feed</feed>`) so a translator can move it. Dates, relative
+times and country names come from `Intl`. The privacy, terms and cookie pages
+stay in English on purpose, marked `lang="en"` under a translated note, because
+their wording is legal text. Languages are listed on the quilt label and on the
+contents page, each named in its own language, and every page now has its own
+canonical URL with hreflang alternates instead of all of them pointing at `/en`.
+
+Longer languages crowded the quilt. German compounds now hyphenate, phone
+blocks grow when a language needs more lines, the quilt label lost its
+duplicate Contents link, and the French and German title copy got shorter until
+the title block held it at 1280 by 720. The responsiveness suite now checks
+every locale at 320px and fails when any block's text spills out of it.
+
 ## 2026-10-18 - New mark for the quilt #decision
 
 The quilt redesign kept the old logo, a soft gradient hand holding a person

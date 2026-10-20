@@ -1,72 +1,57 @@
 <script lang="ts">
   import Seo from '$lib/components/Seo.svelte';
   import Link from '$lib/components/Link.svelte';
+  import Rich from '$lib/components/Rich.svelte';
   import Scissors from '$lib/components/art/Scissors.svelte';
   import Swatch from '$lib/components/art/Swatch.svelte';
   import Pin from '$lib/components/art/Pin.svelte';
   import Needle from '$lib/components/art/Needle.svelte';
+  import * as m from '$lib/paraglide/messages.js';
 </script>
 
-<Seo
-  title="How a patch is made | MicroMatch"
-  description="Four steps from a posted task to a patch sewn into the quilt: a nonprofit posts it, you pick it up, you pin your proof, and a person approves it."
-/>
+<Seo title={m.how_meta_title()} description={m.how_meta_description()} />
 
 <header class="page-head">
-  <h1 class="display h-xl" tabindex="-1">How a patch is made</h1>
-  <p class="lede">Every patch on the quilt went through the same four steps, and a person checked it at the last one.</p>
+  <h1 class="display h-xl" tabindex="-1">{m.block_how_title()}</h1>
+  <p class="lede">{m.how_lede()}</p>
 </header>
 
 <ol class="steps">
   <li class="step">
     <Scissors class="step__art" />
     <div>
-      <h2 class="h-m">A nonprofit cuts the cloth</h2>
-      <p>
-        A verified nonprofit posts a task: a title, a short summary, the full brief and an honest estimate between 5 and 30
-        minutes. It can add tags, a deadline and a cap on how many volunteers it needs. Task text goes through Azure AI
-        Content Safety before it is saved.
-      </p>
-      <p class="muted small">Only tasks from verified nonprofits appear in the feed.</p>
+      <h2 class="h-m">{m.how_step_1_title()}</h2>
+      <p>{m.how_step_1_body()}</p>
+      <p class="muted small">{m.how_step_1_note()}</p>
     </div>
   </li>
   <li class="step">
     <Swatch class="step__art" />
     <div>
-      <h2 class="h-m">You pick a piece up</h2>
-      <p>
-        Browse the <Link href="/tasks" class="link">task feed</Link> without an account. Search it, filter it to 15, 20 or 30
-        minutes, or narrow it by tag. When one fits the time you have, open it and claim it. Claiming needs an account.
-      </p>
+      <h2 class="h-m">{m.how_step_2_title()}</h2>
+      <p><Rich text={m.how_step_2_body()} links={{ feed: '/tasks' }} /></p>
     </div>
   </li>
   <li class="step">
     <Pin class="step__art step__art--pin" />
     <div>
-      <h2 class="h-m">You pin your work to it</h2>
-      <p>
-        Do the task, then send your proof: a link to what you made (a document, a shared folder, a pull request) and a note
-        about how you did it. Your claim is pinned, not sewn: it waits for a person at the nonprofit.
-      </p>
+      <h2 class="h-m">{m.how_step_3_title()}</h2>
+      <p>{m.how_step_3_body()}</p>
     </div>
   </li>
   <li class="step">
     <Needle class="step__art" />
     <div>
-      <h2 class="h-m">A person sews it in</h2>
-      <p>
-        Someone at the nonprofit reads your proof and approves the claim, or rejects it if it is not what they needed.
-        Approval awards the badges that nonprofit designed, for any task it posted or for that one task, and your patch is
-        sewn into the community block in their colors.
-      </p>
-      <p class="muted small">No points, levels or streaks. A patch means one finished task, checked by a person.</p>
+      <h2 class="h-m">{m.how_step_4_title()}</h2>
+      <p>{m.how_step_4_body()}</p>
+      <p class="muted small">{m.how_step_4_note()}</p>
     </div>
   </li>
 </ol>
 
 <div class="next">
-  <Link href="/tasks" class="patch-btn">Find a task</Link>
-  <Link href="/for-nonprofits" class="patch-btn patch-btn--plain">Post a task</Link>
+  <Link href="/tasks" class="patch-btn">{m.hero_find()}</Link>
+  <Link href="/for-nonprofits" class="patch-btn patch-btn--plain">{m.nav_post_task()}</Link>
 </div>
 
 <style>

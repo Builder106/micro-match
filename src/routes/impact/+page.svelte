@@ -2,52 +2,51 @@
   import Seo from '$lib/components/Seo.svelte';
   import Link from '$lib/components/Link.svelte';
   import Quilt from '$lib/components/Quilt.svelte';
+  import * as m from '$lib/paraglide/messages.js';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
   const s = $derived(data.stats);
-  const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
   const lengths = $derived([
-    { label: 'Up to 15 minutes', n: s.durationCounts['15m'] },
-    { label: '16 to 20 minutes', n: s.durationCounts['20m'] },
-    { label: '21 to 30 minutes', n: s.durationCounts['30m'] }
+    { label: m.impact_len_15(), n: s.durationCounts['15m'] },
+    { label: m.impact_len_20(), n: s.durationCounts['20m'] },
+    { label: m.impact_len_30(), n: s.durationCounts['30m'] }
   ]);
   const longest = $derived(Math.max(1, ...lengths.map((l) => l.n)));
 </script>
 
-<Seo
-  title="The community block | MicroMatch"
-  description="The whole MicroMatch quilt, built from real approved tasks, with live counts of tasks finished, volunteers, nonprofits and hours given."
-/>
+<Seo title={m.impact_meta_title()} description={m.impact_meta_description()} />
 
 <header class="page-head">
-  <h1 class="display h-xl" tabindex="-1">The community block</h1>
+  <h1 class="display h-xl" tabindex="-1">{m.block_community_title()}</h1>
   {#if s.tasksCompleted === 0}
-    <p class="lede">Nothing has been sewn in yet. When a person at a nonprofit approves the first finished task, it becomes the square in the middle.</p>
+    <p class="lede">{m.impact_lede_empty()}</p>
   {:else}
     <p class="lede">
-      {plural(s.tasksCompleted, 'task', 'tasks')} finished and approved, by {plural(s.activeVolunteers, 'volunteer', 'volunteers')},
-      for nonprofits on MicroMatch. Each one is a patch below.
+      {m.impact_lede({
+        tasks: s.tasksCompleted === 1 ? m.count_tasks_one() : m.count_tasks({ count: s.tasksCompleted }),
+        volunteers: s.activeVolunteers === 1 ? m.count_volunteers_one() : m.count_volunteers({ count: s.activeVolunteers })
+      })}
     </p>
   {/if}
 </header>
 
 <div class="whole">
-  <Quilt patches={data.patches} label="The whole community quilt, {s.tasksCompleted} patches" emptyLine="The first one could be yours" />
+  <Quilt patches={data.patches} label={m.impact_quilt_label({ count: s.tasksCompleted })} emptyLine={m.quilt_empty_line()} />
 </div>
 
 {#if s.tasksCompleted > 0}
   <section class="part" aria-labelledby="adds">
-    <h2 id="adds">What it adds up to</h2>
+    <h2 id="adds">{m.impact_adds_title()}</h2>
     <ul class="ticks">
-      <li>{s.hoursContributed} hours of help in total, about {s.avgTaskMinutes} minutes a task.</li>
-      <li>{plural(s.badgesAwarded, 'badge', 'badges')} awarded from designs the nonprofits made.</li>
-      <li>{plural(s.ngosOnboarded, 'nonprofit has', 'nonprofits have')} posted tasks.</li>
+      <li>{m.impact_adds_hours({ hours: s.hoursContributed, minutes: s.avgTaskMinutes })}</li>
+      <li>{s.badgesAwarded === 1 ? m.impact_adds_badges_one() : m.impact_adds_badges({ count: s.badgesAwarded })}</li>
+      <li>{s.ngosOnboarded === 1 ? m.impact_adds_ngos_one() : m.impact_adds_ngos({ count: s.ngosOnboarded })}</li>
     </ul>
   </section>
 
   <section class="part" aria-labelledby="len">
-    <h2 id="len">How long the finished tasks took</h2>
+    <h2 id="len">{m.impact_len_title()}</h2>
     <ul class="bars">
       {#each lengths as l (l.label)}
         <li>
@@ -61,7 +60,7 @@
 
   {#if s.causeBreakdown.length}
     <section class="part" aria-labelledby="causes">
-      <h2 id="causes">What they were about</h2>
+      <h2 id="causes">{m.impact_causes_title()}</h2>
       <ul class="causes">
         {#each s.causeBreakdown as c (c.name)}
           <li><span class="fabric-tag">{c.name} <strong class="num">{c.count}</strong></span></li>
@@ -71,8 +70,8 @@
   {/if}
 {:else}
   <section class="part">
-    <p>The counts here are live. There is nothing to count yet, so there is nothing shown.</p>
-    <div class="ctas"><Link href="/tasks" class="patch-btn">Find a task</Link></div>
+    <p>{m.impact_none()}</p>
+    <div class="ctas"><Link href="/tasks" class="patch-btn">{m.hero_find()}</Link></div>
   </section>
 {/if}
 

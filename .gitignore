@@ -73,3 +73,9 @@ PLAN.md
 
 # Visual QA screenshots
 .shots/
+
+# Video footage takes and full-quality renders (regenerable; the cut clips, the 720p
+# copies and the README GIFs are committed)
+e2e/recordings/
+trailer/renders/
+ui-demo/renders/

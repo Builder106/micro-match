@@ -1,102 +1,135 @@
 # MicroMatch accessibility evidence matrix
 
-This matrix records the current accessibility audit scope. It is a release gate, not a claim that MicroMatch already conforms to WCAG 2.2 AA. The target is Level AA; AAA criteria, including 1.4.6 Contrast (Enhanced), are out of scope. Manual evidence is `Not recorded` until a person completes the required review.
+This matrix records the accessibility audit scope and its results. It is a release gate, not a claim that MicroMatch conforms to WCAG 2.2 AA. The target is Level AA; AAA criteria, including 1.4.6 Contrast (Enhanced), are out of scope.
 
 ## Status vocabulary
 
 Use only `Pass`, `Fail`, `Needs review`, or `N/A with rationale`. Every `Pass` needs evidence. Every `N/A with rationale` needs a reason. `Fail` and `Needs review` block the release gate.
 
+## Audit run, 2026-10-19
+
+| Item | Value |
+| --- | --- |
+| Build | Production build (`bun run build`) served by `vite preview` with the in-memory test harness (`PLAYWRIGHT_A11Y_HARNESS=1`, empty Appwrite variables) |
+| Browser | Chromium (Playwright 1.64.0, Desktop Chrome profile), Linux ARM64 |
+| Engine | axe-core 4.14.0 via `@axe-core/playwright` 4.14.0, tags `wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa`, `wcag22aa`, `best-practice`; no AAA tags, no rules disabled |
+| Suites | `e2e/accessibility.spec.ts` (`bun run test:a11y`), `e2e/responsiveness.spec.ts`, `e2e/functional.spec.ts` |
+| Locales | `en`, `es`, `fr`, `de`, `pt`, `zh`, `ar` (right to left) |
+| Themes and modes | Light and dark; reduced motion; forced colors |
+| Result | 237 accessibility tests, 324 responsiveness tests and 9 functional tests pass; 0 axe violations; every axe `incomplete` result dispositioned (below) |
+| Reviewer | Claude Code (agent), for the project owner |
+
+**How `incomplete` results are dispositioned.** Axe reports text over the quilt's pieced fabric as `incomplete` for color-contrast, because it cannot read a background made of SVG pieces. The suite measures each of those nodes from rendered pixels instead: all page text is hidden, the area behind the node's line boxes is screenshotted, and the worst-case ratio (2nd percentile of pixels) against the text color must meet 4.5:1, or 3:1 for large text. Nodes that are inert or covered by other content are recorded without a ratio. Per-page results are written to `test-results/a11y/*.json` and `*.contrast.json` on each run. Any other `incomplete` rule fails the suite.
+
+**Findings fixed in this run.**
+
+| Criterion | Finding | Fix |
+| --- | --- | --- |
+| 1.4.3 | With a panel open, the dimmed quilt behind it kept live links at about 2:1 contrast | The quilt behind an open panel is `inert`; it reads and behaves as background (2.4.3 improves too) |
+| 1.4.3 | The task page's tag card stayed white in the dark theme (1.17:1) | It uses the card token |
+| 1.4.3 | The avatar initial on weld cloth was cream in the dark theme (1.52:1) | Its ink stays indigo, as the cloth does |
+| 2.1.1 | The code sample on `/docs/api` and the panel scroller could not be scrolled from the keyboard | Both are focusable regions with names |
+| 2.4.3 | After a block unfolded from the keyboard, focus never reached the panel heading (the body started `visibility: hidden`) | Panels fade by opacity, so the heading takes focus at once |
+| 2.4.7 | Focused inputs lost their focus indicator in forced colors (box-shadow only) | A transparent outline shows in forced colors |
+| 2.5.8 | Sign out (23px), contents and language list links (21px), a dashboard link (22px), the narrow-phone home tag (23px) | Each is at least 24px tall |
+| 2.5.8 | The open language list covered other links on the quilt label | It opens downward, over empty cloth |
+| 1.4.10 | German headings, French and German title copy, 320px block teasers and the quilt label overflowed their blocks | Headings and teasers hyphenate, phone blocks grow with their text, the label lost a duplicate link, French and German copy is shorter |
+| 1.4.13 | A patch's label could not be dismissed or hovered | Escape dismisses it; it stays while the pointer is on it |
+| 2.2.2 | The quilt's ambient motion (sway, chalk stitch, needle) ran forever | It comes to rest five seconds after the last input; with reduced motion it never starts |
+| 3.1.2 | Untranslated task text sat inside other locales without a language | It carries the `lang` of the language the nonprofit wrote it in |
+| 4.1.2 | The code sample's region had the same name as its section (`landmark-unique`) | It is named "An example response" |
+
 ## Route and state coverage
 
-The site is one quilt: pages are blocks that unfold into panels (see `DESIGN.md`). English only this round. No automated accessibility (axe) suite runs yet; the coverage column names the Playwright suites that render each surface, which catch layout and behavior regressions but not accessibility failures.
+The site is one quilt: pages are blocks that unfold into panels (see `DESIGN.md`).
 
 | Surface | State or role | Automated coverage | Manual status | Evidence |
 | --- | --- | --- | --- | --- |
-| `/`, the quilt | Anonymous; first-visit entrance and later loads; desktop canvas moved by drag, wheel, arrow keys, focus and the minimap; phone reading path; light and dark | Visual, responsiveness and functional suites | Needs review | Not recorded |
-| Corner tags, minimap and quilt label | Location live region, Contents and sign-in links, theme toggle, keyboard focus panning the camera | Visual and responsiveness suites (layout only) | Needs review | Not recorded |
-| Panels | Read, work and narrow panels; focus moves to the panel heading; Fold back, Escape and the back button fold it into its hole | None yet | Needs review | Not recorded |
-| Public reading routes | `/about`, `/contact`, `/help`, `/docs`, `/docs/api`, `/how-it-works`, `/for-volunteers`, `/for-nonprofits`, `/impact` | Visual and responsiveness suites | Needs review | Not recorded |
-| Quilt label routes | `/privacy`, `/terms`, `/cookies` | Visual suite; responsiveness for `/privacy` | Needs review | Not recorded |
-| `/contents` | The plain list of every block | Visual and responsiveness suites | Needs review | Not recorded |
-| Not found | A hole cut in the quilt | Visual and responsiveness suites | Needs review | Not recorded |
-| Authentication routes | `/login`, `/signup`, `/forgot-password`, `/reset-password`; form and error states | Visual suite; responsiveness for `/login` and `/signup` | Needs review | Not recorded |
-| `/tasks` | Feed, search, minute filters, sort select, empty state | Visual, responsiveness and functional suites | Needs review | Not recorded |
-| `/task/:id` and `/task/:id/claim` | Anonymous and volunteer sessions; claim proof form | None yet | Needs review | Not recorded |
-| `/dashboard` | Volunteer block and nonprofit review list | Visual, responsiveness and functional suites | Needs review | Not recorded |
-| `/org` | Nonprofit form and language select | Visual and responsiveness suites | Needs review | Not recorded |
-| `/badges/manage` | Patch designer, task select, live patch preview | Visual and responsiveness suites | Needs review | Not recorded |
-| `/badges/analytics` | Nonprofit session | None yet | Needs review | Not recorded |
-| `/profile` | Volunteer and nonprofit sessions, downgrade confirm dialog | None yet | Needs review | Not recorded |
-| `/admin/verifications` | Admin session and reject dialog | None yet | Needs review | Not recorded |
+| `/`, the quilt | Anonymous; first-visit entrance and later loads; desktop canvas moved by drag, wheel, arrow keys, focus and the minimap; phone reading path; light and dark | Axe in 7 locales, light and dark, desktop and phone; keyboard, target size, reflow, text spacing, motion | Pass | `accessibility.spec.ts` › axe, public surfaces; keyboard; target size; reflow; `functional.spec.ts` › motion tests |
+| Corner tags, minimap and quilt label | Location live region, Contents and sign-in links, theme toggle, language list | Axe (label list open), target size, overflow in every locale | Pass | › language list open; `responsiveness.spec.ts` › quilt blocks hold their text |
+| Panels | Read, work and narrow panels; focus moves to the panel heading; Fold back, Escape and the back button fold it into its hole | Keyboard, focus not obscured, reduced motion | Pass | › a block opens from the keyboard, Escape folds it back and focus returns; › focus not obscured |
+| Public reading routes | `/about`, `/contact`, `/help`, `/docs`, `/docs/api`, `/how-it-works`, `/for-volunteers`, `/for-nonprofits`, `/impact` | Axe in 7 locales and dark; reflow; text spacing | Pass | › axe, public surfaces |
+| Quilt label routes | `/privacy`, `/terms`, `/cookies`; English-only legal text inside other locales | Axe in 7 locales and dark; language of parts | Pass | › English-only legal text is marked as English inside other locales |
+| `/contents` | The plain list of every block and every language | Axe, target size, focus not obscured | Pass | › axe, public surfaces; › target size |
+| Not found | A hole cut in the quilt | Axe in 7 locales and dark | Pass | › axe, public surfaces |
+| Authentication routes | `/login`, `/signup`, `/forgot-password`, `/reset-password`; form and error states | Axe in 7 locales and dark; sign-up form after picking a role; forced-colors focus | Pass | › sign-up form after picking a role; › focus stays visible with forced colors |
+| `/tasks` | Feed, search, minute filters, sort select, empty and filtered-empty states | Axe; feed filtered to nothing; non-text contrast | Pass | › feed filtered to nothing; › control edges meet 3:1 |
+| `/task/:id` and `/task/:id/claim` | Anonymous and volunteer sessions; claim proof form, invalid link | Axe in `en` and `ar`, light and dark | Pass | › task as volunteer; › anonymous task page; › claim form with an invalid link |
+| `/dashboard` | Volunteer block and nonprofit review list | Axe in `en` and `ar`, light and dark; target size | Pass | › volunteer dashboard; › nonprofit dashboard |
+| `/org` | Nonprofit form and language select | Axe in `en` and `ar`, light and dark; non-text contrast | Pass | › post a task |
+| `/badges/manage` | Patch designer, task select, live patch preview | Axe in `en` and `ar`, light and dark; target size | Pass | › design a patch |
+| `/badges/analytics` | Nonprofit session | Axe in `en` and `ar`, light and dark | Pass | › patch stats |
+| `/profile` | Volunteer and nonprofit sessions, switch-role confirm dialog | Axe in `en` and `ar`, light and dark; dialog keyboard | Pass | › profile switch dialog; › the profile dialog keeps focus inside and Escape closes it |
+| `/admin/verifications` | Admin session and reject dialog | Axe in `en` and `ar`, light and dark | Pass | › verification queue |
 
 ## WCAG 2.2 success criteria
 
-Each applicable criterion has its own row so that evidence and dispositions cannot be hidden in grouped ranges.
+Each applicable criterion has its own row so that evidence and dispositions cannot be hidden in grouped ranges. Evidence names tests in `e2e/accessibility.spec.ts` (›) unless it says otherwise.
 
 | Criterion | Level | Surface or state | Method | Evidence | Status | Reviewer | Date | Rationale or issue |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1.1.1 Non-text Content | A | All routes and images | Axe and screen reader | Not recorded | Needs review | | | |
-| 1.2.1 Audio-only and Video-only (Prerecorded) | A | Media surfaces | Manual media review | Not recorded | N/A with rationale | | | No prerecorded audio or video is currently inventoried |
-| 1.2.2 Captions (Prerecorded) | A | Media surfaces | Manual media review | Not recorded | N/A with rationale | | | No prerecorded audio or video is currently inventoried |
-| 1.2.3 Audio Description or Media Alternative (Prerecorded) | A | Media surfaces | Manual media review | Not recorded | N/A with rationale | | | No prerecorded audio or video is currently inventoried |
-| 1.2.4 Captions (Live) | AA | Live media, if applicable | Manual media review | Not recorded | N/A with rationale | | | No live media is currently inventoried |
-| 1.2.5 Audio Description (Prerecorded) | AA | Media surfaces | Manual media review | Not recorded | N/A with rationale | | | No prerecorded audio or video is currently inventoried |
-| 1.3.1 Info and Relationships | A | All routes and forms | Axe and accessibility tree | Not recorded | Needs review | | | |
-| 1.3.2 Meaningful Sequence | A | All responsive layouts | Keyboard and screen reader | Not recorded | Needs review | | | |
-| 1.3.3 Sensory Characteristics | A | Instructions and controls | Content review | Not recorded | Needs review | | | |
-| 1.3.4 Orientation | AA | Responsive routes | Viewport review | Not recorded | Needs review | | | |
-| 1.3.5 Identify Input Purpose | AA | Authentication and profile forms | Axe and accessibility tree | Not recorded | Needs review | | | |
-| 1.4.1 Use of Color | A | Statuses, links, and controls | Visual review | Not recorded | Needs review | | | |
-| 1.4.2 Audio Control | A | Audio content, if applicable | Manual media review | Not recorded | N/A with rationale | | | No audio content is currently inventoried |
-| 1.4.3 Contrast (Minimum) | AA | All themes and states | Axe and visual review | Not recorded | Needs review | | | |
-| 1.4.4 Resize Text | AA | 200% and 400% zoom | Zoom and reflow review | Not recorded | Needs review | | | |
-| 1.4.5 Images of Text | AA | Branded and content imagery | Visual review | Not recorded | Needs review | | | |
-| 1.4.10 Reflow | AA | 320px and zoomed layouts | Responsive review | Not recorded | Needs review | | | |
-| 1.4.11 Non-text Contrast | AA | Focus, borders, icons, controls | Axe and visual review | Not recorded | Needs review | | | |
-| 1.4.12 Text Spacing | AA | Content and forms | Text-spacing review | Not recorded | Needs review | | | |
-| 1.4.13 Content on Hover or Focus | AA | Quilt patch labels and block hover lifts | Keyboard and pointer review | Not recorded | Needs review | | | |
-| 2.1.1 Keyboard | A | All interactive states | Keyboard review | Not recorded | Needs review | | | |
-| 2.1.2 No Keyboard Trap | A | Quilt canvas, panels and dialogs | Keyboard review | Not recorded | Needs review | | | |
-| 2.1.4 Character Key Shortcuts | A | Keyboard shortcuts, if applicable | Keyboard review | Not recorded | N/A with rationale | | | No character-key shortcuts are currently inventoried |
-| 2.2.1 Timing Adjustable | A | Sessions and notifications | Timing review | Not recorded | Needs review | | | |
-| 2.2.2 Pause, Stop, Hide | A | Animation and auto-updating content | Motion review | Not recorded | Needs review | | | |
-| 2.3.1 Three Flashes or Below Threshold | A | Animation and media | Motion review | Not recorded | Needs review | | | |
-| 2.4.1 Bypass Blocks | A | Skip link, corner tags and panels | Axe and keyboard | Not recorded | Needs review | | | |
-| 2.4.2 Page Titled | A | All routes | Axe and document review | Not recorded | Needs review | | | |
-| 2.4.3 Focus Order | A | Quilt blocks, panels, dialogs and forms | Keyboard review | Not recorded | Needs review | | | |
-| 2.4.4 Link Purpose (In Context) | A | Links and cards | Axe and screen reader | Not recorded | Needs review | | | |
-| 2.4.5 Multiple Ways | AA | Quilt, minimap and `/contents` | Keyboard and content review | Not recorded | Needs review | | | |
-| 2.4.6 Headings and Labels | AA | All routes and forms | Axe and accessibility tree | Not recorded | Needs review | | | |
-| 2.4.7 Focus Visible | AA | All interactive controls | Keyboard and visual review | Not recorded | Needs review | | | |
-| 2.4.11 Focus Not Obscured (Minimum) | AA | Corner tags, minimap, panels and dialogs | Keyboard and viewport review | Not recorded | Needs review | | | |
-| 2.5.1 Pointer Gestures | A | Touch and pointer interactions | Touch review | Not recorded | Needs review | | | |
-| 2.5.2 Pointer Cancellation | A | Buttons and links | Pointer review | Not recorded | Needs review | | | |
-| 2.5.3 Label in Name | A | Controls with visible labels | Accessibility tree | Not recorded | Needs review | | | |
-| 2.5.4 Motion Actuation | A | Motion controls, if applicable | Motion review | Not recorded | N/A with rationale | | | No motion-actuated controls are currently inventoried |
-| 2.5.7 Dragging Movements | AA | Drag controls, if applicable | Touch and keyboard review | Not recorded | N/A with rationale | | | No dragging controls are currently inventoried |
-| 2.5.8 Target Size (Minimum) | AA | Touch and pointer controls | Touch and visual review | Not recorded | Needs review | | | |
-| 3.1.1 Language of Page | A | All routes (English only this round) | DOM and screen reader | Not recorded | Needs review | | | |
-| 3.1.2 Language of Parts | AA | Mixed-language content | DOM and content review | Not recorded | Needs review | | | |
-| 3.2.1 On Focus | A | All interactive controls | Keyboard review | Not recorded | Needs review | | | |
-| 3.2.2 On Input | A | Forms and selects | Keyboard review | Not recorded | Needs review | | | |
-| 3.2.3 Consistent Navigation | AA | Corner tags and quilt label | Cross-route review | Not recorded | Needs review | | | |
-| 3.2.4 Consistent Identification | AA | Repeated controls | Cross-route review | Not recorded | Needs review | | | |
-| 3.3.1 Error Identification | A | Authentication and forms | Form and screen-reader review | Not recorded | Needs review | | | |
-| 3.3.2 Labels or Instructions | A | Authentication and forms | Accessibility tree | Not recorded | Needs review | | | |
-| 3.3.3 Error Suggestion | AA | Forms and recovery | Form review | Not recorded | Needs review | | | |
-| 3.3.4 Error Prevention (Legal, Financial, Data) | AA | Account and submission forms | Form review | Not recorded | Needs review | | | |
-| 4.1.2 Name, Role, Value | A | Custom controls and dialogs | Axe and accessibility tree | Not recorded | Needs review | | | |
-| 4.1.3 Status Messages | AA | Notifications and async states | Screen reader review | Not recorded | Needs review | | | |
+| 1.1.1 Non-text Content | A | All routes and images | Axe and accessibility tree | › axe on every surface (image-alt, svg-img-alt, role-img-alt); decorative art is `aria-hidden`, patches carry labels | Pass | Claude Code | 2026-10-19 | |
+| 1.2.1 Audio-only and Video-only (Prerecorded) | A | Media surfaces | Manual media review | Route inventory above | N/A with rationale | Claude Code | 2026-10-19 | The site has no audio or video; the marketing videos live in the repository, not on the site |
+| 1.2.2 Captions (Prerecorded) | A | Media surfaces | Manual media review | Route inventory above | N/A with rationale | Claude Code | 2026-10-19 | No prerecorded audio or video on the site |
+| 1.2.3 Audio Description or Media Alternative (Prerecorded) | A | Media surfaces | Manual media review | Route inventory above | N/A with rationale | Claude Code | 2026-10-19 | No prerecorded video on the site |
+| 1.2.4 Captions (Live) | AA | Live media | Manual media review | Route inventory above | N/A with rationale | Claude Code | 2026-10-19 | No live media |
+| 1.2.5 Audio Description (Prerecorded) | AA | Media surfaces | Manual media review | Route inventory above | N/A with rationale | Claude Code | 2026-10-19 | No prerecorded video on the site |
+| 1.3.1 Info and Relationships | A | All routes and forms | Axe and accessibility tree | › axe on every surface (landmarks, headings, labels, lists, landmark-unique) | Pass | Claude Code | 2026-10-19 | |
+| 1.3.2 Meaningful Sequence | A | All responsive layouts | Keyboard and DOM order | › Tab walks the whole page; `responsiveness.spec.ts` › blocks read as a vertical path | Pass | Claude Code | 2026-10-19 | |
+| 1.3.3 Sensory Characteristics | A | Instructions and controls | Content review | All 671 English messages reviewed; "Drag or scroll" has keyboard, minimap and Contents alternatives and is not the only instruction | Pass | Claude Code | 2026-10-19 | |
+| 1.3.4 Orientation | AA | Responsive routes | Viewport review | › a phone held sideways still reads | Pass | Claude Code | 2026-10-19 | |
+| 1.3.5 Identify Input Purpose | AA | Authentication and profile forms | Accessibility tree | `autocomplete` on email, passwords, names, organization and URL fields; › axe (autocomplete-valid) | Pass | Claude Code | 2026-10-19 | |
+| 1.4.1 Use of Color | A | Statuses, links, and controls | Visual review | Links are underlined, statuses are written out, selected filters use `aria-pressed` and a fill change | Pass | Claude Code | 2026-10-19 | |
+| 1.4.2 Audio Control | A | Audio content | Manual media review | Route inventory above | N/A with rationale | Claude Code | 2026-10-19 | The site plays no audio |
+| 1.4.3 Contrast (Minimum) | AA | All themes and states | Axe and rendered-pixel measurement | › axe on every surface, light (7 locales) and dark; measured ratios in `test-results/a11y/*.contrast.json` | Pass | Claude Code | 2026-10-19 | |
+| 1.4.4 Resize Text | AA | 200% and 400% zoom | Zoom and reflow review | › 200% zoom; › 400% zoom | Pass | Claude Code | 2026-10-19 | |
+| 1.4.5 Images of Text | AA | Branded and content imagery | Visual review | The only image with letters is the logo mark, which is exempt | Pass | Claude Code | 2026-10-19 | |
+| 1.4.10 Reflow | AA | 320px and zoomed layouts | Responsive review | › 320px reflow; `responsiveness.spec.ts` (every route, 7 locales, 320px) | Pass | Claude Code | 2026-10-19 | |
+| 1.4.11 Non-text Contrast | AA | Focus, borders, icons, controls | Measured and visual review | › control edges meet 3:1 at rest and when focused (light and dark); focus ring is 2px indigo with a weld halo | Pass | Claude Code | 2026-10-19 | |
+| 1.4.12 Text Spacing | AA | Content and forms | Text-spacing review | › text spacing overrides keep everything readable | Pass | Claude Code | 2026-10-19 | |
+| 1.4.13 Content on Hover or Focus | AA | Quilt patch labels and block hover lifts | Keyboard and pointer review | › a patch label stays while hovered and Escape dismisses it | Pass | Claude Code | 2026-10-19 | |
+| 2.1.1 Keyboard | A | All interactive states | Keyboard review | › keyboard (skip link, blocks, Escape, arrow keys, dialog); scroll regions are focusable | Pass | Claude Code | 2026-10-19 | |
+| 2.1.2 No Keyboard Trap | A | Quilt canvas, panels and dialogs | Keyboard review | › Tab walks the whole page without a trap; › the profile dialog keeps focus inside and Escape closes it | Pass | Claude Code | 2026-10-19 | |
+| 2.1.4 Character Key Shortcuts | A | Keyboard shortcuts | Keyboard review | Only arrow keys and Escape are handled | N/A with rationale | Claude Code | 2026-10-19 | No single-character shortcuts |
+| 2.2.1 Timing Adjustable | A | Sessions and notifications | Timing review | No countdowns, timed forms or auto-redirects; notices stay until the next action | N/A with rationale | Claude Code | 2026-10-19 | The site sets no time limits |
+| 2.2.2 Pause, Stop, Hide | A | Animation and auto-updating content | Motion review | `functional.spec.ts` › the quilt's ambient motion comes to rest five seconds after the last input | Pass | Claude Code | 2026-10-19 | |
+| 2.3.1 Three Flashes or Below Threshold | A | Animation and media | Motion review | Motion is slow transforms and fades; nothing flashes | Pass | Claude Code | 2026-10-19 | |
+| 2.4.1 Bypass Blocks | A | Skip link, corner tags and panels | Axe and keyboard | › the skip link comes first and lands on the main region | Pass | Claude Code | 2026-10-19 | |
+| 2.4.2 Page Titled | A | All routes | Document review | › every page has its own title and the right language and direction (7 locales) | Pass | Claude Code | 2026-10-19 | |
+| 2.4.3 Focus Order | A | Quilt blocks, panels, dialogs and forms | Keyboard review | › a block opens from the keyboard; the quilt behind a panel is inert | Pass | Claude Code | 2026-10-19 | |
+| 2.4.4 Link Purpose (In Context) | A | Links and cards | Axe and content review | › axe (link-name); card titles are the links | Pass | Claude Code | 2026-10-19 | |
+| 2.4.5 Multiple Ways | AA | Quilt, minimap and `/contents` | Content review | The quilt, the minimap, the corner tags and `/contents` reach every block | Pass | Claude Code | 2026-10-19 | |
+| 2.4.6 Headings and Labels | AA | All routes and forms | Axe and accessibility tree | › axe on every surface | Pass | Claude Code | 2026-10-19 | |
+| 2.4.7 Focus Visible | AA | All interactive controls | Keyboard and visual review | › every stop shows focus; › focus stays visible with forced colors | Pass | Claude Code | 2026-10-19 | |
+| 2.4.11 Focus Not Obscured (Minimum) | AA | Corner tags, minimap, panels and dialogs | Keyboard and viewport review | › panel controls stay visible when focused (1440px and 390px) | Pass | Claude Code | 2026-10-19 | |
+| 2.5.1 Pointer Gestures | A | Touch and pointer interactions | Touch review | No multipoint or path gestures; panning the quilt is optional | Pass | Claude Code | 2026-10-19 | |
+| 2.5.2 Pointer Cancellation | A | Buttons and links | Pointer review | Actions fire on click (up event); a drag of more than 6px cancels the click | Pass | Claude Code | 2026-10-19 | |
+| 2.5.3 Label in Name | A | Controls with visible labels | Accessibility tree | › axe (label-content-name-mismatch); the language summary reads "Language: English" | Pass | Claude Code | 2026-10-19 | |
+| 2.5.4 Motion Actuation | A | Motion controls | Motion review | Nothing responds to device motion | N/A with rationale | Claude Code | 2026-10-19 | No motion-actuated controls |
+| 2.5.7 Dragging Movements | AA | Dragging the quilt | Pointer and keyboard review | The minimap jumps with one click, links open every block, wheel and arrow keys pan | Pass | Claude Code | 2026-10-19 | |
+| 2.5.8 Target Size (Minimum) | AA | Touch and pointer controls | Measured | › axe (target-size); › controls are at least 24 by 24 px (1440px and 390px) | Pass | Claude Code | 2026-10-19 | |
+| 3.1.1 Language of Page | A | All routes, 7 locales | DOM review | › every page has its own title and the right language and direction | Pass | Claude Code | 2026-10-19 | |
+| 3.1.2 Language of Parts | AA | Legal pages, language names, task text | DOM review | › English-only legal text is marked as English; › each language in the list is named in its own language; untranslated task text carries its `lang` | Pass | Claude Code | 2026-10-19 | |
+| 3.2.1 On Focus | A | All interactive controls | Keyboard review | Focus pans the camera and nothing else; no navigation on focus | Pass | Claude Code | 2026-10-19 | |
+| 3.2.2 On Input | A | Forms and selects | Keyboard review | Filters update the list in place and announce the count; no select submits a form | Pass | Claude Code | 2026-10-19 | |
+| 3.2.3 Consistent Navigation | AA | Corner tags and quilt label | Cross-route review | The same corner tags and quilt on every route | Pass | Claude Code | 2026-10-19 | |
+| 3.2.4 Consistent Identification | AA | Repeated controls | Cross-route review | One message per repeated control in every locale | Pass | Claude Code | 2026-10-19 | |
+| 3.3.1 Error Identification | A | Authentication and forms | Form review | › claim form with an invalid link (`aria-invalid`, described hint); errors use `role="alert"` | Pass | Claude Code | 2026-10-19 | |
+| 3.3.2 Labels or Instructions | A | Authentication and forms | Accessibility tree | › axe (label); visible labels and hints on every field | Pass | Claude Code | 2026-10-19 | |
+| 3.3.3 Error Suggestion | AA | Forms and recovery | Form review | Errors say how to fix them ("A full link starting with https://", "Use at least 8 characters") | Pass | Claude Code | 2026-10-19 | |
+| 3.3.4 Error Prevention (Legal, Financial, Data) | AA | Account and submission forms | Form review | Deleting a task or patch, rejecting a claim and leaving the nonprofit role all ask first | Pass | Claude Code | 2026-10-19 | |
+| 4.1.2 Name, Role, Value | A | Custom controls and dialogs | Axe and accessibility tree | › axe on every surface, including dialogs and the open language list | Pass | Claude Code | 2026-10-19 | |
+| 4.1.3 Status Messages | AA | Notifications and async states | DOM review | Notices use `role="status"` or `role="alert"`; the feed count and the corner tag are live regions | Pass | Claude Code | 2026-10-19 | |
 
 ## Manual sign-off
 
 | Review environment | Reviewer | Date | Status | Evidence | Notes |
 | --- | --- | --- | --- | --- | --- |
-| Keyboard only, Chromium | | | Needs review | Not recorded | |
-| VoiceOver with Safari on macOS | | | Needs review | Not recorded | |
-| NVDA with Firefox on Windows | | | Needs review | Not recorded | |
-| 200% and 400% zoom, 320px reflow | | | Needs review | Not recorded | |
-| Light, dark, reduced motion, and forced colors | | | Needs review | Not recorded | |
+| Keyboard only, Chromium | Claude Code | 2026-10-19 | Pass | › keyboard; › focus not obscured | Scripted keyboard paths, not a person at a keyboard |
+| VoiceOver with Safari on macOS | | | Needs review | Not recorded | Needs a person with VoiceOver: the agent cannot drive a screen reader |
+| NVDA with Firefox on Windows | | | Needs review | Not recorded | Needs a person with NVDA on Windows |
+| 200% and 400% zoom, 320px reflow | Claude Code | 2026-10-19 | Pass | › reflow, zoom and text spacing; `responsiveness.spec.ts` | |
+| Light, dark, reduced motion, and forced colors | Claude Code | 2026-10-19 | Pass | › axe in both themes; `functional.spec.ts` › reduced motion; › forced colors | |
 
 ## Exceptions
 
@@ -105,4 +138,4 @@ Exceptions are scoped test dispositions, not accessibility waivers. Each excepti
 | Scope | Reason | User impact | Mitigation | Owner | Follow-up date | Evidence |
 | --- | --- | --- | --- | --- | --- | --- |
 
-None recorded. The 2026-10-16 quilt rebuild removed every surface the earlier exceptions matched; record new ones from the next audit run.
+None recorded. No axe rule is disabled, and every `incomplete` result is measured (see "How `incomplete` results are dispositioned").

@@ -2,12 +2,15 @@
   import { page } from '$app/state';
   import Seo from '$lib/components/Seo.svelte';
   import Link from '$lib/components/Link.svelte';
+  import Rich from '$lib/components/Rich.svelte';
   import PatchPreview from '$lib/components/PatchPreview.svelte';
   import { callApi } from '$lib/api';
   import { go } from '$lib/go';
   import { isHttpUrl, NOTES_MAX } from '$lib/claim';
   import { minutesLabel } from '$lib/time';
+  import { taskLang } from '$lib/translation';
   import type { Locale } from '$lib/locale';
+  import * as m from '$lib/paraglide/messages.js';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
@@ -28,7 +31,7 @@
     error = '';
     const res = await callApi(`/api/tasks/${data.task.id}/claim`, {
       body: { proofUrl: proofUrl.trim(), notes: notes.trim() || undefined },
-      fallback: 'Could not send your work.'
+      fallback: m.claim_error()
     });
     submitting = false;
     if (res.ok) await go('/dashboard?pinned=1', locale, { invalidateAll: true });
@@ -36,16 +39,16 @@
   }
 </script>
 
-<Seo title="Send your work: {data.task.title} | MicroMatch" description="Send a link to your finished work and a note to the nonprofit that posted this task." noindex />
+<Seo title={m.claim_meta_title({ task: data.task.title })} description={m.claim_meta_description()} noindex />
 
 <div class="claim">
   <form class="claim__form" onsubmit={submit} novalidate>
-    <p class="crumbs"><Link href="/task/{data.task.id}" class="link">Back to the task</Link></p>
-    <h1 class="display h-l" tabindex="-1">Send your work</h1>
-    <p class="lede">{data.task.title}</p>
+    <p class="crumbs"><Link href="/task/{data.task.id}" class="link">{m.claim_back()}</Link></p>
+    <h1 class="display h-l" tabindex="-1">{m.claim_title()}</h1>
+    <p class="lede" lang={taskLang(data.task.language)}>{data.task.title}</p>
 
     <div class="field">
-      <label for="proof">Link to your work</label>
+      <label for="proof">{m.claim_proof_label()}</label>
       <input
         id="proof"
         class="input"
@@ -60,31 +63,31 @@
         required
       />
       <span class="hint" id="proof-hint">
-        {#if touched && !urlOk}A full link starting with https:// or http://.{:else}A document, shared folder, pull request or design file the nonprofit can open.{/if}
+        {touched && !urlOk ? m.claim_proof_invalid() : m.claim_proof_hint()}
       </span>
     </div>
 
     <div class="field">
-      <label for="notes">A note for the reviewer <span class="muted">(optional)</span></label>
-      <textarea id="notes" class="input" maxlength={NOTES_MAX} bind:value={notes} placeholder="What you did, anything they should check, anything you were unsure about."></textarea>
-      <span class="hint num">{notes.length} of {NOTES_MAX}</span>
+      <label for="notes">{m.claim_notes_label()} <span class="muted">{m.field_optional()}</span></label>
+      <textarea id="notes" class="input" maxlength={NOTES_MAX} bind:value={notes} placeholder={m.claim_notes_placeholder()}></textarea>
+      <span class="hint num">{m.count_of({ count: notes.length, max: NOTES_MAX })}</span>
     </div>
 
     {#if error}<p class="notice notice--error" role="alert">{error}</p>{/if}
 
     <div class="ctas">
-      <button class="patch-btn" type="submit" disabled={submitting}>{submitting ? 'Sending...' : 'Pin it for review'}</button>
-      <Link href="/task/{data.task.id}" class="patch-btn patch-btn--plain">Not yet</Link>
+      <button class="patch-btn" type="submit" disabled={submitting}>{submitting ? m.status_sending() : m.claim_submit()}</button>
+      <Link href="/task/{data.task.id}" class="patch-btn patch-btn--plain">{m.claim_not_yet()}</Link>
     </div>
   </form>
 
-  <aside class="claim__patch" aria-label="The patch this becomes">
+  <aside class="claim__patch" aria-label={m.claim_patch_label()}>
     <PatchPreview color={data.patch?.color} icon={data.patch?.icon} size="9rem" pinned />
     <p>
-      Your work is <strong>pinned</strong> until a person at the nonprofit reviews it.
-      {#if data.patch?.label}Once approved it is sewn in as a {data.patch.label} patch.{:else}Once approved it is sewn in as a plain patch.{/if}
+      <Rich text={m.claim_pinned()} />
+      {data.patch?.label ? m.claim_sewn_named({ patch: data.patch.label }) : m.claim_sewn_plain()}
     </p>
-    <p class="small muted">{minutesLabel(data.task.estimatedMinutes)} task. Notes go through content safety before they are saved.</p>
+    <p class="small muted">{m.claim_safety({ length: minutesLabel(data.task.estimatedMinutes) })}</p>
   </aside>
 </div>
 

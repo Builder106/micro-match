@@ -3,28 +3,23 @@
   import Seo from '$lib/components/Seo.svelte';
   import Link from '$lib/components/Link.svelte';
   import Needle from '$lib/components/art/Needle.svelte';
+  import * as m from '$lib/paraglide/messages.js';
 
   const missing = $derived(page.status === 404);
 </script>
 
-<Seo title="{missing ? 'A missing block' : 'Something came unstitched'} | MicroMatch" description="This page is not part of the MicroMatch quilt." noindex />
+<Seo title={missing ? m.error_missing_meta() : m.error_broken_meta()} description={m.error_meta_description()} noindex />
 
 <div class="missing">
   <div class="hole" aria-hidden="true">
     <Needle class="hole__needle" />
     <svg class="hole__thread" viewBox="0 0 380 60"><path d="M10 40C60 26 86 54 130 40S204 18 242 36 320 52 370 34" /></svg>
   </div>
-  <h1 class="display h-xl" tabindex="-1">{missing ? 'This block was never sewn' : 'Something came unstitched'}</h1>
-  <p class="lede">
-    {#if missing}
-      There is no page here. It may have moved, or the link has a typo.
-    {:else}
-      The server dropped a stitch ({page.status}). Try again in a moment.
-    {/if}
-  </p>
+  <h1 class="display h-xl" tabindex="-1">{missing ? m.error_missing_title() : m.error_broken_title()}</h1>
+  <p class="lede">{missing ? m.error_missing_body() : m.error_broken_body({ status: page.status })}</p>
   <div class="ctas">
-    <Link href="/" class="patch-btn">Back to the quilt</Link>
-    <Link href="/contents" class="patch-btn patch-btn--plain">See every block</Link>
+    <Link href="/" class="patch-btn">{m.error_back()}</Link>
+    <Link href="/contents" class="patch-btn patch-btn--plain">{m.error_contents()}</Link>
   </div>
 </div>
 

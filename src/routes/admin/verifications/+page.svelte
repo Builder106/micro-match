@@ -6,6 +6,7 @@
   import { relativeTime } from '$lib/time';
   import { countryName } from '$lib/verification';
   import type { NgoVerification } from '$lib/types';
+  import * as m from '$lib/paraglide/messages.js';
 
   type Row = NgoVerification & {
     propublica?: { found: true; orgName: string; status: 'active' | 'revoked' | 'unknown'; ntee?: string; rulingDate?: string } | { found: false; error?: string } | null;
@@ -29,29 +30,30 @@
     all: rows.length
   });
   const shown = $derived(tab === 'all' ? rows : rows.filter((r) => r.status === tab));
-  const tabs: { id: Tab; label: string }[] = [
-    { id: 'pending', label: 'Waiting' },
-    { id: 'approved', label: 'Approved' },
-    { id: 'rejected', label: 'Rejected' },
-    { id: 'all', label: 'All' }
+  const tabs: { id: Tab; label: () => string }[] = [
+    { id: 'pending', label: m.admin_tab_pending },
+    { id: 'approved', label: m.admin_tab_approved },
+    { id: 'rejected', label: m.admin_tab_rejected },
+    { id: 'all', label: m.admin_tab_all }
   ];
+  const statusName = { pending: m.admin_status_pending, approved: m.admin_status_approved, rejected: m.admin_status_rejected };
 
   async function load() {
     loading = true;
-    const res = await callApi<{ verifications: Row[] }>('/api/verifications', { fallback: 'Could not load the queue.' });
+    const res = await callApi<{ verifications: Row[] }>('/api/verifications', { fallback: m.admin_load_error() });
     loading = false;
     if (res.ok) rows = res.data.verifications ?? [];
     else loadError = res.error;
   }
   onMount(load);
 
-  const emailNote = (d: { email?: { ok?: boolean } }) => (d.email?.ok ? 'The email was sent.' : 'The email was not sent.');
+  const emailNote = (d: { email?: { ok?: boolean } }) => (d.email?.ok ? m.admin_email_sent() : m.admin_email_not_sent());
 
   async function approve(r: Row) {
     working = r.userId;
-    const res = await callApi<{ tasksUpdated?: number; email?: { ok?: boolean } }>(`/api/verifications/${r.userId}/approve`, { method: 'POST', fallback: 'Could not approve.' });
+    const res = await callApi<{ tasksUpdated?: number; email?: { ok?: boolean } }>(`/api/verifications/${r.userId}/approve`, { method: 'POST', fallback: m.admin_approve_error() });
     working = null;
-    note = res.ok ? `${r.orgName} approved. ${res.data.tasksUpdated ?? 0} of its tasks now show the verified mark. ${emailNote(res.data)}` : res.error;
+    note = res.ok ? `${m.admin_approved({ org: r.orgName, count: res.data.tasksUpdated ?? 0 })} ${emailNote(res.data)}` : res.error;
     if (res.ok) await load();
   }
 
@@ -66,72 +68,72 @@
     if (!rejecting || !reason.trim()) return;
     const r = rejecting;
     working = r.userId;
-    const res = await callApi<{ email?: { ok?: boolean } }>(`/api/verifications/${r.userId}/reject`, { body: { reason: reason.trim() }, fallback: 'Could not reject.' });
+    const res = await callApi<{ email?: { ok?: boolean } }>(`/api/verifications/${r.userId}/reject`, { body: { reason: reason.trim() }, fallback: m.admin_reject_error() });
     working = null;
     dialog?.close();
-    note = res.ok ? `${r.orgName} rejected. ${emailNote(res.data)}` : res.error;
+    note = res.ok ? `${m.admin_rejected({ org: r.orgName })} ${emailNote(res.data)}` : res.error;
     if (res.ok) await load();
   }
 </script>
 
-<Seo title="Verifications | MicroMatch" description="Review nonprofit verification applications." noindex />
+<Seo title={m.admin_meta_title()} description={m.admin_meta_description()} noindex />
 
 <AccountTabs />
 
 <header class="page-head">
-  <h1 class="display h-l" tabindex="-1">Verifications</h1>
-  <p class="lede">Each nonprofit waits here until an admin checks it. US EINs come with what ProPublica knows.</p>
+  <h1 class="display h-l" tabindex="-1">{m.nav_verifications()}</h1>
+  <p class="lede">{m.admin_lede()}</p>
 </header>
 
-<div class="tabs" role="tablist" aria-label="Filter applications">
+<div class="tabs" role="tablist" aria-label={m.admin_tabs_label()}>
   {#each tabs as t (t.id)}
-    <button type="button" role="tab" aria-selected={tab === t.id} onclick={() => (tab = t.id)}>{t.label} <span class="num">{counts[t.id]}</span></button>
+    <button type="button" role="tab" aria-selected={tab === t.id} onclick={() => (tab = t.id)}>{t.label()} <span class="num">{counts[t.id]}</span></button>
   {/each}
 </div>
 
 {#if note}<p class="notice notice--ok" role="status">{note}</p>{/if}
 
 {#if loading}
-  <p class="muted">Loading the queue...</p>
+  <p class="muted">{m.admin_loading()}</p>
 {:else if loadError}
   <p class="notice notice--error" role="alert">{loadError}</p>
 {:else if shown.length === 0}
-  <p class="muted">{tab === 'pending' ? 'Nobody is waiting. New applications show up here.' : 'Nothing in this list.'}</p>
+  <p class="muted">{tab === 'pending' ? m.admin_none_pending() : m.admin_none()}</p>
 {:else}
   <ul class="queue">
     {#each shown as r (r.id)}
       <li class="app">
         <div class="app__head">
           <h2>{r.orgName}</h2>
-          <span class="small muted">{countryName(r.country)}, sent {relativeTime(r.submittedAt)}, {r.status}</span>
+          <span class="small muted">{m.admin_row_meta({ country: countryName(r.country), time: relativeTime(r.submittedAt), status: statusName[r.status]() })}</span>
         </div>
         <dl>
-          <div><dt>Registration number</dt><dd><code>{r.taxId}</code></dd></div>
+          <div><dt>{m.admin_reg_number()}</dt><dd><code>{r.taxId}</code></dd></div>
           {#if r.propublica}
             <div>
               <dt>ProPublica</dt>
               <dd>
                 {#if r.propublica.found}
-                  {r.propublica.orgName}, status {r.propublica.status}{r.propublica.rulingDate ? `, ruling ${r.propublica.rulingDate}` : ''}
+                  {m.admin_propublica({ org: r.propublica.orgName, status: r.propublica.status })}{r.propublica.rulingDate ? m.admin_ruling({ date: r.propublica.rulingDate }) : ''}
                 {:else}
-                  No match for this EIN{r.propublica.error ? ` (${r.propublica.error})` : ''}
+                  {m.admin_no_match()}{r.propublica.error ? ` (${r.propublica.error})` : ''}
                 {/if}
               </dd>
             </div>
           {/if}
           {#if r.docFileId}
             <div>
-              <dt>Document</dt>
+              <dt>{m.admin_document()}</dt>
               <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- an API file download, not a page route -->
-              <dd><a class="link" href="/api/verifications/{r.userId}/document" target="_blank" rel="noopener">Open the document</a></dd>
+              <dd><a class="link" href="/api/verifications/{r.userId}/document" target="_blank" rel="noopener">{m.admin_open_document()}</a></dd>
             </div>
           {/if}
-          {#if r.reason}<div><dt>Reason given</dt><dd>{r.reason}</dd></div>{/if}
+          {#if r.reason}<div><dt>{m.admin_reason_given()}</dt><dd>{r.reason}</dd></div>{/if}
         </dl>
         {#if r.status === 'pending'}
           <div class="ctas">
-            <button type="button" class="patch-btn patch-btn--small" disabled={working === r.userId} onclick={() => approve(r)}>Approve</button>
-            <button type="button" class="patch-btn patch-btn--plain patch-btn--small" disabled={working === r.userId} onclick={() => askReject(r)}>Reject</button>
+            <button type="button" class="patch-btn patch-btn--small" disabled={working === r.userId} onclick={() => approve(r)}>{m.action_approve()}</button>
+            <button type="button" class="patch-btn patch-btn--plain patch-btn--small" disabled={working === r.userId} onclick={() => askReject(r)}>{m.action_reject()}</button>
           </div>
         {/if}
       </li>
@@ -141,14 +143,14 @@
 
 <dialog class="confirm" bind:this={dialog} aria-labelledby="reject-title">
   <form onsubmit={reject}>
-    <h2 id="reject-title" class="h-m">Reject {rejecting?.orgName}?</h2>
+    <h2 id="reject-title" class="h-m">{m.admin_reject_title({ org: rejecting?.orgName ?? '' })}</h2>
     <div class="field">
-      <label for="reason">Reason, sent to them by email</label>
+      <label for="reason">{m.admin_reason_label()}</label>
       <textarea id="reason" class="input" required bind:value={reason}></textarea>
     </div>
     <div class="ctas">
-      <button type="submit" class="patch-btn" disabled={!reason.trim()}>Reject and send</button>
-      <button type="button" class="patch-btn patch-btn--plain" onclick={() => dialog?.close()}>Cancel</button>
+      <button type="submit" class="patch-btn" disabled={!reason.trim()}>{m.admin_reject_send()}</button>
+      <button type="button" class="patch-btn patch-btn--plain" onclick={() => dialog?.close()}>{m.action_cancel()}</button>
     </div>
   </form>
 </dialog>

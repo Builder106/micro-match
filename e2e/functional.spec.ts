@@ -144,3 +144,34 @@ test('a block unfolds into a panel and folds back into the quilt', async ({ page
   await expect(page).toHaveURL(/\/en$/);
   await expect(page.locator('[data-block="how"]')).not.toHaveClass(/is-open/);
 });
+
+test('with reduced motion the intro and the panel flight do not play', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/en');
+  await expect(page.locator('html')).not.toHaveClass(/\bmotion\b/);
+  await expect(page.locator('html')).not.toHaveClass(/\benter\b/);
+  // Sample the panel while it opens: it fades in place, it never flies, scales or turns.
+  await page.getByRole('link', { name: 'Help', exact: true }).click();
+  const transforms = new Set<string>();
+  for (let i = 0; i < 10; i++) {
+    transforms.add(await page.locator('.panel').first().evaluate((el) => getComputedStyle(el).transform).catch(() => 'none'));
+    await page.waitForTimeout(30);
+  }
+  expect([...transforms]).toEqual(['none']);
+  await expect(page.getByRole('heading', { level: 1, name: 'Help' })).toBeVisible();
+});
+
+test("the quilt's ambient motion comes to rest five seconds after the last input", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/en');
+  await page.mouse.move(700, 450);
+  await page.waitForTimeout(7000);
+  const read = () => page.locator('.quilt-world').evaluate((el) => getComputedStyle(el).transform);
+  const rested = await read();
+  await page.waitForTimeout(1500);
+  expect(await read()).toBe(rested);
+  await page.mouse.move(300, 200, { steps: 12 });
+  await page.waitForTimeout(600);
+  expect(await read()).not.toBe(rested);
+});

@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Open: fifteen minutes</title>
+  </head>
+  <body>
+    <template>
+      <style>
+        /* The cold open on bare muslin: what volunteering usually asks for, then what people
+           have. Fifteen running stitches cross under the second line, one per minute. */
+        #root {
+          position: absolute;
+          inset: 0;
+          background:
+            repeating-linear-gradient(45deg, rgb(28 31 59 / 0.045) 0 1.5px, transparent 1.5px 34px),
+            #fdfcf8;
+        }
+        /* Each group of lines is one column in normal flow, so wrapped lines push the next one
+           down instead of overlapping it. */
+        .stack {
+          position: absolute;
+          left: 180px;
+          right: 180px;
+          top: 50%;
+          translate: 0 -50%;
+          display: grid;
+          gap: 34px;
+        }
+        .line {
+          margin: 0;
+          font: 680 104px/1 "Bricolage", sans-serif;
+          font-stretch: 96%;
+          letter-spacing: -0.03em;
+          color: #1c1f3b;
+          opacity: 0;
+        }
+        .or {
+          color: #575b76;
+        }
+        .have em {
+          font-style: normal;
+          color: #ff6b6b;
+        }
+        .stitches {
+          display: flex;
+          margin-top: 26px;
+          gap: 26px;
+        }
+        .stitches i {
+          display: block;
+          width: 70px;
+          height: 9px;
+          border-radius: 5px;
+          background: #ff6b6b;
+          transform-origin: 0 50%;
+          transform: scaleX(0);
+        }
+      </style>
+
+      <div id="root" data-composition-id="open" data-width="1920" data-height="1080">
+        <div class="stack">
+          <p class="line ask">Most volunteering asks for a Saturday morning.</p>
+          <p class="line or">Or a semester.</p>
+        </div>
+        <div class="stack">
+          <p class="line have">Plenty of people have <em>fifteen minutes.</em></p>
+          <div class="stitches" aria-hidden="true">
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        // Local time: 0 is 0.00 s in the trailer.
+        window.__timelines = window.__timelines || {};
+        const tl = gsap.timeline({ paused: true });
+        const scope = document.querySelector('[data-composition-id="open"]');
+        const $ = (s) => scope.querySelector(s);
+        const settle = { opacity: 1, y: 0, rotation: 0, duration: 0.7, ease: "expo.out" };
+        tl.fromTo($(".ask"), { opacity: 0, y: 22, rotation: -0.8 }, settle, 0.4)
+          .fromTo($(".or"), { opacity: 0, y: 22, rotation: 0.6 }, settle, 2.3)
+          .to([$(".ask"), $(".or")], { opacity: 0, y: -18, duration: 0.35, ease: "power2.in" }, 4.4)
+          .fromTo($(".have"), { opacity: 0, y: 22, rotation: -0.6 }, settle, 4.9);
+        scope.querySelectorAll(".stitches i").forEach((stitch, i) => {
+          tl.to(stitch, { scaleX: 1, duration: 0.16, ease: "power2.out" }, 5.7 + i * 0.2);
+        });
+        tl.to([$(".have"), $(".stitches")], { opacity: 0, y: -14, duration: 0.4, ease: "power2.in" }, 9.05);
+        window.__timelines["open"] = tl;
+      </script>
+    </template>
+  </body>
+</html>

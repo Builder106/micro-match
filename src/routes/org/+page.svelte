@@ -7,6 +7,7 @@
   import { go } from '$lib/go';
   import { TASK_MINUTES, LIMITS, parseTags } from '$lib/taskForm';
   import type { Locale } from '$lib/locale';
+  import * as m from '$lib/paraglide/messages.js';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
@@ -23,11 +24,20 @@
   let error = $state('');
   let submitting = $state(false);
 
-  const languages = ['English', 'Spanish', 'French', 'German', 'Portuguese', 'Chinese', 'Arabic'];
+  // The stored value stays the English name the task translation service expects.
+  const languages = [
+    ['English', m.lang_en],
+    ['Spanish', m.lang_es],
+    ['French', m.lang_fr],
+    ['German', m.lang_de],
+    ['Portuguese', m.lang_pt],
+    ['Chinese', m.lang_zh],
+    ['Arabic', m.lang_ar]
+  ] as const;
 
   async function post(e: SubmitEvent) {
     e.preventDefault();
-    if (!title.trim() || !shortDescription.trim()) return void (error = 'A title and a one-line summary are required.');
+    if (!title.trim() || !shortDescription.trim()) return void (error = m.org_required());
     submitting = true;
     error = '';
     const res = await callApi<{ id: string }>('/api/tasks', {
@@ -41,7 +51,7 @@
         maxVolunteers: maxVolunteers ? Number(maxVolunteers) : undefined,
         deadline: deadline ? new Date(deadline).toISOString() : undefined
       },
-      fallback: 'Could not post the task.'
+      fallback: m.org_error()
     });
     submitting = false;
     if (res.ok) await go(`/task/${res.data.id}`, locale, { invalidateAll: true });
@@ -49,67 +59,67 @@
   }
 </script>
 
-<Seo title="Post a task | MicroMatch" description="Post a 5 to 30 minute task for volunteers and verify your nonprofit." noindex />
+<Seo title={m.org_meta_title()} description={m.org_meta_description()} noindex />
 
 <AccountTabs />
 
 <div class="org">
   <form class="org__form" onsubmit={post}>
     <header class="page-head">
-      <h1 class="display h-l" tabindex="-1">Post a task</h1>
-      <p class="lede">Cut one clear piece of work: what to make, what done looks like and how long it takes.</p>
+      <h1 class="display h-l" tabindex="-1">{m.nav_post_task()}</h1>
+      <p class="lede">{m.org_lede()}</p>
     </header>
     {#if data.verificationStatus !== 'approved'}
-      <p class="notice">Tasks you post now stay out of the public feed until your organization is verified.</p>
+      <p class="notice">{m.org_unverified()}</p>
     {/if}
 
     <div class="field">
-      <label for="t-title">Title</label>
-      <input id="t-title" class="input" maxlength={LIMITS.title} bind:value={title} placeholder="Translate a medical flyer into Spanish" required />
+      <label for="t-title">{m.field_title()}</label>
+      <input id="t-title" class="input" maxlength={LIMITS.title} bind:value={title} placeholder={m.org_title_placeholder()} required />
     </div>
     <div class="field">
-      <label for="t-short">One-line summary</label>
-      <input id="t-short" class="input" maxlength={LIMITS.short} bind:value={shortDescription} placeholder="What the volunteer does, in one sentence." required />
+      <label for="t-short">{m.org_summary()}</label>
+      <input id="t-short" class="input" maxlength={LIMITS.short} bind:value={shortDescription} placeholder={m.org_summary_placeholder()} required />
     </div>
     <div class="field">
-      <label for="t-brief">The brief</label>
-      <textarea id="t-brief" class="input" maxlength={LIMITS.brief} bind:value={description} placeholder="Where the material is, what to deliver, how you will judge it."></textarea>
+      <label for="t-brief">{m.task_brief()}</label>
+      <textarea id="t-brief" class="input" maxlength={LIMITS.brief} bind:value={description} placeholder={m.org_brief_placeholder()}></textarea>
     </div>
 
     <fieldset class="field minutes">
-      <legend class="label">How long it takes</legend>
+      <legend class="label">{m.org_minutes()}</legend>
       <div class="seg">
-        {#each TASK_MINUTES as m (m)}
-          <label class:is-on={minutes === m}><input type="radio" name="minutes" value={m} bind:group={minutes} />{m} min</label>
+        {#each TASK_MINUTES as n (n)}
+          <label class:is-on={minutes === n}><input type="radio" name="minutes" value={n} bind:group={minutes} />{m.minutes_short({ count: n })}</label>
         {/each}
       </div>
     </fieldset>
 
     <div class="row">
       <div class="field">
-        <label for="t-tags">Tags</label>
-        <input id="t-tags" class="input" bind:value={tags} placeholder="translation, health" />
-        <span class="hint">Separate with commas.</span>
+        <label for="t-tags">{m.field_tags()}</label>
+        <input id="t-tags" class="input" bind:value={tags} placeholder={m.org_tags_placeholder()} />
+        <span class="hint">{m.org_tags_hint()}</span>
       </div>
       <div class="field">
-        <label for="t-lang">Written in</label>
-        <select id="t-lang" class="input" bind:value={language}>{#each languages as l (l)}<option>{l}</option>{/each}</select>
+        <label for="t-lang">{m.field_written_in()}</label>
+        <select id="t-lang" class="input" bind:value={language}>{#each languages as [value, name] (value)}<option {value}>{name()}</option>{/each}</select>
       </div>
     </div>
     <div class="row">
       <div class="field">
-        <label for="t-cap">Most volunteers (optional)</label>
+        <label for="t-cap">{m.org_cap()}</label>
         <input id="t-cap" class="input" type="number" min="1" inputmode="numeric" bind:value={maxVolunteers} />
       </div>
       <div class="field">
-        <label for="t-due">Deadline (optional)</label>
+        <label for="t-due">{m.org_deadline()}</label>
         <input id="t-due" class="input" type="date" bind:value={deadline} />
       </div>
     </div>
 
     {#if error}<p class="notice notice--error" role="alert">{error}</p>{/if}
-    <button class="patch-btn" type="submit" disabled={submitting}>{submitting ? 'Posting...' : 'Post the task'}</button>
-    <p class="small muted">Task text goes through Azure AI Content Safety before it is saved.</p>
+    <button class="patch-btn" type="submit" disabled={submitting}>{submitting ? m.org_posting() : m.org_submit()}</button>
+    <p class="small muted">{m.org_safety()}</p>
   </form>
 
   <aside class="org__side">

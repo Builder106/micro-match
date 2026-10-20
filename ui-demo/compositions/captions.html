@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Captions</title>
+  </head>
+  <body>
+    <template>
+      <style>
+        /* Captions over the phone footage: a signed muslin square near the bottom, clear of
+           the corner tags at the top of the screen. */
+        #root {
+          position: absolute;
+          inset: 0;
+        }
+        .caption {
+          position: absolute;
+          left: 60px;
+          right: 60px;
+          bottom: 150px;
+          margin: 0;
+          padding: 30px 40px 34px;
+          background: #fdfcf8;
+          color: #1c1f3b;
+          font: 680 66px/1.04 "Bricolage", sans-serif;
+          font-stretch: 96%;
+          letter-spacing: -0.025em;
+          box-shadow: 0 0 0 3px #1c1f3b, 0 12px 0 -2px rgb(28 31 59 / 0.25);
+          opacity: 0;
+        }
+        .caption::after {
+          content: "";
+          position: absolute;
+          inset: 10px;
+          border: 2px dashed rgb(28 31 59 / 0.35);
+        }
+        .caption em {
+          font-style: normal;
+          color: #e0484a;
+        }
+        /* The form fills the bottom of the screen, so its caption covers the panel's header
+           row instead, below the corner tags and above the link back to the task. */
+        .top {
+          top: 170px;
+          bottom: auto;
+        }
+      </style>
+
+      <div id="root" data-composition-id="captions" data-width="1080" data-height="1920">
+        <p class="caption c-time">Got <em>fifteen minutes?</em></p>
+        <p class="caption c-pick">Pick a real task from a real nonprofit.</p>
+        <p class="caption top c-send">Do it, then send a link to your work.</p>
+      </div>
+
+      <script>
+        // Times are on the cut's clock; this layer starts at 0.
+        window.__timelines = window.__timelines || {};
+        const tl = gsap.timeline({ paused: true });
+        const scope = document.querySelector('[data-composition-id="captions"]');
+        function caption(selector, from, to, turn) {
+          const el = scope.querySelector(selector);
+          tl.fromTo(el, { opacity: 0, y: 30, rotation: turn * 2 }, { opacity: 1, y: 0, rotation: turn, duration: 0.6, ease: "expo.out" }, from)
+            .to(el, { opacity: 0, y: -14, duration: 0.25, ease: "power2.in" }, to - 0.25);
+        }
+        caption(".c-time", 0.6, 6.5, -0.8);
+        caption(".c-pick", 6.9, 10.3, 0.7);
+        caption(".c-send", 10.7, 19.9, -0.6);
+        window.__timelines["captions"] = tl;
+      </script>
+    </template>
+  </body>
+</html>

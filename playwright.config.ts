@@ -31,7 +31,8 @@ export default defineConfig({
   projects: [
     { name: 'functional', testMatch: /functional\.spec\.ts/, use: { ...devices['Desktop Chrome'] } },
     { name: 'responsiveness', testMatch: /responsiveness\.spec\.ts/, use: { ...devices['Desktop Chrome'] } },
-    { name: 'visual', testMatch: /visual\.spec\.ts/, use: { ...devices['Desktop Chrome'] } }
+    { name: 'visual', testMatch: /visual\.spec\.ts/, use: { ...devices['Desktop Chrome'] } },
+    { name: 'accessibility', testMatch: /accessibility\.spec\.ts/, use: { ...devices['Desktop Chrome'] } }
   ],
   webServer: process.env.PLAYWRIGHT_BASE_URL
     ? undefined

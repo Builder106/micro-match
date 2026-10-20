@@ -4,6 +4,7 @@
   import Link from '$lib/components/Link.svelte';
   import { hrefFor } from '$lib/site';
   import type { Locale } from '$lib/locale';
+  import * as m from '$lib/paraglide/messages.js';
 
   const locale = $derived((page.data.locale as Locale | undefined) ?? 'en');
   let email = $state('');
@@ -20,30 +21,30 @@
       await client.createRecovery(email, `${location.origin}${hrefFor('/reset-password', locale)}`);
       sent = true;
     } catch {
-      error = 'We could not send a reset email. Check the address and try again.';
+      error = m.forgot_error();
     } finally {
       submitting = false;
     }
   }
 </script>
 
-<Seo title="Forgot password | MicroMatch" description="Forgot your MicroMatch password? Enter your email and get a link to choose a new one." />
+<Seo title={m.forgot_meta_title()} description={m.forgot_meta_description()} />
 
 <div class="auth">
-  <h1 class="display h-l" tabindex="-1">Forgot your password?</h1>
+  <h1 class="display h-l" tabindex="-1">{m.login_forgot()}</h1>
   {#if sent}
-    <p class="notice notice--ok" role="status">If an account uses {email}, a reset link is on its way. It comes from Appwrite, which runs MicroMatch accounts.</p>
-    <Link href="/login" class="patch-btn patch-btn--plain">Back to sign in</Link>
+    <p class="notice notice--ok" role="status">{m.forgot_sent({ email })}</p>
+    <Link href="/login" class="patch-btn patch-btn--plain">{m.forgot_back()}</Link>
   {:else}
-    <p class="muted">Enter your email and we will send you a link to choose a new one.</p>
+    <p class="muted">{m.forgot_lede()}</p>
     <form class="auth__form" onsubmit={send}>
       <div class="field">
-        <label for="email">Email</label>
+        <label for="email">{m.field_email()}</label>
         <input id="email" class="input" type="email" autocomplete="email" required bind:value={email} />
       </div>
       {#if error}<p class="notice notice--error" role="alert">{error}</p>{/if}
-      <button class="patch-btn" type="submit" disabled={submitting}>{submitting ? 'Sending...' : 'Send reset link'}</button>
+      <button class="patch-btn" type="submit" disabled={submitting}>{submitting ? m.status_sending() : m.forgot_submit()}</button>
     </form>
-    <p class="small"><Link href="/login" class="link">Back to sign in</Link></p>
+    <p class="small"><Link href="/login" class="link">{m.forgot_back()}</Link></p>
   {/if}
 </div>

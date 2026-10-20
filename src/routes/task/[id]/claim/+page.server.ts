@@ -18,7 +18,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
       shortDescription: task.shortDescription,
       estimatedMinutes: task.estimatedMinutes,
       tags: task.tags,
-      isVerified: task.isVerified
+      isVerified: task.isVerified,
+      language: task.language
     }
   };
 };

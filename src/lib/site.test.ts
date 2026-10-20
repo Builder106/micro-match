@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { PUBLIC_NAV, appNav, canonicalPath, hrefFor, isCurrent, isPublicPath, safeNext } from './site';
+import { appNav, canonicalPath, hrefFor, isCurrent, isPublicPath, safeNext } from './site';
 
 describe('site map', () => {
   it('strips the locale and a trailing slash', () => {
@@ -27,7 +27,6 @@ describe('site map', () => {
     expect(hrefFor('#main', 'en')).toBe('#main');
   });
   it('lists account tools by role', () => {
-    expect(PUBLIC_NAV.length).toBeGreaterThan(3);
     expect(appNav('volunteer', false).map((i) => i.label)).toEqual(['My block', 'Tasks', 'Profile']);
     expect(appNav('ngo', true).map((i) => i.href)).toEqual(['/dashboard', '/tasks', '/org', '/badges/manage', '/admin/verifications', '/profile']);
   });

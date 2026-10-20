@@ -27,7 +27,9 @@ img { height: auto; }
 input, button, textarea, select { font: inherit; color: inherit; }
 button { background: none; border: 0; cursor: pointer; padding: 0; }
 a { color: inherit; text-decoration: none; }
-h1, h2, h3, h4 { font-weight: inherit; font-size: inherit; text-wrap: balance; }
+h1, h2, h3, h4 { font-weight: inherit; font-size: inherit; text-wrap: balance; overflow-wrap: break-word; }
+/* Long compounds (German above all) hyphenate; English wraps at word breaks. */
+html:not([lang='en']) :is(h1, h2, h3, h4, .sig__line) { hyphens: auto; }
 p { text-wrap: pretty; }
 ::selection { background: var(--c-weld); color: var(--c-fg); }
 :focus-visible { outline: 2px solid var(--c-fg); outline-offset: 3px; border-radius: var(--radius); box-shadow: 0 0 0 5px var(--c-weld); }
@@ -172,7 +174,7 @@ html.lenis, html.lenis body { height: auto; }
 }
 .input::placeholder { color: var(--c-muted); }
 .input:hover { border-color: color-mix(in srgb, var(--c-fg) 70%, transparent); }
-.input:focus-visible { outline: none; border-color: var(--c-fg); box-shadow: 0 0 0 4px rgb(242 184 75 / 0.55); }
+.input:focus-visible { outline: 2px solid transparent; /* shows in forced colors, where box-shadow is dropped */ border-color: var(--c-fg); box-shadow: 0 0 0 4px rgb(242 184 75 / 0.55); }
 textarea.input { min-height: 8rem; resize: vertical; line-height: 1.5; }
 .notice { padding: 0.8rem 1rem; border-radius: var(--radius); background: rgb(242 184 75 / 0.22); }
 .notice--error { background: color-mix(in srgb, var(--c-danger) 10%, transparent); color: var(--c-danger); }
@@ -186,6 +188,19 @@ textarea.input { min-height: 8rem; resize: vertical; line-height: 1.5; }
 html.motion .intro-line > span { animation: rise 1.05s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: calc(var(--i, 0) * 70ms + 60ms); }
 html.motion .intro-settle { animation: settle 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: calc(var(--i, 0) * 70ms + 200ms); }
 
+/* Reduced motion: no keyframes or transitions run, so everything paints in its final state.
+   The engine checks the same query for its JS motion (panel flights, camera, smooth scroll). */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* ---------- pages inside a panel ---------- */
 .page-head { display: grid; gap: 1rem; max-width: 40rem; margin-bottom: clamp(2rem, 4vw, 3.5rem); }
 .page-head h1:focus { outline: none; }
@@ -193,6 +208,7 @@ html.motion .intro-settle { animation: settle 0.9s cubic-bezier(0.16, 1, 0.3, 1)
 .part > h2 { font-family: var(--f-display); font-size: var(--t-m); font-weight: 700; letter-spacing: -0.015em; line-height: 1.15; }
 .part > p, .part > ul, .part > ol { max-width: 38rem; }
 .part ul.plain, .part ol.plain { list-style: none; padding: 0; display: grid; gap: 0.6rem; }
+.part .plain a { display: inline-block; padding-block: 0.15rem; } /* at least 24px tall to tap */
 .ticks { list-style: none; padding: 0; display: grid; gap: 0.55rem; max-width: 38rem; }
 .ticks li { position: relative; padding-left: 1.6rem; }
 .ticks li::before { content: ''; position: absolute; left: 0.1rem; top: 0.62em; width: 0.9rem; height: 2px; background: linear-gradient(90deg, var(--c-accent) 55%, transparent 0) 0 0 / 5px 2px repeat-x; }

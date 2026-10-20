@@ -4,4 +4,4 @@ export { createCamera, type Camera } from './camera';
 export { unfold, fold, contentOut, contentIn } from './panel';
 export { smoothPanel, stopSmoothPanel, resetPanelScroll } from './scroll';
 export { idle, startIdle } from './idle';
-export { ease, isTouch, isMobile } from './env';
+export { ease, isTouch, isMobile, prefersStill } from './env';

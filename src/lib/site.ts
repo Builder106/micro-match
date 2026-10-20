@@ -1,6 +1,7 @@
 // Site map: which pages are public (smooth scroll and the motion engine) and which are app
 // pages (native scroll), plus the navigation lists shared by the header and footer.
 import { stripLocale, localizedHref, type Locale } from './locale';
+import * as m from '$lib/paraglide/messages.js';
 
 export const PUBLIC_PATHS = [
   '/',
@@ -48,25 +49,17 @@ export function hrefFor(path: string, locale: Locale): string {
 export type Role = 'anonymous' | 'user' | 'ngo' | 'volunteer';
 export type NavItem = { href: string; label: string };
 
-export const PUBLIC_NAV: NavItem[] = [
-  { href: '/how-it-works', label: 'How it works' },
-  { href: '/tasks', label: 'Tasks' },
-  { href: '/for-nonprofits', label: 'For nonprofits' },
-  { href: '/for-volunteers', label: 'For volunteers' },
-  { href: '/impact', label: 'The quilt' }
-];
-
 /** Links for a signed-in person, by role. */
 export function appNav(role: Role, isAdmin: boolean): NavItem[] {
   const items: NavItem[] = [
-    { href: '/dashboard', label: role === 'ngo' ? 'Reviews' : 'My block' },
-    { href: '/tasks', label: 'Tasks' }
+    { href: '/dashboard', label: role === 'ngo' ? m.nav_reviews() : m.nav_my_block() },
+    { href: '/tasks', label: m.nav_tasks() }
   ];
   if (role === 'ngo') {
-    items.push({ href: '/org', label: 'Post a task' }, { href: '/badges/manage', label: 'Patches' });
+    items.push({ href: '/org', label: m.nav_post_task() }, { href: '/badges/manage', label: m.nav_patches() });
   }
-  if (isAdmin) items.push({ href: '/admin/verifications', label: 'Verifications' });
-  items.push({ href: '/profile', label: 'Profile' });
+  if (isAdmin) items.push({ href: '/admin/verifications', label: m.nav_verifications() });
+  items.push({ href: '/profile', label: m.nav_profile() });
   return items;
 }
 

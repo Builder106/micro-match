@@ -3,20 +3,21 @@
   import { page } from '$app/state';
   import Seo from '$lib/components/Seo.svelte';
   import Link from '$lib/components/Link.svelte';
+  import Rich from '$lib/components/Rich.svelte';
   import PatchPreview from '$lib/components/PatchPreview.svelte';
-  import { getTaskDetailCopy } from '$lib/translation';
   import { deadlineLabel, minutesLabel } from '$lib/time';
   import { callApi } from '$lib/api';
+  import { taskLang } from '$lib/translation';
   import { go } from '$lib/go';
   import type { Locale } from '$lib/locale';
   import type { Task } from '$lib/types';
+  import * as m from '$lib/paraglide/messages.js';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
-  const taskDescription = (t: Task) => `${t.shortDescription} ${minutesLabel(t.estimatedMinutes)} volunteer task on MicroMatch.`.trim();
+  const taskDescription = (t: Task) => m.task_meta_description({ summary: t.shortDescription, length: minutesLabel(t.estimatedMinutes) }).trim();
 
   const locale = $derived((page.data.locale as Locale | undefined) ?? 'en');
-  const copy = $derived(getTaskDetailCopy(locale === 'en' ? null : locale));
   const signedIn = $derived((page.data.userRole ?? 'anonymous') !== 'anonymous');
 
   // Task text comes in its original language; other site locales fetch a translation after load.
@@ -45,18 +46,20 @@
   });
 
   const task = $derived(!showOriginal && translationStatus === 'translated' && translated ? translated : data.task);
+  // The nonprofit's own words carry their language until a translation replaces them.
+  const textLang = $derived(taskLang(data.task.language, task !== data.task));
   const deadline = $derived(deadlineLabel(task.deadline));
   const claimable = $derived(task.status === 'active' && deadline?.tone !== 'late');
   const closedNote = $derived(
-    task.status === 'completed' ? 'This task is complete.' : task.status === 'expired' || deadline?.tone === 'late' ? 'This task has closed.' : task.status === 'moderated' ? 'This task is under review.' : ''
+    task.status === 'completed' ? m.task_closed_complete() : task.status === 'expired' || deadline?.tone === 'late' ? m.task_closed() : task.status === 'moderated' ? m.task_closed_review() : ''
   );
 
   let deleting = $state(false);
   let deleteError = $state('');
   async function remove() {
-    if (!confirm('Delete this task? Volunteers can no longer claim it. Existing claims are kept.')) return;
+    if (!confirm(m.task_delete_confirm())) return;
     deleting = true;
-    const res = await callApi(`/api/tasks/${data.task.id}`, { method: 'DELETE', fallback: 'Could not delete the task.' });
+    const res = await callApi(`/api/tasks/${data.task.id}`, { method: 'DELETE', fallback: m.task_delete_error() });
     deleting = false;
     if (res.ok) await go('/tasks', locale, { invalidateAll: true });
     else deleteError = res.error;
@@ -67,51 +70,51 @@
 
 <div class="task">
   <article class="task__main">
-    <p class="crumbs"><Link href="/tasks" class="link">All tasks</Link></p>
-    <h1 class="display h-l" tabindex="-1">{task.title}</h1>
-    <p class="lede">{task.shortDescription}</p>
+    <p class="crumbs"><Link href="/tasks" class="link">{m.task_all()}</Link></p>
+    <h1 class="display h-l" tabindex="-1" lang={textLang}>{task.title}</h1>
+    <p class="lede" lang={textLang}>{task.shortDescription}</p>
 
     {#if locale !== 'en'}
       <div class="translation">
         {#if translating}
-          <span>{copy.translating}</span>
+          <span>{m.task_translating()}</span>
         {:else if translationStatus === 'translated'}
-          <span>{copy.translationNotice}</span>
+          <span>{m.task_translation_notice()}</span>
           <button type="button" class="link" onclick={() => (showOriginal = !showOriginal)}>
-            {showOriginal ? copy.viewTranslation : copy.viewOriginal}
+            {showOriginal ? m.task_view_translation() : m.task_view_original()}
           </button>
         {:else if translationStatus === 'fallback'}
-          <span>{copy.translationUnavailable}</span>
+          <span>{m.task_translation_unavailable()}</span>
         {/if}
       </div>
     {/if}
 
     <section class="brief" aria-labelledby="brief">
-      <h2 id="brief" class="h-m">The brief</h2>
+      <h2 id="brief" class="h-m">{m.task_brief()}</h2>
       {#if task.description}
-        <p class="brief__text">{task.description}</p>
+        <p class="brief__text" lang={textLang}>{task.description}</p>
       {:else}
-        <p class="muted">{copy.noDescription}</p>
+        <p class="muted">{m.task_no_description()}</p>
       {/if}
     </section>
 
     <section class="send" aria-labelledby="send">
-      <h2 id="send" class="h-m">What you send back</h2>
+      <h2 id="send" class="h-m">{m.task_send_title()}</h2>
       <ol class="ticks">
-        <li>A link to what you made: a document, a shared folder, a pull request or a design file.</li>
-        <li>A short note on how you did it and anything they should check.</li>
-        <li>A person at {data.orgName ?? 'the nonprofit'} reads both and approves the claim, or rejects it if it is not what they needed.</li>
+        <li>{m.task_send_1()}</li>
+        <li>{m.task_send_2()}</li>
+        <li>{data.orgName ? m.task_send_3_org({ org: data.orgName }) : m.task_send_3()}</li>
       </ol>
     </section>
 
     {#if data.isOwner}
       <section class="owner" aria-labelledby="owner">
-        <h2 id="owner" class="h-m">You posted this</h2>
-        <p class="muted">Claims on it wait in your reviews.</p>
+        <h2 id="owner" class="h-m">{m.task_owner_title()}</h2>
+        <p class="muted">{m.task_owner_body()}</p>
         <div class="ctas">
-          <Link href="/dashboard" class="patch-btn patch-btn--small">Open your reviews</Link>
+          <Link href="/dashboard" class="patch-btn patch-btn--small">{m.task_open_reviews()}</Link>
           <button type="button" class="patch-btn patch-btn--plain patch-btn--small" onclick={remove} disabled={deleting}>
-            {deleting ? 'Deleting...' : 'Delete task'}
+            {deleting ? m.task_deleting() : m.task_delete()}
           </button>
         </div>
         {#if deleteError}<p class="notice notice--error" role="alert">{deleteError}</p>{/if}
@@ -119,17 +122,17 @@
     {/if}
   </article>
 
-  <aside class="tag-card" aria-label="About this task">
+  <aside class="tag-card" aria-label={m.task_about_label()}>
     <dl>
-      <div><dt>Takes</dt><dd class="num big">{minutesLabel(task.estimatedMinutes)}</dd></div>
-      <div><dt>Posted by</dt><dd>{data.orgName ?? 'A nonprofit on MicroMatch'}{#if task.isVerified}<span class="verified">, verified</span>{/if}</dd></div>
-      {#if deadline}<div><dt>Deadline</dt><dd class:late={deadline.tone === 'late'}>{deadline.text}</dd></div>{/if}
-      {#if task.maxVolunteers}<div><dt>Volunteers</dt><dd>Up to {task.maxVolunteers}</dd></div>{/if}
-      {#if task.language}<div><dt>Written in</dt><dd>{task.language}</dd></div>{/if}
+      <div><dt>{m.task_takes()}</dt><dd class="num big">{minutesLabel(task.estimatedMinutes)}</dd></div>
+      <div><dt>{m.task_posted_by()}</dt><dd>{data.orgName ?? m.task_a_nonprofit()}{#if task.isVerified}<span class="verified">{m.task_verified_suffix()}</span>{/if}</dd></div>
+      {#if deadline}<div><dt>{m.task_deadline()}</dt><dd class:late={deadline.tone === 'late'}>{deadline.text}</dd></div>{/if}
+      {#if task.maxVolunteers}<div><dt>{m.task_volunteers()}</dt><dd>{m.task_up_to({ count: task.maxVolunteers })}</dd></div>{/if}
+      {#if task.language}<div><dt>{m.field_written_in()}</dt><dd>{task.language}</dd></div>{/if}
       {#if task.tags.length}
         <div>
-          <dt>Tags</dt>
-          <dd class="tag-list">{#each task.tags as t (t)}<span class="fabric-tag">{t.replace(/^#/, '')}</span>{/each}</dd>
+          <dt>{m.field_tags()}</dt>
+          <dd class="tag-list" lang={textLang}>{#each task.tags as t (t)}<span class="fabric-tag">{t.replace(/^#/, '')}</span>{/each}</dd>
         </div>
       {/if}
     </dl>
@@ -138,18 +141,18 @@
       <PatchPreview color={data.patch?.color} icon={data.patch?.icon} size="5.5rem" />
       <p>
         {#if data.patch?.label}
-          Finish it and it is sewn in as a <strong>{data.patch.label}</strong> patch.
+          <Rich text={m.task_earn_named({ patch: data.patch.label })} />
         {:else}
-          Finish it and it is sewn in as a plain patch: this nonprofit has not designed one yet.
+          {m.task_earn_plain()}
         {/if}
       </p>
     </div>
 
     {#if claimable}
       {#if signedIn}
-        <Link href="/task/{task.id}/claim" class="patch-btn">{copy.claimTask}</Link>
+        <Link href="/task/{task.id}/claim" class="patch-btn">{m.task_claim()}</Link>
       {:else}
-        <Link href="/login?next=/task/{task.id}/claim" class="patch-btn">{copy.signInToClaim}</Link>
+        <Link href="/login?next=/task/{task.id}/claim" class="patch-btn">{m.task_sign_in_to_claim()}</Link>
       {/if}
     {:else}
       <p class="notice">{closedNote}</p>
@@ -207,7 +210,7 @@
     display: grid;
     gap: 1.1rem;
     padding: 1.4rem;
-    background: #fff;
+    background: var(--c-card);
     border-radius: var(--radius);
     box-shadow: inset 0 0 0 1.5px var(--c-fg), 0 6px 0 -2px color-mix(in srgb, var(--c-shade) 15%, transparent);
     rotate: 0.4deg;

@@ -4,9 +4,11 @@
   import Link from './Link.svelte';
   import { fabricForTag, threadFor } from '$lib/quilt/fabrics';
   import { minutesLabel } from '$lib/time';
+  import { taskLang } from '$lib/translation';
+  import * as m from '$lib/paraglide/messages.js';
 
   type Props = {
-    task: { id: string; title: string; shortDescription: string; tags: string[]; sourceTags?: string[]; estimatedMinutes?: number; isVerified?: boolean };
+    task: { id: string; title: string; shortDescription: string; tags: string[]; sourceTags?: string[]; estimatedMinutes?: number; isVerified?: boolean; language?: string; translation?: { status: string } };
     headingLevel?: 'h2' | 'h3';
   };
   let { task, headingLevel = 'h2' }: Props = $props();
@@ -18,15 +20,15 @@
 <article class="swatch-card">
   <div class="swatch-card__cloth" style:--cloth={cloth} style:color={ink}>
     <span class="swatch-card__min num">{minutesLabel(task.estimatedMinutes)}</span>
-    {#if task.isVerified}<span class="swatch-card__verified">Verified nonprofit</span>{/if}
+    {#if task.isVerified}<span class="swatch-card__verified">{m.swatch_verified()}</span>{/if}
   </div>
-  <div class="swatch-card__body">
+  <div class="swatch-card__body" lang={taskLang(task.language, task.translation?.status === 'translated')}>
     <svelte:element this={headingLevel} class="swatch-card__title">
       <Link href="/task/{task.id}" class="swatch-card__link">{task.title}</Link>
     </svelte:element>
     <p class="swatch-card__desc">{task.shortDescription}</p>
     {#if task.tags.length}
-      <ul class="swatch-card__tags" aria-label="Tags">
+      <ul class="swatch-card__tags" aria-label={m.field_tags()}>
         {#each task.tags as tag (tag)}<li>{tag.replace(/^#/, '')}</li>{/each}
       </ul>
     {/if}

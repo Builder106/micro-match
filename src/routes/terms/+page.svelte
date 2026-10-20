@@ -1,8 +1,12 @@
 <script lang="ts">
+  import { page } from '$app/state';
   import Seo from '$lib/components/Seo.svelte';
+  import * as m from '$lib/paraglide/messages.js';
 </script>
 
-<Seo title="Terms of service | MicroMatch" description="The terms for using MicroMatch, a free, non-commercial educational project: the service disclaimer, liability, account use and submissions." />
+<Seo title={m.terms_meta_title()} description={m.terms_meta_description()} />
+
+{#if page.data.locale && page.data.locale !== 'en'}<p class="notice">{m.legal_english_only()}</p>{/if}
 
 <article class="legal" lang="en">
   <header class="page-head">
