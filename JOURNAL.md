@@ -1,5 +1,12 @@
 # JOURNAL — MicroMatch
 
+## 2026-10-21 - Replace the core loop sequence with a claim lifecycle #decision
+
+The Mermaid sequence showed a claim and its proof as two writes. The claim
+route takes both in one request, and badges only come from the org's own
+rules. The new figure in `assets/diagrams/` shows the claim states instead,
+and the verification flow is now one paragraph of text.
+
 ## 2026-10-19 - Demo GIFs, a social cut and a trailer #decision
 
 The videos were made after the UI was frozen, so they show the quilt as it

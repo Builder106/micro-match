@@ -89,39 +89,16 @@ There's a [trailer](trailer/) and a vertical [social cut](ui-demo/), both made i
 
 ## 🔄 How it works
 
-The core loop, end-to-end:
+A volunteer earns badges only when the NGO approves their claim.
 
-```mermaid
-sequenceDiagram
-  autonumber
-  actor V as Volunteer
-  actor N as NGO
-  participant App as MicroMatch
-  participant DB as Appwrite
-  participant Mail as Plunk
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/diagrams/claim-lifecycle-dark.png">
+  <img src="assets/diagrams/claim-lifecycle.png" alt="An NGO posts a task. A volunteer claims it and sends a proof URL and notes in the same request. If the notes fail the safety check, no claim is created. Otherwise the claim waits as pending. The NGO either rejects it, with no badge, or approves it, which awards badges from the org's badge rules." width="720">
+</picture>
 
-  N->>App: Post task
-  App->>DB: tasks.create (isVerified ← NGO's verification status)
+[Edit the diagram](assets/diagrams/claim-lifecycle.html).
 
-  V->>App: Browse feed, claim task
-  App->>DB: claims.create (status=pending)
-
-  V->>App: Submit proof (URL or file)
-  App->>DB: claims.update (proofUrl, notes)
-
-  N->>App: Approve claim
-  App->>DB: claims.update (status=approved)
-  App->>DB: badges.create (matching BadgeDefinitions for org)
-  App-->>V: Dashboard updates, badge appears in vault
-
-  Note over N,Mail: Verification flow (parallel)
-  N->>App: Submit verification (tax ID + doc)
-  App->>DB: ngoVerifications.create (status=pending)
-  Note over App: Admin reviews queue with ProPublica enrichment
-  App->>DB: status=approved, back-fill tasks.isVerified
-  App->>Mail: Send "you're verified" email
-  Mail-->>N: 📧
-```
+Verification runs alongside this. An NGO submits its tax ID and a document, and an admin reviews the request. On approval, all of the org's tasks are marked verified and Plunk emails the NGO.
 
 ## 🚀 Tech stack
 
