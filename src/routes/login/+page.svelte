@@ -61,6 +61,9 @@
   </form>
 
   <div class="auth__or"><span>{m.login_or()}</span></div>
-  <button type="button" class="patch-btn patch-btn--plain" onclick={google}>{m.login_google()}</button>
+  <button type="button" class="patch-btn patch-btn--plain" onclick={google}>
+    <img src="/google-signin-icon.png" width="28" height="28" alt="" />
+    {m.login_google()}
+  </button>
   <p class="small"><Rich text={m.login_new()} links={{ join: '/signup' }} /></p>
 </div>
