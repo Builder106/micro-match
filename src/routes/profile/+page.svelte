@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from '$app/state';
   import { onMount, untrack } from 'svelte';
   import Seo from '$lib/components/Seo.svelte';
   import AccountTabs from '$lib/components/AccountTabs.svelte';
@@ -12,7 +13,9 @@
 
   type Role = 'volunteer' | 'ngo';
   const start: Role | null = untrack(() => (data.userRole === 'ngo' || data.userRole === 'volunteer' ? data.userRole : null));
-  let role = $state<Role>(start ?? 'volunteer');
+  const requestedRole = page.url.searchParams.get('role');
+  const initialRole = requestedRole === 'ngo' || requestedRole === 'volunteer' ? requestedRole : null;
+  let role = $state<Role>(start ?? initialRole ?? 'volunteer');
   let savedRole = $state<Role | null>(start);
   let displayName = $state('');
   let bio = $state('');

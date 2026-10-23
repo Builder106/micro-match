@@ -16,6 +16,7 @@ import { createSession as createAppSession, SESSION_TTL_SECONDS } from '$lib/ser
 export const GET: RequestHandler = async (event) => {
   const userId = event.url.searchParams.get('userId') ?? '';
   const secret = event.url.searchParams.get('secret') ?? '';
+  const requestedRole = event.url.searchParams.get('role');
   if (!userId || !secret) {
     throw redirect(303, '/login?error=oauth_token');
   }
@@ -89,5 +90,9 @@ export const GET: RequestHandler = async (event) => {
 
   // 5. Land users without a chosen role on /profile so they can pick one.
   const hasRole = prefRole === 'ngo' || prefRole === 'volunteer';
-  throw redirect(303, hasRole ? '/dashboard' : '/profile');
+  const profileUrl = new URL('/profile', event.url);
+  if (!hasRole && (requestedRole === 'ngo' || requestedRole === 'volunteer')) {
+    profileUrl.searchParams.set('role', requestedRole);
+  }
+  throw redirect(303, hasRole ? '/dashboard' : `${profileUrl.pathname}${profileUrl.search}`);
 };

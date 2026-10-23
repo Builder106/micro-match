@@ -34,15 +34,20 @@ export async function updateRecovery(userId: string, secret: string, password: s
   await account.updateRecovery({ userId, secret, password });
 }
 
-export function signInWithGoogle() {
+export function signInWithGoogle(options: { role?: 'volunteer' | 'ngo'; returnTo?: 'login' | 'signup' } = {}) {
   // Token flow (RFC 6749-style code exchange) instead of session flow.
   // The provider redirects back to our server with userId+secret in the
   // query, the server validates them via the admin SDK and mints a
   // first-party mm_session cookie. This survives Safari/ITP cross-origin
   // cookie blocking, which the old createOAuth2Session flow does not.
-  const success = `${window.location.origin}/api/auth/oauth/callback`;
-  const failure = `${window.location.origin}/login?error=oauth`;
-  account.createOAuth2Token({ provider: OAuthProvider.Google, success, failure });
+  const success = new URL('/api/auth/oauth/callback', window.location.origin);
+  const failure = new URL(options.returnTo === 'signup' ? '/signup' : '/login', window.location.origin);
+  failure.searchParams.set('error', 'oauth');
+  if (options.role) {
+    success.searchParams.set('role', options.role);
+    failure.searchParams.set('role', options.role);
+  }
+  account.createOAuth2Token({ provider: OAuthProvider.Google, success: success.toString(), failure: failure.toString() });
 }
 
 export async function signOut() {

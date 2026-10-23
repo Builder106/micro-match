@@ -9,6 +9,7 @@
 
   const locale = $derived((page.data.locale as Locale | undefined) ?? 'en');
   const fromQuery = page.url.searchParams.get('role');
+  const oauthError = $derived(page.url.searchParams.get('error'));
 
   let role = $state<'volunteer' | 'ngo' | null>(fromQuery === 'ngo' || fromQuery === 'volunteer' ? fromQuery : null);
   let firstName = $state('');
@@ -17,6 +18,11 @@
   let password = $state('');
   let error = $state('');
   let submitting = $state(false);
+
+  async function google() {
+    const client = await import('$lib/appwrite.client');
+    client.signInWithGoogle({ role: role ?? undefined, returnTo: 'signup' });
+  }
 
   async function create(e: SubmitEvent) {
     e.preventDefault();
@@ -57,7 +63,6 @@
         <span><strong>{m.hero_nonprofit()}</strong><span>{m.signup_ngo_body()}</span></span>
       </button>
     </div>
-    <p class="small"><Rich text={m.signup_have_account()} links={{ login: '/login' }} /></p>
   {:else}
     <button type="button" class="link small back" onclick={() => (role = null)}>{m.signup_back()}</button>
     <h1 class="display h-l" tabindex="-1">{role === 'ngo' ? m.cta_join_nonprofit() : m.cta_join_volunteer()}</h1>
@@ -84,9 +89,16 @@
       {#if role === 'ngo'}<p class="small muted">{m.signup_ngo_next()}</p>{/if}
       {#if error}<p class="notice notice--error" role="alert">{error}</p>{/if}
       <button class="patch-btn" type="submit" disabled={submitting}>{submitting ? m.signup_submitting() : m.signup_submit()}</button>
-      <p class="small muted"><Rich text={m.signup_agree()} links={{ terms: '/terms', privacy: '/privacy' }} /></p>
     </form>
   {/if}
+  {#if oauthError === 'oauth'}<p class="notice notice--error" role="alert">{m.login_google_error()}</p>{/if}
+  <div class="auth__or"><span>{m.login_or()}</span></div>
+  <button type="button" class="patch-btn patch-btn--plain" onclick={google}>
+    <img src="/google-signin-icon.png" width="28" height="28" alt="" />
+    {m.login_google()}
+  </button>
+  <p class="small muted"><Rich text={m.signup_agree()} links={{ terms: '/terms', privacy: '/privacy' }} /></p>
+  <p class="small"><Rich text={m.signup_have_account()} links={{ login: '/login' }} /></p>
 </div>
 
 <style>
