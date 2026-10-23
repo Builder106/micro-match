@@ -228,6 +228,8 @@ export async function getUserEmail(userId: string): Promise<string | null> {
 
 /** Update user prefs verificationStatus so client-side UI doesn't need a separate fetch. */
 export async function setUserVerificationPref(userId: string, status: 'pending' | 'approved' | 'rejected' | null) {
+  if (!useAppwrite) return;
+
   try {
     const { Client, Users } = await import('node-appwrite');
     const client = new Client()

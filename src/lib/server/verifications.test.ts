@@ -2,16 +2,22 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 // Force in-memory mode by mocking env to empty. With APPWRITE_* unset, the
 // module's `useAppwrite` flag is false and all CRUD goes through its Map.
-const { envState } = vi.hoisted(() => ({ envState: {} as Record<string, string | undefined> }));
+const { envState, appwriteCalls } = vi.hoisted(() => ({
+  envState: {} as Record<string, string | undefined>,
+  appwriteCalls: { setEndpoint: vi.fn(), usersGet: vi.fn(), updatePrefs: vi.fn() }
+}));
 vi.mock('$env/dynamic/private', () => ({
   env: new Proxy(envState, { get: (_, key: string) => envState[key] })
 }));
 
-// In-memory path doesn't need node-appwrite — but the module imports it lazily
-// inside withAppwrite(). Stub setUserVerificationPref's Users.get to be safe.
+// In-memory mode must not make Appwrite client calls.
 vi.mock('node-appwrite', () => ({
-  Client: class { setEndpoint() { return this; } setProject() { return this; } setKey() { return this; } },
-  Users: class { get = vi.fn(); updatePrefs = vi.fn(); }
+  Client: class {
+    setEndpoint(...args: unknown[]) { appwriteCalls.setEndpoint(...args); return this; }
+    setProject() { return this; }
+    setKey() { return this; }
+  },
+  Users: class { get = appwriteCalls.usersGet; updatePrefs = appwriteCalls.updatePrefs; }
 }));
 
 import {
@@ -19,11 +25,13 @@ import {
   getVerificationByUserId,
   listVerifications,
   setVerificationStatus,
-  withdrawVerification
+  withdrawVerification,
+  setUserVerificationPref
 } from './verifications';
 
 describe('verifications (in-memory mode)', () => {
   beforeEach(async () => {
+    vi.clearAllMocks();
     // Wipe any state from previous tests by withdrawing every known userId.
     const all = await listVerifications();
     for (const v of all) await withdrawVerification(v.userId);
@@ -182,5 +190,13 @@ describe('verifications (in-memory mode)', () => {
   it('getUserEmail returns null in in-memory mode', async () => {
     const { getUserEmail } = await import('./verifications');
     expect(await getUserEmail('user-1')).toBeNull();
+  });
+
+  it('does not update Appwrite user prefs in in-memory mode', async () => {
+    await setUserVerificationPref('user-1', 'approved');
+
+    expect(appwriteCalls.setEndpoint).not.toHaveBeenCalled();
+    expect(appwriteCalls.usersGet).not.toHaveBeenCalled();
+    expect(appwriteCalls.updatePrefs).not.toHaveBeenCalled();
   });
 });
