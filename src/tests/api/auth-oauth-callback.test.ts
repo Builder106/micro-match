@@ -131,6 +131,18 @@ describe('GET /api/auth/oauth/callback', () => {
     expect(event.setCalls.map((c: { name: string }) => c.name)).toEqual(['mm_session', 'mm_role']);
   });
 
+  it.each(['ngo', 'volunteer'] as const)('keeps a selected %s role for profile setup', async (role) => {
+    mocks.accountCreateSession.mockResolvedValue({});
+    mocks.usersGet.mockResolvedValue({ email: 'jane@example.com', prefs: {} });
+    mocks.isUserInTeam.mockResolvedValue(false);
+
+    await expectRedirect(
+      GET(makeEvent(`?userId=u1&secret=s1&role=${role}`)),
+      303,
+      `/profile?role=${role}`
+    );
+  });
+
   it('redirects to /dashboard when prefs.role is already set', async () => {
     mocks.accountCreateSession.mockResolvedValue({});
     mocks.usersGet.mockResolvedValue({ email: 'jane@example.com', prefs: { role: 'ngo' } });

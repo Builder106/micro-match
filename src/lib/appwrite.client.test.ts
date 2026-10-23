@@ -121,6 +121,15 @@ describe('appwrite.client', () => {
     });
   });
 
+  it('keeps the signup route and selected role in Google OAuth URLs', () => {
+    signInWithGoogle({ role: 'ngo', returnTo: 'signup' });
+    expect(mocks.createOAuth2Token).toHaveBeenCalledWith({
+      provider: 'google',
+      success: 'https://micromatch.tech/api/auth/oauth/callback?role=ngo',
+      failure: 'https://micromatch.tech/signup?error=oauth&role=ngo'
+    });
+  });
+
   it('getJWT returns the jwt string, or null on error', async () => {
     mocks.createJWT.mockResolvedValue({ jwt: 'abc.def.ghi' });
     expect(await getJWT()).toBe('abc.def.ghi');
