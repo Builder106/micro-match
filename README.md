@@ -4,6 +4,8 @@
 
 <h1>MicroMatch</h1>
 
+<img src="static/readme-banner.png" alt="Small tasks, sewn into something warm." width="100%" />
+
 <br />
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-FF6B6B.svg)](https://opensource.org/licenses/MIT)
