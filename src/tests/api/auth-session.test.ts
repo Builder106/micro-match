@@ -63,6 +63,8 @@ describe('POST /api/auth/session', () => {
     mocks.createSession.mockReset();
     mocks.isUserInTeam.mockReset();
     mocks.createSession.mockImplementation((input: Record<string, unknown>) => ({ id: 'sess-1', ...input, expiresAt: Date.now() + 1000 }));
+    mocks.env.APPWRITE_ENDPOINT = 'https://fake.appwrite.io/v1';
+    mocks.env.APPWRITE_PROJECT_ID = 'proj';
     mocks.env.APPWRITE_API_KEY = 'key';
     mocks.env.NODE_ENV = 'test';
     mocks.ngoTeamId = 'ngo-team';
@@ -78,6 +80,19 @@ describe('POST /api/auth/session', () => {
     expect((await POST(makeEvent(null))).status).toBe(400);
     expect((await POST(makeEvent({ jwt: '  ' }))).status).toBe(400);
   });
+
+  it.each(['APPWRITE_ENDPOINT', 'APPWRITE_PROJECT_ID'] as const)(
+    'returns 503 when %s is not configured',
+    async (setting) => {
+      mocks.env[setting] = '';
+
+      const res = await POST(makeEvent({ jwt: 'test-jwt' }));
+
+      expect(res.status).toBe(503);
+      expect(await res.json()).toEqual({ error: 'Authentication service is unavailable' });
+      expect(mocks.accountGet).not.toHaveBeenCalled();
+    }
+  );
 
   it('returns 400 on invalid JSON', async () => {
     const res = await POST(makeEvent(undefined));

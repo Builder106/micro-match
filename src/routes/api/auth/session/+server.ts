@@ -8,6 +8,9 @@ export const POST: RequestHandler = async (event) => {
 		const body = (await event.request.json()) as { jwt?: string | null };
 		const jwt = (body?.jwt ?? '').trim();
 		if (!jwt) return json({ error: 'Missing jwt' }, { status: 400 });
+		if (!env.APPWRITE_ENDPOINT || !env.APPWRITE_PROJECT_ID) {
+			return json({ error: 'Authentication service is unavailable' }, { status: 503 });
+		}
 
 		const { Client, Account } = await import('node-appwrite');
 		const client = new Client()
