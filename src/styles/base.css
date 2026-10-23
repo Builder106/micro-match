@@ -141,12 +141,12 @@ html.lenis, html.lenis body { height: auto; }
 .patch-btn:focus-visible { translate: 0 -2px; rotate: -0.6deg; }
 .patch-btn:focus-visible::after { opacity: 0.85; }
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
-  .patch-btn:not(.patch-btn--plain):hover::after {
+  .patch-btn:hover::after {
     animation: patch-stitch-run 0.6s linear infinite;
   }
 }
 @media (prefers-reduced-motion: no-preference) {
-  .patch-btn:not(.patch-btn--plain):focus-visible::after {
+  .patch-btn:focus-visible::after {
     animation: patch-stitch-run 0.6s linear infinite;
   }
 }
