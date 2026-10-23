@@ -78,10 +78,16 @@ async function measureContrast(page: Page, selector: string) {
     const size = parseFloat(s.fontSize);
     const bold = Number(s.fontWeight) >= 700;
     const large = size >= 24 || (bold && size >= 18.66);
-    // The text's own line boxes, so the element's border or padding is not read as background.
+    // Text nodes exclude inline logos from the contrast sample.
     const range = document.createRange();
-    range.selectNodeContents(node);
-    const rects = [...range.getClientRects()].filter((r) => r.width > 1 && r.height > 1);
+    const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT);
+    const rects: DOMRect[] = [];
+    while (walker.nextNode()) {
+      const text = walker.currentNode;
+      if (!text.textContent?.trim()) continue;
+      range.selectNodeContents(text);
+      rects.push(...[...range.getClientRects()].filter((r) => r.width > 1 && r.height > 1));
+    }
     if (!rects.length) return null;
     const box = {
       x: Math.max(0, Math.min(...rects.map((r) => r.left))),
