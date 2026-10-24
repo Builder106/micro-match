@@ -88,33 +88,25 @@ export type UserPreferenceValue =
   | undefined
   | string[];
 
-export type DashboardDataValue =
-  | number
-  | string
-  | boolean
-  | null
-  | undefined
-  | Task[]
-  | Array<Claim & { task?: { id: string; title: string; estimatedMinutes?: number } }>
-  | import('$lib/quilt/patches').QuiltPatch[];
+export type EnrichedClaim = Claim & { task?: { id: string; title: string; estimatedMinutes?: number } };
 
 export interface VolunteerUserData {
-  myClaims?: Array<Claim & { task?: { id: string; title: string; estimatedMinutes?: number } }>;
-  approvedClaimsCount?: number;
-  totalHours?: number;
-  recommendations?: Task[];
-  [key: string]: DashboardDataValue;
+  myClaims: EnrichedClaim[];
+  approvedClaimsCount: number;
+  totalHours: number;
+  recommendations: Task[];
+  patches: import('$lib/quilt/patches').QuiltPatch[];
 }
 
 export interface NgoUserData {
-  myTasks?: Task[];
-  pendingReviews?: Array<Claim & { task?: { id: string; title: string; estimatedMinutes?: number } }>;
-  totalTasks?: number;
-  pendingReviewsCount?: number;
-  approvedClaimsCount?: number;
-  totalHours?: number;
-  myClaims?: Array<Claim & { task?: { id: string; title: string; estimatedMinutes?: number } }>;
-  [key: string]: DashboardDataValue;
+  myTasks: Task[];
+  pendingReviews: EnrichedClaim[];
+  totalTasks: number;
+  pendingReviewsCount: number;
+  approvedClaimsCount: number;
+  totalHours: number;
+  myClaims: EnrichedClaim[];
+  patches: import('$lib/quilt/patches').QuiltPatch[];
 }
 
 export type DashboardUserData = VolunteerUserData | NgoUserData;

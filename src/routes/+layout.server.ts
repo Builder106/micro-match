@@ -11,7 +11,7 @@ const TASK_PREVIEW = 3;
 
 /** The quilt is on every page, so a failed lookup shows an empty block instead of breaking the site. */
 function orEmpty<T>(what: string, pending: Promise<T[]>): Promise<T[]> {
-  return pending.catch((error: unknown) => {
+  return pending.catch((error) => {
     console.error(`Layout could not load ${what}:`, error);
     return [];
   });

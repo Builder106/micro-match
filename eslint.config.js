@@ -46,6 +46,33 @@ export default [
     rules: { '@typescript-eslint/no-deprecated': 'error' }
   },
 
+  {
+    files: ['src/**/*.ts', 'src/**/*.svelte'],
+    ignores: [
+      'src/tests/**',
+      'src/routes/api/test/**',
+      'src/**/*.test.ts',
+      'src/**/*.spec.ts',
+      'src/**/*.test.svelte',
+      'src/**/*.spec.svelte',
+    ],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'TSUnknownKeyword',
+          message: 'Use a concrete type; keep unknown only at validated data or error boundaries.',
+        },
+      ],
+    },
+  },
+
+  {
+    // The API wrapper validates server responses and serializes caller payloads.
+    files: ['src/lib/api.ts'],
+    rules: { 'no-restricted-syntax': 'off' },
+  },
+
   // Project-wide rule tweaks
   {
     rules: {

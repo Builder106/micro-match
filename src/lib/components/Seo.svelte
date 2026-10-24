@@ -3,7 +3,8 @@
   import { canonicalPath } from '$lib/site';
   import { locales, type Locale } from '$lib/locale';
 
-  type Props = { title: string; description: string; noindex?: boolean; jsonLd?: Record<string, unknown> };
+  type JsonLdValue = string | number | boolean | null | JsonLdValue[] | { [key: string]: JsonLdValue };
+  type Props = { title: string; description: string; noindex?: boolean; jsonLd?: { [key: string]: JsonLdValue } };
   let { title, description, noindex = false, jsonLd }: Props = $props();
 
   const origin = $derived((page.data.origin as string | undefined) ?? page.url.origin);

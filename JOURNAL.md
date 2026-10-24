@@ -1,5 +1,9 @@
 # JOURNAL — MicroMatch
 
+## 2026-10-23 - Restrict explicit `unknown` in app source #ci #decision
+
+Typed ESLint continues to catch deprecated APIs and explicit `any`. Application `unknown` annotations are now limited to the API boundary, and animation helpers return `Promise<void>` when callers only need completion. Dashboard payloads list their volunteer and nonprofit fields explicitly so the page can narrow them without a catch-all record type.
+
 ## 2026-10-21 - Replace the core loop sequence with a claim lifecycle #decision
 
 The Mermaid sequence showed a claim and its proof as two writes. The claim

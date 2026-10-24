@@ -22,16 +22,20 @@ const parts = (panel: HTMLElement) => ({
   body: panel.querySelector<HTMLElement>('[data-panel-body]')
 });
 
+function waitForAnimation<T>(animation: T): Promise<void> {
+  return Promise.resolve(animation).then(() => undefined);
+}
+
 /** Unfold the panel from the block's rectangle on screen. */
-export function unfold(panel: HTMLElement, from: Rect | null): Promise<unknown> {
+export function unfold(panel: HTMLElement, from: Rect | null): Promise<void> {
   const { face, body } = parts(panel);
   gsap.killTweensOf([panel, face, body]);
   if (prefersStill()) {
     gsap.set(face, { autoAlpha: 0 });
-    return Promise.resolve(gsap.fromTo(panel, { opacity: 0 }, { opacity: 1, duration: 0.2, ease: 'none', clearProps: 'opacity' }));
+    return waitForAnimation(gsap.fromTo(panel, { opacity: 0 }, { opacity: 1, duration: 0.2, ease: 'none', clearProps: 'opacity' }));
   }
   if (!from) {
-    return Promise.resolve(
+    return waitForAnimation(
       gsap.timeline().fromTo(panel, { y: 24, rotation: 0.8 }, { y: 0, rotation: 0, duration: 0.7, ease: ease.out, clearProps: 'transform' })
     );
   }
@@ -44,17 +48,17 @@ export function unfold(panel: HTMLElement, from: Rect | null): Promise<unknown> 
     .to(panel, { x: 0, y: 0, scaleX: 1, scaleY: 1, rotation: 0, duration: 0.82, ease: ease.out, clearProps: 'transform' })
     .to(face, { autoAlpha: 0, duration: 0.35, ease: 'power1.out' }, 0.32)
     .to(body, { opacity: 1, y: 0, duration: 0.6, ease: ease.out, clearProps: 'transform,opacity' }, 0.42);
-  return Promise.resolve(tl);
+  return waitForAnimation(tl);
 }
 
 /** Fold the panel back into the block's hole. */
-export function fold(panel: HTMLElement, to: Rect | null): Promise<unknown> {
+export function fold(panel: HTMLElement, to: Rect | null): Promise<void> {
   const { face, body } = parts(panel);
   gsap.killTweensOf([panel, face, body]);
-  if (prefersStill()) return Promise.resolve(gsap.to(panel, { autoAlpha: 0, duration: 0.15, ease: 'none' }));
-  if (!to) return Promise.resolve(gsap.to(panel, { y: 30, autoAlpha: 0, duration: 0.35, ease: ease.inOut }));
+  if (prefersStill()) return waitForAnimation(gsap.to(panel, { autoAlpha: 0, duration: 0.15, ease: 'none' }));
+  if (!to) return waitForAnimation(gsap.to(panel, { y: 30, autoAlpha: 0, duration: 0.35, ease: ease.inOut }));
   const f = flight(panel, to);
-  return Promise.resolve(
+  return waitForAnimation(
     gsap
       .timeline()
       .to(body, { autoAlpha: 0, duration: 0.18 })
@@ -64,19 +68,19 @@ export function fold(panel: HTMLElement, to: Rect | null): Promise<unknown> {
 }
 
 /** Between two panels: the old content lifts away... */
-export function contentOut(panel: HTMLElement): Promise<unknown> {
+export function contentOut(panel: HTMLElement): Promise<void> {
   const { body } = parts(panel);
   if (!body) return Promise.resolve();
-  if (prefersStill()) return Promise.resolve(gsap.to(body, { autoAlpha: 0, duration: 0.12, ease: 'none' }));
-  return Promise.resolve(gsap.to(body, { autoAlpha: 0, y: -10, duration: 0.22, ease: ease.soft }));
+  if (prefersStill()) return waitForAnimation(gsap.to(body, { autoAlpha: 0, duration: 0.12, ease: 'none' }));
+  return waitForAnimation(gsap.to(body, { autoAlpha: 0, y: -10, duration: 0.22, ease: ease.soft }));
 }
 
 /** ...and the new content settles in. */
-export function contentIn(panel: HTMLElement): Promise<unknown> {
+export function contentIn(panel: HTMLElement): Promise<void> {
   const { body } = parts(panel);
   if (!body) return Promise.resolve();
-  if (prefersStill()) return Promise.resolve(gsap.fromTo(body, { opacity: 0 }, { opacity: 1, duration: 0.2, ease: 'none', clearProps: 'all' }));
-  return Promise.resolve(
+  if (prefersStill()) return waitForAnimation(gsap.fromTo(body, { opacity: 0 }, { opacity: 1, duration: 0.2, ease: 'none', clearProps: 'all' }));
+  return waitForAnimation(
     gsap.fromTo(body, { opacity: 0, y: 16, rotation: -0.4 }, { opacity: 1, y: 0, rotation: 0, duration: 0.6, ease: ease.out, clearProps: 'all' })
   );
 }

@@ -1,10 +1,8 @@
 import type { PageServerLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
 import { getTasks, getClaims } from '$lib/server/appwrite';
-import type { Task, Claim } from '$lib/types';
+import type { Claim, EnrichedClaim, NgoUserData, Task, VolunteerUserData } from '$lib/types';
 import { getQuiltPatches } from '$lib/server/quilt';
-
-type EnrichedClaim = Claim & { task?: { id: string; title: string; estimatedMinutes?: number } };
 
 function enrichClaims(claims: Claim[], tasks: Task[]): EnrichedClaim[] {
   const taskMap = new Map(tasks.map(t => [t.id, t]));
@@ -16,7 +14,7 @@ function enrichClaims(claims: Claim[], tasks: Task[]): EnrichedClaim[] {
   });
 }
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load = (async ({ locals }) => {
   const userRole = locals.userRole ?? 'anonymous';
   const session = locals.session;
   const user = session?.user?.id ? { id: session.user.id, email: session.user.email ?? undefined } : null;
@@ -44,20 +42,22 @@ export const load: PageServerLoad = async ({ locals }) => {
       return total + ((claim.task?.estimatedMinutes ?? 30) / 60);
     }, 0);
 
+    const userData: NgoUserData = {
+      myTasks,
+      pendingReviews,
+      totalTasks: myTasks.length,
+      pendingReviewsCount: pendingReviews.length,
+      approvedClaimsCount: approvedClaims.length,
+      totalHours: Math.round(totalHours * 10) / 10,
+      myClaims: myTaskClaims,
+      patches
+    };
+
     return {
       signedIn: true,
       userRole,
       user,
-      userData: {
-        myTasks,
-        pendingReviews,
-        totalTasks: myTasks.length,
-        pendingReviewsCount: pendingReviews.length,
-        approvedClaimsCount: approvedClaims.length,
-        totalHours: Math.round(totalHours * 10) / 10,
-        myClaims: myTaskClaims,
-        patches
-      }
+      userData
     };
   } else if (userRole === 'volunteer' && user) {
     const allTasks = await getTasks();
@@ -80,17 +80,19 @@ export const load: PageServerLoad = async ({ locals }) => {
       .slice(0, 3);
     const patches = await getQuiltPatches({ userId: user.id, statuses: ['approved', 'pending', 'rejected'] });
 
+    const userData: VolunteerUserData = {
+      myClaims,
+      approvedClaimsCount: approvedClaims.length,
+      totalHours: Math.round(totalHours * 10) / 10,
+      recommendations,
+      patches
+    };
+
     return {
       signedIn: true,
       userRole,
       user,
-      userData: {
-        myClaims,
-        approvedClaimsCount: approvedClaims.length,
-        totalHours: Math.round(totalHours * 10) / 10,
-        recommendations,
-        patches
-      }
+      userData
     };
   }
 
@@ -100,4 +102,4 @@ export const load: PageServerLoad = async ({ locals }) => {
     user: null,
     userData: null
   };
-};
+}) satisfies PageServerLoad;

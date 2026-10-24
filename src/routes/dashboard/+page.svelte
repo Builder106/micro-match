@@ -10,23 +10,21 @@
   import { callApi } from '$lib/api';
   import { relativeTime, minutesLabel } from '$lib/time';
   import * as m from '$lib/paraglide/messages.js';
-  import type { QuiltPatch } from '$lib/quilt/patches';
-  import type { Claim, Task } from '$lib/types';
+  import type { EnrichedClaim } from '$lib/types';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
 
-  type Enriched = Claim & { task?: { id: string; title: string; estimatedMinutes?: number } };
-  const ud = $derived((data.userData ?? {}) as Record<string, unknown>);
+  const ud = $derived(data.userData);
   const isNgo = $derived(data.userRole === 'ngo');
-  const patches = $derived((ud.patches as QuiltPatch[] | undefined) ?? []);
+  const patches = $derived(ud?.patches ?? []);
   const sewn = $derived(patches.filter((p) => p.status === 'approved'));
   const pinned = $derived(patches.filter((p) => p.status === 'pending'));
   const unpicked = $derived(patches.filter((p) => p.status === 'rejected'));
-  const hours = $derived(Number(ud.totalHours ?? 0));
-  const recs = $derived((ud.recommendations as Task[] | undefined) ?? []);
-  const reviews = $derived((ud.pendingReviews as Enriched[] | undefined) ?? []);
-  const myTasks = $derived((ud.myTasks as Task[] | undefined) ?? []);
+  const hours = $derived(ud?.totalHours ?? 0);
+  const recs = $derived(ud && 'recommendations' in ud ? ud.recommendations : []);
+  const reviews = $derived(ud && 'pendingReviews' in ud ? ud.pendingReviews : []);
+  const myTasks = $derived(ud && 'myTasks' in ud ? ud.myTasks : []);
   const justPinned = $derived(page.url.searchParams.get('pinned') === '1');
 
   const statusName = { active: m.task_status_active, completed: m.task_status_completed, expired: m.task_status_expired, moderated: m.task_status_moderated };
@@ -34,7 +32,7 @@
   let busy = $state<string | null>(null);
   let result = $state<Record<string, { kind: 'approved' | 'rejected' | 'error'; text: string }>>({});
 
-  async function review(claim: Enriched, action: 'approve' | 'reject') {
+  async function review(claim: EnrichedClaim, action: 'approve' | 'reject') {
     if (action === 'reject' && !confirm(m.dash_reject_confirm({ task: claim.task?.title ?? m.dash_your_task() }))) return;
     busy = claim.id;
     const res = await callApi<{ awardedBadgeIds?: string[] }>(`/api/claims/${claim.id}/${action}`, {

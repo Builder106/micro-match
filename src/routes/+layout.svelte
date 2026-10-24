@@ -55,7 +55,7 @@
 
   const desktop = () => matchMedia('(min-width: 900px)').matches;
   const samePage = (a?: URL | null, b?: URL | null) => !!a && !!b && a.pathname === b.pathname;
-  let pending: Promise<unknown> | null = null;
+  let pending: Promise<void> | null = null;
 
   beforeNavigate((nav) => {
     if (!nav.to || nav.willUnload || samePage(nav.from?.url, nav.to.url) || !panel) return;
