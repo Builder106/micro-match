@@ -211,7 +211,7 @@ function renderMessage(input: RenderInput): string {
   const reason = input.reason
     ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:16px 0;background:#F2B84B;border-radius:3px;">
       <tr><td style="padding:16px;color:#1C1F3B;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.5;text-align:${alignment};word-break:break-word;">
-        <strong>${escapeHtml(input.reasonLabel ?? '')}</strong><br />${escapeWithBreaks(input.reason)}
+        <strong>${escapeHtml(input.reasonLabel!)}</strong><br />${escapeWithBreaks(input.reason)}
       </td></tr>
     </table>`
     : '';

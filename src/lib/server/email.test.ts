@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { locales } from '$lib/locale';
 
 const { envState } = vi.hoisted(() => ({ envState: {} as Record<string, string | undefined> }));
 vi.mock('$env/dynamic/private', () => ({ env: new Proxy(envState, { get: (_, key: string) => envState[key] }) }));
@@ -53,6 +54,20 @@ describe('email module (Plunk)', () => {
     await sendVerificationApproved({ to: 'a@b', orgName: '<script>alert(1)</script>' }); await sendVerificationRejected({ to: 'a@b', orgName: 'Org', reason: '<img onerror=x>' });
     const bodies = fetchSpy.mock.calls.map((call) => JSON.parse((call[1] as RequestInit).body as string).body as string);
     expect(bodies[0]).toContain('&lt;script&gt;'); expect(bodies[1]).toContain('&lt;img onerror=x&gt;');
+  });
+
+  it('renders localized approval and rejection templates across all supported locales', async () => {
+    setEnv({ PLUNK_SECRET_KEY: 'secret', PLUNK_FROM_ADDRESS: 'a@b' });
+    const fetchSpy = vi.fn().mockResolvedValue(response());
+    vi.stubGlobal('fetch', fetchSpy);
+
+    for (const locale of locales) {
+      const approved = await sendVerificationApproved({ to: 'a@b', orgName: 'Example Org', locale });
+      expect(approved.ok).toBe(true);
+      const rejected = await sendVerificationRejected({ to: 'a@b', orgName: 'Example Org', reason: 'Changes needed', locale });
+      expect(rejected.ok).toBe(true);
+    }
+    expect(fetchSpy).toHaveBeenCalledTimes(locales.length * 2);
   });
 
   it('rejects HTTP and Plunk failures', async () => {
