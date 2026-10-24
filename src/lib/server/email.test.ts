@@ -28,13 +28,13 @@ describe('email module (Plunk)', () => {
     const [url, init] = fetchSpy.mock.calls[0] as [string, RequestInit];
     expect(url).toBe('https://next-api.useplunk.com/v1/send'); expect(init.method).toBe('POST');
     expect((init.headers as Record<string, string>).Authorization).toBe('Bearer secret');
-    expect(JSON.parse(init.body as string)).toMatchObject({ to: 'jane@example.com', subject: 'Your NGO is verified', from: { name: 'MicroMatch', email: 'noreply@micromatch.app' } });
+    expect(JSON.parse(init.body as string)).toMatchObject({ to: 'jane@example.com', subject: 'Your organization is verified', from: { name: 'MicroMatch', email: 'noreply@micromatch.app' } });
   });
 
   it('uses custom endpoint/name and supplied HTML', async () => {
     setEnv({ PLUNK_SECRET_KEY: 'secret', PLUNK_FROM_ADDRESS: 'env@example.com', PLUNK_FROM_NAME: 'MicroMatch Beta', PLUNK_API_URL: 'https://plunk.test/' });
     const fetchSpy = vi.fn().mockResolvedValue(response()); vi.stubGlobal('fetch', fetchSpy);
-    await sendEmail({ to: 'a@b', subject: 'Subject', html: '<p>HTML</p>', text: 'ignored' });
+    await sendEmail({ to: 'a@b', subject: 'Subject', html: '<p>HTML</p>' });
     const [url, init] = fetchSpy.mock.calls[0] as [string, RequestInit];
     expect(url).toBe('https://plunk.test/v1/send'); expect(JSON.parse(init.body as string)).toMatchObject({ body: '<p>HTML</p>', from: { name: 'MicroMatch Beta' } });
   });

@@ -1,7 +1,7 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { json } from '@sveltejs/kit';
 import { isUserAdmin } from '$lib/server/teams';
-import { getVerificationByUserId, getUserEmail, setUserVerificationPref, setVerificationStatus } from '$lib/server/verifications';
+import { getVerificationByUserId, getUserEmailAndLocale, setUserVerificationPref, setVerificationStatus } from '$lib/server/verifications';
 import { setTasksVerifiedForOrg } from '$lib/server/appwrite';
 import { sendVerificationRejected } from '$lib/server/email';
 
@@ -36,8 +36,8 @@ export const POST: RequestHandler = async (event) => {
 
   let emailResult: { ok: boolean; error?: string } = { ok: false };
   try {
-    const email = await getUserEmail(targetUserId);
-    if (email) emailResult = await sendVerificationRejected({ to: email, orgName: updated.orgName, reason });
+    const recipient = await getUserEmailAndLocale(targetUserId);
+    if (recipient) emailResult = await sendVerificationRejected({ ...recipient, orgName: updated.orgName, reason });
   } catch (err) {
     emailResult = { ok: false, error: (err as Error).message };
   }

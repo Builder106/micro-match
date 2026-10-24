@@ -27,11 +27,13 @@ function makeEvent(opts: {
   userId?: string | null;
   body?: unknown;
   search?: string;
+  locale?: 'en' | 'es' | 'fr' | 'de' | 'pt' | 'zh' | 'ar';
 } = {}) {
   const url = `http://test/api/verifications${opts.search ?? ''}`;
   return createRequestEvent({
     userId: opts.userId ?? undefined,
     url,
+    locals: { locale: opts.locale ?? 'en' },
     request: new Request(url, {
       method: 'POST',
       body: opts.body === undefined ? undefined : JSON.stringify(opts.body),
@@ -149,6 +151,7 @@ describe('POST /api/verifications', () => {
     mocks.getUserRole.mockResolvedValue('ngo');
     const res = await POST(makeEvent({
       userId: 'u1',
+      locale: 'fr',
       body: { orgName: '  Doctors Without Borders  ', country: 'US', taxId: ' 13-3433452 ', docFileId: 'f-1' }
     }));
     expect(res.status).toBe(200);
@@ -159,7 +162,7 @@ describe('POST /api/verifications', () => {
       taxId: '13-3433452',
       docFileId: 'f-1'
     });
-    expect(mocks.setUserVerificationPref).toHaveBeenCalledWith('u1', 'pending');
+    expect(mocks.setUserVerificationPref).toHaveBeenCalledWith('u1', 'pending', 'fr');
   });
 
   it('persists an undefined document file id when no document is supplied', async () => {

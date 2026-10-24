@@ -187,9 +187,9 @@ describe('verifications (in-memory mode)', () => {
     expect(approved?.docFileId).toBe('storage-file-abc');
   });
 
-  it('getUserEmail returns null in in-memory mode', async () => {
-    const { getUserEmail } = await import('./verifications');
-    expect(await getUserEmail('user-1')).toBeNull();
+  it('getUserEmailAndLocale returns null in in-memory mode', async () => {
+    const { getUserEmailAndLocale } = await import('./verifications');
+    expect(await getUserEmailAndLocale('user-1')).toBeNull();
   });
 
   it('does not update Appwrite user prefs in in-memory mode', async () => {

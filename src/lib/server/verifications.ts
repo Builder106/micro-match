@@ -1,5 +1,6 @@
 import { env } from '$env/dynamic/private';
-import type { NgoVerification } from '$lib/types';
+import { defaultLocale, isLocale, type Locale } from '$lib/locale';
+import type { NgoVerification, UserPreferences } from '$lib/types';
 
 const useAppwrite =
   process.env.PLAYWRIGHT_A11Y_HARNESS !== '1' &&
@@ -209,8 +210,8 @@ export async function withdrawVerification(userId: string): Promise<boolean> {
   });
 }
 
-/** Lookup the email for a user via the Appwrite Users API. */
-export async function getUserEmail(userId: string): Promise<string | null> {
+/** Look up a verification recipient and their saved email locale. */
+export async function getUserEmailAndLocale(userId: string): Promise<{ email: string; locale: Locale } | null> {
   if (!useAppwrite) return null;
   try {
     const { Client, Users } = await import('node-appwrite');
@@ -219,15 +220,20 @@ export async function getUserEmail(userId: string): Promise<string | null> {
       .setProject(env.APPWRITE_PROJECT_ID!)
       .setKey(env.APPWRITE_API_KEY!);
     const users = new Users(client);
-    const u = await users.get({ userId });
-    return u?.email ?? null;
+    const user = await users.get<UserPreferences>({ userId });
+    if (!user?.email) return null;
+    const localePreference = user.prefs?.locale;
+    const locale = typeof localePreference === 'string' && isLocale(localePreference)
+      ? localePreference
+      : defaultLocale;
+    return { email: user.email, locale };
   } catch {
     return null;
   }
 }
 
-/** Update user prefs verificationStatus so client-side UI doesn't need a separate fetch. */
-export async function setUserVerificationPref(userId: string, status: 'pending' | 'approved' | 'rejected' | null) {
+/** Update verification status and, on submission, the locale for its email notices. */
+export async function setUserVerificationPref(userId: string, status: 'pending' | 'approved' | 'rejected' | null, locale?: Locale) {
   if (!useAppwrite) return;
 
   try {
@@ -237,8 +243,9 @@ export async function setUserVerificationPref(userId: string, status: 'pending' 
       .setProject(env.APPWRITE_PROJECT_ID!)
       .setKey(env.APPWRITE_API_KEY!);
     const users = new Users(client);
-    const current = await users.get({ userId });
+    const current = await users.get<UserPreferences>({ userId });
     const prefs = { ...(current?.prefs ?? {}), verificationStatus: status ?? '' };
+    if (locale) prefs.locale = locale;
     await users.updatePrefs({ userId, prefs });
   } catch (err) {
     console.warn('Could not update user prefs:', err);

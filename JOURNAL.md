@@ -1,5 +1,15 @@
 # JOURNAL — MicroMatch
 
+## 2026-10-24 - Render localized verification emails #decision
+
+Approval and change-request emails now use one HTML template system with copy
+for all seven app locales. The locale selected when an NGO submits its
+verification is saved in its Appwrite preferences and used for later email.
+Older accounts and unsupported locale values use English. Each template has a
+hidden preheader, one action, a visible fallback URL, and the reason the
+recipient is receiving the email. Plunk builds the plain-text alternative
+from the HTML body. Account recovery remains with Appwrite.
+
 ## 2026-10-24 - Define a transactional email design system #decision
 
 Added `docs/email-design-system.md` for MicroMatch's Plunk transactional

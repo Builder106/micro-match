@@ -42,7 +42,7 @@ export const POST: RequestHandler = async (event) => {
   if (!taxId) return json({ error: 'taxId is required' }, { status: 400 });
 
   const v = await upsertVerification({ userId, orgName, country, taxId, docFileId });
-  await setUserVerificationPref(userId, 'pending');
+  await setUserVerificationPref(userId, 'pending', event.locals.locale);
   return json({ ok: true, verification: v });
 };
 

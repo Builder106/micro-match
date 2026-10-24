@@ -46,7 +46,7 @@ import {
   upsertVerification,
   setVerificationStatus,
   withdrawVerification,
-  getUserEmail,
+  getUserEmailAndLocale,
   setUserVerificationPref
 } from './verifications';
 
@@ -197,26 +197,29 @@ describe('verifications (Appwrite-backed mode)', () => {
     expect(await withdrawVerification('user-1')).toBe(false);
   });
 
-  it('getUserEmail returns the Appwrite user email, and null on error', async () => {
-    mocks.usersGet.mockResolvedValueOnce({ email: 'jane@example.com' });
-    expect(await getUserEmail('user-1')).toBe('jane@example.com');
+  it('getUserEmailAndLocale returns the saved locale and defaults to English', async () => {
+    mocks.usersGet.mockResolvedValueOnce({ email: 'jane@example.com', prefs: { locale: 'ar' } });
+    expect(await getUserEmailAndLocale('user-1')).toEqual({ email: 'jane@example.com', locale: 'ar' });
+
+    mocks.usersGet.mockResolvedValueOnce({ email: 'jane@example.com', prefs: { locale: 'unsupported' } });
+    expect(await getUserEmailAndLocale('user-1')).toEqual({ email: 'jane@example.com', locale: 'en' });
 
     mocks.usersGet.mockRejectedValueOnce(new Error('not found'));
-    expect(await getUserEmail('ghost')).toBeNull();
+    expect(await getUserEmailAndLocale('ghost')).toBeNull();
   });
 
-  it('getUserEmail returns null when Appwrite returns a user without an email', async () => {
+  it('getUserEmailAndLocale returns null when Appwrite returns a user without an email', async () => {
     mocks.usersGet.mockResolvedValueOnce({});
-    expect(await getUserEmail('user-1')).toBeNull();
+    expect(await getUserEmailAndLocale('user-1')).toBeNull();
   });
 
-  it('setUserVerificationPref merges verificationStatus into existing prefs', async () => {
+  it('setUserVerificationPref merges status and locale into existing prefs', async () => {
     mocks.usersGet.mockResolvedValueOnce({ prefs: { role: 'ngo' } });
     mocks.usersUpdatePrefs.mockResolvedValueOnce(undefined);
 
-    await setUserVerificationPref('user-1', 'approved');
+    await setUserVerificationPref('user-1', 'pending', 'fr');
 
-    expect(mocks.usersUpdatePrefs).toHaveBeenCalledWith({ userId: 'user-1', prefs: { role: 'ngo', verificationStatus: 'approved' } });
+    expect(mocks.usersUpdatePrefs).toHaveBeenCalledWith({ userId: 'user-1', prefs: { role: 'ngo', verificationStatus: 'pending', locale: 'fr' } });
   });
 
   it('setUserVerificationPref supports absent prefs and clearing the status', async () => {

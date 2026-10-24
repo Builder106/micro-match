@@ -9,7 +9,7 @@ The site brand, name, wordmark, and type choices follow [`DESIGN.md`](../DESIGN.
 - Put the outcome in the subject and heading.
 - Give each message one main action.
 - Keep the copy useful when images and custom fonts do not load.
-- Use the same information and destination in HTML and plain text.
+- Point the fallback link to the same destination as the main action.
 - Keep personal and verification details to the minimum needed to explain the next step.
 - Use color to support the message. State approval or a requested change in words as well.
 
@@ -46,13 +46,14 @@ Use an 8px spacing unit: 8px between related items, 16px between paragraphs, 24p
 
 Use this order for transactional messages:
 
-1. MicroMatch wordmark
-2. Outcome heading
-3. Short explanation
-4. Optional context panel for a specific detail or review note
-5. One primary action
-6. A plain-text fallback link when the button may not work
-7. A brief line explaining why the recipient received the email
+1. Hidden preheader for the inbox preview
+2. MicroMatch wordmark
+3. Outcome heading
+4. Short explanation
+5. Optional context panel for a specific detail or review note
+6. One primary action
+7. An underlined, copyable URL for the same action
+8. A brief line explaining why the recipient received the email
 
 Keep the shell quiet. Avoid decorative status dots, emoji, text over images, large illustrations, motion, gradients, and extra buttons. Do not use a color alone to distinguish an approved request from one that needs changes.
 
@@ -82,20 +83,20 @@ Keep the tone calm and specific. The approval message should describe what the o
 
 ## Localization and accessibility
 
-MicroMatch supports English, Spanish, French, German, Portuguese, Chinese, and Arabic. Each localized version needs a matching subject, preheader, HTML body, and plain-text body. Keep placeholders intact through translation and escape inserted organization names and review reasons.
+Verification emails use the locale saved in the applicant's `prefs.locale` when they submit or resubmit. If the preference is missing or unsupported, use English. The approval and change-request messages have complete copy in English, Spanish, French, German, Portuguese, Chinese, and Arabic. Keep placeholders intact through translation and escape inserted organization names and review reasons.
 
-Set the email language and text direction for the selected locale. Arabic must use right-to-left direction. Keep the layout in one column so longer German copy and right-to-left text do not depend on narrow side-by-side regions. Use descriptive link labels, visible underlines for links in body copy, and strong text contrast. The message must keep its meaning when color is removed.
+Set the email language and text direction from the saved locale. Arabic uses right-to-left direction. Keep the layout in one column so longer German copy and right-to-left text do not depend on narrow side-by-side regions. Use descriptive link labels, visible underlines for links in body copy, and strong text contrast. The message must keep its meaning when color is removed.
 
 ## Implementation notes
 
-The current sender is [`src/lib/server/email.ts`](../src/lib/server/email.ts). Keep presentation inside the existing email flow and leave provider credentials and delivery configuration separate. Continue to send an HTML body and a plain-text alternative. Use absolute links based on the configured app URL, escape inserted text, and do not include tax IDs, uploaded documents, or other verification evidence in email.
+The sender is [`src/lib/server/email.ts`](../src/lib/server/email.ts), and message markup and copy live in [`src/lib/server/emailTemplates.ts`](../src/lib/server/emailTemplates.ts). Plunk creates a plain-text alternative from the HTML body, so the template includes a visible full URL below the main action. The Plunk send API has no separate text-body field ([API reference](https://docs.useplunk.com/api-reference/public-api/sendEmail)).
 
-The current templates are English-only and still use an earlier palette, rounder corners, and different font choices. Apply these tokens and message patterns when updating those templates. The approval HTML button currently points to `/org`, while its plain-text alternative points to `/profile`; bring those destinations into agreement during that implementation.
+Use absolute, locale-prefixed links based on the configured app URL. Escape inserted text, and do not include tax IDs, uploaded documents, or other verification evidence in email. Appwrite account recovery messages remain outside this system.
 
 ## Review checklist
 
 - The subject, preheader, heading, and action describe the same outcome.
-- The HTML and plain-text versions include the same key details and action destination.
+- The generated plain-text version includes the same key details and action destination.
 - The email remains readable at 320px wide and with images disabled.
 - Long organization names and reviewer notes wrap without clipping.
 - Arabic uses right-to-left direction; each of the seven locales has complete copy before being sent in that locale.

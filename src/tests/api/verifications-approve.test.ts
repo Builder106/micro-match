@@ -5,7 +5,7 @@ const { mocks } = vi.hoisted(() => ({
   mocks: {
     isUserAdmin: vi.fn(),
     getVerificationByUserId: vi.fn(),
-    getUserEmail: vi.fn(),
+    getUserEmailAndLocale: vi.fn(),
     setVerificationStatus: vi.fn(),
     setUserVerificationPref: vi.fn(),
     setTasksVerifiedForOrg: vi.fn(),
@@ -17,7 +17,7 @@ const { mocks } = vi.hoisted(() => ({
 vi.mock('$lib/server/teams', () => ({ isUserAdmin: mocks.isUserAdmin }));
 vi.mock('$lib/server/verifications', () => ({
   getVerificationByUserId: mocks.getVerificationByUserId,
-  getUserEmail: mocks.getUserEmail,
+  getUserEmailAndLocale: mocks.getUserEmailAndLocale,
   setVerificationStatus: mocks.setVerificationStatus,
   setUserVerificationPref: mocks.setUserVerificationPref
 }));
@@ -55,7 +55,7 @@ describe('POST /api/verifications/[userId]/approve', () => {
     mocks.getVerificationByUserId.mockResolvedValue(happyVerification);
     mocks.setVerificationStatus.mockResolvedValue({ ...happyVerification, status: 'approved', reviewedBy: 'admin-1' });
     mocks.setTasksVerifiedForOrg.mockResolvedValue(3);
-    mocks.getUserEmail.mockResolvedValue('jane@example.com');
+    mocks.getUserEmailAndLocale.mockResolvedValue({ email: 'jane@example.com', locale: 'en' });
     mocks.sendVerificationApproved.mockResolvedValue({ ok: true, id: 'plunk-1' });
     mocks.setUserVerificationPref.mockResolvedValue(undefined);
   });
@@ -101,14 +101,15 @@ describe('POST /api/verifications/[userId]/approve', () => {
     expect(mocks.setUserVerificationPref).toHaveBeenCalledWith('target-user', 'approved');
     expect(mocks.sendVerificationApproved).toHaveBeenCalledWith({
       to: 'jane@example.com',
-      orgName: 'Doctors Without Borders'
+      orgName: 'Doctors Without Borders',
+      locale: 'en'
     });
     expect(body.tasksUpdated).toBe(3);
     expect(body.email.ok).toBe(true);
   });
 
   it('still returns 200 when email lookup throws (email is best-effort)', async () => {
-    mocks.getUserEmail.mockRejectedValue(new Error('users API down'));
+    mocks.getUserEmailAndLocale.mockRejectedValue(new Error('users API down'));
     const res = await approve(makeEvent({ adminId: 'admin-1', userId: 'target-user' }));
     const body = await res.json();
     expect(res.status).toBe(200);
@@ -116,7 +117,7 @@ describe('POST /api/verifications/[userId]/approve', () => {
   });
 
   it('skips sending the email when no email is on file', async () => {
-    mocks.getUserEmail.mockResolvedValue(null);
+    mocks.getUserEmailAndLocale.mockResolvedValue(null);
     const res = await approve(makeEvent({ adminId: 'admin-1', userId: 'target-user' }));
     expect(res.status).toBe(200);
     expect(mocks.sendVerificationApproved).not.toHaveBeenCalled();
@@ -139,7 +140,7 @@ describe('POST /api/verifications/[userId]/reject', () => {
     mocks.getVerificationByUserId.mockResolvedValue(happyVerification);
     mocks.setVerificationStatus.mockResolvedValue({ ...happyVerification, status: 'rejected', reason: 'docs unclear' });
     mocks.setTasksVerifiedForOrg.mockResolvedValue(2);
-    mocks.getUserEmail.mockResolvedValue('jane@example.com');
+    mocks.getUserEmailAndLocale.mockResolvedValue({ email: 'jane@example.com', locale: 'fr' });
     mocks.sendVerificationRejected.mockResolvedValue({ ok: true, id: 'plunk-2' });
   });
 
@@ -212,13 +213,14 @@ describe('POST /api/verifications/[userId]/reject', () => {
     expect(mocks.sendVerificationRejected).toHaveBeenCalledWith({
       to: 'jane@example.com',
       orgName: 'Doctors Without Borders',
-      reason: 'Document does not show tax-exempt status.'
+      reason: 'Document does not show tax-exempt status.',
+      locale: 'fr'
     });
     expect(body.tasksUpdated).toBe(2);
   });
 
   it('handles email throwing and returns emailResult with error message', async () => {
-    mocks.getUserEmail.mockRejectedValue(new Error('email service down'));
+    mocks.getUserEmailAndLocale.mockRejectedValue(new Error('email service down'));
     const res = await reject(makeEvent({
       adminId: 'admin-1',
       userId: 'target-user',
@@ -231,7 +233,7 @@ describe('POST /api/verifications/[userId]/reject', () => {
   });
 
   it('does not send a rejection email when the user has no email address', async () => {
-    mocks.getUserEmail.mockResolvedValue(null);
+    mocks.getUserEmailAndLocale.mockResolvedValue(null);
 
     const res = await reject(makeEvent({
       adminId: 'admin-1',
