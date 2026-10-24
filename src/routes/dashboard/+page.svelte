@@ -10,7 +10,7 @@
   import { callApi } from '$lib/api';
   import { relativeTime, minutesLabel } from '$lib/time';
   import * as m from '$lib/paraglide/messages.js';
-  import type { EnrichedClaim } from '$lib/types';
+  import type { EnrichedClaim, Task } from '$lib/types';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
@@ -22,9 +22,9 @@
   const pinned = $derived(patches.filter((p) => p.status === 'pending'));
   const unpicked = $derived(patches.filter((p) => p.status === 'rejected'));
   const hours = $derived(ud?.totalHours ?? 0);
-  const recs = $derived(ud && 'recommendations' in ud ? ud.recommendations : []);
-  const reviews = $derived(ud && 'pendingReviews' in ud ? ud.pendingReviews : []);
-  const myTasks = $derived(ud && 'myTasks' in ud ? ud.myTasks : []);
+  const recs = $derived<Task[]>((ud && 'recommendations' in ud && ud.recommendations) || []);
+  const reviews = $derived<EnrichedClaim[]>((ud && 'pendingReviews' in ud && ud.pendingReviews) || []);
+  const myTasks = $derived<Task[]>((ud && 'myTasks' in ud && ud.myTasks) || []);
   const justPinned = $derived(page.url.searchParams.get('pinned') === '1');
 
   const statusName = { active: m.task_status_active, completed: m.task_status_completed, expired: m.task_status_expired, moderated: m.task_status_moderated };

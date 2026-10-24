@@ -9,6 +9,7 @@ vi.mock('$lib/server/quilt', () => ({ getQuiltPatches: mocks.getQuiltPatches }))
 import { load } from '../../routes/dashboard/+page.server';
 import { createServerLoadEventFor, requireLoadResult } from '../helpers/createLoadEvent';
 import { isHttpError } from '../helpers/httpError';
+import type { NgoUserData, VolunteerUserData } from '$lib/types';
 
 function makeEvent(opts: { userRole?: App.Locals['userRole']; userId?: string } = {}) {
   return createServerLoadEventFor<typeof load>({
@@ -70,13 +71,14 @@ describe('/dashboard load', () => {
     ]);
 
     const result = requireLoadResult(await load(makeEvent({ userRole: 'ngo', userId: 'org-1' })));
+    const userData = result.userData as NgoUserData;
 
     expect(result.signedIn).toBe(true);
-    expect(result.userData.totalTasks).toBe(1);
-    expect(result.userData.pendingReviewsCount).toBe(1);
-    expect(result.userData.approvedClaimsCount).toBe(1);
-    expect(result.userData.totalHours).toBe(1); // 60 minutes / 60
-    expect(result.userData.myClaims.every((c: { task?: { id?: string }; taskId?: string }) => c.task?.id === 't1' || c.taskId === 't1')).toBe(true);
+    expect(userData.totalTasks).toBe(1);
+    expect(userData.pendingReviewsCount).toBe(1);
+    expect(userData.approvedClaimsCount).toBe(1);
+    expect(userData.totalHours).toBe(1); // 60 minutes / 60
+    expect(userData.myClaims.every((c: { task?: { id?: string }; taskId?: string }) => c.task?.id === 't1' || c.taskId === 't1')).toBe(true);
   });
 
   it('builds volunteer stats with recommendations excluding already-claimed tasks', async () => {
@@ -92,11 +94,12 @@ describe('/dashboard load', () => {
     ]);
 
     const result = requireLoadResult(await load(makeEvent({ userRole: 'volunteer', userId: 'user-1' })));
+    const userData = result.userData as VolunteerUserData;
 
     expect(result.signedIn).toBe(true);
-    expect(result.userData.approvedClaimsCount).toBe(1);
-    expect(result.userData.totalHours).toBe(0.2); // Math.round((10/60) * 10) / 10
-    const recTaskIds = result.userData.recommendations.map((t: { id: string }) => t.id);
+    expect(userData.approvedClaimsCount).toBe(1);
+    expect(userData.totalHours).toBe(0.2); // Math.round((10/60) * 10) / 10
+    const recTaskIds = userData.recommendations.map((t: { id: string }) => t.id);
     expect(recTaskIds).not.toContain('t1');
     // sorted by estimatedMinutes ascending
     expect(recTaskIds).toEqual(['t2', 't3', 't4']);
@@ -147,13 +150,15 @@ describe('/dashboard load', () => {
     mocks.getClaims.mockResolvedValue([{ id: 'c1', taskId: 't1', status: 'approved' }]);
 
     const result = requireLoadResult(await load(makeEvent({ userRole: 'ngo', userId: 'org-1' })));
-    expect(result.userData.totalHours).toBe(0.5);
+    const userData = result.userData as NgoUserData;
+    expect(userData.totalHours).toBe(0.5);
 
     // Also volunteer with missing task in enrichClaims
     mocks.getTasks.mockResolvedValue([]);
     mocks.getClaims.mockResolvedValue([{ id: 'c2', taskId: 'nonexistent', userId: 'user-1', status: 'approved' }]);
     const volResult = requireLoadResult(await load(makeEvent({ userRole: 'volunteer', userId: 'user-1' })));
-    expect(volResult.userData.totalHours).toBe(0.5);
+    const volData = volResult.userData as VolunteerUserData;
+    expect(volData.totalHours).toBe(0.5);
   });
 
   it('returns signedIn:false for non-NGO, non-volunteer roles when authenticated', async () => {
