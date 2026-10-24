@@ -77,6 +77,7 @@ export interface UserPreferences {
   bio?: string;
   skills?: string[];
   verificationStatus?: string;
+  locale?: string;
   [key: string]: UserPreferenceValue;
 }
 

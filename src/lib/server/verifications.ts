@@ -244,7 +244,7 @@ export async function setUserVerificationPref(userId: string, status: 'pending' 
       .setKey(env.APPWRITE_API_KEY!);
     const users = new Users(client);
     const current = await users.get<UserPreferences>({ userId });
-    const prefs = { ...(current?.prefs ?? {}), verificationStatus: status ?? '' };
+    const prefs: UserPreferences = { ...(current?.prefs ?? {}), verificationStatus: status ?? '' };
     if (locale) prefs.locale = locale;
     await users.updatePrefs({ userId, prefs });
   } catch (err) {

@@ -37,7 +37,7 @@ export const POST: RequestHandler = async (event) => {
   let emailResult: { ok: boolean; error?: string } = { ok: false };
   try {
     const recipient = await getUserEmailAndLocale(targetUserId);
-    if (recipient) emailResult = await sendVerificationRejected({ ...recipient, orgName: updated.orgName, reason });
+    if (recipient) emailResult = await sendVerificationRejected({ to: recipient.email, orgName: updated.orgName, reason, locale: recipient.locale });
   } catch (err) {
     emailResult = { ok: false, error: (err as Error).message };
   }
