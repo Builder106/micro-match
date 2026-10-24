@@ -1,5 +1,16 @@
 # JOURNAL — MicroMatch
 
+## 2026-10-24 - Define a transactional email design system #decision
+
+Added `docs/email-design-system.md` for MicroMatch's Plunk transactional
+messages and linked it from the docs index. The system uses the site's
+indigo, madder, and weld colors on a white email surface, with one-column
+layouts, a text wordmark, and a single clear action. It covers the current
+NGO verification outcomes and sets localization and accessibility rules for
+future templates. The existing templates remain unchanged; their approval
+HTML and plain-text links still need the same destination when the system is
+implemented.
+
 ## 2026-10-23 - Restrict explicit `unknown` in app source #ci #decision
 
 Typed ESLint continues to catch deprecated APIs and explicit `any`. Application `unknown` annotations are now limited to the API boundary, and animation helpers return `Promise<void>` when callers only need completion. Dashboard payloads list their volunteer and nonprofit fields explicitly so the page can narrow them without a catch-all record type.

@@ -11,5 +11,6 @@
 - **[LibreTranslate operations](./libretranslate-operations.md)**: Service,
   tunnel, secret, and verification runbook for task translation.
 - **[Design System](../DESIGN.md)**: Color tokens, typography, and UI specs.
+- **[Email Design System](./email-design-system.md)**: Tokens, layout, content, and accessibility rules for transactional email.
 - **[WCAG 2.2 AA audit guide](./WCAG-2.2-AA-AUDIT-GUIDE.md)**: Reusable accessibility testing and review procedures.
 - **[Accessibility evidence matrix](./accessibility-matrix.md)**: MicroMatch routes, states, criteria, and manual sign-off.
