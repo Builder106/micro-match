@@ -141,4 +141,3 @@ To check the configured Preview resources:
 ```bash
 APPWRITE_PROJECT_ID=micromatch-prod APPWRITE_API_KEY=<preview_key> bun run verify:staging
 ```
-
