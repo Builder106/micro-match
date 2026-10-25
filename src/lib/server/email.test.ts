@@ -70,6 +70,22 @@ describe('email module (Plunk)', () => {
     expect(fetchSpy).toHaveBeenCalledTimes(locales.length * 2);
   });
 
+  it('isolates mixed-direction text and links the fallback URL', async () => {
+    setEnv({ PLUNK_SECRET_KEY: 'secret', PLUNK_FROM_ADDRESS: 'a@b', PUBLIC_APP_URL: 'https://micromatch.app/' }); const fetchSpy = vi.fn().mockResolvedValue(response()); vi.stubGlobal('fetch', fetchSpy);
+    await sendVerificationRejected({ to: 'a@b', orgName: 'Food, Inc.', reason: 'Upload the IRS letter.', locale: 'ar' });
+    const body = JSON.parse((fetchSpy.mock.calls[0]![1] as RequestInit).body as string).body as string;
+    expect(body).toContain('<strong dir="auto">Food, Inc.</strong>'); expect(body).toContain('<div dir="auto" style="margin-top:4px;">Upload the IRS letter.</div>');
+    expect(body).toContain('<a href="https://micromatch.app/ar/profile" dir="ltr"'); expect(body).toContain('<title>يلزم تعديل لإكمال التحقق</title>');
+    expect(body).toContain("url('https://micromatch.app/email/patch-pinned.png')"); expect(body).toContain('background-position:left top');
+  });
+
+  it('shows the sewn patch on approval', async () => {
+    setEnv({ PLUNK_SECRET_KEY: 'secret', PLUNK_FROM_ADDRESS: 'a@b', PUBLIC_APP_URL: 'https://micromatch.app' }); const fetchSpy = vi.fn().mockResolvedValue(response()); vi.stubGlobal('fetch', fetchSpy);
+    await sendVerificationApproved({ to: 'a@b', orgName: 'Org' });
+    const body = JSON.parse((fetchSpy.mock.calls[0]![1] as RequestInit).body as string).body as string;
+    expect(body).toContain("url('https://micromatch.app/email/patch-sewn.png')"); expect(body).toContain('background-position:right top');
+  });
+
   it('rejects HTTP and Plunk failures', async () => {
     setEnv({ PLUNK_SECRET_KEY: 'secret', PLUNK_FROM_ADDRESS: 'a@b' });
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(response({ error: 'bad key' }, { ok: false, status: 401 })));
