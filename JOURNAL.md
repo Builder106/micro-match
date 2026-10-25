@@ -1,5 +1,9 @@
 # JOURNAL — MicroMatch
 
+## 2026-10-25 - Cross the scissors blades and fix the trailer URL #design #video
+
+The scissors on How a patch is made had two nearly parallel blades that never crossed, with the pivot dot floating between them, so the icon read as two sticks. Each blade now runs from its loop through the pivot, so they cross in an X and the loops splay apart. A filled wedge-blade version was tried and read worse at icon size. The trailer end card also pointed at trymicromatch.com, which does not resolve; it now says micromatch.app. Only the `unfold` take was re-recorded for the icon. HyperFrames now warns that the new clip has sparse keyframes, but freezedetect finds the same still stretches in the clip and the render, so nothing freezes. `static/robots.txt` still names trymicromatch.com and needs its own fix.
+
 ## 2026-10-24 - Pin and sew the verification email patch #design #decision
 
 The verification emails now carry one piece of artwork: a 48px cloth patch in the header corner, set like a stamp. A change request shows the patch pinned and askew; an approval shows it sewn down. This is the site's "pinned, then stitched" verb applied to the two outcomes. The patches are Blender renders (`design/blender/email-patches.blend`) served from `static/email/` as CSS backgrounds. A separate logo image beside the wordmark was tried and dropped, because with images blocked it left an indent and an empty row. The same review fixed a bidi bug: an English reviewer note inside an Arabic email moved its periods to the start of each line, so organization names and notes now carry `dir="auto"`. The fallback URL was underlined but not a link; it is a link now.
