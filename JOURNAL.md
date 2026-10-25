@@ -1,5 +1,9 @@
 # JOURNAL — MicroMatch
 
+## 2026-10-24 - Pin and sew the verification email patch #design #decision
+
+The verification emails now carry one piece of artwork: a 48px cloth patch in the header corner, set like a stamp. A change request shows the patch pinned and askew; an approval shows it sewn down. This is the site's "pinned, then stitched" verb applied to the two outcomes. The patches are Blender renders (`design/blender/email-patches.blend`) served from `static/email/` as CSS backgrounds. A separate logo image beside the wordmark was tried and dropped, because with images blocked it left an indent and an empty row. The same review fixed a bidi bug: an English reviewer note inside an Arabic email moved its periods to the start of each line, so organization names and notes now carry `dir="auto"`. The fallback URL was underlined but not a link; it is a link now.
+
 ## 2026-10-24 - Render localized verification emails #decision
 
 Approval and change-request emails now use one HTML template system with copy

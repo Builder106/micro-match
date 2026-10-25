@@ -2,7 +2,7 @@
 
 This system covers transactional email sent by MicroMatch. The app currently sends NGO verification approvals and requests for changes through Plunk. Appwrite account recovery messages remain outside this system.
 
-The site brand, name, wordmark, and type choices follow [`DESIGN.md`](../DESIGN.md). Email uses a compact, static expression of the quilt identity: clear type, a simple seam, and the madder action color.
+The site brand, name, wordmark, and type choices follow [`DESIGN.md`](../DESIGN.md). Email uses a compact, static expression of the quilt identity: clear type, a stitched seam, one small cloth patch, and the madder action color.
 
 ## Design rules
 
@@ -26,7 +26,9 @@ The site brand, name, wordmark, and type choices follow [`DESIGN.md`](../DESIGN.
 | Weld | `#F2B84B` | Context panels, such as a review note |
 | Context ink | `#1C1F3B` | Text on weld |
 
-Use a 3px corner radius, matching the product's cut-cloth shape. Keep shadows and decorative graphics out of the email shell. The wordmark and madder action carry the brand without relying on images.
+Use a 3px corner radius, matching the product's cut-cloth shape. The rule under the header is a 1px dashed `#575B76` line, the running stitch from the logo. Other dividers stay solid seam color.
+
+The only artwork is a 48px status patch in the header's trailing corner, set like a stamp on an envelope. It follows the site's motion verb, "pinned, then stitched": a change request shows a madder patch held by a weld pin, and an approval shows the same patch sewn down with an indigo running stitch. The patch is a CSS background, so blocked images leave only the wordmark, with no gap or broken-image box. The wordmark and madder action carry the brand without it.
 
 ## Type and spacing
 
@@ -47,15 +49,15 @@ Use an 8px spacing unit: 8px between related items, 16px between paragraphs, 24p
 Use this order for transactional messages:
 
 1. Hidden preheader for the inbox preview
-2. MicroMatch wordmark
+2. MicroMatch wordmark, with the status patch in the trailing corner
 3. Outcome heading
 4. Short explanation
 5. Optional context panel for a specific detail or review note
 6. One primary action
-7. An underlined, copyable URL for the same action
+7. The full URL for the same action, as an underlined link
 8. A brief line explaining why the recipient received the email
 
-Keep the shell quiet. Avoid decorative status dots, emoji, text over images, large illustrations, motion, gradients, and extra buttons. Do not use a color alone to distinguish an approved request from one that needs changes.
+Keep the shell quiet. Avoid decorative status dots, emoji, text over images, large illustrations, motion, gradients, and extra buttons. Do not use a color alone to distinguish an approved request from one that needs changes. The patch repeats the heading; it never replaces it.
 
 ## Current message patterns
 
@@ -85,19 +87,21 @@ Keep the tone calm and specific. The approval message should describe what the o
 
 Verification emails use the locale saved in the applicant's `prefs.locale` when they submit or resubmit. If the preference is missing or unsupported, use English. The approval and change-request messages have complete copy in English, Spanish, French, German, Portuguese, Chinese, and Arabic. Keep placeholders intact through translation and escape inserted organization names and review reasons.
 
-Set the email language and text direction from the saved locale. Arabic uses right-to-left direction. Keep the layout in one column so longer German copy and right-to-left text do not depend on narrow side-by-side regions. Use descriptive link labels, visible underlines for links in body copy, and strong text contrast. The message must keep its meaning when color is removed.
+Set the email language and text direction from the saved locale. Arabic uses right-to-left direction. Organization names and reviewer notes are user text in any script, so they carry `dir="auto"`. An English note inside an Arabic email then keeps its punctuation at the end of the line. The fallback URL is always `dir="ltr"`. Keep the layout in one column so longer German copy and right-to-left text do not depend on narrow side-by-side regions. Use descriptive link labels, visible underlines for links in body copy, and strong text contrast. The message must keep its meaning when color is removed.
 
 ## Implementation notes
 
 The sender is [`src/lib/server/email.ts`](../src/lib/server/email.ts), and message markup and copy live in [`src/lib/server/emailTemplates.ts`](../src/lib/server/emailTemplates.ts). Plunk creates a plain-text alternative from the HTML body, so the template includes a visible full URL below the main action. The Plunk send API has no separate text-body field ([API reference](https://docs.useplunk.com/api-reference/public-api/sendEmail)).
 
-Use absolute, locale-prefixed links based on the configured app URL. Escape inserted text, and do not include tax IDs, uploaded documents, or other verification evidence in email. Appwrite account recovery messages remain outside this system.
+Use absolute, locale-prefixed links based on the configured app URL. Patch images load from `{PUBLIC_APP_URL}/email/patch-sewn.png` and `patch-pinned.png` in `static/email/`. They are 256px renders of `design/blender/email-patches.blend`, which has one collection per state. Re-render both after any change to the scene.
+
+To review the markup, run `bun run scripts/qa/render-email-previews.ts <dir>` on the build host. It writes both messages in every locale with a long organization name and a two-line reviewer note. Escape inserted text, and do not include tax IDs, uploaded documents, or other verification evidence in email. Appwrite account recovery messages remain outside this system.
 
 ## Review checklist
 
 - The subject, preheader, heading, and action describe the same outcome.
 - The generated plain-text version includes the same key details and action destination.
-- The email remains readable at 320px wide and with images disabled.
+- The email remains readable at 320px wide and with images disabled, and the header shows no gap where the patch was.
 - Long organization names and reviewer notes wrap without clipping.
 - Arabic uses right-to-left direction; each of the seven locales has complete copy before being sent in that locale.
 - Links work, the main action has a 44px target, and the message remains understandable without color.
