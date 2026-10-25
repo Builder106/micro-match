@@ -12,7 +12,7 @@
     "check": "svelte-check --fail-on-warnings --tsconfig ./tsconfig.json --output human",
     "check:tsgo": "bun run paraglide:compile && svelte-check --fail-on-warnings --tsconfig ./tsconfig.json --output human --tsgo",
     "typecheck": "bun run paraglide:compile && svelte-kit sync && tsc6 --noEmit",
-    "test": "vitest run",
+    "test": "bun run paraglide:compile && vitest run",
     "test:unit": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
