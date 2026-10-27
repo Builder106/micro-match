@@ -1,5 +1,9 @@
 # JOURNAL — MicroMatch
 
+## 2026-10-27 - Plan an original MicroMatch trailer cue #decision #video
+
+The trailer needs an intimate, tactile score that follows the quilt reveal instead of a generic inspirational bed. The brief uses sparse piano and plucked notes, then opens as the site appears. Keep `audio.mp3` and its credit until a new cue is rendered and approved.
+
 ## 2026-10-27 — Start Google sign-in without a browser session
 
 The staging login returned Appwrite's `user_already_exists` (409) before the token callback. The browser still had fallback-cookie storage. Appwrite links OAuth identities to an existing browser session, so a session for another account can conflict with the selected Google identity. Google sign-in now deletes only the current Appwrite session before starting OAuth. A 401 means there is no session and sign-in can continue; other cleanup failures return to the existing OAuth error screen. Other devices remain signed in. The server token exchange and first-party cookie flow remain in place. Regression checks cover cleanup order, absent sessions, cleanup failures, and signup role URLs. A live Google round trip is still required to confirm the reported account conflict is resolved.
