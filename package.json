@@ -25,6 +25,7 @@
     "verify:libretranslate": "bun run scripts/verify-libretranslate.ts",
     "verify:staging": "bun run scripts/verify-staging.ts",
     "lint": "eslint . --max-warnings 0",
+    "format:check": "prettier --check .",
     "format": "prettier -w ."
   },
   "dependencies": {

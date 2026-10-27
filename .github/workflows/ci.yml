@@ -40,7 +40,7 @@ jobs:
           path: ~/.bun/install/cache
           key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
       - run: bun install --frozen-lockfile
-      - run: bun audit --audit-level moderate || bun audit --level moderate || true
+      - run: bun audit --audit-level moderate
       - run: bunx license-checker --summary
       - run: bunx svelte-kit sync
       - run: bun run check
@@ -59,6 +59,7 @@ jobs:
           key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
       - run: bun install --frozen-lockfile
       - run: bun run lint
+      - run: bun run format:check
 
   test:
     name: Unit tests & Coverage Gate
