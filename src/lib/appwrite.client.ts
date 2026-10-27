@@ -34,7 +34,7 @@ export async function updateRecovery(userId: string, secret: string, password: s
   await account.updateRecovery({ userId, secret, password });
 }
 
-export function signInWithGoogle(options: { role?: 'volunteer' | 'ngo'; returnTo?: 'login' | 'signup' } = {}) {
+export async function signInWithGoogle(options: { role?: 'volunteer' | 'ngo'; returnTo?: 'login' | 'signup' } = {}) {
   // Token flow (RFC 6749-style code exchange) instead of session flow.
   // The provider redirects back to our server with userId+secret in the
   // query, the server validates them via the admin SDK and mints a
@@ -46,6 +46,15 @@ export function signInWithGoogle(options: { role?: 'volunteer' | 'ngo'; returnTo
   if (options.role) {
     success.searchParams.set('role', options.role);
     failure.searchParams.set('role', options.role);
+  }
+  // An existing browser session makes OAuth link accounts instead of signing in.
+  try {
+    await account.deleteSession({ sessionId: 'current' });
+  } catch (error) {
+    if (!(error instanceof Error && 'code' in error && error.code === 401)) {
+      window.location.assign(failure.toString());
+      return;
+    }
   }
   account.createOAuth2Token({ provider: OAuthProvider.Google, success: success.toString(), failure: failure.toString() });
 }

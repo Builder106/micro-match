@@ -1,5 +1,9 @@
 # JOURNAL — MicroMatch
 
+## 2026-10-27 — Start Google sign-in without a browser session
+
+The staging login returned Appwrite's `user_already_exists` (409) before the token callback. The browser still had fallback-cookie storage. Appwrite links OAuth identities to an existing browser session, so a session for another account can conflict with the selected Google identity. Google sign-in now deletes only the current Appwrite session before starting OAuth. A 401 means there is no session and sign-in can continue; other cleanup failures return to the existing OAuth error screen. Other devices remain signed in. The server token exchange and first-party cookie flow remain in place. Regression checks cover cleanup order, absent sessions, cleanup failures, and signup role URLs. A live Google round trip is still required to confirm the reported account conflict is resolved.
+
 ## 2026-10-25 - Cross the scissors blades and fix the trailer URL #design #video
 
 The scissors on How a patch is made had two nearly parallel blades that never crossed, with the pivot dot floating between them, so the icon read as two sticks. Each blade now runs from its loop through the pivot, so they cross in an X and the loops splay apart. A filled wedge-blade version was tried and read worse at icon size. The trailer end card also pointed at trymicromatch.com, which does not resolve; it now says micromatch.app. Only the `unfold` take was re-recorded for the icon. HyperFrames now warns that the new clip has sparse keyframes, but freezedetect finds the same still stretches in the clip and the render, so nothing freezes. `static/robots.txt` still names trymicromatch.com and needs its own fix.

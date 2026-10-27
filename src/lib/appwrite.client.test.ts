@@ -8,6 +8,7 @@ const { mocks, publicEnvState } = vi.hoisted(() => ({
     updateRecovery: vi.fn(),
     updatePrefs: vi.fn(),
     createOAuth2Token: vi.fn(),
+    deleteSession: vi.fn(),
     deleteSessions: vi.fn(),
     createJWT: vi.fn(),
     getFilePreview: vi.fn()
@@ -34,6 +35,7 @@ vi.mock('appwrite', () => ({
     updateRecovery = mocks.updateRecovery;
     updatePrefs = mocks.updatePrefs;
     createOAuth2Token = mocks.createOAuth2Token;
+    deleteSession = mocks.deleteSession;
     deleteSessions = mocks.deleteSessions;
     createJWT = mocks.createJWT;
   },
@@ -64,7 +66,7 @@ describe('appwrite.client', () => {
     Object.values(mocks).forEach((m) => m.mockReset());
     for (const key of Object.keys(publicEnvState)) delete publicEnvState[key];
     vi.unstubAllGlobals();
-    vi.stubGlobal('window', { location: { origin: 'https://micromatch.tech' } });
+    vi.stubGlobal('window', { location: { origin: 'https://micromatch.tech', assign: vi.fn() } });
     vi.stubGlobal('localStorage', {
       removeItem: vi.fn(),
       getItem: vi.fn(),
@@ -112,8 +114,10 @@ describe('appwrite.client', () => {
     expect(mocks.updateRecovery).toHaveBeenCalledWith({ userId: 'user-1', secret: 'secret', password: 'new-password' });
   });
 
-  it('signInWithGoogle builds success/failure URLs from window.location.origin', () => {
-    signInWithGoogle();
+  it('signInWithGoogle builds success/failure URLs from window.location.origin', async () => {
+    await signInWithGoogle();
+    expect(mocks.deleteSession).toHaveBeenCalledWith({ sessionId: 'current' });
+    expect(mocks.deleteSession.mock.invocationCallOrder[0]).toBeLessThan(mocks.createOAuth2Token.mock.invocationCallOrder[0]);
     expect(mocks.createOAuth2Token).toHaveBeenCalledWith({
       provider: 'google',
       success: 'https://micromatch.tech/api/auth/oauth/callback',
@@ -121,13 +125,27 @@ describe('appwrite.client', () => {
     });
   });
 
-  it('keeps the signup route and selected role in Google OAuth URLs', () => {
-    signInWithGoogle({ role: 'ngo', returnTo: 'signup' });
+  it('keeps the signup route and selected role in Google OAuth URLs', async () => {
+    await signInWithGoogle({ role: 'ngo', returnTo: 'signup' });
     expect(mocks.createOAuth2Token).toHaveBeenCalledWith({
       provider: 'google',
       success: 'https://micromatch.tech/api/auth/oauth/callback?role=ngo',
       failure: 'https://micromatch.tech/signup?error=oauth&role=ngo'
     });
+  });
+
+  it('starts Google sign-in when there is no browser session', async () => {
+    mocks.deleteSession.mockRejectedValue(Object.assign(new Error('Unauthorized'), { code: 401 }));
+    await signInWithGoogle();
+    expect(mocks.createOAuth2Token).toHaveBeenCalledOnce();
+  });
+
+  it('does not start OAuth if browser session cleanup fails', async () => {
+    mocks.deleteSession.mockRejectedValue(new Error('Network unavailable'));
+    await signInWithGoogle({ role: 'ngo', returnTo: 'signup' });
+    expect(mocks.createOAuth2Token).not.toHaveBeenCalled();
+    expect(window.location.assign).toHaveBeenCalledWith('https://micromatch.tech/signup?error=oauth&role=ngo');
+    expect(mocks.deleteSessions).not.toHaveBeenCalled();
   });
 
   it('getJWT returns the jwt string, or null on error', async () => {
