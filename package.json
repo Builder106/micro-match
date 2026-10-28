@@ -29,7 +29,7 @@
     "format": "prettier -w ."
   },
   "dependencies": {
-    "@inlang/paraglide-js": "^2.25.2",
+    "@inlang/paraglide-js": "^2.29.1",
     "@sveltejs/kit": "^2.70.3",
     "appwrite": "^29.0.0",
     "gsap": "^3.15.0",
