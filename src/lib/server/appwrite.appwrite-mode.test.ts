@@ -10,7 +10,7 @@ const { mocks, envState } = vi.hoisted(() => ({
     getRow: vi.fn(),
     createRow: vi.fn(),
     updateRow: vi.fn(),
-    deleteRow: vi.fn()
+    deleteRow: vi.fn(),
   },
   envState: {
     APPWRITE_ENDPOINT: 'https://fake.appwrite.io/v1',
@@ -19,18 +19,24 @@ const { mocks, envState } = vi.hoisted(() => ({
     APPWRITE_DB_ID: 'db',
     APPWRITE_TASKS_TABLE_ID: 'tasks',
     APPWRITE_CLAIMS_TABLE_ID: 'claims',
-    APPWRITE_BADGES_TABLE_ID: 'badges'
-  } as Record<string, string | undefined>
+    APPWRITE_BADGES_TABLE_ID: 'badges',
+  } as Record<string, string | undefined>,
 }));
 
 vi.mock('$env/dynamic/private', () => ({
-  env: new Proxy(envState, { get: (_, key: string) => envState[key] })
+  env: new Proxy(envState, { get: (_, key: string) => envState[key] }),
 }));
 vi.mock('node-appwrite', () => ({
   Client: class {
-    setEndpoint() { return this; }
-    setProject() { return this; }
-    setKey() { return this; }
+    setEndpoint() {
+      return this;
+    }
+    setProject() {
+      return this;
+    }
+    setKey() {
+      return this;
+    }
   },
   TablesDB: class {
     listRows = mocks.listRows;
@@ -45,8 +51,8 @@ vi.mock('node-appwrite', () => ({
     limit: (n: number) => `limit(${n})`,
     orderDesc: (k: string) => `orderDesc(${k})`,
     lessThanEqual: (k: string, v: unknown) => `lte(${k},${v})`,
-    lessThan: (k: string, v: unknown) => `lt(${k},${v})`
-  }
+    lessThan: (k: string, v: unknown) => `lt(${k},${v})`,
+  },
 }));
 
 import {
@@ -66,7 +72,7 @@ import {
   expireTasks,
   autoArchiveTasks,
   setTasksVerifiedForOrg,
-  deleteTask
+  deleteTask,
 } from './appwrite';
 
 const taskRow = {
@@ -83,7 +89,7 @@ const taskRow = {
   maxVolunteers: undefined,
   deadline: undefined,
   isVerified: true,
-  lastActivityAt: '2026-01-01T00:00:00.000Z'
+  lastActivityAt: '2026-01-01T00:00:00.000Z',
 };
 
 describe('appwrite (Appwrite-backed mode) — tasks', () => {
@@ -97,14 +103,18 @@ describe('appwrite (Appwrite-backed mode) — tasks', () => {
     const tasks = await getTasks({ includeInactive: true });
 
     expect(tasks).toEqual([
-      expect.objectContaining({ id: 'row-1', orgId: 'org-1', title: 'Translate flyer' })
+      expect.objectContaining({ id: 'row-1', orgId: 'org-1', title: 'Translate flyer' }),
     ]);
   });
 
   it('getTasks applies the active-status query when not including inactive tasks', async () => {
     mocks.listRows.mockResolvedValue({ rows: [] });
     await getTasks();
-    expect(mocks.listRows).toHaveBeenCalledWith({ databaseId: 'db', tableId: 'tasks', queries: expect.arrayContaining(['equal(status,active)']) });
+    expect(mocks.listRows).toHaveBeenCalledWith({
+      databaseId: 'db',
+      tableId: 'tasks',
+      queries: expect.arrayContaining(['equal(status,active)']),
+    });
   });
 
   it('getTasks scopes the Appwrite query to an NGO when requested', async () => {
@@ -112,11 +122,17 @@ describe('appwrite (Appwrite-backed mode) — tasks', () => {
 
     await getTasks({ orgId: 'org-1', includeInactive: true });
 
-    expect(mocks.listRows).toHaveBeenCalledWith({ databaseId: 'db', tableId: 'tasks', queries: expect.arrayContaining(['equal(orgID,org-1)']) });
+    expect(mocks.listRows).toHaveBeenCalledWith({
+      databaseId: 'db',
+      tableId: 'tasks',
+      queries: expect.arrayContaining(['equal(orgID,org-1)']),
+    });
   });
 
   it('keeps active tasks without a volunteer limit in the feed', async () => {
-    mocks.listRows.mockResolvedValue({ rows: [{ ...taskRow, lastActivityAt: new Date().toISOString() }] });
+    mocks.listRows.mockResolvedValue({
+      rows: [{ ...taskRow, lastActivityAt: new Date().toISOString() }],
+    });
 
     await expect(getTasks()).resolves.toEqual([expect.objectContaining({ id: 'row-1' })]);
     expect(mocks.listRows).toHaveBeenCalledTimes(1);
@@ -126,8 +142,8 @@ describe('appwrite (Appwrite-backed mode) — tasks', () => {
     mocks.listRows.mockResolvedValue({
       rows: [
         { ...taskRow, $id: 'curated', evergreen: true },
-        { ...taskRow, $id: 'dead' }
-      ]
+        { ...taskRow, $id: 'dead' },
+      ],
     });
 
     const tasks = await getTasks();
@@ -140,7 +156,7 @@ describe('appwrite (Appwrite-backed mode) — tasks', () => {
       ...taskRow,
       $id: 't-limit',
       maxVolunteers: 5,
-      lastActivityAt: new Date().toISOString()
+      lastActivityAt: new Date().toISOString(),
     };
     mocks.listRows.mockImplementation(async ({ tableId: table }: { tableId: string }) => {
       if (table === 'tasks') return { rows: [taskWithLimit] };
@@ -155,7 +171,16 @@ describe('appwrite (Appwrite-backed mode) — tasks', () => {
   it('keeps a limited task visible when the claim-limit lookup fails', async () => {
     mocks.listRows.mockImplementation(async ({ tableId: table }: { tableId: string }) => {
       if (table === 'tasks') {
-        return { rows: [{ ...taskRow, $id: 't-limit-error', maxVolunteers: 1, lastActivityAt: new Date().toISOString() }] };
+        return {
+          rows: [
+            {
+              ...taskRow,
+              $id: 't-limit-error',
+              maxVolunteers: 1,
+              lastActivityAt: new Date().toISOString(),
+            },
+          ],
+        };
       }
       throw new Error('claims unavailable');
     });
@@ -165,12 +190,18 @@ describe('appwrite (Appwrite-backed mode) — tasks', () => {
 
   it('excludes tasks explicitly marked as unverified', async () => {
     mocks.listRows.mockResolvedValueOnce({
-      rows: [{ ...taskRow, $id: 'unverified', isVerified: false, lastActivityAt: new Date().toISOString() }]
+      rows: [
+        {
+          ...taskRow,
+          $id: 'unverified',
+          isVerified: false,
+          lastActivityAt: new Date().toISOString(),
+        },
+      ],
     });
 
     await expect(getTasks()).resolves.toEqual([]);
   });
-
 
   it('getTaskById maps a single row and returns undefined on error', async () => {
     mocks.getRow.mockResolvedValueOnce(taskRow);
@@ -183,9 +214,19 @@ describe('appwrite (Appwrite-backed mode) — tasks', () => {
   it('createTask sends orgID (not orgId) to the table and maps the response back', async () => {
     mocks.createRow.mockResolvedValue(taskRow);
 
-    const created = await createTask({ title: 'x', shortDescription: 's', tags: [], orgId: 'org-1' });
+    const created = await createTask({
+      title: 'x',
+      shortDescription: 's',
+      tags: [],
+      orgId: 'org-1',
+    });
 
-    expect(mocks.createRow).toHaveBeenCalledWith({ databaseId: 'db', tableId: 'tasks', rowId: 'new-id', data: expect.objectContaining({ orgID: 'org-1' }) });
+    expect(mocks.createRow).toHaveBeenCalledWith({
+      databaseId: 'db',
+      tableId: 'tasks',
+      rowId: 'new-id',
+      data: expect.objectContaining({ orgID: 'org-1' }),
+    });
     expect(created.orgId).toBe('org-1');
   });
 
@@ -194,7 +235,12 @@ describe('appwrite (Appwrite-backed mode) — tasks', () => {
 
     await createTask({ title: 'x', shortDescription: 's', tags: 'not-an-array' as never });
 
-    expect(mocks.createRow).toHaveBeenCalledWith({ databaseId: 'db', tableId: 'tasks', rowId: 'new-id', data: expect.objectContaining({ tags: [] }) });
+    expect(mocks.createRow).toHaveBeenCalledWith({
+      databaseId: 'db',
+      tableId: 'tasks',
+      rowId: 'new-id',
+      data: expect.objectContaining({ tags: [] }),
+    });
   });
 
   it('updateTaskStatus maps the updated row and returns undefined on error', async () => {
@@ -217,27 +263,34 @@ describe('appwrite (Appwrite-backed mode) — tasks', () => {
       maxVolunteers: null,
       deadline: null,
       isVerified: null,
-      $createdAt: '2026-01-01T00:00:00.000Z'
+      $createdAt: '2026-01-01T00:00:00.000Z',
     });
 
     const updated = await updateTaskStatus('row-defaults', '' as never);
 
-    expect(mocks.updateRow).toHaveBeenCalledWith({ databaseId: 'db', tableId: 'tasks', rowId: 'row-defaults', data: expect.objectContaining({ status: 'active' }) });
-    expect(updated).toEqual(expect.objectContaining({
-      tags: [],
-      estimatedMinutes: undefined,
-      status: 'active',
-      maxVolunteers: undefined,
-      deadline: undefined,
-      isVerified: true
-    }));
+    expect(mocks.updateRow).toHaveBeenCalledWith({
+      databaseId: 'db',
+      tableId: 'tasks',
+      rowId: 'row-defaults',
+      data: expect.objectContaining({ status: 'active' }),
+    });
+    expect(updated).toEqual(
+      expect.objectContaining({
+        tags: [],
+        estimatedMinutes: undefined,
+        status: 'active',
+        maxVolunteers: undefined,
+        deadline: undefined,
+        isVerified: true,
+      }),
+    );
   });
 
   it('reads serialized tag values from an update response', async () => {
     mocks.updateRow.mockResolvedValueOnce({ ...taskRow, tags: { values: ['serialized'] } });
 
     await expect(updateTaskStatus('row-1', 'active')).resolves.toEqual(
-      expect.objectContaining({ tags: ['serialized'] })
+      expect.objectContaining({ tags: ['serialized'] }),
     );
   });
 
@@ -247,43 +300,45 @@ describe('appwrite (Appwrite-backed mode) — tasks', () => {
       read: async (row: Record<string, unknown>): Promise<Task | undefined> => {
         mocks.listRows.mockResolvedValue({ rows: [row] });
         return (await getTasks({ includeInactive: true }))[0];
-      }
+      },
     },
     {
       name: 'getTaskById',
       read: async (row: Record<string, unknown>): Promise<Task | undefined> => {
         mocks.getRow.mockResolvedValue(row);
         return getTaskById('row-1');
-      }
+      },
     },
     {
       name: 'createTask',
       read: async (row: Record<string, unknown>): Promise<Task | undefined> => {
         mocks.createRow.mockResolvedValue(row);
         return createTask({ title: 'Fallback task', shortDescription: 'short', tags: [] });
-      }
+      },
     },
     {
       name: 'updateTaskStatus',
       read: async (row: Record<string, unknown>): Promise<Task | undefined> => {
         mocks.updateRow.mockResolvedValue(row);
         return updateTaskStatus('row-1', 'active');
-      }
-    }
+      },
+    },
   ])('$name normalizes JSON tags and missing task metadata', async ({ read }) => {
     const serialized = await read({
       ...taskRow,
       tags: { values: ['serialized'] },
       estimatedMinutes: null,
       status: '',
-      isVerified: undefined
+      isVerified: undefined,
     });
-    expect(serialized).toEqual(expect.objectContaining({
-      tags: ['serialized'],
-      estimatedMinutes: undefined,
-      status: 'active',
-      isVerified: true
-    }));
+    expect(serialized).toEqual(
+      expect.objectContaining({
+        tags: ['serialized'],
+        estimatedMinutes: undefined,
+        status: 'active',
+        isVerified: true,
+      }),
+    );
 
     const missingTags = await read({ ...taskRow, tags: undefined });
     expect(missingTags?.tags).toEqual([]);
@@ -318,7 +373,9 @@ describe('appwrite (Appwrite-backed mode) — tasks', () => {
   });
 
   it('autoArchiveTasks leaves evergreen rows active', async () => {
-    mocks.listRows.mockResolvedValueOnce({ rows: [{ $id: 'curated', evergreen: true }, { $id: 'dead' }] });
+    mocks.listRows.mockResolvedValueOnce({
+      rows: [{ $id: 'curated', evergreen: true }, { $id: 'dead' }],
+    });
     mocks.updateRow.mockResolvedValueOnce({});
 
     expect(await autoArchiveTasks()).toBe(1);
@@ -338,7 +395,12 @@ describe('appwrite (Appwrite-backed mode) — tasks', () => {
     const count = await setTasksVerifiedForOrg('org-1', false);
 
     expect(count).toBe(2);
-    expect(mocks.updateRow).toHaveBeenCalledWith({ databaseId: 'db', tableId: 'tasks', rowId: 'a', data: { isVerified: false } });
+    expect(mocks.updateRow).toHaveBeenCalledWith({
+      databaseId: 'db',
+      tableId: 'tasks',
+      rowId: 'a',
+      data: { isVerified: false },
+    });
   });
 
   it('setTasksVerifiedForOrg returns 0 when the query itself fails', async () => {
@@ -349,7 +411,11 @@ describe('appwrite (Appwrite-backed mode) — tasks', () => {
   it('deleteTask calls tables.deleteRow', async () => {
     mocks.deleteRow.mockResolvedValue(undefined);
     await deleteTask('row-1');
-    expect(mocks.deleteRow).toHaveBeenCalledWith({ databaseId: 'db', tableId: 'tasks', rowId: 'row-1' });
+    expect(mocks.deleteRow).toHaveBeenCalledWith({
+      databaseId: 'db',
+      tableId: 'tasks',
+      rowId: 'row-1',
+    });
   });
 });
 
@@ -367,30 +433,44 @@ describe('appwrite (Appwrite-backed mode) — claims', () => {
     status: 'pending',
     reviewedBy: undefined,
     reviewedAt: undefined,
-    $createdAt: '2026-01-01T00:00:00.000Z'
+    $createdAt: '2026-01-01T00:00:00.000Z',
   };
 
   it('createClaim maps taskId/userId/proofUrl to the database column names', async () => {
     mocks.createRow.mockResolvedValue(claimRow);
 
-    const claim = await createClaim({ taskId: 'task-1', userId: 'user-1', notes: 'done', proofUrl: 'https://proof' });
+    const claim = await createClaim({
+      taskId: 'task-1',
+      userId: 'user-1',
+      notes: 'done',
+      proofUrl: 'https://proof',
+    });
 
     expect(mocks.createRow).toHaveBeenCalledWith({
       databaseId: 'db',
       tableId: 'claims',
       rowId: 'new-id',
       data: expect.objectContaining({
-      taskID: 'task-1', userID: 'user-1', notes: 'done', proofURL: 'https://proof'
-    })
+        taskID: 'task-1',
+        userID: 'user-1',
+        notes: 'done',
+        proofURL: 'https://proof',
+      }),
     });
-    expect(claim).toEqual(expect.objectContaining({ id: 'claim-1', taskId: 'task-1', userId: 'user-1' }));
+    expect(claim).toEqual(
+      expect.objectContaining({ id: 'claim-1', taskId: 'task-1', userId: 'user-1' }),
+    );
   });
 
   it('getClaims maps rows and applies the userID filter', async () => {
     mocks.listRows.mockResolvedValue({ rows: [claimRow] });
     const claims = await getClaims({ userId: 'user-1' });
 
-    expect(mocks.listRows).toHaveBeenCalledWith({ databaseId: 'db', tableId: 'claims', queries: expect.arrayContaining(['equal(userID,user-1)']) });
+    expect(mocks.listRows).toHaveBeenCalledWith({
+      databaseId: 'db',
+      tableId: 'claims',
+      queries: expect.arrayContaining(['equal(userID,user-1)']),
+    });
     expect(claims[0]).toEqual(expect.objectContaining({ id: 'claim-1', taskId: 'task-1' }));
   });
 
@@ -398,7 +478,11 @@ describe('appwrite (Appwrite-backed mode) — claims', () => {
     mocks.listRows.mockResolvedValue({ rows: [claimRow] });
 
     await expect(getClaims()).resolves.toEqual([expect.objectContaining({ id: 'claim-1' })]);
-    expect(mocks.listRows).toHaveBeenCalledWith({ databaseId: 'db', tableId: 'claims', queries: ['limit(100)'] });
+    expect(mocks.listRows).toHaveBeenCalledWith({
+      databaseId: 'db',
+      tableId: 'claims',
+      queries: ['limit(100)'],
+    });
   });
 
   it('getClaimById maps a row and returns undefined on error', async () => {
@@ -410,7 +494,11 @@ describe('appwrite (Appwrite-backed mode) — claims', () => {
   });
 
   it('updateClaimStatus maps the updated row and returns undefined on error', async () => {
-    mocks.updateRow.mockResolvedValueOnce({ ...claimRow, status: 'approved', reviewedBy: 'reviewer-1' });
+    mocks.updateRow.mockResolvedValueOnce({
+      ...claimRow,
+      status: 'approved',
+      reviewedBy: 'reviewer-1',
+    });
     const updated = await updateClaimStatus('claim-1', 'approved', 'reviewer-1');
     expect(updated?.status).toBe('approved');
     expect(updated?.reviewedBy).toBe('reviewer-1');
@@ -429,41 +517,56 @@ describe('appwrite (Appwrite-backed mode) — claims', () => {
       proofURL: null,
       reviewedBy: null,
       reviewedAt: null,
-      $createdAt: '2026-01-01T00:00:00.000Z'
+      $createdAt: '2026-01-01T00:00:00.000Z',
     };
 
     mocks.createRow.mockResolvedValueOnce(sparseClaimRow);
-    await expect(createClaim({ taskId: 'task-1' })).resolves.toEqual(expect.objectContaining({
-      userId: undefined,
-      notes: undefined,
-      proofUrl: undefined,
-      reviewedBy: undefined,
-      reviewedAt: undefined
-    }));
+    await expect(createClaim({ taskId: 'task-1' })).resolves.toEqual(
+      expect.objectContaining({
+        userId: undefined,
+        notes: undefined,
+        proofUrl: undefined,
+        reviewedBy: undefined,
+        reviewedAt: undefined,
+      }),
+    );
     expect(mocks.createRow).toHaveBeenCalledWith({
       databaseId: 'db',
       tableId: 'claims',
       rowId: 'new-id',
       data: expect.not.objectContaining({
-      userID: expect.anything(), notes: expect.anything(), proofURL: expect.anything()
-    })
+        userID: expect.anything(),
+        notes: expect.anything(),
+        proofURL: expect.anything(),
+      }),
     });
 
     mocks.listRows.mockResolvedValueOnce({ rows: [sparseClaimRow] });
-    await expect(getClaims()).resolves.toEqual([expect.objectContaining({ userId: undefined, notes: undefined, proofUrl: undefined })]);
+    await expect(getClaims()).resolves.toEqual([
+      expect.objectContaining({ userId: undefined, notes: undefined, proofUrl: undefined }),
+    ]);
 
     mocks.getRow.mockResolvedValueOnce(sparseClaimRow);
-    await expect(getClaimById('claim-sparse')).resolves.toEqual(expect.objectContaining({ reviewedBy: undefined, reviewedAt: undefined }));
+    await expect(getClaimById('claim-sparse')).resolves.toEqual(
+      expect.objectContaining({ reviewedBy: undefined, reviewedAt: undefined }),
+    );
 
     mocks.updateRow.mockResolvedValueOnce(sparseClaimRow);
-    await expect(updateClaimStatus('claim-sparse', 'pending')).resolves.toEqual(expect.objectContaining({
-      userId: undefined,
-      notes: undefined,
-      proofUrl: undefined,
-      reviewedBy: undefined,
-      reviewedAt: undefined
-    }));
-    expect(mocks.updateRow).toHaveBeenCalledWith({ databaseId: 'db', tableId: 'claims', rowId: 'claim-sparse', data: expect.objectContaining({ reviewedBy: null }) });
+    await expect(updateClaimStatus('claim-sparse', 'pending')).resolves.toEqual(
+      expect.objectContaining({
+        userId: undefined,
+        notes: undefined,
+        proofUrl: undefined,
+        reviewedBy: undefined,
+        reviewedAt: undefined,
+      }),
+    );
+    expect(mocks.updateRow).toHaveBeenCalledWith({
+      databaseId: 'db',
+      tableId: 'claims',
+      rowId: 'claim-sparse',
+      data: expect.objectContaining({ reviewedBy: null }),
+    });
   });
 });
 
@@ -473,15 +576,30 @@ describe('appwrite (Appwrite-backed mode) — badges', () => {
   });
 
   const badgeRow = {
-    $id: 'badge-1', userID: 'user-1', taskID: 'task-1', label: 'Helper', color: '#FF6B6B',
-    awardedAt: '2026-01-01T00:00:00.000Z', $createdAt: '2026-01-01T00:00:00.000Z'
+    $id: 'badge-1',
+    userID: 'user-1',
+    taskID: 'task-1',
+    label: 'Helper',
+    color: '#FF6B6B',
+    awardedAt: '2026-01-01T00:00:00.000Z',
+    $createdAt: '2026-01-01T00:00:00.000Z',
   };
 
   it('awardBadge maps userId to userID and maps the response back', async () => {
     mocks.createRow.mockResolvedValue(badgeRow);
-    const badge = await awardBadge({ userId: 'user-1', label: 'Helper', taskId: 'task-1', color: '#FF6B6B' });
+    const badge = await awardBadge({
+      userId: 'user-1',
+      label: 'Helper',
+      taskId: 'task-1',
+      color: '#FF6B6B',
+    });
 
-    expect(mocks.createRow).toHaveBeenCalledWith({ databaseId: 'db', tableId: 'badges', rowId: 'new-id', data: expect.objectContaining({ userID: 'user-1' }) });
+    expect(mocks.createRow).toHaveBeenCalledWith({
+      databaseId: 'db',
+      tableId: 'badges',
+      rowId: 'new-id',
+      data: expect.objectContaining({ userID: 'user-1' }),
+    });
     expect(badge).toEqual(expect.objectContaining({ id: 'badge-1', userId: 'user-1' }));
   });
 
@@ -518,15 +636,23 @@ describe('appwrite (Appwrite-backed mode) — badges', () => {
         { ...badgeRow, $id: 'b2', userID: 'user-1', label: 'Helper', awardedAt: twoMonthsAgo },
         { ...badgeRow, $id: 'b3', userID: 'user-2', label: 'Speedy', awardedAt: fourMonthsAgo },
         { ...badgeRow, $id: 'b4', userID: 'user-2', label: 'Speedy', awardedAt: fourMonthsAgo },
-        { ...badgeRow, $id: 'b5', userID: 'user-3', label: 'Legacy', awardedAt: '2000-01-01T00:00:00.000Z' }
-      ]
+        {
+          ...badgeRow,
+          $id: 'b5',
+          userID: 'user-3',
+          label: 'Legacy',
+          awardedAt: '2000-01-01T00:00:00.000Z',
+        },
+      ],
     });
 
     const analytics = await getBadgeAnalytics();
 
     expect(analytics.totalBadgesAwarded).toBe(5);
     expect(analytics.totalVolunteersEngaged).toBe(3);
-    expect(analytics.topBadgeTypes[0]).toEqual(expect.objectContaining({ type: 'Helper', count: 2 }));
+    expect(analytics.topBadgeTypes[0]).toEqual(
+      expect.objectContaining({ type: 'Helper', count: 2 }),
+    );
     expect(analytics.engagementTrend.length).toBeGreaterThanOrEqual(1);
     expect(analytics.engagementTrend.find((entry) => entry.badges === 2)?.volunteers).toBe(1);
     expect(analytics.recentAwards).toHaveLength(5);
@@ -543,7 +669,7 @@ describe('appwrite (Appwrite-backed mode) — badges', () => {
       ...badgeRow,
       taskID: null,
       color: null,
-      awardedAt: undefined
+      awardedAt: undefined,
     });
     await awardBadge({ userId: 'user-1', label: 'Helper' });
     expect(mocks.createRow).toHaveBeenCalledWith({
@@ -551,26 +677,32 @@ describe('appwrite (Appwrite-backed mode) — badges', () => {
       tableId: 'badges',
       rowId: 'new-id',
       data: {
-      userID: 'user-1',
-      label: 'Helper',
-      awardedAt: expect.any(String)
-    }
+        userID: 'user-1',
+        label: 'Helper',
+        awardedAt: expect.any(String),
+      },
     });
 
     mocks.listRows.mockResolvedValueOnce({
-      rows: [{ ...badgeRow, userID: '', taskID: null, label: '', awardedAt: undefined }]
+      rows: [{ ...badgeRow, userID: '', taskID: null, label: '', awardedAt: undefined }],
     });
     const analytics = await getBadgeAnalytics();
     expect(analytics.topBadgeTypes).toEqual([{ type: 'Unnamed Badge', count: 1, percentage: 100 }]);
     expect(analytics.recentAwards).toEqual([
-      expect.objectContaining({ volunteer: 'Unknown Volunteer', badge: 'Unnamed Badge', task: 'General Task' })
+      expect.objectContaining({
+        volunteer: 'Unknown Volunteer',
+        badge: 'Unnamed Badge',
+        task: 'General Task',
+      }),
     ]);
   });
 
   it('normalizes a missing badge color in analytics rows', async () => {
     mocks.listRows.mockResolvedValueOnce({ rows: [{ ...badgeRow, color: null }] });
 
-    await expect(getBadgeAnalytics()).resolves.toEqual(expect.objectContaining({ totalBadgesAwarded: 1 }));
+    await expect(getBadgeAnalytics()).resolves.toEqual(
+      expect.objectContaining({ totalBadgesAwarded: 1 }),
+    );
   });
 
   it('normalizes nullable badge fields across badge read paths', async () => {
@@ -578,29 +710,35 @@ describe('appwrite (Appwrite-backed mode) — badges', () => {
       ...badgeRow,
       taskID: null,
       color: null,
-      awardedAt: undefined
+      awardedAt: undefined,
     };
 
     mocks.createRow.mockResolvedValueOnce(sparseBadgeRow);
-    await expect(awardBadge({ userId: 'user-1', label: 'Helper' })).resolves.toEqual(expect.objectContaining({
-      taskId: undefined,
-      color: undefined,
-      awardedAt: sparseBadgeRow.$createdAt
-    }));
+    await expect(awardBadge({ userId: 'user-1', label: 'Helper' })).resolves.toEqual(
+      expect.objectContaining({
+        taskId: undefined,
+        color: undefined,
+        awardedAt: sparseBadgeRow.$createdAt,
+      }),
+    );
 
     mocks.listRows.mockResolvedValueOnce({ rows: [sparseBadgeRow] });
-    await expect(listBadgesByUser('user-1')).resolves.toEqual([expect.objectContaining({
-      taskId: undefined,
-      color: undefined,
-      awardedAt: sparseBadgeRow.$createdAt
-    })]);
+    await expect(listBadgesByUser('user-1')).resolves.toEqual([
+      expect.objectContaining({
+        taskId: undefined,
+        color: undefined,
+        awardedAt: sparseBadgeRow.$createdAt,
+      }),
+    ]);
 
     mocks.listRows.mockResolvedValueOnce({ rows: [sparseBadgeRow] });
-    await expect(getBadges()).resolves.toEqual([expect.objectContaining({
-      taskId: undefined,
-      color: undefined,
-      awardedAt: sparseBadgeRow.$createdAt
-    })]);
+    await expect(getBadges()).resolves.toEqual([
+      expect.objectContaining({
+        taskId: undefined,
+        color: undefined,
+        awardedAt: sparseBadgeRow.$createdAt,
+      }),
+    ]);
   });
 
   it('uses now for undated badges and excludes old badges from the trend', async () => {
@@ -610,20 +748,19 @@ describe('appwrite (Appwrite-backed mode) — badges', () => {
       mocks.listRows.mockResolvedValueOnce({
         rows: [
           { ...badgeRow, $id: 'undated', awardedAt: undefined, $createdAt: undefined },
-          { ...badgeRow, $id: 'old', awardedAt: '2000-01-01T00:00:00.000Z' }
-        ]
+          { ...badgeRow, $id: 'old', awardedAt: '2000-01-01T00:00:00.000Z' },
+        ],
       });
 
       const analytics = await getBadgeAnalytics();
 
       expect(analytics.totalBadgesAwarded).toBe(2);
       expect(analytics.engagementTrend).toEqual([expect.objectContaining({ badges: 1 })]);
-      expect(analytics.recentAwards).toEqual(expect.arrayContaining([
-        expect.objectContaining({ date: '2026-08-23' })
-      ]));
+      expect(analytics.recentAwards).toEqual(
+        expect.arrayContaining([expect.objectContaining({ date: '2026-08-23' })]),
+      );
     } finally {
       vi.useRealTimers();
     }
   });
-
 });

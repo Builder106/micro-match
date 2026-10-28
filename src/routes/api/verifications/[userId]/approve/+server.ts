@@ -1,7 +1,12 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { json } from '@sveltejs/kit';
 import { isUserAdmin } from '$lib/server/teams';
-import { getVerificationByUserId, getUserEmailAndLocale, setUserVerificationPref, setVerificationStatus } from '$lib/server/verifications';
+import {
+  getVerificationByUserId,
+  getUserEmailAndLocale,
+  setUserVerificationPref,
+  setVerificationStatus,
+} from '$lib/server/verifications';
 import { setTasksVerifiedForOrg } from '$lib/server/appwrite';
 import { sendVerificationApproved } from '$lib/server/email';
 
@@ -23,7 +28,9 @@ export const POST: RequestHandler = async (event) => {
 
   // Backfill: existing tasks owned by this NGO now show the Verified chip.
   let tasksUpdated = 0;
-  try { tasksUpdated = await setTasksVerifiedForOrg(targetUserId, true); } catch {}
+  try {
+    tasksUpdated = await setTasksVerifiedForOrg(targetUserId, true);
+  } catch {}
 
   // Sync the user's prefs so client-side UI sees the new status without a fetch.
   await setUserVerificationPref(targetUserId, 'approved');
@@ -32,7 +39,12 @@ export const POST: RequestHandler = async (event) => {
   let emailResult: { ok: boolean; error?: string } = { ok: false };
   try {
     const recipient = await getUserEmailAndLocale(targetUserId);
-    if (recipient) emailResult = await sendVerificationApproved({ to: recipient.email, orgName: updated.orgName, locale: recipient.locale });
+    if (recipient)
+      emailResult = await sendVerificationApproved({
+        to: recipient.email,
+        orgName: updated.orgName,
+        locale: recipient.locale,
+      });
   } catch (err) {
     emailResult = { ok: false, error: (err as Error).message };
   }

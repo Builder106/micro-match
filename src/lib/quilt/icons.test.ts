@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { PATCH_ICONS, PATCH_ICON_LABELS, PATCH_ICON_NAMES, iconValue, resolvePatchIcon } from './icons';
+import {
+  PATCH_ICONS,
+  PATCH_ICON_LABELS,
+  PATCH_ICON_NAMES,
+  iconValue,
+  resolvePatchIcon,
+} from './icons';
 
 describe('patch icons', () => {
   it('labels every icon', () => {

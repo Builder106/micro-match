@@ -3,7 +3,13 @@
 // Docs: https://projects.propublica.org/nonprofits/api
 
 export type ProPublicaResult =
-  | { found: true; orgName: string; status: 'active' | 'revoked' | 'unknown'; ntee?: string; rulingDate?: string }
+  | {
+      found: true;
+      orgName: string;
+      status: 'active' | 'revoked' | 'unknown';
+      ntee?: string;
+      rulingDate?: string;
+    }
   | { found: false; error?: string };
 
 function normalizeEin(ein: string): string {
@@ -42,7 +48,7 @@ export async function lookupNonprofitByEin(rawEin: string): Promise<ProPublicaRe
       orgName: org.name || 'Unknown',
       status: revoked ? 'revoked' : 'active',
       ntee: org.ntee_code || undefined,
-      rulingDate: org.ruling_date || undefined
+      rulingDate: org.ruling_date || undefined,
     };
   } catch (err) {
     return { found: false, error: err instanceof Error ? err.message : String(err) };

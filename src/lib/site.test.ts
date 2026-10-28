@@ -27,8 +27,19 @@ describe('site map', () => {
     expect(hrefFor('#main', 'en')).toBe('#main');
   });
   it('lists account tools by role', () => {
-    expect(appNav('volunteer', false).map((i) => i.label)).toEqual(['My block', 'Tasks', 'Profile']);
-    expect(appNav('ngo', true).map((i) => i.href)).toEqual(['/dashboard', '/tasks', '/org', '/badges/manage', '/admin/verifications', '/profile']);
+    expect(appNav('volunteer', false).map((i) => i.label)).toEqual([
+      'My block',
+      'Tasks',
+      'Profile',
+    ]);
+    expect(appNav('ngo', true).map((i) => i.href)).toEqual([
+      '/dashboard',
+      '/tasks',
+      '/org',
+      '/badges/manage',
+      '/admin/verifications',
+      '/profile',
+    ]);
   });
   it('only follows same-origin next paths', () => {
     expect(safeNext('/task/1/claim')).toBe('/task/1/claim');

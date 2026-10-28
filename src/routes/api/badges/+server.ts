@@ -9,4 +9,3 @@ export const GET: RequestHandler = async ({ url, locals }) => {
   const badges = await listBadgesByUser(userId);
   return json(badges);
 };
-

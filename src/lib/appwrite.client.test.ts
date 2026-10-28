@@ -11,22 +11,26 @@ const { mocks, publicEnvState } = vi.hoisted(() => ({
     deleteSession: vi.fn(),
     deleteSessions: vi.fn(),
     createJWT: vi.fn(),
-    getFilePreview: vi.fn()
+    getFilePreview: vi.fn(),
   },
-  publicEnvState: {} as Record<string, string | undefined>
+  publicEnvState: {} as Record<string, string | undefined>,
 }));
 
 vi.mock('$env/static/public', () => ({
   PUBLIC_APPWRITE_ENDPOINT: 'https://fake.appwrite.io/v1',
-  PUBLIC_APPWRITE_PROJECT_ID: 'proj'
+  PUBLIC_APPWRITE_PROJECT_ID: 'proj',
 }));
 vi.mock('$env/dynamic/public', () => ({
-  env: new Proxy(publicEnvState, { get: (_, key: string) => publicEnvState[key] })
+  env: new Proxy(publicEnvState, { get: (_, key: string) => publicEnvState[key] }),
 }));
 vi.mock('appwrite', () => ({
   Client: class {
-    setEndpoint() { return this; }
-    setProject() { return this; }
+    setEndpoint() {
+      return this;
+    }
+    setProject() {
+      return this;
+    }
   },
   Account: class {
     createEmailPasswordSession = mocks.createEmailPasswordSession;
@@ -43,7 +47,7 @@ vi.mock('appwrite', () => ({
     getFilePreview = mocks.getFilePreview;
   },
   ID: { unique: () => 'unique-id' },
-  OAuthProvider: { Google: 'google' }
+  OAuthProvider: { Google: 'google' },
 }));
 
 import {
@@ -58,7 +62,7 @@ import {
   refreshSessionCookie,
   assignTeamForCurrentRole,
   uploadAvatar,
-  getAvatarUrl
+  getAvatarUrl,
 } from './appwrite.client';
 
 describe('appwrite.client', () => {
@@ -70,7 +74,7 @@ describe('appwrite.client', () => {
     vi.stubGlobal('localStorage', {
       removeItem: vi.fn(),
       getItem: vi.fn(),
-      setItem: vi.fn()
+      setItem: vi.fn(),
     });
   });
 
@@ -81,7 +85,10 @@ describe('appwrite.client', () => {
   it('signInEmail delegates to account.createEmailPasswordSession', async () => {
     mocks.createEmailPasswordSession.mockResolvedValue({ $id: 'sess-1' });
     const result = await signInEmail('jane@example.com', 'hunter2');
-    expect(mocks.createEmailPasswordSession).toHaveBeenCalledWith({ email: 'jane@example.com', password: 'hunter2' });
+    expect(mocks.createEmailPasswordSession).toHaveBeenCalledWith({
+      email: 'jane@example.com',
+      password: 'hunter2',
+    });
     expect(result).toEqual({ $id: 'sess-1' });
   });
 
@@ -92,8 +99,16 @@ describe('appwrite.client', () => {
 
     await signUpEmail('jane@example.com', 'hunter2', 'Jane', 'ngo');
 
-    expect(mocks.create).toHaveBeenCalledWith({ userId: 'unique-id', email: 'jane@example.com', password: 'hunter2', name: 'Jane' });
-    expect(mocks.createEmailPasswordSession).toHaveBeenCalledWith({ email: 'jane@example.com', password: 'hunter2' });
+    expect(mocks.create).toHaveBeenCalledWith({
+      userId: 'unique-id',
+      email: 'jane@example.com',
+      password: 'hunter2',
+      name: 'Jane',
+    });
+    expect(mocks.createEmailPasswordSession).toHaveBeenCalledWith({
+      email: 'jane@example.com',
+      password: 'hunter2',
+    });
     expect(mocks.updatePrefs).toHaveBeenCalledWith({ prefs: { role: 'ngo' } });
   });
 
@@ -108,20 +123,29 @@ describe('appwrite.client', () => {
 
   it('createRecovery/updateRecovery delegate to the account SDK', async () => {
     await createRecovery('jane@example.com', 'https://micromatch.tech/reset');
-    expect(mocks.createRecovery).toHaveBeenCalledWith({ email: 'jane@example.com', url: 'https://micromatch.tech/reset' });
+    expect(mocks.createRecovery).toHaveBeenCalledWith({
+      email: 'jane@example.com',
+      url: 'https://micromatch.tech/reset',
+    });
 
     await updateRecovery('user-1', 'secret', 'new-password');
-    expect(mocks.updateRecovery).toHaveBeenCalledWith({ userId: 'user-1', secret: 'secret', password: 'new-password' });
+    expect(mocks.updateRecovery).toHaveBeenCalledWith({
+      userId: 'user-1',
+      secret: 'secret',
+      password: 'new-password',
+    });
   });
 
   it('signInWithGoogle builds success/failure URLs from window.location.origin', async () => {
     await signInWithGoogle();
     expect(mocks.deleteSession).toHaveBeenCalledWith({ sessionId: 'current' });
-    expect(mocks.deleteSession.mock.invocationCallOrder[0]).toBeLessThan(mocks.createOAuth2Token.mock.invocationCallOrder[0]);
+    expect(mocks.deleteSession.mock.invocationCallOrder[0]).toBeLessThan(
+      mocks.createOAuth2Token.mock.invocationCallOrder[0],
+    );
     expect(mocks.createOAuth2Token).toHaveBeenCalledWith({
       provider: 'google',
       success: 'https://micromatch.tech/api/auth/oauth/callback',
-      failure: 'https://micromatch.tech/login?error=oauth'
+      failure: 'https://micromatch.tech/login?error=oauth',
     });
   });
 
@@ -130,7 +154,7 @@ describe('appwrite.client', () => {
     expect(mocks.createOAuth2Token).toHaveBeenCalledWith({
       provider: 'google',
       success: 'https://micromatch.tech/api/auth/oauth/callback?role=ngo',
-      failure: 'https://micromatch.tech/signup?error=oauth&role=ngo'
+      failure: 'https://micromatch.tech/signup?error=oauth&role=ngo',
     });
   });
 
@@ -144,7 +168,9 @@ describe('appwrite.client', () => {
     mocks.deleteSession.mockRejectedValue(new Error('Network unavailable'));
     await signInWithGoogle({ role: 'ngo', returnTo: 'signup' });
     expect(mocks.createOAuth2Token).not.toHaveBeenCalled();
-    expect(window.location.assign).toHaveBeenCalledWith('https://micromatch.tech/signup?error=oauth&role=ngo');
+    expect(window.location.assign).toHaveBeenCalledWith(
+      'https://micromatch.tech/signup?error=oauth&role=ngo',
+    );
     expect(mocks.deleteSessions).not.toHaveBeenCalled();
   });
 
@@ -170,7 +196,10 @@ describe('appwrite.client', () => {
     vi.stubGlobal('fetch', fetchMock);
 
     await expect(signOut()).resolves.toBeUndefined();
-    expect(fetchMock).toHaveBeenCalledWith('/api/auth/logout', expect.objectContaining({ method: 'POST' }));
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/auth/logout',
+      expect.objectContaining({ method: 'POST' }),
+    );
   });
 
   it('signOut clears the browser session after successful server cleanup', async () => {
@@ -191,10 +220,13 @@ describe('appwrite.client', () => {
 
     await refreshSessionCookie();
 
-    expect(fetchMock).toHaveBeenCalledWith('/api/auth/session', expect.objectContaining({
-      method: 'POST',
-      body: JSON.stringify({ jwt: 'abc.def.ghi' })
-    }));
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/auth/session',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({ jwt: 'abc.def.ghi' }),
+      }),
+    );
   });
 
   it('refreshSessionCookie is a no-op when there is no JWT', async () => {
@@ -222,7 +254,7 @@ describe('appwrite.client', () => {
 
     expect(fetchMock).toHaveBeenCalledWith('/api/teams/assign', {
       method: 'POST',
-      headers: { Authorization: 'Bearer abc.def.ghi' }
+      headers: { Authorization: 'Bearer abc.def.ghi' },
     });
   });
 
@@ -245,50 +277,72 @@ describe('appwrite.client', () => {
   it('uploadAvatar posts multipart form data and returns fileId/url on success', async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({ fileId: 'file-1', url: 'https://cdn/file-1' })
+      json: async () => ({ fileId: 'file-1', url: 'https://cdn/file-1' }),
     });
     vi.stubGlobal('fetch', fetchMock);
-    vi.stubGlobal('FormData', class {
-      appended: Record<string, unknown> = {};
-      append(k: string, v: unknown) { this.appended[k] = v; }
-    });
+    vi.stubGlobal(
+      'FormData',
+      class {
+        appended: Record<string, unknown> = {};
+        append(k: string, v: unknown) {
+          this.appended[k] = v;
+        }
+      },
+    );
 
     const file = new File(['avatar'], 'avatar.png', { type: 'image/png' });
     const result = await uploadAvatar(file);
 
     expect(result).toEqual({ fileId: 'file-1', url: 'https://cdn/file-1' });
-    expect(fetchMock).toHaveBeenCalledWith('/api/profile/avatar', expect.objectContaining({ method: 'POST' }));
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/profile/avatar',
+      expect.objectContaining({ method: 'POST' }),
+    );
   });
 
   it('uploadAvatar throws with the server error message on failure', async () => {
-    vi.stubGlobal('FormData', class { append() { } });
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-      ok: false,
-      json: async () => ({ error: 'File too large' })
-    }));
+    vi.stubGlobal(
+      'FormData',
+      class {
+        append() {}
+      },
+    );
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: false,
+        json: async () => ({ error: 'File too large' }),
+      }),
+    );
 
     await expect(uploadAvatar({} as File)).rejects.toThrow('File too large');
 
     // Server returns error with non-JSON or missing error property
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-      ok: false,
-      json: async () => { throw new Error('bad json'); }
-    }));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: false,
+        json: async () => {
+          throw new Error('bad json');
+        },
+      }),
+    );
     await expect(uploadAvatar({} as File)).rejects.toThrow('Upload failed');
 
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-      ok: false,
-      json: async () => ({ error: '' })
-    }));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: false,
+        json: async () => ({ error: '' }),
+      }),
+    );
     await expect(uploadAvatar({} as File)).rejects.toThrow('Upload failed');
   });
 
   it('getJWT returns null when jwt property is missing in response', async () => {
-
     mocks.createJWT.mockResolvedValue({});
     expect(await getJWT()).toBeNull();
   });
-
 
   it('getAvatarUrl returns empty string when the bucket id is not configured', () => {
     expect(getAvatarUrl('file-1')).toBe('');
@@ -301,7 +355,12 @@ describe('appwrite.client', () => {
 
     const url = getAvatarUrl('file-1', 64);
 
-    expect(mocks.getFilePreview).toHaveBeenCalledWith({ bucketId: 'avatars-bucket', fileId: 'file-1', width: 64, height: 64 });
+    expect(mocks.getFilePreview).toHaveBeenCalledWith({
+      bucketId: 'avatars-bucket',
+      fileId: 'file-1',
+      width: 64,
+      height: 64,
+    });
     expect(url).toBe('https://cdn/avatars/file-1');
   });
 
@@ -310,12 +369,19 @@ describe('appwrite.client', () => {
     mocks.getFilePreview.mockReturnValue('https://cdn/avatars/file-1');
 
     expect(getAvatarUrl('file-1')).toBe('https://cdn/avatars/file-1');
-    expect(mocks.getFilePreview).toHaveBeenCalledWith({ bucketId: 'avatars-bucket', fileId: 'file-1', width: 128, height: 128 });
+    expect(mocks.getFilePreview).toHaveBeenCalledWith({
+      bucketId: 'avatars-bucket',
+      fileId: 'file-1',
+      width: 128,
+      height: 128,
+    });
   });
 
   it('getAvatarUrl returns empty string if getFilePreview throws', () => {
     publicEnvState.PUBLIC_APPWRITE_AVATARS_BUCKET_ID = 'avatars-bucket';
-    mocks.getFilePreview.mockImplementation(() => { throw new Error('bad file id'); });
+    mocks.getFilePreview.mockImplementation(() => {
+      throw new Error('bad file id');
+    });
 
     expect(getAvatarUrl('file-1')).toBe('');
   });

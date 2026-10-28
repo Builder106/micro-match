@@ -4,7 +4,9 @@ import { getTasks, getBadgeAnalytics } from '$lib/server/appwrite';
 export const load: PageServerLoad = async ({ locals }) => {
   const userRole = locals.userRole ?? 'anonymous';
   const session = locals.session;
-  const user = session?.user?.id ? { id: session.user.id, email: session.user.email ?? undefined } : null;
+  const user = session?.user?.id
+    ? { id: session.user.id, email: session.user.email ?? undefined }
+    : null;
 
   if (userRole !== 'ngo') {
     throw new Error('Access denied: NGO access required');
@@ -20,6 +22,6 @@ export const load: PageServerLoad = async ({ locals }) => {
     userRole,
     user,
     tasks,
-    analytics
+    analytics,
   };
 };

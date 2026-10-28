@@ -4,17 +4,23 @@ import type { Badge, BadgeDefinition } from '$lib/types';
 const { mockAwardBadge, mockListBadgesByUser, mockEvaluate, mockMilestone } = vi.hoisted(() => ({
   mockAwardBadge: vi.fn<(input: Omit<Badge, 'id' | 'awardedAt'>) => Promise<Badge>>(),
   mockListBadgesByUser: vi.fn<(userId: string) => Promise<Badge[]>>(),
-  mockEvaluate: vi.fn<(userId: string, action: { type: string; taskId: string; taskTimeMinutes?: number }) => Promise<BadgeDefinition[]>>(),
-  mockMilestone: vi.fn<(userId: string) => Promise<BadgeDefinition[]>>()
+  mockEvaluate:
+    vi.fn<
+      (
+        userId: string,
+        action: { type: string; taskId: string; taskTimeMinutes?: number },
+      ) => Promise<BadgeDefinition[]>
+    >(),
+  mockMilestone: vi.fn<(userId: string) => Promise<BadgeDefinition[]>>(),
 }));
 
 vi.mock('./appwrite', () => ({
   awardBadge: mockAwardBadge,
-  listBadgesByUser: mockListBadgesByUser
+  listBadgesByUser: mockListBadgesByUser,
 }));
 vi.mock('./badgeCriteria', () => ({
   evaluateBadgeCriteria: mockEvaluate,
-  checkMilestoneCriteria: mockMilestone
+  checkMilestoneCriteria: mockMilestone,
 }));
 
 import { processBadgeAwards, onTaskApproved } from './badgeAwarder';
@@ -29,7 +35,7 @@ function def(label: string, id = label, taskId?: string): BadgeDefinition {
     taskId,
     icon: undefined,
     description: undefined,
-    createdAt: undefined
+    createdAt: undefined,
   };
 }
 
@@ -52,7 +58,7 @@ describe('processBadgeAwards', () => {
       userId: input.userId,
       label: input.label,
       color: input.color,
-      awardedAt: new Date().toISOString()
+      awardedAt: new Date().toISOString(),
     }));
   });
 
@@ -94,7 +100,9 @@ describe('processBadgeAwards', () => {
 
   it('continues awarding the rest of the batch when one award throws', async () => {
     mockEvaluate.mockResolvedValue([def('First'), def('Speedy'), def('Third')]);
-    mockAwardBadge.mockImplementationOnce(async () => { throw new Error('appwrite kaboom'); });
+    mockAwardBadge.mockImplementationOnce(async () => {
+      throw new Error('appwrite kaboom');
+    });
 
     const ids = await processBadgeAwards('user-1', { type: 'task-completed', taskId: 'task-1' });
 
@@ -107,17 +115,19 @@ describe('processBadgeAwards', () => {
 
     await processBadgeAwards('user-1', { type: 'task-completed', taskId: 'task-7' });
 
-    expect(mockAwardBadge).toHaveBeenCalledWith(expect.objectContaining({
-      userId: 'user-1',
-      taskId: 'task-7',
-      label: 'First',
-      color: '#FF6B6B'
-    }));
+    expect(mockAwardBadge).toHaveBeenCalledWith(
+      expect.objectContaining({
+        userId: 'user-1',
+        taskId: 'task-7',
+        label: 'First',
+        color: '#FF6B6B',
+      }),
+    );
   });
 
   it('returns [] without throwing if the criteria engine errors', async () => {
     mockEvaluate.mockRejectedValue(new Error('db down'));
-    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const ids = await processBadgeAwards('user-1', { type: 'task-completed', taskId: 'task-1' });
 
@@ -132,7 +142,7 @@ describe('processBadgeAwards', () => {
 
     expect(mockEvaluate).toHaveBeenCalledWith(
       'user-1',
-      expect.objectContaining({ type: 'task-completed', taskId: 'task-1', taskTimeMinutes: 15 })
+      expect.objectContaining({ type: 'task-completed', taskId: 'task-1', taskTimeMinutes: 15 }),
     );
   });
 
@@ -144,7 +154,7 @@ describe('processBadgeAwards', () => {
 
     expect(mockEvaluate).toHaveBeenCalledWith(
       'user-1',
-      expect.objectContaining({ type: 'task-completed', taskId: 'task-1', taskTimeMinutes: 20 })
+      expect.objectContaining({ type: 'task-completed', taskId: 'task-1', taskTimeMinutes: 20 }),
     );
   });
 });

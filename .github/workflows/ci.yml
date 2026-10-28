@@ -215,7 +215,8 @@ jobs:
   ci-gate:
     name: CI required gate
     if: ${{ always() }}
-    needs: [check, lint, test, build, functional, responsiveness, accessibility, visual, vercel-function]
+    needs:
+      [check, lint, test, build, functional, responsiveness, accessibility, visual, vercel-function]
     runs-on: ubuntu-24.04
     steps:
       - name: Require selected CI checks

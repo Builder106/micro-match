@@ -7,5 +7,5 @@ export const ease = {
   out: 'expo.out', // settles: cloth laid down
   inOut: 'power2.inOut', // stitches and the curtain
   soft: 'power3.out', // small UI
-  spring: 'back.out(1.6)' // a press that pops back, used rarely
+  spring: 'back.out(1.6)', // a press that pops back, used rarely
 } as const;

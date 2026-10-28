@@ -16,7 +16,7 @@ export const PUBLIC_PATHS = [
   '/docs/api',
   '/privacy',
   '/terms',
-  '/cookies'
+  '/cookies',
 ] as const;
 
 const PUBLIC_SET: ReadonlySet<string> = new Set(PUBLIC_PATHS);
@@ -53,10 +53,13 @@ export type NavItem = { href: string; label: string };
 export function appNav(role: Role, isAdmin: boolean): NavItem[] {
   const items: NavItem[] = [
     { href: '/dashboard', label: role === 'ngo' ? m.nav_reviews() : m.nav_my_block() },
-    { href: '/tasks', label: m.nav_tasks() }
+    { href: '/tasks', label: m.nav_tasks() },
   ];
   if (role === 'ngo') {
-    items.push({ href: '/org', label: m.nav_post_task() }, { href: '/badges/manage', label: m.nav_patches() });
+    items.push(
+      { href: '/org', label: m.nav_post_task() },
+      { href: '/badges/manage', label: m.nav_patches() },
+    );
   }
   if (isAdmin) items.push({ href: '/admin/verifications', label: m.nav_verifications() });
   items.push({ href: '/profile', label: m.nav_profile() });

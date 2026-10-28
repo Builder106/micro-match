@@ -19,7 +19,7 @@ function makeEvent(opts: { sessionCookie?: string; protocol?: string } = {}): Mo
   const cookies = createMockCookies(opts.sessionCookie ? { mm_session: opts.sessionCookie } : {});
   const event = createRequestEvent({
     url: `${opts.protocol ?? 'https:'}//test/api/auth/logout`,
-    cookies
+    cookies,
   });
   const setCalls: MockEvent['setCalls'] = [];
   cookies.set.mockImplementation((name, value, opts) => {

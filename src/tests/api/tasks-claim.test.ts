@@ -5,11 +5,14 @@ const { mocks } = vi.hoisted(() => ({
     getUserRole: vi.fn(),
     getTaskById: vi.fn(),
     createClaim: vi.fn(),
-    moderateText: vi.fn()
-  }
+    moderateText: vi.fn(),
+  },
 }));
 
-vi.mock('$lib/server/appwrite', () => ({ createClaim: mocks.createClaim, getTaskById: mocks.getTaskById }));
+vi.mock('$lib/server/appwrite', () => ({
+  createClaim: mocks.createClaim,
+  getTaskById: mocks.getTaskById,
+}));
 vi.mock('$lib/server/auth', () => ({ getUserRole: mocks.getUserRole }));
 vi.mock('$lib/server/contentsafety', () => ({ moderateText: mocks.moderateText }));
 
@@ -22,9 +25,10 @@ function makeEvent(opts: { userId?: string | null; taskId?: string; body?: unkno
     params: { id: opts.taskId ?? 'task-1' },
     userId: opts.userId ?? undefined,
     request: new Request(url, {
-      method: 'POST', body: JSON.stringify(opts.body ?? {}),
-      headers: { 'content-type': 'application/json' }
-    })
+      method: 'POST',
+      body: JSON.stringify(opts.body ?? {}),
+      headers: { 'content-type': 'application/json' },
+    }),
   });
 }
 
@@ -32,7 +36,11 @@ describe('POST /api/tasks/[id]/claim', () => {
   beforeEach(() => {
     Object.values(mocks).forEach((m) => m.mockReset());
     mocks.moderateText.mockResolvedValue({ blocked: false, reasons: [] });
-    mocks.createClaim.mockImplementation(async (input: Record<string, unknown>) => ({ id: 'claim-1', status: 'pending', ...input }));
+    mocks.createClaim.mockImplementation(async (input: Record<string, unknown>) => ({
+      id: 'claim-1',
+      status: 'pending',
+      ...input,
+    }));
   });
 
   it('returns 401 for an anonymous caller', async () => {
@@ -52,7 +60,10 @@ describe('POST /api/tasks/[id]/claim', () => {
   it('returns 400 when the notes fail content moderation', async () => {
     mocks.getUserRole.mockResolvedValue('volunteer');
     mocks.getTaskById.mockResolvedValue({ id: 'task-1' });
-    mocks.moderateText.mockResolvedValue({ blocked: true, reasons: [{ category: 'Hate', severity: 6 }] });
+    mocks.moderateText.mockResolvedValue({
+      blocked: true,
+      reasons: [{ category: 'Hate', severity: 6 }],
+    });
 
     const res = await POST(makeEvent({ userId: 'user-1', body: { notes: 'nasty' } }));
     expect(res.status).toBe(400);
@@ -71,10 +82,19 @@ describe('POST /api/tasks/[id]/claim', () => {
     mocks.getUserRole.mockResolvedValue('volunteer');
     mocks.getTaskById.mockResolvedValue({ id: 'task-1' });
 
-    const res = await POST(makeEvent({ userId: 'user-1', taskId: 'task-1', body: { proofUrl: 'https://proof', notes: 'done' } }));
+    const res = await POST(
+      makeEvent({
+        userId: 'user-1',
+        taskId: 'task-1',
+        body: { proofUrl: 'https://proof', notes: 'done' },
+      }),
+    );
 
     expect(mocks.createClaim).toHaveBeenCalledWith({
-      taskId: 'task-1', proofUrl: 'https://proof', notes: 'done', userId: 'user-1'
+      taskId: 'task-1',
+      proofUrl: 'https://proof',
+      notes: 'done',
+      userId: 'user-1',
     });
     expect(res.status).toBe(201);
   });

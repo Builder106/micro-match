@@ -13,26 +13,54 @@ describe('/tasks load', () => {
 
   it('passes every task and the selected locale to the server translation boundary', async () => {
     const tasks = [
-      { id: '1', title: 'One', shortDescription: 'First task', tags: ['first'], language: 'English' },
-      { id: '2', title: 'Two', shortDescription: 'Second task', tags: ['second'], language: 'English' },
-      { id: '3', title: 'Three', shortDescription: 'Third task', tags: ['third'], language: 'English' },
-      { id: '4', title: 'Four', shortDescription: 'Fourth task', tags: ['fourth'], language: 'English' }
+      {
+        id: '1',
+        title: 'One',
+        shortDescription: 'First task',
+        tags: ['first'],
+        language: 'English',
+      },
+      {
+        id: '2',
+        title: 'Two',
+        shortDescription: 'Second task',
+        tags: ['second'],
+        language: 'English',
+      },
+      {
+        id: '3',
+        title: 'Three',
+        shortDescription: 'Third task',
+        tags: ['third'],
+        language: 'English',
+      },
+      {
+        id: '4',
+        title: 'Four',
+        shortDescription: 'Fourth task',
+        tags: ['fourth'],
+        language: 'English',
+      },
     ];
     const translatedTasks = tasks.map((task) => ({
       ...task,
       title: `Translated ${task.title}`,
-      tags: task.tags.map((tag) => `translated-${tag}`)
+      tags: task.tags.map((tag) => `translated-${tag}`),
     }));
     mocks.getTasks.mockResolvedValue(tasks);
     mocks.translateTasks.mockResolvedValue(translatedTasks);
 
-    const result = requireLoadResult(await load(createServerLoadEventFor<typeof load>({ locals: { locale: 'de' } })));
+    const result = requireLoadResult(
+      await load(createServerLoadEventFor<typeof load>({ locals: { locale: 'de' } })),
+    );
 
     expect(mocks.translateTasks).toHaveBeenCalledWith(tasks, 'de');
-    expect(result.tasks).toEqual(translatedTasks.map((task, index) => ({
-      ...task,
-      sourceTags: tasks[index]?.tags ?? task.tags
-    })));
+    expect(result.tasks).toEqual(
+      translatedTasks.map((task, index) => ({
+        ...task,
+        sourceTags: tasks[index]?.tags ?? task.tags,
+      })),
+    );
   });
 
   it('defaults to English and preserves the helper result', async () => {
@@ -51,7 +79,9 @@ describe('/tasks load', () => {
     mocks.getTasks.mockResolvedValue(tasks);
     mocks.translateTasks.mockResolvedValue(tasks);
 
-    const result = requireLoadResult(await load(createServerLoadEventFor<typeof load>({ locals: { locale: 'fr' } })));
+    const result = requireLoadResult(
+      await load(createServerLoadEventFor<typeof load>({ locals: { locale: 'fr' } })),
+    );
 
     expect(result.tasks).toEqual(tasks.map((task) => ({ ...task, sourceTags: undefined })));
   });

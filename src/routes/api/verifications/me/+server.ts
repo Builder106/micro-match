@@ -1,6 +1,10 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { json } from '@sveltejs/kit';
-import { getVerificationByUserId, withdrawVerification, setUserVerificationPref } from '$lib/server/verifications';
+import {
+  getVerificationByUserId,
+  withdrawVerification,
+  setUserVerificationPref,
+} from '$lib/server/verifications';
 
 export const GET: RequestHandler = async (event) => {
   const session = event.locals.session;

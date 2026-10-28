@@ -2,7 +2,8 @@
 import * as m from '$lib/paraglide/messages.js';
 import { getLocale } from '$lib/paraglide/runtime.js';
 
-const shortDay = (date: Date) => date.toLocaleDateString(getLocale(), { month: 'short', day: 'numeric' });
+const shortDay = (date: Date) =>
+  date.toLocaleDateString(getLocale(), { month: 'short', day: 'numeric' });
 
 export function relativeTime(iso: string | null | undefined, now = Date.now()): string {
   if (!iso) return '';
@@ -35,4 +36,5 @@ export function deadlineLabel(iso: string | null | undefined, now = Date.now()):
 }
 
 /** Minutes as words for a task length: "15 min". */
-export const minutesLabel = (minutes: number | null | undefined) => (typeof minutes === 'number' ? m.minutes_short({ count: minutes }) : m.time_not_set());
+export const minutesLabel = (minutes: number | null | undefined) =>
+  typeof minutes === 'number' ? m.minutes_short({ count: minutes }) : m.time_not_set();

@@ -5,31 +5,50 @@ const { envState, mocks } = vi.hoisted(() => ({
   mocks: {
     accountGet: vi.fn(),
     createFile: vi.fn(),
-    getFilePreview: vi.fn()
-  }
+    getFilePreview: vi.fn(),
+  },
 }));
 
 vi.mock('$env/dynamic/private', () => ({
-  env: new Proxy(envState, { get: (_, key: string) => envState[key] })
+  env: new Proxy(envState, { get: (_, key: string) => envState[key] }),
 }));
 vi.mock('node-appwrite', () => ({
   Client: class {
-    setEndpoint() { return this; } setProject() { return this; } setKey() { return this; } setJWT() { return this; }
+    setEndpoint() {
+      return this;
+    }
+    setProject() {
+      return this;
+    }
+    setKey() {
+      return this;
+    }
+    setJWT() {
+      return this;
+    }
   },
-  Account: class { get = mocks.accountGet; },
+  Account: class {
+    get = mocks.accountGet;
+  },
   Storage: class {
     createFile = mocks.createFile;
     getFilePreview = mocks.getFilePreview;
   },
   ID: { unique: () => 'file-id' },
-  Permission: { read: (r: string) => `read:${r}`, update: (r: string) => `update:${r}`, delete: (r: string) => `delete:${r}` },
-  Role: { any: () => 'any', user: (id: string) => `user:${id}` }
+  Permission: {
+    read: (r: string) => `read:${r}`,
+    update: (r: string) => `update:${r}`,
+    delete: (r: string) => `delete:${r}`,
+  },
+  Role: { any: () => 'any', user: (id: string) => `user:${id}` },
 }));
 
 import { POST } from '../../routes/api/profile/avatar/+server';
 import { createRequestEvent } from '../../tests/helpers/createLoadEvent';
 
-function makeEvent(opts: { userId?: string | null; authorization?: string; file?: File | null } = {}) {
+function makeEvent(
+  opts: { userId?: string | null; authorization?: string; file?: File | null } = {},
+) {
   const form = new FormData();
   if (opts.file !== null) {
     form.set('file', opts.file ?? new File(['x'], 'avatar.png', { type: 'image/png' }));
@@ -37,9 +56,10 @@ function makeEvent(opts: { userId?: string | null; authorization?: string; file?
   return createRequestEvent({
     userId: opts.userId ?? undefined,
     request: new Request('http://test/api/profile/avatar', {
-      method: 'POST', body: form,
-      headers: opts.authorization ? { authorization: opts.authorization } : undefined
-    })
+      method: 'POST',
+      body: form,
+      headers: opts.authorization ? { authorization: opts.authorization } : undefined,
+    }),
   });
 }
 
@@ -68,7 +88,6 @@ describe('POST /api/profile/avatar', () => {
     expect(resNoId.status).toBe(401);
   });
 
-
   it('returns 500 when the avatar bucket is not configured', async () => {
     delete envState.APPWRITE_AVATARS_BUCKET_ID;
     const res = await POST(makeEvent({ userId: 'user-1' }));
@@ -84,13 +103,18 @@ describe('POST /api/profile/avatar', () => {
     const res = await POST(makeEvent({ userId: 'user-1' }));
     const body = await res.json();
 
-    expect(mocks.createFile).toHaveBeenCalledWith({ bucketId: 'avatars', fileId: 'file-id', file: expect.anything(), permissions: expect.any(Array) });
+    expect(mocks.createFile).toHaveBeenCalledWith({
+      bucketId: 'avatars',
+      fileId: 'file-id',
+      file: expect.anything(),
+      permissions: expect.any(Array),
+    });
     expect(body).toEqual({ fileId: 'file-1', url: 'https://cdn/file-1' });
   });
 
   it('returns 500 when the upload throws', async () => {
     mocks.createFile.mockRejectedValue(new Error('storage down'));
-    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const res = await POST(makeEvent({ userId: 'user-1' }));
     expect(res.status).toBe(500);

@@ -2,7 +2,9 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
-const { mocks } = vi.hoisted(() => ({ mocks: { getTasks: vi.fn(), listBadgeDefinitions: vi.fn() } }));
+const { mocks } = vi.hoisted(() => ({
+  mocks: { getTasks: vi.fn(), listBadgeDefinitions: vi.fn() },
+}));
 vi.mock('$lib/server/appwrite', () => ({ getTasks: mocks.getTasks }));
 vi.mock('$lib/server/badgeDefs', () => ({ listBadgeDefinitions: mocks.listBadgeDefinitions }));
 
@@ -12,7 +14,7 @@ import { createServerLoadEventFor, requireLoadResult } from '../helpers/createLo
 function makeEvent(opts: { userRole?: App.Locals['userRole']; userId?: string } = {}) {
   return createServerLoadEventFor<typeof load>({
     userRole: opts.userRole,
-    userId: opts.userId
+    userId: opts.userId,
   });
 }
 
@@ -32,8 +34,7 @@ describe('/badges/manage load', () => {
     await expect(load(event)).rejects.toMatchObject({ status: 403 });
   });
 
-
-  it('scopes tasks and badge definitions to the NGO\'s own org', async () => {
+  it("scopes tasks and badge definitions to the NGO's own org", async () => {
     mocks.getTasks.mockResolvedValue([{ id: 't1', orgId: 'org-1' }]);
     mocks.listBadgeDefinitions.mockResolvedValue([{ id: 'b1', orgId: 'org-1' }]);
 
@@ -45,10 +46,14 @@ describe('/badges/manage load', () => {
     expect(result.badges).toEqual([{ id: 'b1', orgId: 'org-1' }]);
 
     // Test NGO user without email
-    const result2 = requireLoadResult(await load(createServerLoadEventFor<typeof load>({
-      userRole: 'ngo',
-      session: { user: { id: 'org-2' } }
-    })));
+    const result2 = requireLoadResult(
+      await load(
+        createServerLoadEventFor<typeof load>({
+          userRole: 'ngo',
+          session: { user: { id: 'org-2' } },
+        }),
+      ),
+    );
     expect(result2.user?.email).toBeUndefined();
   });
 });

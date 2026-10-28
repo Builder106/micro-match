@@ -27,38 +27,127 @@ const ROOT = resolve(HERE, '../..');
 const DEVICES = {
   desktop: { viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 },
   // 360 by 640 at 3x is exactly 1080 by 1920, the social cut's frame.
-  phone: { viewport: { width: 360, height: 640 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true }
+  phone: {
+    viewport: { width: 360, height: 640 },
+    deviceScaleFactor: 3,
+    isMobile: true,
+    hasTouch: true,
+  },
 };
 
 // ---------- seeding ----------
 
 const NONPROFITS = [
-  { ns: 'clinic', orgName: 'Riverside Community Clinic', patch: { label: 'Clinic helper', color: '#FF6B6B', icon: 'quilt:heart' } },
-  { ns: 'archive', orgName: 'Town History Archive', patch: { label: 'Archive keeper', color: '#3B4A8C', icon: 'quilt:book' } },
-  { ns: 'green', orgName: 'Green Streets Project', patch: { label: 'Street greener', color: '#8DAA8B', icon: 'quilt:leaf' } },
-  { ns: 'literacy', orgName: 'Literacy Circle', patch: { label: 'Word weaver', color: '#F2B84B', icon: 'quilt:pencil' } },
-  { ns: 'neighbors', orgName: 'New Neighbors Network', patch: { label: 'Good neighbor', color: '#7A4E7E', icon: 'quilt:house' } }
+  {
+    ns: 'clinic',
+    orgName: 'Riverside Community Clinic',
+    patch: { label: 'Clinic helper', color: '#FF6B6B', icon: 'quilt:heart' },
+  },
+  {
+    ns: 'archive',
+    orgName: 'Town History Archive',
+    patch: { label: 'Archive keeper', color: '#3B4A8C', icon: 'quilt:book' },
+  },
+  {
+    ns: 'green',
+    orgName: 'Green Streets Project',
+    patch: { label: 'Street greener', color: '#8DAA8B', icon: 'quilt:leaf' },
+  },
+  {
+    ns: 'literacy',
+    orgName: 'Literacy Circle',
+    patch: { label: 'Word weaver', color: '#F2B84B', icon: 'quilt:pencil' },
+  },
+  {
+    ns: 'neighbors',
+    orgName: 'New Neighbors Network',
+    patch: { label: 'Good neighbor', color: '#7A4E7E', icon: 'quilt:house' },
+  },
 ];
 
 const TASKS = [
-  { org: 0, title: 'Translate a medical flyer into Spanish', shortDescription: 'Help patients understand a one-page flyer about diabetes screenings.', description: 'Translate a single-page patient flyer (about 250 words) into clear, accessible Spanish. Keep medical terms accurate and the tone friendly.', estimatedMinutes: 15, tags: ['translation', 'spanish', 'health'] },
-  { org: 1, title: 'Tag historical photos for an archive', shortDescription: 'Add searchable tags (year, place, subject) to a small batch of photos.', description: 'A community history archive needs tags on 20 scanned photos so they show up in search. We provide the photos and a tag list.', estimatedMinutes: 5, tags: ['data', 'history'] },
-  { org: 2, title: 'Draft three social-post captions for an event', shortDescription: 'Write three short captions promoting a community clean-up day.', description: 'Three captions of about 50 words each. We provide the event details and tone notes.', estimatedMinutes: 10, tags: ['design'] },
-  { org: 3, title: 'Audit alt-text on a learning resource', shortDescription: 'Review the alt-text for about 15 images on an open lesson page.', description: 'Check each image and confirm the alt-text is accurate, or suggest a better short description.', estimatedMinutes: 20, tags: ['design', 'data'] },
-  { org: 1, title: 'Categorize community Q&A entries', shortDescription: 'Sort 30 forum questions into 6 topics.', description: 'For each question, pick the best topic. Edge cases get a short note.', estimatedMinutes: 15, tags: ['data'] },
-  { org: 2, title: 'Proofread a plain-language climate explainer', shortDescription: 'Catch typos and awkward phrasing in a 600-word explainer.', description: 'A short explainer for high-school readers. Proofread for grammar, clarity and jargon.', estimatedMinutes: 25, tags: ['environment'] },
-  { org: 4, title: 'Build a beginner Excel formula reference', shortDescription: 'Write one-line explanations for 10 common Excel formulas.', description: 'For a financial-literacy workshop. One short, plain explanation per formula.', estimatedMinutes: 20, tags: ['data', 'excel'] },
-  { org: 0, title: 'Translate a volunteer welcome email to Spanish', shortDescription: 'Translate a 150-word welcome email into warm, casual Spanish.', description: 'Keep it warm, casual and inclusive. We provide the source and a glossary.', estimatedMinutes: 10, tags: ['translation', 'spanish'] }
+  {
+    org: 0,
+    title: 'Translate a medical flyer into Spanish',
+    shortDescription: 'Help patients understand a one-page flyer about diabetes screenings.',
+    description:
+      'Translate a single-page patient flyer (about 250 words) into clear, accessible Spanish. Keep medical terms accurate and the tone friendly.',
+    estimatedMinutes: 15,
+    tags: ['translation', 'spanish', 'health'],
+  },
+  {
+    org: 1,
+    title: 'Tag historical photos for an archive',
+    shortDescription: 'Add searchable tags (year, place, subject) to a small batch of photos.',
+    description:
+      'A community history archive needs tags on 20 scanned photos so they show up in search. We provide the photos and a tag list.',
+    estimatedMinutes: 5,
+    tags: ['data', 'history'],
+  },
+  {
+    org: 2,
+    title: 'Draft three social-post captions for an event',
+    shortDescription: 'Write three short captions promoting a community clean-up day.',
+    description:
+      'Three captions of about 50 words each. We provide the event details and tone notes.',
+    estimatedMinutes: 10,
+    tags: ['design'],
+  },
+  {
+    org: 3,
+    title: 'Audit alt-text on a learning resource',
+    shortDescription: 'Review the alt-text for about 15 images on an open lesson page.',
+    description:
+      'Check each image and confirm the alt-text is accurate, or suggest a better short description.',
+    estimatedMinutes: 20,
+    tags: ['design', 'data'],
+  },
+  {
+    org: 1,
+    title: 'Categorize community Q&A entries',
+    shortDescription: 'Sort 30 forum questions into 6 topics.',
+    description: 'For each question, pick the best topic. Edge cases get a short note.',
+    estimatedMinutes: 15,
+    tags: ['data'],
+  },
+  {
+    org: 2,
+    title: 'Proofread a plain-language climate explainer',
+    shortDescription: 'Catch typos and awkward phrasing in a 600-word explainer.',
+    description:
+      'A short explainer for high-school readers. Proofread for grammar, clarity and jargon.',
+    estimatedMinutes: 25,
+    tags: ['environment'],
+  },
+  {
+    org: 4,
+    title: 'Build a beginner Excel formula reference',
+    shortDescription: 'Write one-line explanations for 10 common Excel formulas.',
+    description: 'For a financial-literacy workshop. One short, plain explanation per formula.',
+    estimatedMinutes: 20,
+    tags: ['data', 'excel'],
+  },
+  {
+    org: 0,
+    title: 'Translate a volunteer welcome email to Spanish',
+    shortDescription: 'Translate a 150-word welcome email into warm, casual Spanish.',
+    description: 'Keep it warm, casual and inclusive. We provide the source and a glossary.',
+    estimatedMinutes: 10,
+    tags: ['translation', 'spanish'],
+  },
 ];
 
 async function session(base, role, namespace) {
   const res = await fetch(`${base}/api/test/a11y`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ action: 'session', role, namespace })
+    body: JSON.stringify({ action: 'session', role, namespace }),
   });
   if (!res.ok) throw new Error(`session ${role}/${namespace}: ${res.status}`);
-  const cookie = res.headers.getSetCookie().map((c) => c.split(';')[0]).join('; ');
+  const cookie = res.headers
+    .getSetCookie()
+    .map((c) => c.split(';')[0])
+    .join('; ');
   return { cookie, userId: (await res.json()).userId, namespace, role };
 }
 
@@ -66,7 +155,7 @@ async function call(base, s, method, path, body) {
   const res = await fetch(`${base}${path}`, {
     method,
     headers: { cookie: s.cookie, 'content-type': 'application/json', origin: base },
-    body: body === undefined ? undefined : JSON.stringify(body)
+    body: body === undefined ? undefined : JSON.stringify(body),
   });
   const text = await res.text();
   if (!res.ok) throw new Error(`${method} ${path}: ${res.status} ${text}`);
@@ -79,21 +168,35 @@ async function seed(base) {
   const orgs = [];
   for (const np of NONPROFITS) {
     const s = await session(base, 'ngo', np.ns);
-    await call(base, s, 'POST', '/api/verifications', { orgName: np.orgName, country: 'US', taxId: '00-0000000' });
+    await call(base, s, 'POST', '/api/verifications', {
+      orgName: np.orgName,
+      country: 'US',
+      taxId: '00-0000000',
+    });
     await call(base, admin, 'POST', `/api/verifications/${s.userId}/approve`);
     await call(base, s, 'POST', '/api/badges/manage', { ...np.patch, criteria: 'task-completion' });
     orgs.push(s);
   }
   const posted = [];
-  for (const { org, ...body } of TASKS) posted.push((await call(base, orgs[org], 'POST', '/api/tasks', { ...body, language: 'English' })).id);
+  for (const { org, ...body } of TASKS)
+    posted.push(
+      (await call(base, orgs[org], 'POST', '/api/tasks', { ...body, language: 'English' })).id,
+    );
   const volunteers = [];
-  for (const ns of ['ana', 'ben', 'chi', 'dev', 'eli', 'fay']) volunteers.push(await session(base, 'volunteer', ns));
+  for (const ns of ['ana', 'ben', 'chi', 'dev', 'eli', 'fay'])
+    volunteers.push(await session(base, 'volunteer', ns));
   for (let i = 0; i < 11; i++) {
     const t = (i * 3 + 1) % posted.length;
-    const claim = await call(base, volunteers[i % volunteers.length], 'POST', `/api/tasks/${posted[t]}/claim`, {
-      proofUrl: `https://example.org/proof/${i + 1}`,
-      notes: 'Finished and checked against the brief.'
-    });
+    const claim = await call(
+      base,
+      volunteers[i % volunteers.length],
+      'POST',
+      `/api/tasks/${posted[t]}/claim`,
+      {
+        proofUrl: `https://example.org/proof/${i + 1}`,
+        notes: 'Finished and checked against the brief.',
+      },
+    );
     await call(base, orgs[TASKS[t].org], 'POST', `/api/claims/${claim.id}/approve`);
   }
   return { flyer: posted[0] };
@@ -106,26 +209,37 @@ async function seed(base) {
 const TAKES = {
   // A first visit: the quilt laid out, pinned and quilted, then a slow look around.
   entrance: {
-    device: 'desktop', path: '/en', seconds: 13, fresh: true,
-    actions: [[8.2, 'glide', 960, 620, 0.6], [8.9, 'drag', -520, -260, 2.6]]
+    device: 'desktop',
+    path: '/en',
+    seconds: 13,
+    fresh: true,
+    actions: [
+      [8.2, 'glide', 960, 620, 0.6],
+      [8.9, 'drag', -520, -260, 2.6],
+    ],
   },
 
   // A block lifts off the quilt and unfolds into a panel, then folds back into its hole.
   unfold: {
-    device: 'desktop', path: '/en', seconds: 12,
+    device: 'desktop',
+    path: '/en',
+    seconds: 12,
     actions: [
       [0.6, 'glideTo', '[data-block="how"] .sig__link', 1.0],
       [1.9, 'click'],
       [4.2, 'wheel', 0, 380, 1.4],
       [6.6, 'wheel', 0, 340, 1.2],
       [8.6, 'glideTo', '[data-fold]', 0.9],
-      [9.8, 'click']
-    ]
+      [9.8, 'click'],
+    ],
   },
 
   // A volunteer filters the feed to fifteen minutes, opens a task and pins their work to it.
   claim: {
-    device: 'desktop', path: '/en/tasks', seconds: 27, as: ['volunteer', 'sam'],
+    device: 'desktop',
+    path: '/en/tasks',
+    seconds: 27,
+    as: ['volunteer', 'sam'],
     actions: [
       [0.8, 'glideTo', 'label:has(input[name="max"]):nth-of-type(2)', 0.9],
       [2.0, 'click'],
@@ -138,35 +252,47 @@ const TAKES = {
       [11.8, 'type', 'https://docs.google.com/document/d/flyer-es', 1.8],
       [14.0, 'glideTo', '#notes', 0.7],
       [14.8, 'click'],
-      [15.0, 'type', 'Kept the medical terms from the clinic glossary. Please check the dosage line.', 3.2],
+      [
+        15.0,
+        'type',
+        'Kept the medical terms from the clinic glossary. Please check the dosage line.',
+        3.2,
+      ],
       [18.8, 'glideTo', 'button[type="submit"]', 0.9],
-      [20.0, 'click']
-    ]
+      [20.0, 'click'],
+    ],
   },
 
   // The clinic reads the work and sews it in.
   approve: {
-    device: 'desktop', path: '/en/dashboard', seconds: 10, as: ['ngo', 'clinic'],
+    device: 'desktop',
+    path: '/en/dashboard',
+    seconds: 10,
+    as: ['ngo', 'clinic'],
     actions: [
       [1.0, 'glideTo', 'button >> text=Approve and sew in', 1.0],
-      [2.4, 'click']
-    ]
+      [2.4, 'click'],
+    ],
   },
 
   // The new patch on the quilt: the community block, a patch's label, and the whole quilt.
   sewn: {
-    device: 'desktop', path: '/en', seconds: 14,
+    device: 'desktop',
+    path: '/en',
+    seconds: 14,
     actions: [
       [1.4, 'glideTo', '[data-block="community"] .quilt__patch >> nth=0', 1.2],
       [4.2, 'glideTo', '[data-block="community"] .quilt__patch >> nth=4', 0.9],
       [6.4, 'glideTo', '.community__link', 0.9],
-      [7.6, 'click']
-    ]
+      [7.6, 'click'],
+    ],
   },
 
   // The same quilt in Arabic, right to left, then by lamplight.
   languages: {
-    device: 'desktop', path: '/en', seconds: 14,
+    device: 'desktop',
+    path: '/en',
+    seconds: 14,
     actions: [
       [0.3, 'glide', 1300, 760, 0.5],
       [0.9, 'dragTo', '[data-block="label"]', 1.1],
@@ -175,19 +301,28 @@ const TAKES = {
       [4.4, 'glideTo', '.langs a[hreflang="ar"]', 0.7],
       [5.3, 'click'],
       [8.0, 'glideTo', '.theme-toggle', 1.0],
-      [9.3, 'click']
-    ]
+      [9.3, 'click'],
+    ],
   },
 
   // The phone: the quilt read top to bottom, then a block opened as a sheet.
   'phone-path': {
-    device: 'phone', path: '/en', seconds: 14, fresh: true,
-    actions: [[7.5, 'swipe', -520, 1.6], [10.0, 'tap', '[data-block="tasks"] .sig__link']]
+    device: 'phone',
+    path: '/en',
+    seconds: 14,
+    fresh: true,
+    actions: [
+      [7.5, 'swipe', -520, 1.6],
+      [10.0, 'tap', '[data-block="tasks"] .sig__link'],
+    ],
   },
 
   // The phone: a volunteer claims a task from the feed.
   'phone-claim': {
-    device: 'phone', path: '/en/tasks', seconds: 20, as: ['volunteer', 'sam-phone'],
+    device: 'phone',
+    path: '/en/tasks',
+    seconds: 20,
+    as: ['volunteer', 'sam-phone'],
     actions: [
       [1.2, 'tap', 'a.swatch-card__link >> text=Translate a volunteer welcome email to Spanish'],
       [4.2, 'tap', 'a.patch-btn >> text=Claim this task'],
@@ -195,9 +330,9 @@ const TAKES = {
       [6.9, 'type', 'https://docs.google.com/document/d/welcome-es', 1.8],
       [9.2, 'tap', '#notes'],
       [9.4, 'type', 'Kept it casual, the way the glossary asks.', 2.0],
-      [12.2, 'tap', 'button[type="submit"]']
-    ]
-  }
+      [12.2, 'tap', 'button[type="submit"]'],
+    ],
+  },
 };
 
 // ---------- recording ----------
@@ -213,7 +348,8 @@ function cursorScript() {
     let x = -100;
     let y = -100;
     let down = false;
-    const paint = () => (dot.style.transform = `translate(${x}px,${y}px) scale(${down ? 0.72 : 1})`);
+    const paint = () =>
+      (dot.style.transform = `translate(${x}px,${y}px) scale(${down ? 0.72 : 1})`);
     addEventListener('mousemove', (e) => ((x = e.clientX), (y = e.clientY), paint()), true);
     addEventListener('mousedown', () => ((down = true), paint()), true);
     addEventListener('mouseup', () => ((down = false), paint()), true);
@@ -236,9 +372,14 @@ async function centre(page, selector) {
 const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
 async function record(browser, base, name, take, outDir) {
-  const context = await browser.newContext({ ...DEVICES[take.device], reducedMotion: 'no-preference' });
+  const context = await browser.newContext({
+    ...DEVICES[take.device],
+    reducedMotion: 'no-preference',
+  });
   if (take.as) {
-    const res = await context.request.post(`${base}/api/test/a11y`, { data: { action: 'session', role: take.as[0], namespace: take.as[1] } });
+    const res = await context.request.post(`${base}/api/test/a11y`, {
+      data: { action: 'session', role: take.as[0], namespace: take.as[1] },
+    });
     if (!res.ok()) throw new Error(`${name}: harness session ${res.status()}`);
   }
   const page = await context.newPage();
@@ -273,13 +414,40 @@ async function record(browser, base, name, take, outDir) {
   const out = resolve(outDir, `${name}.mp4`);
   const ffmpeg = spawn(
     'ffmpeg',
-    ['-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', String(FPS), '-c:v', 'png', '-i', '-',
-      '-c:v', 'libx264', '-preset', 'slow', '-crf', '14', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', out],
-    { stdio: ['pipe', 'inherit', 'inherit'] }
+    [
+      '-y',
+      '-loglevel',
+      'error',
+      '-f',
+      'image2pipe',
+      '-framerate',
+      String(FPS),
+      '-c:v',
+      'png',
+      '-i',
+      '-',
+      '-c:v',
+      'libx264',
+      '-preset',
+      'slow',
+      '-crf',
+      '14',
+      '-pix_fmt',
+      'yuv420p',
+      '-movflags',
+      '+faststart',
+      out,
+    ],
+    { stdio: ['pipe', 'inherit', 'inherit'] },
   );
-  const done = new Promise((ok, fail) => ffmpeg.on('close', (code) => (code === 0 ? ok() : fail(new Error(`ffmpeg exited ${code}`)))));
+  const done = new Promise((ok, fail) =>
+    ffmpeg.on('close', (code) => (code === 0 ? ok() : fail(new Error(`ffmpeg exited ${code}`)))),
+  );
 
-  const mouse = { x: DEVICES[take.device].viewport.width * 0.62, y: DEVICES[take.device].viewport.height * 0.7 };
+  const mouse = {
+    x: DEVICES[take.device].viewport.width * 0.62,
+    y: DEVICES[take.device].viewport.height * 0.7,
+  };
   if (take.device === 'desktop') await page.mouse.move(mouse.x, mouse.y);
   // Moves that play out over several frames: glides, drags, wheels, swipes and typing.
   let running = [];
@@ -301,36 +469,69 @@ async function record(browser, base, name, take, outDir) {
       const to = kind === 'glide' ? { x: args[0], y: args[1] } : await centre(page, args[0]);
       const from = { ...mouse };
       const secs = kind === 'glide' ? args[2] : args[1];
-      running.push({ t, secs, step: (k) => ((mouse.x = from.x + (to.x - from.x) * ease(k)), (mouse.y = from.y + (to.y - from.y) * ease(k)), page.mouse.move(mouse.x, mouse.y)) });
+      running.push({
+        t,
+        secs,
+        step: (k) => (
+          (mouse.x = from.x + (to.x - from.x) * ease(k)),
+          (mouse.y = from.y + (to.y - from.y) * ease(k)),
+          page.mouse.move(mouse.x, mouse.y)
+        ),
+      });
       return;
     }
     if (kind === 'drag') {
       const from = { ...mouse };
       await page.mouse.down();
       running.push({
-        t, secs: args[2],
+        t,
+        secs: args[2],
         step: async (k) => {
           mouse.x = from.x + args[0] * ease(k);
           mouse.y = from.y + args[1] * ease(k);
           await page.mouse.move(mouse.x, mouse.y);
           if (k >= 1) await page.mouse.up();
-        }
+        },
       });
       return;
     }
     if (kind === 'wheel') {
       let sent = 0;
-      running.push({ t, secs: args[2], step: async (k) => { const want = args[1] * ease(k); await page.mouse.wheel(0, want - sent); sent = want; } });
+      running.push({
+        t,
+        secs: args[2],
+        step: async (k) => {
+          const want = args[1] * ease(k);
+          await page.mouse.wheel(0, want - sent);
+          sent = want;
+        },
+      });
       return;
     }
     if (kind === 'swipe') {
       let sent = 0;
-      running.push({ t, secs: args[1], step: async (k) => { const want = -args[0] * ease(k); await page.evaluate((d) => window.scrollBy(0, d), want - sent); sent = want; } });
+      running.push({
+        t,
+        secs: args[1],
+        step: async (k) => {
+          const want = -args[0] * ease(k);
+          await page.evaluate((d) => window.scrollBy(0, d), want - sent);
+          sent = want;
+        },
+      });
       return;
     }
     if (kind === 'type') {
       let typed = 0;
-      running.push({ t, secs: args[1], step: async (k) => { const want = Math.round(args[0].length * k); if (want > typed) await page.keyboard.type(args[0].slice(typed, want)); typed = want; } });
+      running.push({
+        t,
+        secs: args[1],
+        step: async (k) => {
+          const want = Math.round(args[0].length * k);
+          if (want > typed) await page.keyboard.type(args[0].slice(typed, want));
+          typed = want;
+        },
+      });
       return;
     }
     throw new Error(`unknown action ${kind}`);
@@ -371,21 +572,25 @@ let server;
 if (!base) {
   const port = 4610;
   base = `http://127.0.0.1:${port}`;
-  server = spawn('bun', ['run', 'preview', '--host', '127.0.0.1', '--port', String(port), '--strictPort'], {
-    cwd: ROOT,
-    stdio: 'ignore',
-    env: {
-      ...process.env,
-      NODE_ENV: 'development',
-      PLAYWRIGHT_A11Y_HARNESS: '1',
-      APPWRITE_ENDPOINT: '',
-      APPWRITE_PROJECT_ID: '',
-      APPWRITE_API_KEY: '',
-      PLUNK_SECRET_KEY: '',
-      PUBLIC_APPWRITE_ENDPOINT: 'https://appwrite.test',
-      PUBLIC_APPWRITE_PROJECT_ID: 'film'
-    }
-  });
+  server = spawn(
+    'bun',
+    ['run', 'preview', '--host', '127.0.0.1', '--port', String(port), '--strictPort'],
+    {
+      cwd: ROOT,
+      stdio: 'ignore',
+      env: {
+        ...process.env,
+        NODE_ENV: 'development',
+        PLAYWRIGHT_A11Y_HARNESS: '1',
+        APPWRITE_ENDPOINT: '',
+        APPWRITE_PROJECT_ID: '',
+        APPWRITE_API_KEY: '',
+        PLUNK_SECRET_KEY: '',
+        PUBLIC_APPWRITE_ENDPOINT: 'https://appwrite.test',
+        PUBLIC_APPWRITE_PROJECT_ID: 'film',
+      },
+    },
+  );
   for (let i = 0; ; i++) {
     try {
       if ((await fetch(`${base}/en`)).ok) break;

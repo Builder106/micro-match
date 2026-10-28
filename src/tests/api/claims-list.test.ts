@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 const { mocks } = vi.hoisted(() => ({
-  mocks: { getClaims: vi.fn(), getUserRole: vi.fn() }
+  mocks: { getClaims: vi.fn(), getUserRole: vi.fn() },
 }));
 vi.mock('$lib/server/appwrite', () => ({ getClaims: mocks.getClaims }));
 vi.mock('$lib/server/auth', () => ({ getUserRole: mocks.getUserRole }));
@@ -12,7 +12,7 @@ import { createRequestEvent } from '../helpers/createLoadEvent';
 function makeEvent(opts: { userId?: string | null; search?: string } = {}) {
   return createRequestEvent({
     url: `http://test/api/claims${opts.search ?? ''}`,
-    userId: opts.userId ?? undefined
+    userId: opts.userId ?? undefined,
   });
 }
 
@@ -47,12 +47,11 @@ describe('GET /api/claims', () => {
     expect(res.status).toBe(400);
   });
 
-
-  it('returns the user\'s claims with pagination metadata', async () => {
+  it("returns the user's claims with pagination metadata", async () => {
     mocks.getUserRole.mockResolvedValue('volunteer');
     mocks.getClaims.mockResolvedValue([
       { id: 'c1', status: 'pending' },
-      { id: 'c2', status: 'approved' }
+      { id: 'c2', status: 'approved' },
     ]);
 
     const res = await GET(makeEvent({ userId: 'user-1' }));
@@ -68,10 +67,12 @@ describe('GET /api/claims', () => {
     mocks.getClaims.mockResolvedValue([
       { id: 'c1', status: 'pending' },
       { id: 'c2', status: 'pending' },
-      { id: 'c3', status: 'approved' }
+      { id: 'c3', status: 'approved' },
     ]);
 
-    const res = await GET(makeEvent({ userId: 'user-1', search: '?status=pending&limit=1&offset=0' }));
+    const res = await GET(
+      makeEvent({ userId: 'user-1', search: '?status=pending&limit=1&offset=0' }),
+    );
     const body = await res.json();
 
     expect(body.data).toHaveLength(1);
@@ -81,7 +82,7 @@ describe('GET /api/claims', () => {
   it('returns 500 without leaking error details when getClaims throws', async () => {
     mocks.getUserRole.mockResolvedValue('volunteer');
     mocks.getClaims.mockRejectedValue(new Error('db exploded with secrets'));
-    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const res = await GET(makeEvent({ userId: 'user-1' }));
     const body = await res.json();
@@ -117,7 +118,7 @@ describe('GET /api/claims', () => {
     expect(res.status).toBe(500);
     expect(errSpy).toHaveBeenCalledWith(
       'Claims API Error [12345]:',
-      expect.objectContaining({ message: 'upstream unavailable' })
+      expect.objectContaining({ message: 'upstream unavailable' }),
     );
     errSpy.mockRestore();
     nowSpy.mockRestore();

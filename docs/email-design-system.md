@@ -15,16 +15,16 @@ The site brand, name, wordmark, and type choices follow [`DESIGN.md`](../DESIGN.
 
 ## Tokens
 
-| Role | Value | Use |
-|---|---|---|
-| Email background | `#FFFFFF` | Page and message surface |
-| Ink | `#1C1F3B` | Headings and body copy |
-| Secondary ink | `#575B76` | Supporting copy |
-| Seam | `#D9DCE8` | Fine borders and dividers |
-| Madder | `#FF6B6B` | Primary action background |
-| Action ink | `#000000` | Text on the madder action |
-| Weld | `#F2B84B` | Context panels, such as a review note |
-| Context ink | `#1C1F3B` | Text on weld |
+| Role             | Value     | Use                                   |
+| ---------------- | --------- | ------------------------------------- |
+| Email background | `#FFFFFF` | Page and message surface              |
+| Ink              | `#1C1F3B` | Headings and body copy                |
+| Secondary ink    | `#575B76` | Supporting copy                       |
+| Seam             | `#D9DCE8` | Fine borders and dividers             |
+| Madder           | `#FF6B6B` | Primary action background             |
+| Action ink       | `#000000` | Text on the madder action             |
+| Weld             | `#F2B84B` | Context panels, such as a review note |
+| Context ink      | `#1C1F3B` | Text on weld                          |
 
 Use a 3px corner radius, matching the product's cut-cloth shape. The rule under the header is a 1px dashed `#575B76` line, the running stitch from the logo. Other dividers stay solid seam color.
 
@@ -32,13 +32,13 @@ The only artwork is a 48px status patch in the header's trailing corner, set lik
 
 ## Type and spacing
 
-| Element | Style |
-|---|---|
-| Wordmark | Bricolage Grotesque, 18px, bold |
-| Main heading | Bricolage Grotesque, 24px, bold, 1.25 line height |
-| Body | Host Grotesk, 16px, 1.55 line height |
-| Supporting copy | Host Grotesk, 14px, 1.5 line height |
-| Footer | Host Grotesk, 12px, 1.5 line height |
+| Element         | Style                                             |
+| --------------- | ------------------------------------------------- |
+| Wordmark        | Bricolage Grotesque, 18px, bold                   |
+| Main heading    | Bricolage Grotesque, 24px, bold, 1.25 line height |
+| Body            | Host Grotesk, 16px, 1.55 line height              |
+| Supporting copy | Host Grotesk, 14px, 1.5 line height               |
+| Footer          | Host Grotesk, 12px, 1.5 line height               |
 
 Declare an Arial and Helvetica fallback for each font stack. The layout and copy must remain readable when only the fallback font is used.
 

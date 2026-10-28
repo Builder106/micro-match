@@ -8,8 +8,12 @@ function mockFetchOnce(response: Response) {
 }
 
 describe('lookupNonprofitByEin', () => {
-  beforeEach(() => { vi.restoreAllMocks(); });
-  afterEach(() => { vi.unstubAllGlobals(); });
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
 
   it('rejects EINs that are not 9 digits after stripping non-numeric characters', async () => {
     const result = await lookupNonprofitByEin('12-345');
@@ -17,9 +21,11 @@ describe('lookupNonprofitByEin', () => {
   });
 
   it('strips dashes from EIN before calling the API', async () => {
-    const fetchSpy = vi.fn<typeof fetch>().mockResolvedValue(
-      new Response(JSON.stringify({ organization: { name: 'Test Org' } }), { status: 200 })
-    );
+    const fetchSpy = vi
+      .fn<typeof fetch>()
+      .mockResolvedValue(
+        new Response(JSON.stringify({ organization: { name: 'Test Org' } }), { status: 200 }),
+      );
     vi.stubGlobal('fetch', fetchSpy);
 
     await lookupNonprofitByEin('13-3433452');
@@ -30,9 +36,18 @@ describe('lookupNonprofitByEin', () => {
   });
 
   it('returns active status when revocation_date is empty', async () => {
-    mockFetchOnce(new Response(JSON.stringify({
-      organization: { name: 'Doctors Without Borders', ntee_code: 'Q33', ruling_date: '1980-09-01' }
-    }), { status: 200 }));
+    mockFetchOnce(
+      new Response(
+        JSON.stringify({
+          organization: {
+            name: 'Doctors Without Borders',
+            ntee_code: 'Q33',
+            ruling_date: '1980-09-01',
+          },
+        }),
+        { status: 200 },
+      ),
+    );
 
     const result = await lookupNonprofitByEin('133433452');
     expect(result).toEqual({
@@ -40,14 +55,19 @@ describe('lookupNonprofitByEin', () => {
       orgName: 'Doctors Without Borders',
       status: 'active',
       ntee: 'Q33',
-      rulingDate: '1980-09-01'
+      rulingDate: '1980-09-01',
     });
   });
 
   it('reports revoked status when revocation_date is set', async () => {
-    mockFetchOnce(new Response(JSON.stringify({
-      organization: { name: 'Bad Charity', revocation_date: '2018-05-15' }
-    }), { status: 200 }));
+    mockFetchOnce(
+      new Response(
+        JSON.stringify({
+          organization: { name: 'Bad Charity', revocation_date: '2018-05-15' },
+        }),
+        { status: 200 },
+      ),
+    );
 
     const result = await lookupNonprofitByEin('123456789');
     expect(result).toMatchObject({ found: true, status: 'revoked' });
@@ -72,12 +92,22 @@ describe('lookupNonprofitByEin', () => {
   });
 
   it('catches network errors and surfaces them in the error field', async () => {
-    vi.stubGlobal('fetch', vi.fn(async () => { throw new Error('connect ECONNREFUSED'); }));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => {
+        throw new Error('connect ECONNREFUSED');
+      }),
+    );
     const result = await lookupNonprofitByEin('333333333');
     expect(result).toEqual({ found: false, error: 'connect ECONNREFUSED' });
 
     // Non-Error exception throw
-    vi.stubGlobal('fetch', vi.fn(async () => { throw 'string exception'; }));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => {
+        throw 'string exception';
+      }),
+    );
     const resultStringErr = await lookupNonprofitByEin('333333333');
     expect(resultStringErr).toEqual({ found: false, error: 'string exception' });
   });
@@ -85,6 +115,12 @@ describe('lookupNonprofitByEin', () => {
   it('falls back to "Unknown" when organization has no name', async () => {
     mockFetchOnce(new Response(JSON.stringify({ organization: {} }), { status: 200 }));
     const result = await lookupNonprofitByEin('444444444');
-    expect(result).toEqual({ found: true, orgName: 'Unknown', status: 'active', ntee: undefined, rulingDate: undefined });
+    expect(result).toEqual({
+      found: true,
+      orgName: 'Unknown',
+      status: 'active',
+      ntee: undefined,
+      rulingDate: undefined,
+    });
   });
 });

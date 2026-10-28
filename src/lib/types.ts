@@ -43,10 +43,10 @@ export type BadgeDefinition = {
   id: string;
   orgId: string;
   label: string;
-  color: string;       // hex
-  icon?: string;       // iconify name (e.g. "hugeicons:trophy-01")
+  color: string; // hex
+  icon?: string; // iconify name (e.g. "hugeicons:trophy-01")
   criteria: 'task-completion' | 'task-specific' | 'time-based' | 'milestone' | 'custom';
-  taskId?: string;     // when criteria === 'task-specific'
+  taskId?: string; // when criteria === 'task-specific'
   description?: string;
   createdAt?: string;
 };
@@ -55,13 +55,13 @@ export type NgoVerification = {
   id: string;
   userId: string;
   orgName: string;
-  country: string;        // ISO-3166 alpha-2 (e.g. "US", "GB", "CA")
-  taxId: string;          // EIN / charity number / registration ID
-  docFileId?: string;     // Appwrite Storage file id (optional)
+  country: string; // ISO-3166 alpha-2 (e.g. "US", "GB", "CA")
+  taxId: string; // EIN / charity number / registration ID
+  docFileId?: string; // Appwrite Storage file id (optional)
   status: 'pending' | 'approved' | 'rejected';
-  reason?: string;        // reviewer's note (rejections)
+  reason?: string; // reviewer's note (rejections)
   submittedAt: string;
-  reviewedBy?: string;    // admin userId
+  reviewedBy?: string; // admin userId
   reviewedAt?: string;
 };
 
@@ -81,15 +81,11 @@ export interface UserPreferences {
   [key: string]: UserPreferenceValue;
 }
 
-export type UserPreferenceValue =
-  | string
-  | number
-  | boolean
-  | null
-  | undefined
-  | string[];
+export type UserPreferenceValue = string | number | boolean | null | undefined | string[];
 
-export type EnrichedClaim = Claim & { task?: { id: string; title: string; estimatedMinutes?: number } };
+export type EnrichedClaim = Claim & {
+  task?: { id: string; title: string; estimatedMinutes?: number };
+};
 
 export interface VolunteerUserData {
   myClaims: EnrichedClaim[];

@@ -1,5 +1,16 @@
 import { describe, it, expect } from 'vitest';
-import { MUSLIN, SWATCHES, THREAD_DARK, THREAD_LIGHT, fabricFor, fabricForTag, luminance, normalizeHex, swatchName, threadFor } from './fabrics';
+import {
+  MUSLIN,
+  SWATCHES,
+  THREAD_DARK,
+  THREAD_LIGHT,
+  fabricFor,
+  fabricForTag,
+  luminance,
+  normalizeHex,
+  swatchName,
+  threadFor,
+} from './fabrics';
 
 describe('normalizeHex', () => {
   it('expands short hex, drops alpha and upper-cases', () => {

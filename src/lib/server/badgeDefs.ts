@@ -13,13 +13,15 @@ const inMemory = new Map<string, BadgeDefinition>();
 let inMemoryCounter = 0;
 const newMemId = () => `mem-${Date.now()}-${++inMemoryCounter}`;
 
-async function withAppwrite<T>(fn: (ctx: {
-  tables: import('node-appwrite').TablesDB;
-  dbId: string;
-  table: string;
-  ID: typeof import('node-appwrite').ID;
-  Query: typeof import('node-appwrite').Query;
-}) => Promise<T>): Promise<T> {
+async function withAppwrite<T>(
+  fn: (ctx: {
+    tables: import('node-appwrite').TablesDB;
+    dbId: string;
+    table: string;
+    ID: typeof import('node-appwrite').ID;
+    Query: typeof import('node-appwrite').Query;
+  }) => Promise<T>,
+): Promise<T> {
   const { Client, TablesDB, ID, Query } = await import('node-appwrite');
   const client = new Client()
     .setEndpoint(env.APPWRITE_ENDPOINT!)
@@ -30,7 +32,7 @@ async function withAppwrite<T>(fn: (ctx: {
     dbId: env.APPWRITE_DB_ID!,
     table: env.APPWRITE_BADGE_DEFS_TABLE_ID!,
     ID,
-    Query
+    Query,
   });
 }
 
@@ -54,7 +56,7 @@ function fromRow(row: DbBadgeDefRow): BadgeDefinition {
     criteria: row.criteria,
     taskId: row.taskID ?? undefined,
     description: row.description ?? undefined,
-    createdAt: row.$createdAt
+    createdAt: row.$createdAt,
   };
 }
 
@@ -65,11 +67,7 @@ export async function listBadgeDefinitions(orgId: string): Promise<BadgeDefiniti
       const res = await tables.listRows<DbBadgeDefRow>({
         databaseId: dbId,
         tableId: table,
-        queries: [
-        Query.equal('orgID', orgId),
-        Query.orderDesc('$createdAt'),
-        Query.limit(200)
-      ]
+        queries: [Query.equal('orgID', orgId), Query.orderDesc('$createdAt'), Query.limit(200)],
       });
       return res.rows.map(fromRow);
     } catch {
@@ -101,9 +99,14 @@ export async function createBadgeDefinition(input: {
       icon: input.icon ?? '',
       criteria: input.criteria,
       taskID: input.taskId ?? '',
-      description: input.description ?? ''
+      description: input.description ?? '',
     };
-    const created = await tables.createRow<DbBadgeDefRow>({ databaseId: dbId, tableId: table, rowId: ID.unique(), data: payload });
+    const created = await tables.createRow<DbBadgeDefRow>({
+      databaseId: dbId,
+      tableId: table,
+      rowId: ID.unique(),
+      data: payload,
+    });
     return fromRow(created);
   });
 }
@@ -118,7 +121,11 @@ export async function deleteBadgeDefinition(id: string, orgId: string): Promise<
   return withAppwrite(async ({ tables, dbId, table }) => {
     try {
       // Confirm ownership before delete to prevent cross-org tampering.
-      const row = await tables.getRow<DbBadgeDefRow>({ databaseId: dbId, tableId: table, rowId: id });
+      const row = await tables.getRow<DbBadgeDefRow>({
+        databaseId: dbId,
+        tableId: table,
+        rowId: id,
+      });
       if (row?.orgID !== orgId) return false;
       await tables.deleteRow({ databaseId: dbId, tableId: table, rowId: id });
       return true;
@@ -132,7 +139,11 @@ export async function getBadgeDefinition(id: string): Promise<BadgeDefinition | 
   if (!useAppwrite) return inMemory.get(id);
   return withAppwrite(async ({ tables, dbId, table }) => {
     try {
-      const row = await tables.getRow<DbBadgeDefRow>({ databaseId: dbId, tableId: table, rowId: id });
+      const row = await tables.getRow<DbBadgeDefRow>({
+        databaseId: dbId,
+        tableId: table,
+        rowId: id,
+      });
       return fromRow(row);
     } catch {
       return undefined;

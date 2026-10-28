@@ -3,7 +3,7 @@ import type { BadgeDefinition, Task } from '$lib/types';
 
 const { mockGetTaskById, mockListBadgeDefinitions } = vi.hoisted(() => ({
   mockGetTaskById: vi.fn<(id: string) => Promise<Task | undefined>>(),
-  mockListBadgeDefinitions: vi.fn<(orgId: string) => Promise<BadgeDefinition[]>>()
+  mockListBadgeDefinitions: vi.fn<(orgId: string) => Promise<BadgeDefinition[]>>(),
 }));
 
 vi.mock('./appwrite', () => ({ getTaskById: mockGetTaskById }));
@@ -17,7 +17,7 @@ const baseTask: Task = {
   title: 'Translate flyer',
   shortDescription: 'do the thing',
   tags: ['translation', 'spanish'],
-  estimatedMinutes: 15
+  estimatedMinutes: 15,
 };
 
 function def(overrides: Partial<BadgeDefinition>): BadgeDefinition {
@@ -30,7 +30,7 @@ function def(overrides: Partial<BadgeDefinition>): BadgeDefinition {
     taskId: overrides.taskId,
     icon: overrides.icon,
     description: overrides.description,
-    createdAt: overrides.createdAt
+    createdAt: overrides.createdAt,
   };
 }
 
@@ -41,7 +41,10 @@ describe('evaluateBadgeCriteria', () => {
   });
 
   it('returns [] for non-completion actions without hitting the DB', async () => {
-    const result = await evaluateBadgeCriteria('user-1', { type: 'task-claimed', taskId: 'task-1' });
+    const result = await evaluateBadgeCriteria('user-1', {
+      type: 'task-claimed',
+      taskId: 'task-1',
+    });
     expect(result).toEqual([]);
     expect(mockGetTaskById).not.toHaveBeenCalled();
     expect(mockListBadgeDefinitions).not.toHaveBeenCalled();
@@ -67,11 +70,14 @@ describe('evaluateBadgeCriteria', () => {
     mockGetTaskById.mockResolvedValue(baseTask);
     const defs = [
       def({ id: 'd1', criteria: 'task-completion' }),
-      def({ id: 'd2', criteria: 'task-completion' })
+      def({ id: 'd2', criteria: 'task-completion' }),
     ];
     mockListBadgeDefinitions.mockResolvedValue(defs);
 
-    const result = await evaluateBadgeCriteria('user-1', { type: 'task-completed', taskId: 'task-1' });
+    const result = await evaluateBadgeCriteria('user-1', {
+      type: 'task-completed',
+      taskId: 'task-1',
+    });
 
     expect(result).toHaveLength(2);
     expect(result.map((d) => d.id).sort()).toEqual(['d1', 'd2']);
@@ -83,10 +89,13 @@ describe('evaluateBadgeCriteria', () => {
     mockListBadgeDefinitions.mockResolvedValue([
       def({ id: 'matches', criteria: 'task-specific', taskId: 'task-1' }),
       def({ id: 'misses', criteria: 'task-specific', taskId: 'task-9' }),
-      def({ id: 'no-task-id', criteria: 'task-specific' /* taskId omitted */ })
+      def({ id: 'no-task-id', criteria: 'task-specific' /* taskId omitted */ }),
     ]);
 
-    const result = await evaluateBadgeCriteria('user-1', { type: 'task-completed', taskId: 'task-1' });
+    const result = await evaluateBadgeCriteria('user-1', {
+      type: 'task-completed',
+      taskId: 'task-1',
+    });
 
     expect(result.map((d) => d.id)).toEqual(['matches']);
   });
@@ -97,10 +106,13 @@ describe('evaluateBadgeCriteria', () => {
       def({ id: 'time', criteria: 'time-based' }),
       def({ id: 'milestone', criteria: 'milestone' }),
       def({ id: 'custom', criteria: 'custom' }),
-      def({ id: 'completion', criteria: 'task-completion' })
+      def({ id: 'completion', criteria: 'task-completion' }),
     ]);
 
-    const result = await evaluateBadgeCriteria('user-1', { type: 'task-completed', taskId: 'task-1' });
+    const result = await evaluateBadgeCriteria('user-1', {
+      type: 'task-completed',
+      taskId: 'task-1',
+    });
 
     expect(result.map((d) => d.id)).toEqual(['completion']);
   });

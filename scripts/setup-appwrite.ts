@@ -60,21 +60,21 @@ if (fs.existsSync(configPath)) {
   }
 }
 
-const endpoint = process.env.APPWRITE_ENDPOINT || config.endpoint || 'https://sfo.cloud.appwrite.io/v1';
+const endpoint =
+  process.env.APPWRITE_ENDPOINT || config.endpoint || 'https://sfo.cloud.appwrite.io/v1';
 const projectId = process.env.APPWRITE_PROJECT_ID || config.projectId;
 const apiKey = process.env.APPWRITE_API_KEY;
 
 if (!projectId || !apiKey) {
   console.error('Error: APPWRITE_PROJECT_ID and APPWRITE_API_KEY must be set in environment.');
   console.error('Example for the existing project:');
-  console.error('  APPWRITE_PROJECT_ID=micromatch-prod APPWRITE_API_KEY=your_key bun scripts/setup-appwrite.ts');
+  console.error(
+    '  APPWRITE_PROJECT_ID=micromatch-prod APPWRITE_API_KEY=your_key bun scripts/setup-appwrite.ts',
+  );
   process.exit(1);
 }
 
-const client = new Client()
-  .setEndpoint(endpoint)
-  .setProject(projectId)
-  .setKey(apiKey);
+const client = new Client().setEndpoint(endpoint).setProject(projectId).setKey(apiKey);
 
 const storage = new Storage(client);
 const teams = new Teams(client);
@@ -111,7 +111,7 @@ async function setupAppwrite() {
         allowedFileExtensions: bucket.allowedFileExtensions,
         compression: (bucket.compression as Compression) || undefined,
         encryption: bucket.encryption,
-        antivirus: bucket.antivirus
+        antivirus: bucket.antivirus,
       });
     }
   }
@@ -136,11 +136,24 @@ async function setupAppwrite() {
     } catch {
       try {
         console.log(`Creating table "${table.name}" (${table.$id}) in database "${dbId}"...`);
-        await tables.createTable({ databaseId: dbId, tableId: table.$id, name: table.name, permissions: [], rowSecurity: table.enabled ?? true });
+        await tables.createTable({
+          databaseId: dbId,
+          tableId: table.$id,
+          name: table.name,
+          permissions: [],
+          rowSecurity: table.enabled ?? true,
+        });
       } catch (err) {
-        console.warn(`Note: Could not automatically create table "${table.$id}" via SDK:`, (err as Error).message);
-        console.warn(`Tip: You can push full schema including columns and indexes via Appwrite CLI:`);
-        console.warn(`  appwrite client --endpoint ${endpoint} --project-id ${projectId} --key <api_key>`);
+        console.warn(
+          `Note: Could not automatically create table "${table.$id}" via SDK:`,
+          (err as Error).message,
+        );
+        console.warn(
+          `Tip: You can push full schema including columns and indexes via Appwrite CLI:`,
+        );
+        console.warn(
+          `  appwrite client --endpoint ${endpoint} --project-id ${projectId} --key <api_key>`,
+        );
         console.warn(`  appwrite push tables`);
       }
     }

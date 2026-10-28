@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
 const { envState } = vi.hoisted(() => ({ envState: {} as Record<string, string | undefined> }));
 vi.mock('$env/dynamic/private', () => ({
-  env: new Proxy(envState, { get: (_, key: string) => envState[key] })
+  env: new Proxy(envState, { get: (_, key: string) => envState[key] }),
 }));
 
 import { moderateText } from './contentsafety';
@@ -40,9 +40,9 @@ describe('moderateText', () => {
       json: async () => ({
         categoriesAnalysis: [
           { category: 'Hate', severity: 6 },
-          { category: 'Violence', severity: 0 }
-        ]
-      })
+          { category: 'Violence', severity: 0 },
+        ],
+      }),
     });
     vi.stubGlobal('fetch', fetchMock);
 
@@ -51,14 +51,14 @@ describe('moderateText', () => {
     expect(result.blocked).toBe(true);
     expect(result.reasons).toEqual([
       { category: 'Hate', severity: 6 },
-      { category: 'Violence', severity: 0 }
+      { category: 'Violence', severity: 0 },
     ]);
     expect(fetchMock).toHaveBeenCalledWith(
       expect.stringContaining('/contentsafety/text:analyze?api-version='),
       expect.objectContaining({
         method: 'POST',
-        headers: expect.objectContaining({ 'Ocp-Apim-Subscription-Key': 'fake-key' })
-      })
+        headers: expect.objectContaining({ 'Ocp-Apim-Subscription-Key': 'fake-key' }),
+      }),
     );
   });
 
@@ -66,10 +66,13 @@ describe('moderateText', () => {
     envState.AZURE_CONTENT_SAFETY_ENDPOINT = 'https://safety.example.com';
     envState.AZURE_CONTENT_SAFETY_KEY = 'fake-key';
 
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({ categoriesAnalysis: [{ category: 'Hate', severity: 1 }] })
-    }));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ categoriesAnalysis: [{ category: 'Hate', severity: 1 }] }),
+      }),
+    );
 
     const result = await moderateText('mild text');
     expect(result.blocked).toBe(false);
@@ -79,14 +82,16 @@ describe('moderateText', () => {
     envState.AZURE_CONTENT_SAFETY_ENDPOINT = 'https://safety.example.com/';
     envState.AZURE_CONTENT_SAFETY_KEY = 'fake-key';
 
-    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ categoriesAnalysis: [] }) });
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue({ ok: true, json: async () => ({ categoriesAnalysis: [] }) });
     vi.stubGlobal('fetch', fetchMock);
 
     await moderateText('text');
 
     expect(fetchMock).toHaveBeenCalledWith(
       'https://safety.example.com/contentsafety/text:analyze?api-version=2024-09-01',
-      expect.anything()
+      expect.anything(),
     );
   });
 
@@ -112,10 +117,15 @@ describe('moderateText', () => {
     envState.AZURE_CONTENT_SAFETY_ENDPOINT = 'https://safety.example.com';
     envState.AZURE_CONTENT_SAFETY_KEY = 'fake-key';
 
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({ categoriesAnalysis: [{ category: 'Hate', severity: 'not-a-number' }] })
-    }));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          categoriesAnalysis: [{ category: 'Hate', severity: 'not-a-number' }],
+        }),
+      }),
+    );
 
     const result = await moderateText('text');
     expect(result.reasons).toEqual([]);
@@ -126,10 +136,15 @@ describe('moderateText', () => {
     envState.AZURE_CONTENT_SAFETY_ENDPOINT = 'https://safety.example.com';
     envState.AZURE_CONTENT_SAFETY_KEY = 'fake-key';
 
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => { throw new Error('invalid json'); }
-    }));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => {
+          throw new Error('invalid json');
+        },
+      }),
+    );
 
     expect(await moderateText('text')).toEqual({ blocked: false, reasons: [] });
   });
@@ -147,14 +162,15 @@ describe('moderateText', () => {
     envState.AZURE_CONTENT_SAFETY_ENDPOINT = 'https://safety.example.com';
     envState.AZURE_CONTENT_SAFETY_KEY = 'fake-key';
 
-    const fetchMock = vi.fn()
+    const fetchMock = vi
+      .fn()
       .mockResolvedValueOnce({ ok: true, json: async () => ({ categoriesAnalysis: [{}] }) })
       .mockResolvedValueOnce({ ok: true, json: async () => null });
     vi.stubGlobal('fetch', fetchMock);
 
     await expect(moderateText('text')).resolves.toMatchObject({
       blocked: false,
-      reasons: [{ category: '', severity: 0 }]
+      reasons: [{ category: '', severity: 0 }],
     });
     await expect(moderateText('text')).resolves.toMatchObject({ blocked: false, reasons: [] });
   });
@@ -163,10 +179,13 @@ describe('moderateText', () => {
     envState.AZURE_CONTENT_SAFETY_ENDPOINT = 'https://safety.example.com';
     envState.AZURE_CONTENT_SAFETY_KEY = 'fake-key';
 
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({ categories: [{ category: 'Sexual', severity: 5 }] })
-    }));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ categories: [{ category: 'Sexual', severity: 5 }] }),
+      }),
+    );
 
     const result = await moderateText('text');
     expect(result.blocked).toBe(true);

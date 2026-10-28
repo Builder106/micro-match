@@ -7,29 +7,35 @@ const { mocks } = vi.hoisted(() => ({
     getTaskById: vi.fn(),
     updateTaskStatus: vi.fn(),
     updateTaskLastActivity: vi.fn(),
-    deleteTask: vi.fn()
-  }
+    deleteTask: vi.fn(),
+  },
 }));
 
 vi.mock('$lib/server/appwrite', () => ({
   getTaskById: mocks.getTaskById,
   updateTaskStatus: mocks.updateTaskStatus,
   updateTaskLastActivity: mocks.updateTaskLastActivity,
-  deleteTask: mocks.deleteTask
+  deleteTask: mocks.deleteTask,
 }));
 vi.mock('$lib/server/auth', () => ({ getUserRole: mocks.getUserRole }));
 
 import { PATCH, DELETE } from '../../routes/api/tasks/[id]/+server';
 
-function makeEvent(opts: { userId?: string | null; taskId?: string; body?: unknown } = {}): Parameters<typeof PATCH>[0] {
-  const request = opts.body === undefined
-    ? new Request('http://test/api/tasks/task-1')
-    : new Request('http://test/api/tasks/task-1', {
-      method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify(opts.body)
-    });
+function makeEvent(
+  opts: { userId?: string | null; taskId?: string; body?: unknown } = {},
+): Parameters<typeof PATCH>[0] {
+  const request =
+    opts.body === undefined
+      ? new Request('http://test/api/tasks/task-1')
+      : new Request('http://test/api/tasks/task-1', {
+          method: 'PATCH',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(opts.body),
+        });
   return createRequestEvent({
-    params: { id: opts.taskId ?? 'task-1' }, request,
-    session: opts.userId ? { user: { id: opts.userId } } : null
+    params: { id: opts.taskId ?? 'task-1' },
+    request,
+    session: opts.userId ? { user: { id: opts.userId } } : null,
   });
 }
 
@@ -55,7 +61,6 @@ describe('PATCH /api/tasks/[id]', () => {
     const res = await PATCH(makeEvent({ userId: null, body: {} }));
     expect(res.status).toBe(401);
   });
-
 
   it('returns 404 when the task does not exist', async () => {
     mocks.getUserRole.mockResolvedValue('ngo');
@@ -91,7 +96,6 @@ describe('PATCH /api/tasks/[id]', () => {
     expect(mocks.updateTaskLastActivity).toHaveBeenCalledWith('task-1');
   });
 
-
   it('returns 500 when updateTaskStatus fails to find the row', async () => {
     mocks.getUserRole.mockResolvedValue('ngo');
     mocks.getTaskById.mockResolvedValue({ id: 'task-1', orgId: 'org-1' });
@@ -104,7 +108,7 @@ describe('PATCH /api/tasks/[id]', () => {
   it('returns 500 when the request body cannot be parsed', async () => {
     mocks.getUserRole.mockResolvedValue('ngo');
     mocks.getTaskById.mockResolvedValue({ id: 'task-1', orgId: 'org-1' });
-    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const res = await PATCH(makeEvent({ userId: 'org-1' }));
     expect(res.status).toBe(500);
@@ -127,7 +131,6 @@ describe('DELETE /api/tasks/[id]', () => {
     const res = await DELETE(makeEvent({ userId: 'org-1' }));
     expect(res.status).toBe(403);
   });
-
 
   it('returns 401 when there is no session', async () => {
     mocks.getUserRole.mockResolvedValue('ngo');

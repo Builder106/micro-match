@@ -6,23 +6,36 @@ const { envState, mocks } = vi.hoisted(() => ({
     accountGet: vi.fn(),
     usersUpdateName: vi.fn(),
     usersGet: vi.fn(),
-    usersUpdatePrefs: vi.fn()
-  }
+    usersUpdatePrefs: vi.fn(),
+  },
 }));
 
 vi.mock('$env/dynamic/private', () => ({
-  env: new Proxy(envState, { get: (_, key: string) => envState[key] })
+  env: new Proxy(envState, { get: (_, key: string) => envState[key] }),
 }));
 vi.mock('node-appwrite', () => ({
   Client: class {
-    setEndpoint() { return this; } setProject() { return this; } setKey() { return this; } setJWT() { return this; }
+    setEndpoint() {
+      return this;
+    }
+    setProject() {
+      return this;
+    }
+    setKey() {
+      return this;
+    }
+    setJWT() {
+      return this;
+    }
   },
-  Account: class { get = mocks.accountGet; },
+  Account: class {
+    get = mocks.accountGet;
+  },
   Users: class {
     updateName = mocks.usersUpdateName;
     get = mocks.usersGet;
     updatePrefs = mocks.usersUpdatePrefs;
-  }
+  },
 }));
 
 import { POST } from '../../routes/api/profile/update/+server';
@@ -34,8 +47,11 @@ function makeEvent(opts: { userId?: string | null; authorization?: string; body?
     request: new Request('http://test/api/profile/update', {
       method: 'POST',
       body: opts.body === undefined ? undefined : JSON.stringify(opts.body),
-      headers: { ...(opts.authorization ? { authorization: opts.authorization } : {}), ...(opts.body === undefined ? {} : { 'content-type': 'application/json' }) }
-    })
+      headers: {
+        ...(opts.authorization ? { authorization: opts.authorization } : {}),
+        ...(opts.body === undefined ? {} : { 'content-type': 'application/json' }),
+      },
+    }),
   });
 }
 
@@ -53,21 +69,25 @@ describe('POST /api/profile/update', () => {
 
   it('resolves userId from a bearer JWT when there is no session', async () => {
     mocks.accountGet.mockResolvedValue({ $id: 'user-1' });
-    const res = await POST(makeEvent({ authorization: 'Bearer good-jwt', body: { displayName: 'Jane' } }));
+    const res = await POST(
+      makeEvent({ authorization: 'Bearer good-jwt', body: { displayName: 'Jane' } }),
+    );
     expect(res.status).toBe(200);
     expect(mocks.usersUpdateName).toHaveBeenCalledWith({ userId: 'user-1', name: 'Jane' });
 
     mocks.accountGet.mockResolvedValue({});
-    const resNoId = await POST(makeEvent({ authorization: 'Bearer good-jwt', body: { displayName: 'Jane' } }));
+    const resNoId = await POST(
+      makeEvent({ authorization: 'Bearer good-jwt', body: { displayName: 'Jane' } }),
+    );
     expect(resNoId.status).toBe(401);
 
     // When account.get throws
     mocks.accountGet.mockRejectedValue(new Error('jwt invalid'));
-    const resErr = await POST(makeEvent({ authorization: 'Bearer good-jwt', body: { displayName: 'Jane' } }));
+    const resErr = await POST(
+      makeEvent({ authorization: 'Bearer good-jwt', body: { displayName: 'Jane' } }),
+    );
     expect(resErr.status).toBe(401);
   });
-
-
 
   it('returns 400 on invalid JSON', async () => {
     const res = await POST(makeEvent({ userId: 'user-1' }));
@@ -89,7 +109,7 @@ describe('POST /api/profile/update', () => {
 
   it('returns 500 when updateName fails', async () => {
     mocks.usersUpdateName.mockRejectedValue(new Error('down'));
-    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const res = await POST(makeEvent({ userId: 'user-1', body: { displayName: 'Jane' } }));
     expect(res.status).toBe(500);
@@ -111,13 +131,22 @@ describe('POST /api/profile/update', () => {
   it('merges bio/orgName/avatarFileId into existing prefs without clobbering unrelated keys', async () => {
     mocks.usersGet.mockResolvedValue({ prefs: { role: 'ngo', verificationStatus: 'approved' } });
 
-    const res = await POST(makeEvent({ userId: 'user-1', body: { bio: 'Hello', orgName: 'Acme', avatarFileId: 'file-1' } }));
+    const res = await POST(
+      makeEvent({
+        userId: 'user-1',
+        body: { bio: 'Hello', orgName: 'Acme', avatarFileId: 'file-1' },
+      }),
+    );
 
     expect(mocks.usersUpdatePrefs).toHaveBeenCalledWith({
       userId: 'user-1',
       prefs: {
-      role: 'ngo', verificationStatus: 'approved', bio: 'Hello', orgName: 'Acme', avatarFileId: 'file-1'
-    }
+        role: 'ngo',
+        verificationStatus: 'approved',
+        bio: 'Hello',
+        orgName: 'Acme',
+        avatarFileId: 'file-1',
+      },
     });
     expect(res.status).toBe(200);
   });
@@ -128,7 +157,10 @@ describe('POST /api/profile/update', () => {
     const res = await POST(makeEvent({ userId: 'user-1', body: { bio: 'Hello' } }));
 
     expect(res.status).toBe(200);
-    expect(mocks.usersUpdatePrefs).toHaveBeenCalledWith({ userId: 'user-1', prefs: { bio: 'Hello' } });
+    expect(mocks.usersUpdatePrefs).toHaveBeenCalledWith({
+      userId: 'user-1',
+      prefs: { bio: 'Hello' },
+    });
   });
 
   it('updates orgName without adding an omitted bio', async () => {
@@ -138,15 +170,15 @@ describe('POST /api/profile/update', () => {
     expect(mocks.usersUpdatePrefs).toHaveBeenCalledWith({
       userId: 'user-1',
       prefs: {
-      role: 'ngo',
-      orgName: 'Acme'
-    }
+        role: 'ngo',
+        orgName: 'Acme',
+      },
     });
   });
 
   it('returns 500 when updatePrefs fails', async () => {
     mocks.usersUpdatePrefs.mockRejectedValue(new Error('down'));
-    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const res = await POST(makeEvent({ userId: 'user-1', body: { bio: 'Hello' } }));
     expect(res.status).toBe(500);

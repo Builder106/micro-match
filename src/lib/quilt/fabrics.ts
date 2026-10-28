@@ -14,7 +14,7 @@ export const SWATCHES: Swatch[] = [
   { name: m.fabric_plum, hex: '#7A4E7E' },
   { name: m.fabric_moss, hex: '#5E7D4F' },
   { name: m.fabric_marigold, hex: '#F08A3C' },
-  { name: m.fabric_slate, hex: '#5D6B7A' }
+  { name: m.fabric_slate, hex: '#5D6B7A' },
 ];
 
 /** Undyed cloth, for patches whose nonprofit has not designed a badge yet. */
@@ -26,7 +26,8 @@ export const THREAD_LIGHT = '#FDFCF8';
 export function normalizeHex(value: string | null | undefined): string | null {
   const v = (value ?? '').trim();
   const short = /^#([0-9a-f])([0-9a-f])([0-9a-f])$/i.exec(v);
-  if (short) return `#${short[1]}${short[1]}${short[2]}${short[2]}${short[3]}${short[3]}`.toUpperCase();
+  if (short)
+    return `#${short[1]}${short[1]}${short[2]}${short[2]}${short[3]}${short[3]}`.toUpperCase();
   const long = /^#([0-9a-f]{6})(?:[0-9a-f]{2})?$/i.exec(v);
   return long ? `#${long[1]}`.toUpperCase() : null;
 }

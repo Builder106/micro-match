@@ -13,7 +13,11 @@ const DEFAULT_API_URL = 'https://next-api.useplunk.com';
 const DEFAULT_FROM_NAME = 'MicroMatch';
 const SEND_TIMEOUT_MS = 10_000;
 
-type PlunkResponse = { success?: boolean; data?: { emails?: Array<{ email?: string }> }; error?: string | { message?: string } | null };
+type PlunkResponse = {
+  success?: boolean;
+  data?: { emails?: Array<{ email?: string }> };
+  error?: string | { message?: string } | null;
+};
 
 function textToHtml(text: string): string {
   return text
@@ -27,7 +31,9 @@ function responseError(data: PlunkResponse | null, status: number): string {
   return `Plunk ${status}: ${error}`;
 }
 
-export async function sendEmail(args: SendArgs): Promise<{ ok: boolean; id?: string; error?: string }> {
+export async function sendEmail(
+  args: SendArgs,
+): Promise<{ ok: boolean; id?: string; error?: string }> {
   const apiKey = env.PLUNK_SECRET_KEY?.trim();
   const fromAddress = env.PLUNK_FROM_ADDRESS?.trim();
 
@@ -41,14 +47,13 @@ export async function sendEmail(args: SendArgs): Promise<{ ok: boolean; id?: str
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), SEND_TIMEOUT_MS);
   const apiUrl = (env.PLUNK_API_URL?.trim() || DEFAULT_API_URL).replace(/\/+$/, '');
-  const body = args.html === undefined || args.html === null
-    ? textToHtml(args.text ?? '')
-    : args.html;
+  const body =
+    args.html === undefined || args.html === null ? textToHtml(args.text ?? '') : args.html;
   const payload = {
     to: args.to,
     subject: args.subject,
     body,
-    from: { name: env.PLUNK_FROM_NAME?.trim() || DEFAULT_FROM_NAME, email: fromAddress }
+    from: { name: env.PLUNK_FROM_NAME?.trim() || DEFAULT_FROM_NAME, email: fromAddress },
   };
 
   try {
@@ -56,13 +61,14 @@ export async function sendEmail(args: SendArgs): Promise<{ ok: boolean; id?: str
       method: 'POST',
       headers: {
         Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(payload),
-      signal: controller.signal
+      signal: controller.signal,
     });
     const data = (await res.json().catch(() => null)) as PlunkResponse | null;
-    if (!res.ok || data?.success !== true) return { ok: false, error: responseError(data, res.status) };
+    if (!res.ok || data?.success !== true)
+      return { ok: false, error: responseError(data, res.status) };
     return { ok: true, id: data.data?.emails?.[0]?.email };
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : 'network error' };
@@ -75,16 +81,44 @@ function appUrl(): string {
   return (env.PUBLIC_APP_URL || 'http://localhost:5173').replace(/\/$/, '');
 }
 
-export async function sendVerificationApproved(args: { to: string; orgName: string; locale?: Locale }) {
-  return sendEmail({ to: args.to, ...renderVerificationApproved(args.orgName, appUrl(), args.locale ?? defaultLocale) });
+export async function sendVerificationApproved(args: {
+  to: string;
+  orgName: string;
+  locale?: Locale;
+}) {
+  return sendEmail({
+    to: args.to,
+    ...renderVerificationApproved(args.orgName, appUrl(), args.locale ?? defaultLocale),
+  });
 }
 
-export async function sendVerificationRejected(args: { to: string; orgName: string; reason: string; locale?: Locale }) {
-  return sendEmail({ to: args.to, ...renderVerificationRejected(args.orgName, args.reason, appUrl(), args.locale ?? defaultLocale) });
+export async function sendVerificationRejected(args: {
+  to: string;
+  orgName: string;
+  reason: string;
+  locale?: Locale;
+}) {
+  return sendEmail({
+    to: args.to,
+    ...renderVerificationRejected(
+      args.orgName,
+      args.reason,
+      appUrl(),
+      args.locale ?? defaultLocale,
+    ),
+  });
 }
 
 function escapeHtml(s: string): string {
-  return String(s).replace(/[&<>"']/g, (c) => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-  }[c] as string));
+  return String(s).replace(
+    /[&<>"']/g,
+    (c) =>
+      ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+      })[c] as string,
+  );
 }

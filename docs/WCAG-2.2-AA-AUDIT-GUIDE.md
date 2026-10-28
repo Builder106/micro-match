@@ -102,21 +102,15 @@ A project using Playwright and axe can adapt this example:
 import AxeBuilder from '@axe-core/playwright';
 import { test, expect } from '@playwright/test';
 
-const tags = [
-  'wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'
-];
+const tags = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'];
 
 test('accessibility gate', async ({ page }) => {
   await page.goto(process.env.AUDIT_URL ?? 'http://localhost:3000');
 
-  const results = await new AxeBuilder({ page })
-    .withTags(tags)
-    .analyze();
+  const results = await new AxeBuilder({ page }).withTags(tags).analyze();
 
-  expect(results.violations, JSON.stringify(results.violations, null, 2))
-    .toEqual([]);
-  expect(results.incomplete, JSON.stringify(results.incomplete, null, 2))
-    .toEqual([]);
+  expect(results.violations, JSON.stringify(results.violations, null, 2)).toEqual([]);
+  expect(results.incomplete, JSON.stringify(results.incomplete, null, 2)).toEqual([]);
 });
 ```
 

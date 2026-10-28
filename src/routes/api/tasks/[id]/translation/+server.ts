@@ -14,8 +14,5 @@ export const GET: RequestHandler = async ({ params, url }) => {
 
   const translated = await translateTask(task, to);
 
-  return json(
-    { task: translated },
-    { headers: { 'Cache-Control': 'private, max-age=900' } }
-  );
+  return json({ task: translated }, { headers: { 'Cache-Control': 'private, max-age=900' } });
 };

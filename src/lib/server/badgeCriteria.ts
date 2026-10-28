@@ -29,7 +29,7 @@ export type BadgeAction = {
  */
 export async function evaluateBadgeCriteria(
   _userId: string,
-  action: BadgeAction
+  action: BadgeAction,
 ): Promise<BadgeDefinition[]> {
   if (action.type !== 'task-completed' || !action.taskId) return [];
 

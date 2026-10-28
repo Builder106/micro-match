@@ -10,7 +10,9 @@ function parseBearer(event: RequestEvent): string | null {
   return authHeader.slice(7).trim() || null;
 }
 
-async function getUserFromJWT(jwt: string): Promise<import('node-appwrite').Models.User<UserPreferences> | null> {
+async function getUserFromJWT(
+  jwt: string,
+): Promise<import('node-appwrite').Models.User<UserPreferences> | null> {
   try {
     const { Client, Account } = await import('node-appwrite');
     const client = new Client()
@@ -53,7 +55,8 @@ export async function getUserRole(event: RequestEvent): Promise<UserRole> {
         const userId: string | undefined = user.$id;
         if (userId) {
           if (NGO_TEAM_ID && (await isUserInTeam(userId, NGO_TEAM_ID))) return 'ngo';
-          if (VOLUNTEER_TEAM_ID && (await isUserInTeam(userId, VOLUNTEER_TEAM_ID))) return 'volunteer';
+          if (VOLUNTEER_TEAM_ID && (await isUserInTeam(userId, VOLUNTEER_TEAM_ID)))
+            return 'volunteer';
         }
       } catch {}
       // Fallback to prefs.role

@@ -9,7 +9,10 @@ export type TaskTranslationMeta = {
   status: 'original' | 'translated' | 'fallback';
 };
 
-export type TranslatedTaskFields = Pick<Task, 'title' | 'shortDescription' | 'description' | 'tags'>;
+export type TranslatedTaskFields = Pick<
+  Task,
+  'title' | 'shortDescription' | 'description' | 'tags'
+>;
 
 export type TranslatedTask = Task & {
   translation: TaskTranslationMeta;
@@ -17,7 +20,9 @@ export type TranslatedTask = Task & {
 
 export const MAX_TASK_TRANSLATION_BATCH_SIZE = 50;
 
-export function isSupportedTaskLocale(value: string | number | boolean | null | undefined | object): value is Locale {
+export function isSupportedTaskLocale(
+  value: string | number | boolean | null | undefined | object,
+): value is Locale {
   return value === 'en' || (typeof value === 'string' && isSupportedTranslationCode(value));
 }
 
@@ -41,7 +46,7 @@ export async function translateTask(task: Task, locale: Locale): Promise<Transla
     shortDescription,
     description: task.description === undefined ? undefined : description,
     tags,
-    translation: { locale, status: changed ? 'translated' : 'fallback' }
+    translation: { locale, status: changed ? 'translated' : 'fallback' },
   };
 }
 
@@ -53,7 +58,7 @@ export async function translateTasks(tasks: Task[], locale: Locale): Promise<Tra
   const originals = tasks.map(fieldsFor);
   const translated = await translateTexts({
     texts: originals.flat(),
-    to: locale
+    to: locale,
   });
 
   let offset = 0;
@@ -69,7 +74,7 @@ export async function translateTasks(tasks: Task[], locale: Locale): Promise<Tra
       shortDescription,
       description: task.description === undefined ? undefined : description,
       tags,
-      translation: { locale, status: changed ? 'translated' : 'fallback' }
+      translation: { locale, status: changed ? 'translated' : 'fallback' },
     };
   });
 }

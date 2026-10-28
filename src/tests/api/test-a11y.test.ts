@@ -10,40 +10,42 @@ const { mocks } = vi.hoisted(() => ({
     listBadgeDefinitions: vi.fn(),
     createBadgeDefinition: vi.fn(),
     upsertVerification: vi.fn(),
-    createSession: vi.fn()
-  }
+    createSession: vi.fn(),
+  },
 }));
 
 vi.mock('$lib/server/appwrite', () => ({
   createTask: mocks.createTask,
   getTaskById: mocks.getTaskById,
   createClaim: mocks.createClaim,
-  awardBadge: mocks.awardBadge
+  awardBadge: mocks.awardBadge,
 }));
 
 vi.mock('$lib/server/badgeDefs', () => ({
   listBadgeDefinitions: mocks.listBadgeDefinitions,
-  createBadgeDefinition: mocks.createBadgeDefinition
+  createBadgeDefinition: mocks.createBadgeDefinition,
 }));
 
 vi.mock('$lib/server/session', () => ({
   createSession: mocks.createSession,
-  SESSION_TTL_SECONDS: 86400
+  SESSION_TTL_SECONDS: 86400,
 }));
 
 vi.mock('$lib/server/verifications', () => ({
-  upsertVerification: mocks.upsertVerification
+  upsertVerification: mocks.upsertVerification,
 }));
-
 
 import { POST } from '../../routes/api/test/a11y/+server';
 
 function makeEvent(opts: { body?: unknown } = {}) {
-  const request = opts.body === undefined
-    ? new Request('http://test/api/test/a11y')
-    : new Request('http://test/api/test/a11y', {
-      method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(opts.body)
-    });
+  const request =
+    opts.body === undefined
+      ? new Request('http://test/api/test/a11y')
+      : new Request('http://test/api/test/a11y', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(opts.body),
+        });
   return createRequestEvent({ request, cookies: createMockCookies() });
 }
 
@@ -70,7 +72,9 @@ describe('POST /api/test/a11y', () => {
 
   it('throws 404 when harness is disabled', async () => {
     delete process.env.PLAYWRIGHT_A11Y_HARNESS;
-    await expect(POST(makeEvent({ body: { action: 'seed' } }))).rejects.toMatchObject({ status: 404 });
+    await expect(POST(makeEvent({ body: { action: 'seed' } }))).rejects.toMatchObject({
+      status: 404,
+    });
   });
 
   it('handles seed action by creating fixtures and returning taskId', async () => {
@@ -101,31 +105,42 @@ describe('POST /api/test/a11y', () => {
 
     mocks.getTaskById.mockResolvedValue(null);
     mocks.listBadgeDefinitions.mockResolvedValue([{ id: 'existing-def' }]);
-    const existingBadgeSeed = await POST(makeEvent({ body: { action: 'seed', namespace: 'existing-badges' } }));
+    const existingBadgeSeed = await POST(
+      makeEvent({ body: { action: 'seed', namespace: 'existing-badges' } }),
+    );
     expect(existingBadgeSeed.status).toBe(200);
     expect(mocks.createBadgeDefinition).not.toHaveBeenCalled();
   });
 
-
-
-
   it('handles session action by setting cookies and returning role and userId', async () => {
-    const event = makeEvent({ body: { action: 'session', role: 'volunteer', namespace: 'chromium-0' } });
+    const event = makeEvent({
+      body: { action: 'session', role: 'volunteer', namespace: 'chromium-0' },
+    });
     const res = await POST(event);
     const body = await res.json();
 
     expect(res.status).toBe(200);
-    expect(body).toEqual({ namespace: 'chromium-0', role: 'volunteer', userId: 'a11y-volunteer-chromium-0' });
+    expect(body).toEqual({
+      namespace: 'chromium-0',
+      role: 'volunteer',
+      userId: 'a11y-volunteer-chromium-0',
+    });
     expect(mocks.createSession).toHaveBeenCalled();
     expect(event.cookies.set).toHaveBeenCalledWith('mm_session', 'sess-a11y-1', expect.any(Object));
     expect(event.cookies.set).toHaveBeenCalledWith('mm_role', 'volunteer', expect.any(Object));
 
     // Admin role
-    const eventAdmin = makeEvent({ body: { action: 'session', role: 'admin', namespace: 'firefox-1' } });
+    const eventAdmin = makeEvent({
+      body: { action: 'session', role: 'admin', namespace: 'firefox-1' },
+    });
     const resAdmin = await POST(eventAdmin);
     const bodyAdmin = await resAdmin.json();
     expect(resAdmin.status).toBe(200);
-    expect(bodyAdmin).toEqual({ namespace: 'firefox-1', role: 'admin', userId: 'a11y-admin-firefox-1' });
+    expect(bodyAdmin).toEqual({
+      namespace: 'firefox-1',
+      role: 'admin',
+      userId: 'a11y-admin-firefox-1',
+    });
   });
 
   it('returns 400 on unsupported actions and invalid bodies', async () => {
@@ -135,7 +150,9 @@ describe('POST /api/test/a11y', () => {
     const body = await res.json();
     expect(body.error).toContain('Unsupported accessibility harness action');
 
-    const invalidSession = await POST(makeEvent({ body: { action: 'session', role: 'unknown', namespace: 'chromium-0' } }));
+    const invalidSession = await POST(
+      makeEvent({ body: { action: 'session', role: 'unknown', namespace: 'chromium-0' } }),
+    );
     expect(invalidSession.status).toBe(400);
 
     // Invalid JSON / no body
@@ -150,19 +167,26 @@ describe('POST /api/test/a11y', () => {
     const [first, second, repeat] = await Promise.all([
       POST(makeEvent({ body: { action: 'seed', namespace: 'chromium-0' } })),
       POST(makeEvent({ body: { action: 'seed', namespace: 'firefox-0' } })),
-      POST(makeEvent({ body: { action: 'seed', namespace: 'chromium-0' } }))
+      POST(makeEvent({ body: { action: 'seed', namespace: 'chromium-0' } })),
     ]);
     const firstTask = (await first.json()).taskId;
     expect((await repeat.json()).taskId).toBe(firstTask);
     expect((await second.json()).taskId).not.toBe(firstTask);
     expect(mocks.createTask).toHaveBeenCalledTimes(2);
-    expect(mocks.createClaim).toHaveBeenCalledWith(expect.objectContaining({ userId: 'a11y-volunteer-chromium-0' }));
-    expect(mocks.createClaim).toHaveBeenCalledWith(expect.objectContaining({ userId: 'a11y-volunteer-firefox-0' }));
+    expect(mocks.createClaim).toHaveBeenCalledWith(
+      expect.objectContaining({ userId: 'a11y-volunteer-chromium-0' }),
+    );
+    expect(mocks.createClaim).toHaveBeenCalledWith(
+      expect.objectContaining({ userId: 'a11y-volunteer-firefox-0' }),
+    );
   });
 
   it('rejects missing and malformed namespaces', async () => {
-    await expect(POST(makeEvent({ body: { action: 'seed' } }))).rejects.toMatchObject({ status: 400 });
-    await expect(POST(makeEvent({ body: { action: 'seed', namespace: '../shared' } }))).rejects.toMatchObject({ status: 400 });
+    await expect(POST(makeEvent({ body: { action: 'seed' } }))).rejects.toMatchObject({
+      status: 400,
+    });
+    await expect(
+      POST(makeEvent({ body: { action: 'seed', namespace: '../shared' } })),
+    ).rejects.toMatchObject({ status: 400 });
   });
-
 });

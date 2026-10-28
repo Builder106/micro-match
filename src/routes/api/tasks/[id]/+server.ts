@@ -1,6 +1,11 @@
 import type { RequestHandler } from './$types';
 import { json } from '@sveltejs/kit';
-import { deleteTask, getTaskById, updateTaskStatus, updateTaskLastActivity } from '$lib/server/appwrite';
+import {
+  deleteTask,
+  getTaskById,
+  updateTaskStatus,
+  updateTaskLastActivity,
+} from '$lib/server/appwrite';
 import { getUserRole } from '$lib/server/auth';
 
 export const PATCH: RequestHandler = async (event) => {
@@ -53,33 +58,33 @@ export const PATCH: RequestHandler = async (event) => {
 };
 
 export const DELETE: RequestHandler = async (event) => {
-	const { params } = event;
-	const id = params.id;
-	if (!id) {
-		return json({ error: 'Missing task id' }, { status: 400 });
-	}
+  const { params } = event;
+  const id = params.id;
+  if (!id) {
+    return json({ error: 'Missing task id' }, { status: 400 });
+  }
 
-	const role = await getUserRole(event);
-	if (role !== 'ngo') {
-		return json({ error: 'Forbidden' }, { status: 403 });
-	}
+  const role = await getUserRole(event);
+  if (role !== 'ngo') {
+    return json({ error: 'Forbidden' }, { status: 403 });
+  }
 
-	const session = event.locals.session;
-	const userId = session?.user?.id;
-	if (!userId) {
-		return json({ error: 'Unauthorized' }, { status: 401 });
-	}
+  const session = event.locals.session;
+  const userId = session?.user?.id;
+  if (!userId) {
+    return json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
-	const task = await getTaskById(id);
-	if (!task) {
-		return json({ error: 'Task not found' }, { status: 404 });
-	}
+  const task = await getTaskById(id);
+  if (!task) {
+    return json({ error: 'Task not found' }, { status: 404 });
+  }
 
-	if (task.orgId !== userId) {
-		return json({ error: 'Forbidden: You do not own this task' }, { status: 403 });
-	}
+  if (task.orgId !== userId) {
+    return json({ error: 'Forbidden: You do not own this task' }, { status: 403 });
+  }
 
-	await deleteTask(id);
+  await deleteTask(id);
 
-	return json({ success: true });
+  return json({ success: true });
 };

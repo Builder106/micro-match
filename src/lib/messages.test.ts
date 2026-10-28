@@ -4,7 +4,8 @@ import { locales } from './locale';
 
 // Every locale carries every English message, with the same {placeholders} and <tags>, so no
 // page falls back to English or loses a link in translation.
-const load = (locale: string) => JSON.parse(readFileSync(`messages/${locale}.json`, 'utf8')) as Record<string, string>;
+const load = (locale: string) =>
+  JSON.parse(readFileSync(`messages/${locale}.json`, 'utf8')) as Record<string, string>;
 const shape = (text: string) => [...text.matchAll(/\{\w+\}|<\/?[a-z]+>/g)].map((m) => m[0]).sort();
 
 describe('message catalogs', () => {

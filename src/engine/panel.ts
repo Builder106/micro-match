@@ -13,13 +13,13 @@ function flight(panel: HTMLElement, from: Rect) {
     x: from.left - to.left,
     y: from.top - to.top,
     scaleX: from.width / to.width,
-    scaleY: from.height / to.height
+    scaleY: from.height / to.height,
   };
 }
 
 const parts = (panel: HTMLElement) => ({
   face: panel.querySelector<HTMLElement>('[data-panel-face]'),
-  body: panel.querySelector<HTMLElement>('[data-panel-body]')
+  body: panel.querySelector<HTMLElement>('[data-panel-body]'),
 });
 
 function waitForAnimation<T>(animation: T): Promise<void> {
@@ -32,11 +32,23 @@ export function unfold(panel: HTMLElement, from: Rect | null): Promise<void> {
   gsap.killTweensOf([panel, face, body]);
   if (prefersStill()) {
     gsap.set(face, { autoAlpha: 0 });
-    return waitForAnimation(gsap.fromTo(panel, { opacity: 0 }, { opacity: 1, duration: 0.2, ease: 'none', clearProps: 'opacity' }));
+    return waitForAnimation(
+      gsap.fromTo(
+        panel,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.2, ease: 'none', clearProps: 'opacity' },
+      ),
+    );
   }
   if (!from) {
     return waitForAnimation(
-      gsap.timeline().fromTo(panel, { y: 24, rotation: 0.8 }, { y: 0, rotation: 0, duration: 0.7, ease: ease.out, clearProps: 'transform' })
+      gsap
+        .timeline()
+        .fromTo(
+          panel,
+          { y: 24, rotation: 0.8 },
+          { y: 0, rotation: 0, duration: 0.7, ease: ease.out, clearProps: 'transform' },
+        ),
     );
   }
   const f = flight(panel, from);
@@ -45,9 +57,22 @@ export function unfold(panel: HTMLElement, from: Rect | null): Promise<void> {
     .set(panel, { transformOrigin: '0 0', ...f, rotation: -1.5 })
     .set(face, { autoAlpha: 1 })
     .set(body, { opacity: 0, y: 18 })
-    .to(panel, { x: 0, y: 0, scaleX: 1, scaleY: 1, rotation: 0, duration: 0.82, ease: ease.out, clearProps: 'transform' })
+    .to(panel, {
+      x: 0,
+      y: 0,
+      scaleX: 1,
+      scaleY: 1,
+      rotation: 0,
+      duration: 0.82,
+      ease: ease.out,
+      clearProps: 'transform',
+    })
     .to(face, { autoAlpha: 0, duration: 0.35, ease: 'power1.out' }, 0.32)
-    .to(body, { opacity: 1, y: 0, duration: 0.6, ease: ease.out, clearProps: 'transform,opacity' }, 0.42);
+    .to(
+      body,
+      { opacity: 1, y: 0, duration: 0.6, ease: ease.out, clearProps: 'transform,opacity' },
+      0.42,
+    );
   return waitForAnimation(tl);
 }
 
@@ -55,15 +80,23 @@ export function unfold(panel: HTMLElement, from: Rect | null): Promise<void> {
 export function fold(panel: HTMLElement, to: Rect | null): Promise<void> {
   const { face, body } = parts(panel);
   gsap.killTweensOf([panel, face, body]);
-  if (prefersStill()) return waitForAnimation(gsap.to(panel, { autoAlpha: 0, duration: 0.15, ease: 'none' }));
-  if (!to) return waitForAnimation(gsap.to(panel, { y: 30, autoAlpha: 0, duration: 0.35, ease: ease.inOut }));
+  if (prefersStill())
+    return waitForAnimation(gsap.to(panel, { autoAlpha: 0, duration: 0.15, ease: 'none' }));
+  if (!to)
+    return waitForAnimation(
+      gsap.to(panel, { y: 30, autoAlpha: 0, duration: 0.35, ease: ease.inOut }),
+    );
   const f = flight(panel, to);
   return waitForAnimation(
     gsap
       .timeline()
       .to(body, { autoAlpha: 0, duration: 0.18 })
       .to(face, { autoAlpha: 1, duration: 0.25 }, 0.05)
-      .to(panel, { transformOrigin: '0 0', ...f, rotation: 1.2, duration: 0.62, ease: ease.inOut }, 0.08)
+      .to(
+        panel,
+        { transformOrigin: '0 0', ...f, rotation: 1.2, duration: 0.62, ease: ease.inOut },
+        0.08,
+      ),
   );
 }
 
@@ -71,7 +104,8 @@ export function fold(panel: HTMLElement, to: Rect | null): Promise<void> {
 export function contentOut(panel: HTMLElement): Promise<void> {
   const { body } = parts(panel);
   if (!body) return Promise.resolve();
-  if (prefersStill()) return waitForAnimation(gsap.to(body, { autoAlpha: 0, duration: 0.12, ease: 'none' }));
+  if (prefersStill())
+    return waitForAnimation(gsap.to(body, { autoAlpha: 0, duration: 0.12, ease: 'none' }));
   return waitForAnimation(gsap.to(body, { autoAlpha: 0, y: -10, duration: 0.22, ease: ease.soft }));
 }
 
@@ -79,8 +113,19 @@ export function contentOut(panel: HTMLElement): Promise<void> {
 export function contentIn(panel: HTMLElement): Promise<void> {
   const { body } = parts(panel);
   if (!body) return Promise.resolve();
-  if (prefersStill()) return waitForAnimation(gsap.fromTo(body, { opacity: 0 }, { opacity: 1, duration: 0.2, ease: 'none', clearProps: 'all' }));
+  if (prefersStill())
+    return waitForAnimation(
+      gsap.fromTo(
+        body,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.2, ease: 'none', clearProps: 'all' },
+      ),
+    );
   return waitForAnimation(
-    gsap.fromTo(body, { opacity: 0, y: 16, rotation: -0.4 }, { opacity: 1, y: 0, rotation: 0, duration: 0.6, ease: ease.out, clearProps: 'all' })
+    gsap.fromTo(
+      body,
+      { opacity: 0, y: 16, rotation: -0.4 },
+      { opacity: 1, y: 0, rotation: 0, duration: 0.6, ease: ease.out, clearProps: 'all' },
+    ),
   );
 }

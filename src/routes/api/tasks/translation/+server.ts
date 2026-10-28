@@ -4,7 +4,7 @@ import { getTaskById } from '$lib/server/appwrite';
 import {
   isSupportedTaskLocale,
   MAX_TASK_TRANSLATION_BATCH_SIZE,
-  translateTasks
+  translateTasks,
 } from '$lib/server/taskTranslation';
 
 export const POST: RequestHandler = async ({ request }) => {
@@ -32,21 +32,26 @@ export const POST: RequestHandler = async ({ request }) => {
     taskIds.length > MAX_TASK_TRANSLATION_BATCH_SIZE ||
     taskIds.some((id) => typeof id !== 'string' || !id.trim())
   ) {
-    return json({ error: `taskIds must contain 1-${MAX_TASK_TRANSLATION_BATCH_SIZE} task IDs` }, { status: 400 });
+    return json(
+      { error: `taskIds must contain 1-${MAX_TASK_TRANSLATION_BATCH_SIZE} task IDs` },
+      { status: 400 },
+    );
   }
 
   const tasks = (await Promise.all((taskIds as string[]).map((id) => getTaskById(id)))).filter(
-    (task): task is NonNullable<typeof task> => task !== undefined
+    (task): task is NonNullable<typeof task> => task !== undefined,
   );
   const translated = await translateTasks(tasks, locale);
-  const displayTasks = translated.map(({ id, title, shortDescription, description, tags, language, translation }) => ({
-    id,
-    title,
-    shortDescription,
-    description,
-    tags,
-    language,
-    translation
-  }));
+  const displayTasks = translated.map(
+    ({ id, title, shortDescription, description, tags, language, translation }) => ({
+      id,
+      title,
+      shortDescription,
+      description,
+      tags,
+      language,
+      translation,
+    }),
+  );
   return json({ tasks: displayTasks }, { headers: { 'Cache-Control': 'private, max-age=900' } });
 };

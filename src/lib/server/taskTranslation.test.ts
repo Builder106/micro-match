@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Task } from '$lib/types';
 
 const { translateTexts } = vi.hoisted(() => ({
-  translateTexts: vi.fn()
+  translateTexts: vi.fn(),
 }));
 vi.mock('$lib/server/libretranslate', () => ({ translateTexts }));
 
@@ -14,7 +14,7 @@ const task: Task = {
   shortDescription: 'Add tags',
   description: 'Tag each photo.',
   language: 'English',
-  tags: ['data', 'history']
+  tags: ['data', 'history'],
 };
 
 describe('task translation helper', () => {
@@ -32,28 +32,39 @@ describe('task translation helper', () => {
   it('bypasses LibreTranslate for English and preserves the source language', async () => {
     await expect(translateTask(task, 'en')).resolves.toEqual({
       ...task,
-      translation: { locale: 'en', status: 'original' }
+      translation: { locale: 'en', status: 'original' },
     });
     expect(translateTexts).not.toHaveBeenCalled();
   });
 
   it('returns translated display fields and metadata without changing language', async () => {
-    translateTexts.mockResolvedValueOnce(['Etiquetar', 'Añadir etiquetas', 'Etiquete cada foto.', 'datos', 'historia']);
+    translateTexts.mockResolvedValueOnce([
+      'Etiquetar',
+      'Añadir etiquetas',
+      'Etiquete cada foto.',
+      'datos',
+      'historia',
+    ]);
     await expect(translateTask(task, 'es')).resolves.toEqual({
       ...task,
       title: 'Etiquetar',
       shortDescription: 'Añadir etiquetas',
       description: 'Etiquete cada foto.',
       tags: ['datos', 'historia'],
-      translation: { locale: 'es', status: 'translated' }
+      translation: { locale: 'es', status: 'translated' },
     });
   });
 
   it('marks provider fallback while retaining the original fields', async () => {
-    translateTexts.mockResolvedValueOnce([task.title, task.shortDescription, task.description, ...task.tags]);
+    translateTexts.mockResolvedValueOnce([
+      task.title,
+      task.shortDescription,
+      task.description,
+      ...task.tags,
+    ]);
     await expect(translateTask(task, 'fr')).resolves.toEqual({
       ...task,
-      translation: { locale: 'fr', status: 'fallback' }
+      translation: { locale: 'fr', status: 'fallback' },
     });
 
     // Test when task.description is undefined
@@ -74,7 +85,7 @@ describe('task translation helper', () => {
   it('handles batch translateTasks for English and empty lists without API call', async () => {
     await expect(translateTasks([], 'es')).resolves.toEqual([]);
     await expect(translateTasks([task], 'en')).resolves.toEqual([
-      { ...task, translation: { locale: 'en', status: 'original' } }
+      { ...task, translation: { locale: 'en', status: 'original' } },
     ]);
     expect(translateTexts).not.toHaveBeenCalled();
   });
@@ -84,11 +95,17 @@ describe('task translation helper', () => {
       id: 'task-2',
       title: 'Review docs',
       shortDescription: 'Check text',
-      tags: ['docs']
+      tags: ['docs'],
     };
     translateTexts.mockResolvedValueOnce([
-      'Etiquetar', 'Añadir', 'Detalle', 'datos', 'historia',
-      'Revisar', 'Verificar', 'docs'
+      'Etiquetar',
+      'Añadir',
+      'Detalle',
+      'datos',
+      'historia',
+      'Revisar',
+      'Verificar',
+      'docs',
     ]);
     const res = await translateTasks([task, task2], 'es');
     expect(res).toHaveLength(2);
@@ -98,7 +115,12 @@ describe('task translation helper', () => {
     expect(res[1].description).toBeUndefined();
 
     // Fallback case when translated matches original
-    translateTexts.mockResolvedValueOnce([task.title, task.shortDescription, task.description, ...task.tags]);
+    translateTexts.mockResolvedValueOnce([
+      task.title,
+      task.shortDescription,
+      task.description,
+      ...task.tags,
+    ]);
     const fallbackRes = await translateTasks([task], 'fr');
     expect(fallbackRes[0].translation.status).toBe('fallback');
   });

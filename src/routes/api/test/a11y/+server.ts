@@ -8,11 +8,14 @@ function isHarnessEnabled(): boolean {
   return process.env.NODE_ENV !== 'production' && process.env.PLAYWRIGHT_A11Y_HARNESS === '1';
 }
 
-
 const identities = {
-  volunteer: { userId: 'a11y-volunteer', email: 'a11y-volunteer@example.test', role: 'volunteer' as const },
+  volunteer: {
+    userId: 'a11y-volunteer',
+    email: 'a11y-volunteer@example.test',
+    role: 'volunteer' as const,
+  },
   ngo: { userId: 'a11y-ngo', email: 'a11y-ngo@example.test', role: 'ngo' as const },
-  admin: { userId: 'a11y-admin', email: 'a11y-admin@example.test', role: 'user' as const }
+  admin: { userId: 'a11y-admin', email: 'a11y-admin@example.test', role: 'user' as const },
 };
 
 const namespacePattern = /^[a-z0-9][a-z0-9_-]{0,63}$/;
@@ -32,12 +35,16 @@ function requireNamespace(value: string | null | undefined): string {
 
 function namespaceIdentity(namespace: string, role: keyof typeof identities) {
   const identity = identities[role];
-  return { ...identity, userId: `${identity.userId}-${namespace}`, email: `${role}-${namespace}@example.test` };
+  return {
+    ...identity,
+    userId: `${identity.userId}-${namespace}`,
+    email: `${role}-${namespace}@example.test`,
+  };
 }
 
 async function seedFixtures(namespace: string): Promise<{ taskId: string }> {
   const existingTaskId = seededTaskIds.get(namespace);
-  if (existingTaskId && await getTaskById(existingTaskId)) return { taskId: existingTaskId };
+  if (existingTaskId && (await getTaskById(existingTaskId))) return { taskId: existingTaskId };
 
   const pending = seeding.get(namespace);
   if (pending) return { taskId: await pending };
@@ -46,7 +53,7 @@ async function seedFixtures(namespace: string): Promise<{ taskId: string }> {
     const namespaceIdentities = {
       volunteer: namespaceIdentity(namespace, 'volunteer'),
       ngo: namespaceIdentity(namespace, 'ngo'),
-      admin: namespaceIdentity(namespace, 'admin')
+      admin: namespaceIdentity(namespace, 'admin'),
     };
     const task = await createTask({
       orgId: namespaceIdentities.ngo.userId,
@@ -59,7 +66,7 @@ async function seedFixtures(namespace: string): Promise<{ taskId: string }> {
       status: 'active',
       maxVolunteers: 5,
       isVerified: true,
-      lastActivityAt: new Date().toISOString()
+      lastActivityAt: new Date().toISOString(),
     });
     seededTaskIds.set(namespace, task.id);
     await createClaim({
@@ -67,13 +74,13 @@ async function seedFixtures(namespace: string): Promise<{ taskId: string }> {
       userId: namespaceIdentities.volunteer.userId,
       status: 'approved',
       notes: 'Accessibility fixture claim',
-      proofUrl: 'https://example.com/a11y-proof'
+      proofUrl: 'https://example.com/a11y-proof',
     });
     await awardBadge({
       userId: namespaceIdentities.volunteer.userId,
       taskId: task.id,
       label: 'Accessibility Reviewer',
-      color: '#2563eb'
+      color: '#2563eb',
     });
     if ((await listBadgeDefinitions(namespaceIdentities.ngo.userId)).length === 0) {
       await createBadgeDefinition({
@@ -81,7 +88,7 @@ async function seedFixtures(namespace: string): Promise<{ taskId: string }> {
         label: 'Accessibility Reviewer',
         color: '#2563eb',
         criteria: 'task-completion',
-        description: 'Awarded for completing an accessibility review.'
+        description: 'Awarded for completing an accessibility review.',
       });
     }
 
@@ -89,7 +96,7 @@ async function seedFixtures(namespace: string): Promise<{ taskId: string }> {
       userId: namespaceIdentities.ngo.userId,
       orgName: `Accessibility Fixture NGO ${namespace}`,
       country: 'US',
-      taxId: `A11Y-${namespace}`
+      taxId: `A11Y-${namespace}`,
     });
 
     return task.id;
@@ -104,10 +111,15 @@ async function seedFixtures(namespace: string): Promise<{ taskId: string }> {
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
   requireHarness();
-  const body = (await request.json().catch(() => ({}))) as { action?: string; role?: string; namespace?: string };
+  const body = (await request.json().catch(() => ({}))) as {
+    action?: string;
+    role?: string;
+    namespace?: string;
+  };
   const namespace = requireNamespace(body.namespace);
 
-  if (body.action === 'seed') return json(await seedFixtures(namespace), { headers: { 'cache-control': 'no-store' } });
+  if (body.action === 'seed')
+    return json(await seedFixtures(namespace), { headers: { 'cache-control': 'no-store' } });
 
   if (body.action === 'session' && body.role && body.role in identities) {
     const identity = namespaceIdentity(namespace, body.role as keyof typeof identities);
@@ -117,16 +129,19 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
       httpOnly: true,
       sameSite: 'lax',
       secure: false,
-      maxAge: SESSION_TTL_SECONDS
+      maxAge: SESSION_TTL_SECONDS,
     });
     cookies.set('mm_role', identity.role, {
       path: '/',
       httpOnly: false,
       sameSite: 'lax',
       secure: false,
-      maxAge: SESSION_TTL_SECONDS
+      maxAge: SESSION_TTL_SECONDS,
     });
-    return json({ namespace, role: body.role, userId: identity.userId }, { headers: { 'cache-control': 'no-store' } });
+    return json(
+      { namespace, role: body.role, userId: identity.userId },
+      { headers: { 'cache-control': 'no-store' } },
+    );
   }
 
   return json({ error: 'Unsupported accessibility harness action.' }, { status: 400 });

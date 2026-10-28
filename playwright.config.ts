@@ -14,7 +14,7 @@ const harnessEnv = {
   APPWRITE_API_KEY: '',
   PLUNK_SECRET_KEY: '',
   PUBLIC_APPWRITE_ENDPOINT: 'https://appwrite.test',
-  PUBLIC_APPWRITE_PROJECT_ID: 'e2e'
+  PUBLIC_APPWRITE_PROJECT_ID: 'e2e',
 };
 
 export default defineConfig({
@@ -25,14 +25,29 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [['github'], ['list']] : 'list',
   timeout: 45_000,
-  expect: { timeout: 10_000, toHaveScreenshot: { maxDiffPixelRatio: 0.02, animations: 'disabled', caret: 'hide' } },
+  expect: {
+    timeout: 10_000,
+    toHaveScreenshot: { maxDiffPixelRatio: 0.02, animations: 'disabled', caret: 'hide' },
+  },
   snapshotPathTemplate: '{testDir}/__snapshots__/{testFilePath}/{arg}{ext}',
   use: { baseURL, trace: 'retain-on-failure', screenshot: 'only-on-failure' },
   projects: [
-    { name: 'functional', testMatch: /functional\.spec\.ts/, use: { ...devices['Desktop Chrome'] } },
-    { name: 'responsiveness', testMatch: /responsiveness\.spec\.ts/, use: { ...devices['Desktop Chrome'] } },
+    {
+      name: 'functional',
+      testMatch: /functional\.spec\.ts/,
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'responsiveness',
+      testMatch: /responsiveness\.spec\.ts/,
+      use: { ...devices['Desktop Chrome'] },
+    },
     { name: 'visual', testMatch: /visual\.spec\.ts/, use: { ...devices['Desktop Chrome'] } },
-    { name: 'accessibility', testMatch: /accessibility\.spec\.ts/, use: { ...devices['Desktop Chrome'] } }
+    {
+      name: 'accessibility',
+      testMatch: /accessibility\.spec\.ts/,
+      use: { ...devices['Desktop Chrome'] },
+    },
   ],
   webServer: process.env.PLAYWRIGHT_BASE_URL
     ? undefined
@@ -41,6 +56,6 @@ export default defineConfig({
         url: `${baseURL}/en`,
         reuseExistingServer: false,
         timeout: 180_000,
-        env: harnessEnv
-      }
+        env: harnessEnv,
+      },
 });

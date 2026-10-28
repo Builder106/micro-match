@@ -5,12 +5,12 @@ const { mocks } = vi.hoisted(() => ({
     isUserAdmin: vi.fn(),
     getTasks: vi.fn(),
     getQuiltPatches: vi.fn(),
-    translateTasks: vi.fn()
-  }
+    translateTasks: vi.fn(),
+  },
 }));
 
 vi.mock('$lib/server/teams', () => ({
-  isUserAdmin: mocks.isUserAdmin
+  isUserAdmin: mocks.isUserAdmin,
 }));
 vi.mock('$lib/server/appwrite', () => ({ getTasks: mocks.getTasks }));
 vi.mock('$lib/server/quilt', () => ({ getQuiltPatches: mocks.getQuiltPatches }));
@@ -18,7 +18,7 @@ vi.mock('$lib/server/taskTranslation', () => ({ translateTasks: mocks.translateT
 
 const emptyQuilt = {
   quilt: { patches: [], total: 0 },
-  openTasks: { count: 0, upTo: { 15: 0, 20: 0, 30: 0 }, preview: [] }
+  openTasks: { count: 0, upTo: { 15: 0, 20: 0, 30: 0 }, preview: [] },
 };
 
 import { load } from '../../routes/+layout.server';
@@ -41,7 +41,7 @@ describe('+layout.server load', () => {
       isAdmin: false,
       origin: 'http://localhost:5173',
       locale: 'en',
-      ...emptyQuilt
+      ...emptyQuilt,
     });
     expect(mocks.isUserAdmin).not.toHaveBeenCalled();
   });
@@ -49,7 +49,7 @@ describe('+layout.server load', () => {
   it('falls back to the anonymous role when locals.userRole is undefined', async () => {
     const event = createServerLoadEvent({
       userRole: 'volunteer',
-      url: 'http://localhost:5173/about'
+      url: 'http://localhost:5173/about',
     });
     event.locals.userRole = undefined;
 
@@ -60,7 +60,7 @@ describe('+layout.server load', () => {
       isAdmin: false,
       origin: 'http://localhost:5173',
       locale: 'en',
-      ...emptyQuilt
+      ...emptyQuilt,
     });
     expect(mocks.isUserAdmin).not.toHaveBeenCalled();
   });
@@ -71,7 +71,7 @@ describe('+layout.server load', () => {
     const event = createServerLoadEvent({
       userRole: 'ngo',
       userId: 'admin-user-1',
-      url: 'http://localhost:5173/dashboard'
+      url: 'http://localhost:5173/dashboard',
     });
 
     const result = await load(event);
@@ -80,7 +80,7 @@ describe('+layout.server load', () => {
       isAdmin: true,
       origin: 'http://localhost:5173',
       locale: 'en',
-      ...emptyQuilt
+      ...emptyQuilt,
     });
     expect(mocks.isUserAdmin).toHaveBeenCalledWith('admin-user-1');
   });
@@ -91,7 +91,7 @@ describe('+layout.server load', () => {
     const event = createServerLoadEvent({
       userRole: 'volunteer',
       userId: 'volunteer-1',
-      url: 'http://localhost:5173/profile'
+      url: 'http://localhost:5173/profile',
     });
 
     const result = await load(event);
@@ -100,7 +100,7 @@ describe('+layout.server load', () => {
       isAdmin: false,
       origin: 'http://localhost:5173',
       locale: 'en',
-      ...emptyQuilt
+      ...emptyQuilt,
     });
     expect(mocks.isUserAdmin).toHaveBeenCalledWith('volunteer-1');
   });
@@ -111,13 +111,16 @@ describe('+layout.server load', () => {
       { id: 't1', estimatedMinutes: 5 },
       { id: 't2', estimatedMinutes: 20 },
       { id: 't3', estimatedMinutes: 30 },
-      { id: 't4' }
+      { id: 't4' },
     ];
     mocks.getQuiltPatches.mockResolvedValue(patches);
     mocks.getTasks.mockResolvedValue(tasks);
     mocks.translateTasks.mockResolvedValue([{ id: 't1', title: 'translated' }]);
 
-    const event = createServerLoadEvent({ url: 'http://localhost:5173/', locals: { locale: 'es' } });
+    const event = createServerLoadEvent({
+      url: 'http://localhost:5173/',
+      locals: { locale: 'es' },
+    });
     const result = requireLoadResult(await load(event));
 
     expect(result.quilt.total).toBe(60);
@@ -132,7 +135,9 @@ describe('+layout.server load', () => {
     const error = vi.spyOn(console, 'error').mockImplementation(() => {});
     mocks.getQuiltPatches.mockRejectedValue(new Error('appwrite down'));
     mocks.getTasks.mockRejectedValue(new Error('appwrite down'));
-    const result = requireLoadResult(await load(createServerLoadEvent({ url: 'http://localhost:5173/en' })));
+    const result = requireLoadResult(
+      await load(createServerLoadEvent({ url: 'http://localhost:5173/en' })),
+    );
     expect(result.quilt).toEqual(emptyQuilt.quilt);
     expect(result.openTasks).toEqual(emptyQuilt.openTasks);
     expect(error).toHaveBeenCalledTimes(2);
@@ -143,7 +148,9 @@ describe('+layout.server load', () => {
     const tasks = [{ id: 't1', title: 'Original' }];
     mocks.getTasks.mockResolvedValue(tasks);
     mocks.translateTasks.mockRejectedValue(new Error('translator down'));
-    const result = requireLoadResult(await load(createServerLoadEvent({ url: 'http://localhost:5173/en' })));
+    const result = requireLoadResult(
+      await load(createServerLoadEvent({ url: 'http://localhost:5173/en' })),
+    );
     expect(result.openTasks.preview).toEqual(tasks);
   });
 });

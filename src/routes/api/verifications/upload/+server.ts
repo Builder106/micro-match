@@ -36,14 +36,19 @@ export const POST: RequestHandler = async (event) => {
     if (!userId) return json({ error: 'Not signed in' }, { status: 401 });
 
     const bucketId = env.APPWRITE_VERIFICATIONS_BUCKET_ID;
-    if (!bucketId) return json({ error: 'Verification bucket not configured (set APPWRITE_VERIFICATIONS_BUCKET_ID)' }, { status: 500 });
+    if (!bucketId)
+      return json(
+        { error: 'Verification bucket not configured (set APPWRITE_VERIFICATIONS_BUCKET_ID)' },
+        { status: 500 },
+      );
 
     const form = await event.request.formData();
     const file = form.get('file');
     if (!(file instanceof File)) return json({ error: 'Missing file' }, { status: 400 });
 
     // Reasonable cap: 10 MB per doc
-    if (file.size > 10 * 1024 * 1024) return json({ error: 'File too large (max 10 MB)' }, { status: 400 });
+    if (file.size > 10 * 1024 * 1024)
+      return json({ error: 'File too large (max 10 MB)' }, { status: 400 });
 
     const allowed = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
     if (!allowed.includes(file.type)) {
@@ -60,7 +65,7 @@ export const POST: RequestHandler = async (event) => {
     const permissions = [
       Permission.read(Role.user(userId)),
       Permission.update(Role.user(userId)),
-      Permission.delete(Role.user(userId))
+      Permission.delete(Role.user(userId)),
     ];
     if (ADMIN_TEAM_ID) {
       permissions.push(Permission.read(Role.team(ADMIN_TEAM_ID)));

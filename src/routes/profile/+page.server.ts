@@ -5,7 +5,9 @@ import { fail } from '@sveltejs/kit';
 export const load: PageServerLoad = async ({ locals }) => {
   const userRole = locals.userRole ?? 'anonymous';
   const session = locals.session;
-  const user = session?.user?.id ? { id: session.user.id, email: session.user.email ?? undefined } : null;
+  const user = session?.user?.id
+    ? { id: session.user.id, email: session.user.email ?? undefined }
+    : null;
   return { userRole, user };
 };
 
@@ -30,6 +32,5 @@ export const actions: Actions = {
       if (env.NODE_ENV !== 'production') console.error('Profile update failed', e);
       return fail(400, { message: 'Failed to update profile' });
     }
-  }
+  },
 };
-

@@ -1,7 +1,12 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { json } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
-import { NGO_TEAM_ID, VOLUNTEER_TEAM_ID, addUserToTeam, removeUserFromTeam } from '$lib/server/teams';
+import {
+  NGO_TEAM_ID,
+  VOLUNTEER_TEAM_ID,
+  addUserToTeam,
+  removeUserFromTeam,
+} from '$lib/server/teams';
 import { withdrawVerification, setUserVerificationPref } from '$lib/server/verifications';
 import { setTasksVerifiedForOrg } from '$lib/server/appwrite';
 
@@ -43,9 +48,15 @@ export const POST: RequestHandler = async (event) => {
   const userId = await getUserId(event);
   if (!userId) return json({ error: 'Unauthorized' }, { status: 401 });
 
-  interface RolePayload { newRole?: string }
+  interface RolePayload {
+    newRole?: string;
+  }
   let body: RolePayload;
-  try { body = await event.request.json(); } catch { return json({ error: 'Invalid JSON' }, { status: 400 }); }
+  try {
+    body = await event.request.json();
+  } catch {
+    return json({ error: 'Invalid JSON' }, { status: 400 });
+  }
   const newRole = String(body?.newRole ?? '').trim();
   if (newRole !== 'volunteer' && newRole !== 'ngo') {
     return json({ error: 'newRole must be "volunteer" or "ngo"' }, { status: 400 });
@@ -72,9 +83,15 @@ export const POST: RequestHandler = async (event) => {
   // 1. Cleanup if downgrading from NGO.
   let tasksUpdated = 0;
   if (downgrading) {
-    try { await withdrawVerification(userId); } catch {}
-    try { tasksUpdated = await setTasksVerifiedForOrg(userId, false); } catch {}
-    try { await setUserVerificationPref(userId, null); } catch {}
+    try {
+      await withdrawVerification(userId);
+    } catch {}
+    try {
+      tasksUpdated = await setTasksVerifiedForOrg(userId, false);
+    } catch {}
+    try {
+      await setUserVerificationPref(userId, null);
+    } catch {}
   }
 
   // 2. Update prefs.role (read-modify-write so we don't clobber other prefs).

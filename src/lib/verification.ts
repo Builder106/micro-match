@@ -2,7 +2,19 @@
 import * as m from '$lib/paraglide/messages.js';
 import { getLocale } from '$lib/paraglide/runtime.js';
 
-export const COUNTRIES = ['US', 'GB', 'CA', 'AU', 'NG', 'IN', 'KE', 'ZA', 'DE', 'FR', 'OTHER'] as const;
+export const COUNTRIES = [
+  'US',
+  'GB',
+  'CA',
+  'AU',
+  'NG',
+  'IN',
+  'KE',
+  'ZA',
+  'DE',
+  'FR',
+  'OTHER',
+] as const;
 
 export function taxIdLabel(country: string): string {
   if (country === 'US') return m.tax_id_us();

@@ -7,8 +7,8 @@ const { mocks } = vi.hoisted(() => ({
     upsertVerification: vi.fn(),
     listVerifications: vi.fn(),
     setUserVerificationPref: vi.fn(),
-    lookupNonprofitByEin: vi.fn()
-  }
+    lookupNonprofitByEin: vi.fn(),
+  },
 }));
 
 vi.mock('$lib/server/auth', () => ({ getUserRole: mocks.getUserRole }));
@@ -16,19 +16,21 @@ vi.mock('$lib/server/teams', () => ({ isUserAdmin: mocks.isUserAdmin }));
 vi.mock('$lib/server/verifications', () => ({
   upsertVerification: mocks.upsertVerification,
   listVerifications: mocks.listVerifications,
-  setUserVerificationPref: mocks.setUserVerificationPref
+  setUserVerificationPref: mocks.setUserVerificationPref,
 }));
 vi.mock('$lib/server/propublica', () => ({ lookupNonprofitByEin: mocks.lookupNonprofitByEin }));
 
 import { POST, GET } from '../../routes/api/verifications/+server';
 import { createRequestEvent } from '../helpers/createLoadEvent';
 
-function makeEvent(opts: {
-  userId?: string | null;
-  body?: unknown;
-  search?: string;
-  locale?: 'en' | 'es' | 'fr' | 'de' | 'pt' | 'zh' | 'ar';
-} = {}) {
+function makeEvent(
+  opts: {
+    userId?: string | null;
+    body?: unknown;
+    search?: string;
+    locale?: 'en' | 'es' | 'fr' | 'de' | 'pt' | 'zh' | 'ar';
+  } = {},
+) {
   const url = `http://test/api/verifications${opts.search ?? ''}`;
   return createRequestEvent({
     userId: opts.userId ?? undefined,
@@ -37,8 +39,8 @@ function makeEvent(opts: {
     request: new Request(url, {
       method: 'POST',
       body: opts.body === undefined ? undefined : JSON.stringify(opts.body),
-      headers: opts.body === undefined ? undefined : { 'content-type': 'application/json' }
-    })
+      headers: opts.body === undefined ? undefined : { 'content-type': 'application/json' },
+    }),
   });
 }
 
@@ -46,8 +48,13 @@ describe('POST /api/verifications', () => {
   beforeEach(() => {
     Object.values(mocks).forEach((m) => m.mockReset());
     mocks.upsertVerification.mockResolvedValue({
-      id: 'v1', userId: 'u1', orgName: 'O', country: 'US', taxId: '123456789',
-      status: 'pending', submittedAt: new Date().toISOString()
+      id: 'v1',
+      userId: 'u1',
+      orgName: 'O',
+      country: 'US',
+      taxId: '123456789',
+      status: 'pending',
+      submittedAt: new Date().toISOString(),
     });
   });
 
@@ -71,7 +78,7 @@ describe('POST /api/verifications', () => {
     mocks.getUserRole.mockResolvedValue('ngo');
     const event = createRequestEvent({
       userId: 'u1',
-      request: new Request('http://test/api/verifications', { method: 'POST', body: '{' })
+      request: new Request('http://test/api/verifications', { method: 'POST', body: '{' }),
     });
     const res = await POST(event);
     expect(res.status).toBe(400);
@@ -79,10 +86,12 @@ describe('POST /api/verifications', () => {
 
   it('rejects when orgName is empty', async () => {
     mocks.getUserRole.mockResolvedValue('ngo');
-    const res = await POST(makeEvent({
-      userId: 'u1',
-      body: { orgName: '   ', country: 'US', taxId: '123456789' }
-    }));
+    const res = await POST(
+      makeEvent({
+        userId: 'u1',
+        body: { orgName: '   ', country: 'US', taxId: '123456789' },
+      }),
+    );
     expect(res.status).toBe(400);
     const body = await res.json();
     expect(body.error).toMatch(/orgName/);
@@ -90,28 +99,33 @@ describe('POST /api/verifications', () => {
 
   it('rejects when country is not exactly 2 characters or missing', async () => {
     mocks.getUserRole.mockResolvedValue('ngo');
-    const res = await POST(makeEvent({
-      userId: 'u1',
-      body: { orgName: 'Org', country: 'USA', taxId: '123456789' }
-    }));
+    const res = await POST(
+      makeEvent({
+        userId: 'u1',
+        body: { orgName: 'Org', country: 'USA', taxId: '123456789' },
+      }),
+    );
     expect(res.status).toBe(400);
     const body = await res.json();
     expect(body.error).toMatch(/country/);
 
-    const resEmpty = await POST(makeEvent({
-      userId: 'u1',
-      body: { orgName: 'Org', country: '', taxId: '123456789' }
-    }));
+    const resEmpty = await POST(
+      makeEvent({
+        userId: 'u1',
+        body: { orgName: 'Org', country: '', taxId: '123456789' },
+      }),
+    );
     expect(resEmpty.status).toBe(400);
   });
 
-
   it('rejects when taxId is missing', async () => {
     mocks.getUserRole.mockResolvedValue('ngo');
-    const res = await POST(makeEvent({
-      userId: 'u1',
-      body: { orgName: 'Org', country: 'US', taxId: '   ' }
-    }));
+    const res = await POST(
+      makeEvent({
+        userId: 'u1',
+        body: { orgName: 'Org', country: 'US', taxId: '   ' },
+      }),
+    );
     expect(res.status).toBe(400);
     const body = await res.json();
     expect(body.error).toMatch(/taxId/);
@@ -120,18 +134,24 @@ describe('POST /api/verifications', () => {
   it('rejects each omitted required field', async () => {
     mocks.getUserRole.mockResolvedValue('ngo');
 
-    const missingOrgName = await POST(makeEvent({
-      userId: 'u1',
-      body: { country: 'US', taxId: '123456789' }
-    }));
-    const missingCountry = await POST(makeEvent({
-      userId: 'u1',
-      body: { orgName: 'Org', taxId: '123456789' }
-    }));
-    const missingTaxId = await POST(makeEvent({
-      userId: 'u1',
-      body: { orgName: 'Org', country: 'US' }
-    }));
+    const missingOrgName = await POST(
+      makeEvent({
+        userId: 'u1',
+        body: { country: 'US', taxId: '123456789' },
+      }),
+    );
+    const missingCountry = await POST(
+      makeEvent({
+        userId: 'u1',
+        body: { orgName: 'Org', taxId: '123456789' },
+      }),
+    );
+    const missingTaxId = await POST(
+      makeEvent({
+        userId: 'u1',
+        body: { orgName: 'Org', country: 'US' },
+      }),
+    );
 
     expect(missingOrgName.status).toBe(400);
     expect(missingCountry.status).toBe(400);
@@ -140,27 +160,38 @@ describe('POST /api/verifications', () => {
 
   it('upper-cases the country code before persisting', async () => {
     mocks.getUserRole.mockResolvedValue('ngo');
-    await POST(makeEvent({
-      userId: 'u1',
-      body: { orgName: 'Org', country: 'us', taxId: '123' }
-    }));
-    expect(mocks.upsertVerification).toHaveBeenCalledWith(expect.objectContaining({ country: 'US' }));
+    await POST(
+      makeEvent({
+        userId: 'u1',
+        body: { orgName: 'Org', country: 'us', taxId: '123' },
+      }),
+    );
+    expect(mocks.upsertVerification).toHaveBeenCalledWith(
+      expect.objectContaining({ country: 'US' }),
+    );
   });
 
   it('persists trimmed values + sets prefs.verificationStatus to pending on success', async () => {
     mocks.getUserRole.mockResolvedValue('ngo');
-    const res = await POST(makeEvent({
-      userId: 'u1',
-      locale: 'fr',
-      body: { orgName: '  Doctors Without Borders  ', country: 'US', taxId: ' 13-3433452 ', docFileId: 'f-1' }
-    }));
+    const res = await POST(
+      makeEvent({
+        userId: 'u1',
+        locale: 'fr',
+        body: {
+          orgName: '  Doctors Without Borders  ',
+          country: 'US',
+          taxId: ' 13-3433452 ',
+          docFileId: 'f-1',
+        },
+      }),
+    );
     expect(res.status).toBe(200);
     expect(mocks.upsertVerification).toHaveBeenCalledWith({
       userId: 'u1',
       orgName: 'Doctors Without Borders',
       country: 'US',
       taxId: '13-3433452',
-      docFileId: 'f-1'
+      docFileId: 'f-1',
     });
     expect(mocks.setUserVerificationPref).toHaveBeenCalledWith('u1', 'pending', 'fr');
   });
@@ -168,13 +199,17 @@ describe('POST /api/verifications', () => {
   it('persists an undefined document file id when no document is supplied', async () => {
     mocks.getUserRole.mockResolvedValue('ngo');
 
-    const res = await POST(makeEvent({
-      userId: 'u1',
-      body: { orgName: 'Doctors Without Borders', country: 'US', taxId: '13-3433452' }
-    }));
+    const res = await POST(
+      makeEvent({
+        userId: 'u1',
+        body: { orgName: 'Doctors Without Borders', country: 'US', taxId: '13-3433452' },
+      }),
+    );
 
     expect(res.status).toBe(200);
-    expect(mocks.upsertVerification).toHaveBeenCalledWith(expect.objectContaining({ docFileId: undefined }));
+    expect(mocks.upsertVerification).toHaveBeenCalledWith(
+      expect.objectContaining({ docFileId: undefined }),
+    );
   });
 });
 
@@ -217,16 +252,40 @@ describe('GET /api/verifications (admin list)', () => {
   it('enriches US rows with the ProPublica lookup result', async () => {
     mocks.isUserAdmin.mockResolvedValue(true);
     mocks.listVerifications.mockResolvedValue([
-      { id: 'v1', userId: 'u1', orgName: 'Doctors Without Borders', country: 'US', taxId: '133433452', status: 'pending', submittedAt: '' },
-      { id: 'v2', userId: 'u2', orgName: 'British Charity', country: 'GB', taxId: 'CC-1', status: 'pending', submittedAt: '' }
+      {
+        id: 'v1',
+        userId: 'u1',
+        orgName: 'Doctors Without Borders',
+        country: 'US',
+        taxId: '133433452',
+        status: 'pending',
+        submittedAt: '',
+      },
+      {
+        id: 'v2',
+        userId: 'u2',
+        orgName: 'British Charity',
+        country: 'GB',
+        taxId: 'CC-1',
+        status: 'pending',
+        submittedAt: '',
+      },
     ]);
-    mocks.lookupNonprofitByEin.mockResolvedValue({ found: true, orgName: 'Doctors Without Borders', status: 'active' });
+    mocks.lookupNonprofitByEin.mockResolvedValue({
+      found: true,
+      orgName: 'Doctors Without Borders',
+      status: 'active',
+    });
 
     const res = await GET(makeEvent({ userId: 'admin-1' }));
     const body = await res.json();
 
     expect(mocks.lookupNonprofitByEin).toHaveBeenCalledExactlyOnceWith('133433452');
-    expect(body.verifications[0].propublica).toEqual({ found: true, orgName: 'Doctors Without Borders', status: 'active' });
+    expect(body.verifications[0].propublica).toEqual({
+      found: true,
+      orgName: 'Doctors Without Borders',
+      status: 'active',
+    });
     expect(body.verifications[1].propublica).toBeNull(); // non-US row skipped
   });
 });

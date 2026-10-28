@@ -9,21 +9,24 @@ import { moderateText } from '$lib/server/contentsafety';
 export const GET: RequestHandler = async () => {
   const tasks = await getTasks();
   // public read-only projection for MVP
-  const result = tasks.map((t) => ({
-    id: t.id,
-    title: t.title,
-    shortDescription: t.shortDescription,
-    tags: t.tags,
-    estimatedMinutes: t.estimatedMinutes,
-    language: t.language
-  } satisfies Partial<Task> & { id: string }));
+  const result = tasks.map(
+    (t) =>
+      ({
+        id: t.id,
+        title: t.title,
+        shortDescription: t.shortDescription,
+        tags: t.tags,
+        estimatedMinutes: t.estimatedMinutes,
+        language: t.language,
+      }) satisfies Partial<Task> & { id: string },
+  );
   return json(result);
 };
 
 export const POST: RequestHandler = async (event) => {
   const role = await getUserRole(event);
   if (role !== 'ngo') return json({ error: 'Forbidden' }, { status: 403 });
-  
+
   const session = event.locals.session;
   const orgId = session?.user?.id;
   if (!orgId) {
@@ -42,9 +45,12 @@ export const POST: RequestHandler = async (event) => {
     .join('\n\n');
   const moderation = await moderateText(textToCheck);
   if (moderation.blocked) {
-    return json({ error: 'Content failed safety checks', reasons: moderation.reasons }, { status: 400 });
+    return json(
+      { error: 'Content failed safety checks', reasons: moderation.reasons },
+      { status: 400 },
+    );
   }
-  
+
   // isVerified is derived server-side from the NGO's verification record.
   // Clients can't claim verification — only the verification queue grants it.
   const verification = await getVerificationByUserId(orgId);
@@ -62,8 +68,7 @@ export const POST: RequestHandler = async (event) => {
     maxVolunteers: typeof body.maxVolunteers === 'number' ? body.maxVolunteers : undefined,
     deadline: body.deadline,
     isVerified,
-    lastActivityAt: new Date().toISOString()
+    lastActivityAt: new Date().toISOString(),
   });
   return json(created, { status: 201 });
 };
-

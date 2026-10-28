@@ -7,8 +7,8 @@ const { mocks } = vi.hoisted(() => ({
     createRow: vi.fn(),
     deleteRow: vi.fn(),
     usersGet: vi.fn(),
-    usersUpdatePrefs: vi.fn()
-  }
+    usersUpdatePrefs: vi.fn(),
+  },
 }));
 
 vi.mock('$env/dynamic/private', () => ({
@@ -17,11 +17,21 @@ vi.mock('$env/dynamic/private', () => ({
     APPWRITE_PROJECT_ID: 'proj',
     APPWRITE_API_KEY: 'key',
     APPWRITE_DB_ID: 'db',
-    APPWRITE_VERIFICATIONS_TABLE_ID: 'verifications'
-  }
+    APPWRITE_VERIFICATIONS_TABLE_ID: 'verifications',
+  },
 }));
 vi.mock('node-appwrite', () => ({
-  Client: class { setEndpoint() { return this; } setProject() { return this; } setKey() { return this; } },
+  Client: class {
+    setEndpoint() {
+      return this;
+    }
+    setProject() {
+      return this;
+    }
+    setKey() {
+      return this;
+    }
+  },
   TablesDB: class {
     listRows = mocks.listRows;
     updateRow = mocks.updateRow;
@@ -36,8 +46,8 @@ vi.mock('node-appwrite', () => ({
   Query: {
     equal: (k: string, v: unknown) => `equal(${k},${v})`,
     limit: (n: number) => `limit(${n})`,
-    orderDesc: (k: string) => `orderDesc(${k})`
-  }
+    orderDesc: (k: string) => `orderDesc(${k})`,
+  },
 }));
 
 import {
@@ -47,14 +57,22 @@ import {
   setVerificationStatus,
   withdrawVerification,
   getUserEmailAndLocale,
-  setUserVerificationPref
+  setUserVerificationPref,
 } from './verifications';
 
 const row = {
-  $id: 'v1', userID: 'user-1', orgName: 'Org', country: 'US', taxId: '123',
-  docFileId: undefined, status: 'pending', reason: undefined,
-  submittedAt: '2026-01-01T00:00:00.000Z', reviewedBy: undefined, reviewedAt: undefined,
-  $createdAt: '2026-01-01T00:00:00.000Z'
+  $id: 'v1',
+  userID: 'user-1',
+  orgName: 'Org',
+  country: 'US',
+  taxId: '123',
+  docFileId: undefined,
+  status: 'pending',
+  reason: undefined,
+  submittedAt: '2026-01-01T00:00:00.000Z',
+  reviewedBy: undefined,
+  reviewedAt: undefined,
+  $createdAt: '2026-01-01T00:00:00.000Z',
 };
 
 describe('verifications (Appwrite-backed mode)', () => {
@@ -64,7 +82,9 @@ describe('verifications (Appwrite-backed mode)', () => {
 
   it('getVerificationByUserId maps the first matching row and undefined when absent', async () => {
     mocks.listRows.mockResolvedValueOnce({ rows: [row] });
-    expect(await getVerificationByUserId('user-1')).toEqual(expect.objectContaining({ id: 'v1', userId: 'user-1' }));
+    expect(await getVerificationByUserId('user-1')).toEqual(
+      expect.objectContaining({ id: 'v1', userId: 'user-1' }),
+    );
 
     mocks.listRows.mockResolvedValueOnce({ rows: [] });
     expect(await getVerificationByUserId('ghost')).toBeUndefined();
@@ -79,7 +99,11 @@ describe('verifications (Appwrite-backed mode)', () => {
     mocks.listRows.mockResolvedValueOnce({ rows: [row] });
     const all = await listVerifications({ status: 'pending' });
 
-    expect(mocks.listRows).toHaveBeenCalledWith({ databaseId: 'db', tableId: 'verifications', queries: expect.arrayContaining(['equal(status,pending)']) });
+    expect(mocks.listRows).toHaveBeenCalledWith({
+      databaseId: 'db',
+      tableId: 'verifications',
+      queries: expect.arrayContaining(['equal(status,pending)']),
+    });
     expect(all).toEqual([expect.objectContaining({ id: 'v1' })]);
   });
 
@@ -91,7 +115,7 @@ describe('verifications (Appwrite-backed mode)', () => {
     expect(mocks.listRows).toHaveBeenCalledWith({
       databaseId: 'db',
       tableId: 'verifications',
-      queries: ['limit(200)', 'orderDesc(submittedAt)']
+      queries: ['limit(200)', 'orderDesc(submittedAt)'],
     });
   });
 
@@ -104,7 +128,12 @@ describe('verifications (Appwrite-backed mode)', () => {
     mocks.listRows.mockResolvedValueOnce({ rows: [] });
     mocks.createRow.mockResolvedValueOnce(row);
 
-    const created = await upsertVerification({ userId: 'user-1', orgName: 'Org', country: 'US', taxId: '123' });
+    const created = await upsertVerification({
+      userId: 'user-1',
+      orgName: 'Org',
+      country: 'US',
+      taxId: '123',
+    });
 
     expect(mocks.createRow).toHaveBeenCalled();
     expect(created).toEqual(expect.objectContaining({ id: 'v1', userId: 'user-1' }));
@@ -119,38 +148,55 @@ describe('verifications (Appwrite-backed mode)', () => {
       submittedAt: undefined,
       $createdAt: undefined,
       reviewedBy: null,
-      reviewedAt: null
+      reviewedAt: null,
     });
 
-    const created = await upsertVerification({ userId: 'user-1', orgName: 'Org', country: 'US', taxId: '123' });
+    const created = await upsertVerification({
+      userId: 'user-1',
+      orgName: 'Org',
+      country: 'US',
+      taxId: '123',
+    });
 
     expect(mocks.createRow).toHaveBeenCalledWith({
       databaseId: 'db',
       tableId: 'verifications',
       rowId: 'new-id',
       data: expect.objectContaining({
-      docFileId: null,
-      reason: '',
-      reviewedBy: '',
-      reviewedAt: ''
-    })
+        docFileId: null,
+        reason: '',
+        reviewedBy: '',
+        reviewedAt: '',
+      }),
     });
-    expect(created).toEqual(expect.objectContaining({
-      docFileId: undefined,
-      reason: undefined,
-      submittedAt: '',
-      reviewedBy: undefined,
-      reviewedAt: undefined
-    }));
+    expect(created).toEqual(
+      expect.objectContaining({
+        docFileId: undefined,
+        reason: undefined,
+        submittedAt: '',
+        reviewedBy: undefined,
+        reviewedAt: undefined,
+      }),
+    );
   });
 
   it('upsertVerification updates the existing row for the user when one is found', async () => {
     mocks.listRows.mockResolvedValueOnce({ rows: [row] });
     mocks.updateRow.mockResolvedValueOnce({ ...row, orgName: 'New Org' });
 
-    const updated = await upsertVerification({ userId: 'user-1', orgName: 'New Org', country: 'US', taxId: '123' });
+    const updated = await upsertVerification({
+      userId: 'user-1',
+      orgName: 'New Org',
+      country: 'US',
+      taxId: '123',
+    });
 
-    expect(mocks.updateRow).toHaveBeenCalledWith({ databaseId: 'db', tableId: 'verifications', rowId: 'v1', data: expect.objectContaining({ orgName: 'New Org' }) });
+    expect(mocks.updateRow).toHaveBeenCalledWith({
+      databaseId: 'db',
+      tableId: 'verifications',
+      rowId: 'v1',
+      data: expect.objectContaining({ orgName: 'New Org' }),
+    });
     expect(updated.orgName).toBe('New Org');
   });
 
@@ -176,9 +222,9 @@ describe('verifications (Appwrite-backed mode)', () => {
       tableId: 'verifications',
       rowId: 'v1',
       data: expect.objectContaining({
-      status: 'rejected',
-      reason: ''
-    })
+        status: 'rejected',
+        reason: '',
+      }),
     });
   });
 
@@ -186,7 +232,11 @@ describe('verifications (Appwrite-backed mode)', () => {
     mocks.listRows.mockResolvedValueOnce({ rows: [row] });
     mocks.deleteRow.mockResolvedValueOnce(undefined);
     expect(await withdrawVerification('user-1')).toBe(true);
-    expect(mocks.deleteRow).toHaveBeenCalledWith({ databaseId: 'db', tableId: 'verifications', rowId: 'v1' });
+    expect(mocks.deleteRow).toHaveBeenCalledWith({
+      databaseId: 'db',
+      tableId: 'verifications',
+      rowId: 'v1',
+    });
 
     mocks.listRows.mockResolvedValueOnce({ rows: [] });
     expect(await withdrawVerification('ghost')).toBe(false);
@@ -199,10 +249,19 @@ describe('verifications (Appwrite-backed mode)', () => {
 
   it('getUserEmailAndLocale returns the saved locale and defaults to English', async () => {
     mocks.usersGet.mockResolvedValueOnce({ email: 'jane@example.com', prefs: { locale: 'ar' } });
-    expect(await getUserEmailAndLocale('user-1')).toEqual({ email: 'jane@example.com', locale: 'ar' });
+    expect(await getUserEmailAndLocale('user-1')).toEqual({
+      email: 'jane@example.com',
+      locale: 'ar',
+    });
 
-    mocks.usersGet.mockResolvedValueOnce({ email: 'jane@example.com', prefs: { locale: 'unsupported' } });
-    expect(await getUserEmailAndLocale('user-1')).toEqual({ email: 'jane@example.com', locale: 'en' });
+    mocks.usersGet.mockResolvedValueOnce({
+      email: 'jane@example.com',
+      prefs: { locale: 'unsupported' },
+    });
+    expect(await getUserEmailAndLocale('user-1')).toEqual({
+      email: 'jane@example.com',
+      locale: 'en',
+    });
 
     mocks.usersGet.mockRejectedValueOnce(new Error('not found'));
     expect(await getUserEmailAndLocale('ghost')).toBeNull();
@@ -219,7 +278,10 @@ describe('verifications (Appwrite-backed mode)', () => {
 
     await setUserVerificationPref('user-1', 'pending', 'fr');
 
-    expect(mocks.usersUpdatePrefs).toHaveBeenCalledWith({ userId: 'user-1', prefs: { role: 'ngo', verificationStatus: 'pending', locale: 'fr' } });
+    expect(mocks.usersUpdatePrefs).toHaveBeenCalledWith({
+      userId: 'user-1',
+      prefs: { role: 'ngo', verificationStatus: 'pending', locale: 'fr' },
+    });
   });
 
   it('setUserVerificationPref supports absent prefs and clearing the status', async () => {
@@ -228,7 +290,10 @@ describe('verifications (Appwrite-backed mode)', () => {
 
     await setUserVerificationPref('user-1', null);
 
-    expect(mocks.usersUpdatePrefs).toHaveBeenCalledWith({ userId: 'user-1', prefs: { verificationStatus: '' } });
+    expect(mocks.usersUpdatePrefs).toHaveBeenCalledWith({
+      userId: 'user-1',
+      prefs: { verificationStatus: '' },
+    });
   });
 
   it('setUserVerificationPref swallows errors', async () => {

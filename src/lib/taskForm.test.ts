@@ -8,7 +8,11 @@ describe('task form', () => {
     expect(LIMITS.title).toBe(140);
   });
   it('cleans and de-duplicates tags', () => {
-    expect(parseTags('translation, #Health, , health, Design ')).toEqual(['translation', 'health', 'design']);
+    expect(parseTags('translation, #Health, , health, Design ')).toEqual([
+      'translation',
+      'health',
+      'design',
+    ]);
     expect(parseTags('')).toEqual([]);
   });
 });

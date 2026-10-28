@@ -39,8 +39,8 @@ export const GET: RequestHandler = async (event) => {
       headers: {
         'Content-Type': 'application/octet-stream',
         'Content-Disposition': `inline; filename="verification-${targetUserId}"`,
-        'Cache-Control': 'private, no-store'
-      }
+        'Cache-Control': 'private, no-store',
+      },
     });
   } catch (err) {
     console.error('Verification doc fetch error', err);

@@ -1,7 +1,12 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { json } from '@sveltejs/kit';
 import { isUserAdmin } from '$lib/server/teams';
-import { getVerificationByUserId, getUserEmailAndLocale, setUserVerificationPref, setVerificationStatus } from '$lib/server/verifications';
+import {
+  getVerificationByUserId,
+  getUserEmailAndLocale,
+  setUserVerificationPref,
+  setVerificationStatus,
+} from '$lib/server/verifications';
 import { setTasksVerifiedForOrg } from '$lib/server/appwrite';
 import { sendVerificationRejected } from '$lib/server/email';
 
@@ -15,12 +20,19 @@ export const POST: RequestHandler = async (event) => {
   const targetUserId = event.params.userId;
   if (!targetUserId) return json({ error: 'Missing userId' }, { status: 400 });
 
-  interface RejectPayload { reason?: string }
+  interface RejectPayload {
+    reason?: string;
+  }
   let body: RejectPayload;
-  try { body = await event.request.json(); } catch { return json({ error: 'Invalid JSON body' }, { status: 400 }); }
+  try {
+    body = await event.request.json();
+  } catch {
+    return json({ error: 'Invalid JSON body' }, { status: 400 });
+  }
   const reason = String(body?.reason ?? '').trim();
   if (!reason) return json({ error: 'reason is required' }, { status: 400 });
-  if (reason.length > 1000) return json({ error: 'reason too long (max 1000 chars)' }, { status: 400 });
+  if (reason.length > 1000)
+    return json({ error: 'reason too long (max 1000 chars)' }, { status: 400 });
 
   const before = await getVerificationByUserId(targetUserId);
   if (!before) return json({ error: 'Verification not found' }, { status: 404 });
@@ -30,14 +42,22 @@ export const POST: RequestHandler = async (event) => {
 
   // Backfill: existing tasks owned by this NGO lose the Verified chip.
   let tasksUpdated = 0;
-  try { tasksUpdated = await setTasksVerifiedForOrg(targetUserId, false); } catch {}
+  try {
+    tasksUpdated = await setTasksVerifiedForOrg(targetUserId, false);
+  } catch {}
 
   await setUserVerificationPref(targetUserId, 'rejected');
 
   let emailResult: { ok: boolean; error?: string } = { ok: false };
   try {
     const recipient = await getUserEmailAndLocale(targetUserId);
-    if (recipient) emailResult = await sendVerificationRejected({ to: recipient.email, orgName: updated.orgName, reason, locale: recipient.locale });
+    if (recipient)
+      emailResult = await sendVerificationRejected({
+        to: recipient.email,
+        orgName: updated.orgName,
+        reason,
+        locale: recipient.locale,
+      });
   } catch (err) {
     emailResult = { ok: false, error: (err as Error).message };
   }

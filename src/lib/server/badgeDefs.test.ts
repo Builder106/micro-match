@@ -10,14 +10,24 @@ const { envState, mocks } = vi.hoisted(() => ({
     unique: vi.fn(),
     equal: vi.fn(),
     orderDesc: vi.fn(),
-    limit: vi.fn()
-  }
+    limit: vi.fn(),
+  },
 }));
 vi.mock('$env/dynamic/private', () => ({
-  env: new Proxy(envState, { get: (_, key: string) => envState[key] })
+  env: new Proxy(envState, { get: (_, key: string) => envState[key] }),
 }));
 vi.mock('node-appwrite', () => ({
-  Client: class { setEndpoint() { return this; } setProject() { return this; } setKey() { return this; } },
+  Client: class {
+    setEndpoint() {
+      return this;
+    }
+    setProject() {
+      return this;
+    }
+    setKey() {
+      return this;
+    }
+  },
   TablesDB: class {
     listRows = mocks.listRows;
     getRow = mocks.getRow;
@@ -25,10 +35,15 @@ vi.mock('node-appwrite', () => ({
     deleteRow = mocks.deleteRow;
   },
   ID: { unique: mocks.unique },
-  Query: { equal: mocks.equal, orderDesc: mocks.orderDesc, limit: mocks.limit }
+  Query: { equal: mocks.equal, orderDesc: mocks.orderDesc, limit: mocks.limit },
 }));
 
-import { createBadgeDefinition, listBadgeDefinitions, deleteBadgeDefinition, getBadgeDefinition } from './badgeDefs';
+import {
+  createBadgeDefinition,
+  listBadgeDefinitions,
+  deleteBadgeDefinition,
+  getBadgeDefinition,
+} from './badgeDefs';
 
 describe('badgeDefs (in-memory mode)', () => {
   beforeEach(async () => {
@@ -44,13 +59,13 @@ describe('badgeDefs (in-memory mode)', () => {
       orgId: 'org-A',
       label: 'Helper',
       color: '#FF6B6B',
-      criteria: 'task-completion'
+      criteria: 'task-completion',
     });
     const b = await createBadgeDefinition({
       orgId: 'org-A',
       label: 'Speedy',
       color: '#3b82f6',
-      criteria: 'task-completion'
+      criteria: 'task-completion',
     });
 
     expect(a.id).not.toBe(b.id);
@@ -59,9 +74,24 @@ describe('badgeDefs (in-memory mode)', () => {
   });
 
   it('listBadgeDefinitions only returns rows for the requested org', async () => {
-    await createBadgeDefinition({ orgId: 'org-A', label: 'A1', color: '#1', criteria: 'task-completion' });
-    await createBadgeDefinition({ orgId: 'org-A', label: 'A2', color: '#2', criteria: 'task-completion' });
-    await createBadgeDefinition({ orgId: 'org-B', label: 'B1', color: '#3', criteria: 'task-completion' });
+    await createBadgeDefinition({
+      orgId: 'org-A',
+      label: 'A1',
+      color: '#1',
+      criteria: 'task-completion',
+    });
+    await createBadgeDefinition({
+      orgId: 'org-A',
+      label: 'A2',
+      color: '#2',
+      criteria: 'task-completion',
+    });
+    await createBadgeDefinition({
+      orgId: 'org-B',
+      label: 'B1',
+      color: '#3',
+      criteria: 'task-completion',
+    });
 
     const aDefs = await listBadgeDefinitions('org-A');
     const bDefs = await listBadgeDefinitions('org-B');
@@ -75,7 +105,7 @@ describe('badgeDefs (in-memory mode)', () => {
       orgId: 'org-A',
       label: 'OnlyA',
       color: '#1',
-      criteria: 'task-completion'
+      criteria: 'task-completion',
     });
 
     // Wrong org tries to delete → false, row is preserved.
@@ -106,7 +136,7 @@ describe('badgeDefs (in-memory mode)', () => {
       criteria: 'task-specific',
       taskId: 'task-99',
       icon: 'hugeicons:trophy-01',
-      description: 'Awarded for completing task 99'
+      description: 'Awarded for completing task 99',
     });
 
     expect(def.taskId).toBe('task-99');
@@ -132,7 +162,7 @@ describe('badgeDefs (Appwrite mode)', () => {
       APPWRITE_PROJECT_ID: 'proj',
       APPWRITE_API_KEY: 'key',
       APPWRITE_DB_ID: 'db',
-      APPWRITE_BADGE_DEFS_TABLE_ID: 'badge-defs'
+      APPWRITE_BADGE_DEFS_TABLE_ID: 'badge-defs',
     });
     vi.resetModules();
   });
@@ -147,38 +177,38 @@ describe('badgeDefs (Appwrite mode)', () => {
   it('lists Appwrite rows and normalizes nullable optional values', async () => {
     const { listBadgeDefinitions } = await import('./badgeDefs');
     mocks.listRows.mockResolvedValue({
-      rows: [{
-        $id: 'def-1',
-        $createdAt: '2026-01-01T00:00:00.000Z',
-        orgID: 'org-1',
-        label: 'Helper',
-        color: '#FF6B6B',
-        icon: null,
-        criteria: 'task-completion',
-        taskID: null,
-        description: null
-      }]
+      rows: [
+        {
+          $id: 'def-1',
+          $createdAt: '2026-01-01T00:00:00.000Z',
+          orgID: 'org-1',
+          label: 'Helper',
+          color: '#FF6B6B',
+          icon: null,
+          criteria: 'task-completion',
+          taskID: null,
+          description: null,
+        },
+      ],
     });
 
-    await expect(listBadgeDefinitions('org-1')).resolves.toEqual([{
-      id: 'def-1',
-      createdAt: '2026-01-01T00:00:00.000Z',
-      orgId: 'org-1',
-      label: 'Helper',
-      color: '#FF6B6B',
-      icon: undefined,
-      criteria: 'task-completion',
-      taskId: undefined,
-      description: undefined
-    }]);
+    await expect(listBadgeDefinitions('org-1')).resolves.toEqual([
+      {
+        id: 'def-1',
+        createdAt: '2026-01-01T00:00:00.000Z',
+        orgId: 'org-1',
+        label: 'Helper',
+        color: '#FF6B6B',
+        icon: undefined,
+        criteria: 'task-completion',
+        taskId: undefined,
+        description: undefined,
+      },
+    ]);
     expect(mocks.listRows).toHaveBeenCalledWith({
       databaseId: 'db',
       tableId: 'badge-defs',
-      queries: [
-      'equal(orgID,org-1)',
-      'orderDesc($createdAt)',
-      'limit(200)'
-    ]
+      queries: ['equal(orgID,org-1)', 'orderDesc($createdAt)', 'limit(200)'],
     });
   });
 
@@ -193,32 +223,71 @@ describe('badgeDefs (Appwrite mode)', () => {
     const { createBadgeDefinition } = await import('./badgeDefs');
     mocks.createRow
       .mockResolvedValueOnce({
-        $id: 'def-1', $createdAt: '2026-01-01T00:00:00.000Z', orgID: 'org-1', label: 'Helper', color: '#FF6B6B',
-        icon: '', criteria: 'task-completion', taskID: '', description: ''
+        $id: 'def-1',
+        $createdAt: '2026-01-01T00:00:00.000Z',
+        orgID: 'org-1',
+        label: 'Helper',
+        color: '#FF6B6B',
+        icon: '',
+        criteria: 'task-completion',
+        taskID: '',
+        description: '',
       })
       .mockResolvedValueOnce({
-        $id: 'def-2', $createdAt: '2026-01-02T00:00:00.000Z', orgID: 'org-1', label: 'Specific', color: '#3B82F6',
-        icon: 'trophy', criteria: 'task-specific', taskID: 'task-1', description: 'For task 1'
+        $id: 'def-2',
+        $createdAt: '2026-01-02T00:00:00.000Z',
+        orgID: 'org-1',
+        label: 'Specific',
+        color: '#3B82F6',
+        icon: 'trophy',
+        criteria: 'task-specific',
+        taskID: 'task-1',
+        description: 'For task 1',
       });
 
     const defaulted = await createBadgeDefinition({
-      orgId: 'org-1', label: 'Helper', color: '#FF6B6B', criteria: 'task-completion'
+      orgId: 'org-1',
+      label: 'Helper',
+      color: '#FF6B6B',
+      criteria: 'task-completion',
     });
     expect(mocks.createRow).toHaveBeenCalledWith({
       databaseId: 'db',
       tableId: 'badge-defs',
       rowId: 'new-id',
       data: {
-      orgID: 'org-1', label: 'Helper', color: '#FF6B6B', icon: '', criteria: 'task-completion', taskID: '', description: ''
-    }
+        orgID: 'org-1',
+        label: 'Helper',
+        color: '#FF6B6B',
+        icon: '',
+        criteria: 'task-completion',
+        taskID: '',
+        description: '',
+      },
     });
-    expect(defaulted).toMatchObject({ id: 'def-1', orgId: 'org-1', icon: '', taskId: '', description: '' });
+    expect(defaulted).toMatchObject({
+      id: 'def-1',
+      orgId: 'org-1',
+      icon: '',
+      taskId: '',
+      description: '',
+    });
 
     const populated = await createBadgeDefinition({
-      orgId: 'org-1', label: 'Specific', color: '#3B82F6', icon: 'trophy', criteria: 'task-specific',
-      taskId: 'task-1', description: 'For task 1'
+      orgId: 'org-1',
+      label: 'Specific',
+      color: '#3B82F6',
+      icon: 'trophy',
+      criteria: 'task-specific',
+      taskId: 'task-1',
+      description: 'For task 1',
     });
-    expect(populated).toMatchObject({ id: 'def-2', icon: 'trophy', taskId: 'task-1', description: 'For task 1' });
+    expect(populated).toMatchObject({
+      id: 'def-2',
+      icon: 'trophy',
+      taskId: 'task-1',
+      description: 'For task 1',
+    });
   });
 
   it('checks Appwrite ownership before deleting and handles lookup failures', async () => {
@@ -232,20 +301,34 @@ describe('badgeDefs (Appwrite mode)', () => {
     await expect(deleteBadgeDefinition('def-1', 'org-1')).resolves.toBe(true);
     await expect(deleteBadgeDefinition('def-1', 'org-1')).resolves.toBe(false);
     expect(mocks.deleteRow).toHaveBeenCalledTimes(1);
-    expect(mocks.deleteRow).toHaveBeenCalledWith({ databaseId: 'db', tableId: 'badge-defs', rowId: 'def-1' });
+    expect(mocks.deleteRow).toHaveBeenCalledWith({
+      databaseId: 'db',
+      tableId: 'badge-defs',
+      rowId: 'def-1',
+    });
   });
 
   it('gets an Appwrite row and returns undefined when it cannot be read', async () => {
     const { getBadgeDefinition } = await import('./badgeDefs');
     mocks.getRow
       .mockResolvedValueOnce({
-        $id: 'def-1', $createdAt: '2026-01-01T00:00:00.000Z', orgID: 'org-1', label: 'Helper', color: '#FF6B6B',
-        icon: 'trophy', criteria: 'task-completion', taskID: 'task-1', description: 'For task 1'
+        $id: 'def-1',
+        $createdAt: '2026-01-01T00:00:00.000Z',
+        orgID: 'org-1',
+        label: 'Helper',
+        color: '#FF6B6B',
+        icon: 'trophy',
+        criteria: 'task-completion',
+        taskID: 'task-1',
+        description: 'For task 1',
       })
       .mockRejectedValueOnce(new Error('not found'));
 
     await expect(getBadgeDefinition('def-1')).resolves.toMatchObject({
-      id: 'def-1', icon: 'trophy', taskId: 'task-1', description: 'For task 1'
+      id: 'def-1',
+      icon: 'trophy',
+      taskId: 'task-1',
+      description: 'For task 1',
     });
     await expect(getBadgeDefinition('ghost')).resolves.toBeUndefined();
   });

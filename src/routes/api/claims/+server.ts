@@ -7,9 +7,8 @@ export const GET: RequestHandler = async (event) => {
   const { locals, request, url } = event;
 
   // Rate limiting (basic per-IP)
-  const _clientIP = request.headers.get('x-forwarded-for') ||
-                    request.headers.get('x-real-ip') ||
-                    'unknown';
+  const _clientIP =
+    request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
   // Note: In production, implement proper rate limiting with Redis/memory store
 
   // Authentication check
@@ -31,7 +30,8 @@ export const GET: RequestHandler = async (event) => {
 
   try {
     // Query parameters for filtering and pagination
-    const statusFilter = url.searchParams.get('status') as 'pending' | 'approved' | 'rejected' | null;
+    const statusFilter = url.searchParams.get('status') as
+      'pending' | 'approved' | 'rejected' | null;
     const limit = Math.min(parseInt(url.searchParams.get('limit') || '50'), 100);
     const offset = parseInt(url.searchParams.get('offset') || '0');
 
@@ -45,7 +45,7 @@ export const GET: RequestHandler = async (event) => {
     // Apply filtering
     let filteredClaims = claims;
     if (statusFilter) {
-      filteredClaims = claims.filter(claim => claim.status === statusFilter);
+      filteredClaims = claims.filter((claim) => claim.status === statusFilter);
     }
 
     // Apply pagination
@@ -53,21 +53,23 @@ export const GET: RequestHandler = async (event) => {
     const totalCount = filteredClaims.length;
 
     // Response with consistent envelope
-    return json({
-      data: paginatedClaims,
-      meta: {
-        total: totalCount,
-        limit,
-        offset,
-        hasMore: offset + limit < totalCount
+    return json(
+      {
+        data: paginatedClaims,
+        meta: {
+          total: totalCount,
+          limit,
+          offset,
+          hasMore: offset + limit < totalCount,
+        },
+        error: null,
       },
-      error: null
-    }, {
-      headers: {
-        'Cache-Control': 'no-store'
-      }
-    });
-
+      {
+        headers: {
+          'Cache-Control': 'no-store',
+        },
+      },
+    );
   } catch (error) {
     // Structured error logging (avoid console.error in production)
     const errorId = crypto.randomUUID?.() || Date.now().toString();
@@ -75,13 +77,16 @@ export const GET: RequestHandler = async (event) => {
       message: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
       userId: sessionUserId,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
 
     // Don't leak internal error details
-    return json({
-      error: 'Internal server error',
-      data: null
-    }, { status: 500 });
+    return json(
+      {
+        error: 'Internal server error',
+        data: null,
+      },
+      { status: 500 },
+    );
   }
 };

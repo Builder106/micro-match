@@ -39,7 +39,13 @@ function cacheTranslation(key: string, value: string): void {
   cache.set(key, { value, expiresAt: Date.now() + TRANSLATION_CACHE_TTL_MS });
 }
 
-export async function translateTexts({ texts, to }: { texts: string[]; to: string }): Promise<string[]> {
+export async function translateTexts({
+  texts,
+  to,
+}: {
+  texts: string[];
+  to: string;
+}): Promise<string[]> {
   if (!texts.length || !isSupportedTranslationCode(to)) return texts;
 
   const endpoint = env.LIBRETRANSLATE_ENDPOINT?.replace(/\/+$/, '');
@@ -70,9 +76,9 @@ export async function translateTexts({ texts, to }: { texts: string[]; to: strin
         source: 'auto',
         target: to,
         format: 'text',
-        api_key: apiKey
+        api_key: apiKey,
       }),
-      signal: controller.signal
+      signal: controller.signal,
     });
 
     interface LibreTranslateResponse {

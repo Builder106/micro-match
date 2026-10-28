@@ -39,19 +39,149 @@ export type BlockDef = {
 export const GRID = { cols: 5, rows: 4 } as const;
 
 export const BLOCKS: BlockDef[] = [
-  { id: 'account', href: '/dashboard', col: 0, row: 0, w: 1, h: 1, pattern: 'courthouse', fabrics: ['#7A4E7E', '#F4A6B8', '#FBF3EA'], phone: 7 },
-  { id: 'tasks', href: '/tasks', col: 1, row: 0, w: 2, h: 1, pattern: 'geese', fabrics: ['#FF6B6B', '#F2B84B', '#FBF3EA'], phone: 2 },
-  { id: 'how', href: '/how-it-works', col: 3, row: 0, w: 1, h: 1, pattern: 'ninePatch', fabrics: ['#3B4A8C', '#7FB7D9', '#FBF3EA'], phone: 3 },
-  { id: 'volunteers', href: '/for-volunteers', col: 4, row: 0, w: 1, h: 1, pattern: 'friendshipStar', fabrics: ['#F08A3C', '#F2B84B', '#FBF3EA'], phone: 4 },
-  { id: 'nonprofits', href: '/for-nonprofits', col: 0, row: 1, w: 1, h: 1, pattern: 'churnDash', fabrics: ['#5E7D4F', '#8DAA8B', '#FBF3EA'], phone: 5 },
-  { id: 'title', href: null, col: 1, row: 1, w: 2, h: 2, pattern: null, fabrics: ['#1C1F3B', '#FF6B6B', '#FBF3EA'], phone: 0 },
-  { id: 'community', href: '/impact', col: 3, row: 1, w: 2, h: 2, pattern: null, fabrics: ['#1C1F3B'], phone: 1 },
-  { id: 'about', href: '/about', col: 0, row: 2, w: 1, h: 1, pattern: 'railFence', fabrics: ['#FF6B6B', '#F4A6B8', '#FBF3EA'], phone: 8 },
-  { id: 'contact', href: '/contact', col: 0, row: 3, w: 1, h: 1, pattern: 'ohioStar', fabrics: ['#5D6B7A', '#7FB7D9', '#FBF3EA'], phone: 12 },
-  { id: 'help', href: '/help', col: 1, row: 3, w: 1, h: 1, pattern: 'pinwheel', fabrics: ['#F2B84B', '#F08A3C', '#FBF3EA'], phone: 9 },
-  { id: 'docs', href: '/docs', col: 2, row: 3, w: 1, h: 1, pattern: 'hourglass', fabrics: ['#3B4A8C', '#8DAA8B', '#FBF3EA'], phone: 10 },
-  { id: 'api', href: '/docs/api', col: 3, row: 3, w: 1, h: 1, pattern: 'triangles', fabrics: ['#7A4E7E', '#7FB7D9', '#FBF3EA'], phone: 11 },
-  { id: 'label', href: null, col: 4, row: 3, w: 1, h: 1, pattern: null, fabrics: ['#1C1F3B'], phone: 13 }
+  {
+    id: 'account',
+    href: '/dashboard',
+    col: 0,
+    row: 0,
+    w: 1,
+    h: 1,
+    pattern: 'courthouse',
+    fabrics: ['#7A4E7E', '#F4A6B8', '#FBF3EA'],
+    phone: 7,
+  },
+  {
+    id: 'tasks',
+    href: '/tasks',
+    col: 1,
+    row: 0,
+    w: 2,
+    h: 1,
+    pattern: 'geese',
+    fabrics: ['#FF6B6B', '#F2B84B', '#FBF3EA'],
+    phone: 2,
+  },
+  {
+    id: 'how',
+    href: '/how-it-works',
+    col: 3,
+    row: 0,
+    w: 1,
+    h: 1,
+    pattern: 'ninePatch',
+    fabrics: ['#3B4A8C', '#7FB7D9', '#FBF3EA'],
+    phone: 3,
+  },
+  {
+    id: 'volunteers',
+    href: '/for-volunteers',
+    col: 4,
+    row: 0,
+    w: 1,
+    h: 1,
+    pattern: 'friendshipStar',
+    fabrics: ['#F08A3C', '#F2B84B', '#FBF3EA'],
+    phone: 4,
+  },
+  {
+    id: 'nonprofits',
+    href: '/for-nonprofits',
+    col: 0,
+    row: 1,
+    w: 1,
+    h: 1,
+    pattern: 'churnDash',
+    fabrics: ['#5E7D4F', '#8DAA8B', '#FBF3EA'],
+    phone: 5,
+  },
+  {
+    id: 'title',
+    href: null,
+    col: 1,
+    row: 1,
+    w: 2,
+    h: 2,
+    pattern: null,
+    fabrics: ['#1C1F3B', '#FF6B6B', '#FBF3EA'],
+    phone: 0,
+  },
+  {
+    id: 'community',
+    href: '/impact',
+    col: 3,
+    row: 1,
+    w: 2,
+    h: 2,
+    pattern: null,
+    fabrics: ['#1C1F3B'],
+    phone: 1,
+  },
+  {
+    id: 'about',
+    href: '/about',
+    col: 0,
+    row: 2,
+    w: 1,
+    h: 1,
+    pattern: 'railFence',
+    fabrics: ['#FF6B6B', '#F4A6B8', '#FBF3EA'],
+    phone: 8,
+  },
+  {
+    id: 'contact',
+    href: '/contact',
+    col: 0,
+    row: 3,
+    w: 1,
+    h: 1,
+    pattern: 'ohioStar',
+    fabrics: ['#5D6B7A', '#7FB7D9', '#FBF3EA'],
+    phone: 12,
+  },
+  {
+    id: 'help',
+    href: '/help',
+    col: 1,
+    row: 3,
+    w: 1,
+    h: 1,
+    pattern: 'pinwheel',
+    fabrics: ['#F2B84B', '#F08A3C', '#FBF3EA'],
+    phone: 9,
+  },
+  {
+    id: 'docs',
+    href: '/docs',
+    col: 2,
+    row: 3,
+    w: 1,
+    h: 1,
+    pattern: 'hourglass',
+    fabrics: ['#3B4A8C', '#8DAA8B', '#FBF3EA'],
+    phone: 10,
+  },
+  {
+    id: 'api',
+    href: '/docs/api',
+    col: 3,
+    row: 3,
+    w: 1,
+    h: 1,
+    pattern: 'triangles',
+    fabrics: ['#7A4E7E', '#7FB7D9', '#FBF3EA'],
+    phone: 11,
+  },
+  {
+    id: 'label',
+    href: null,
+    col: 4,
+    row: 3,
+    w: 1,
+    h: 1,
+    pattern: null,
+    fabrics: ['#1C1F3B'],
+    phone: 13,
+  },
 ];
 
 /**
@@ -75,12 +205,23 @@ export function phonePath(): BlockDef[] {
   return [...BLOCKS].sort((a, b) => a.phone - b.phone);
 }
 
-const ACCOUNT_PATHS = ['/dashboard', '/profile', '/org', '/badges', '/admin', '/login', '/signup', '/forgot-password', '/reset-password'];
+const ACCOUNT_PATHS = [
+  '/dashboard',
+  '/profile',
+  '/org',
+  '/badges',
+  '/admin',
+  '/login',
+  '/signup',
+  '/forgot-password',
+  '/reset-password',
+];
 const WORK_PATHS = ['/tasks', '/task', '/dashboard', '/profile', '/org', '/badges', '/admin'];
 const NARROW_PATHS = ['/login', '/signup', '/forgot-password', '/reset-password'];
 const LABEL_PATHS = ['/privacy', '/terms', '/cookies'];
 
-const within = (path: string, roots: string[]) => roots.some((r) => path === r || path.startsWith(`${r}/`));
+const within = (path: string, roots: string[]) =>
+  roots.some((r) => path === r || path.startsWith(`${r}/`));
 
 /** The block a route opens, or null for home, the contents page and unknown routes. */
 export function blockForPath(pathname: string): BlockId | null {
@@ -134,10 +275,22 @@ export function seams(): Seam[] {
   for (let r = 0; r <= GRID.rows; r++) {
     for (let c = 0; c <= GRID.cols; c++) {
       if (c < GRID.cols && owner(c, r - 1) !== owner(c, r)) {
-        out.push({ x: c, y: r, dir: 'h', reverse: c + 0.5 < HOME_FOCUS.x, dist: Math.hypot(c + 0.5 - HOME_FOCUS.x, r - HOME_FOCUS.y) });
+        out.push({
+          x: c,
+          y: r,
+          dir: 'h',
+          reverse: c + 0.5 < HOME_FOCUS.x,
+          dist: Math.hypot(c + 0.5 - HOME_FOCUS.x, r - HOME_FOCUS.y),
+        });
       }
       if (r < GRID.rows && owner(c - 1, r) !== owner(c, r)) {
-        out.push({ x: c, y: r, dir: 'v', reverse: r + 0.5 < HOME_FOCUS.y, dist: Math.hypot(c - HOME_FOCUS.x, r + 0.5 - HOME_FOCUS.y) });
+        out.push({
+          x: c,
+          y: r,
+          dir: 'v',
+          reverse: r + 0.5 < HOME_FOCUS.y,
+          dist: Math.hypot(c - HOME_FOCUS.x, r + 0.5 - HOME_FOCUS.y),
+        });
       }
     }
   }
@@ -165,7 +318,12 @@ export function cameraFor(focus: Point, viewport: { w: number; h: number }, pane
 }
 
 /** Keep the quilt on screen: it may drift past its edges by `slack` pixels, no further. */
-export function clampCamera(cam: Point, viewport: { w: number; h: number }, world: { w: number; h: number }, slack: number): Point {
+export function clampCamera(
+  cam: Point,
+  viewport: { w: number; h: number },
+  world: { w: number; h: number },
+  slack: number,
+): Point {
   const axis = (value: number, view: number, size: number) => {
     const min = view - size - slack;
     const max = slack;

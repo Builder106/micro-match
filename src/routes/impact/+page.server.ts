@@ -8,7 +8,7 @@ export const load: PageServerLoad = async () => {
     getTasks({ includeInactive: true }),
     getClaims(),
     getBadges(),
-    getQuiltPatches()
+    getQuiltPatches(),
   ]);
 
   const approvedClaims = claims.filter((c) => c.status === 'approved');
@@ -20,7 +20,7 @@ export const load: PageServerLoad = async () => {
   const taskMap = new Map(tasks.map((t) => [t.id, t]));
 
   let totalMinutesContributed = 0;
-  const durationCounts = { '15m': 0, '20m': 0, '30m': 0, 'other': 0 };
+  const durationCounts = { '15m': 0, '20m': 0, '30m': 0, other: 0 };
   const causeCounts = new Map<string, number>();
 
   for (const claim of approvedClaims) {
@@ -49,7 +49,7 @@ export const load: PageServerLoad = async () => {
         count,
         percentage: Math.round((count / Math.max(approvedClaims.length, 1)) * 100),
         bg: style.bg,
-        color: style.color
+        color: style.color,
       };
     })
     .sort((a, b) => b.count - a.count)
@@ -69,8 +69,7 @@ export const load: PageServerLoad = async () => {
       hoursContributed,
       avgTaskMinutes,
       durationCounts,
-      causeBreakdown
-    }
+      causeBreakdown,
+    },
   };
 };
-

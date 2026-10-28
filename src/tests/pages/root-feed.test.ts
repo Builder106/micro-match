@@ -13,22 +13,54 @@ describe('/ (home feed) load', () => {
 
   it('passes only the first 3 tasks and the selected locale to translation', async () => {
     const tasks = [
-      { id: '1', title: 'One', shortDescription: 'First task', tags: ['first'], language: 'English' },
-      { id: '2', title: 'Two', shortDescription: 'Second task', tags: ['second'], language: 'English' },
-      { id: '3', title: 'Three', shortDescription: 'Third task', tags: ['third'], language: 'English' },
-      { id: '4', title: 'Four', shortDescription: 'Fourth task', tags: ['fourth'], language: 'English' },
-      { id: '5', title: 'Five', shortDescription: 'Fifth task', tags: ['fifth'], language: 'English' }
+      {
+        id: '1',
+        title: 'One',
+        shortDescription: 'First task',
+        tags: ['first'],
+        language: 'English',
+      },
+      {
+        id: '2',
+        title: 'Two',
+        shortDescription: 'Second task',
+        tags: ['second'],
+        language: 'English',
+      },
+      {
+        id: '3',
+        title: 'Three',
+        shortDescription: 'Third task',
+        tags: ['third'],
+        language: 'English',
+      },
+      {
+        id: '4',
+        title: 'Four',
+        shortDescription: 'Fourth task',
+        tags: ['fourth'],
+        language: 'English',
+      },
+      {
+        id: '5',
+        title: 'Five',
+        shortDescription: 'Fifth task',
+        tags: ['fifth'],
+        language: 'English',
+      },
     ];
     const translatedTasks = tasks.slice(0, 3).map((task) => ({
       ...task,
       title: `Translated ${task.title}`,
       shortDescription: `Translated ${task.shortDescription}`,
-      tags: [`translated-${task.tags[0]}`]
+      tags: [`translated-${task.tags[0]}`],
     }));
     mocks.getTasks.mockResolvedValue(tasks);
     mocks.translateTasks.mockResolvedValue(translatedTasks);
 
-    const result = requireLoadResult(await load(createServerLoadEventFor<typeof load>({ locals: { locale: 'es' } })));
+    const result = requireLoadResult(
+      await load(createServerLoadEventFor<typeof load>({ locals: { locale: 'es' } })),
+    );
 
     expect(mocks.translateTasks).toHaveBeenCalledWith(tasks.slice(0, 3), 'es');
     expect(result.tasks).toEqual(translatedTasks);
@@ -36,27 +68,30 @@ describe('/ (home feed) load', () => {
       title: 'Translated One',
       shortDescription: 'Translated First task',
       tags: ['translated-first'],
-      language: 'English'
+      language: 'English',
     });
   });
 
   it('defaults to English and preserves the helper result', async () => {
-    mocks.getTasks.mockResolvedValue([
-      { id: '1' }, { id: '2' }, { id: '3' }, { id: '4' }
-    ]);
+    mocks.getTasks.mockResolvedValue([{ id: '1' }, { id: '2' }, { id: '3' }, { id: '4' }]);
     const originalTasks = [{ id: '1' }, { id: '2' }, { id: '3' }];
     mocks.translateTasks.mockResolvedValue(originalTasks);
 
     const result = requireLoadResult(await load(createServerLoadEventFor<typeof load>()));
 
-    expect(mocks.translateTasks).toHaveBeenCalledWith([{ id: '1' }, { id: '2' }, { id: '3' }], 'en');
+    expect(mocks.translateTasks).toHaveBeenCalledWith(
+      [{ id: '1' }, { id: '2' }, { id: '3' }],
+      'en',
+    );
     expect(result.tasks).toEqual(originalTasks);
   });
 
   it('returns an empty array when there are no tasks', async () => {
     mocks.getTasks.mockResolvedValue([]);
     mocks.translateTasks.mockResolvedValue([]);
-    const result = requireLoadResult(await load(createServerLoadEventFor<typeof load>({ locals: { locale: 'fr' } })));
+    const result = requireLoadResult(
+      await load(createServerLoadEventFor<typeof load>({ locals: { locale: 'fr' } })),
+    );
     expect(result.tasks).toEqual([]);
     expect(mocks.translateTasks).toHaveBeenCalledWith([], 'fr');
   });
@@ -66,7 +101,9 @@ describe('/ (home feed) load', () => {
     mocks.getTasks.mockResolvedValue(originalTasks);
     mocks.translateTasks.mockResolvedValue(originalTasks);
 
-    const result = requireLoadResult(await load(createServerLoadEventFor<typeof load>({ locals: { locale: 'es' } })));
+    const result = requireLoadResult(
+      await load(createServerLoadEventFor<typeof load>({ locals: { locale: 'es' } })),
+    );
 
     expect(result.tasks).toEqual(originalTasks);
   });

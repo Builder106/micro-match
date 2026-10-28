@@ -1,7 +1,12 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { json } from '@sveltejs/kit';
 import { getUserRole } from '$lib/server/auth';
-import { NGO_TEAM_ID, VOLUNTEER_TEAM_ID, addUserToTeam, removeUserFromTeam } from '$lib/server/teams';
+import {
+  NGO_TEAM_ID,
+  VOLUNTEER_TEAM_ID,
+  addUserToTeam,
+  removeUserFromTeam,
+} from '$lib/server/teams';
 import { env } from '$env/dynamic/private';
 
 async function getUserId(event: Parameters<RequestHandler>[0]): Promise<string | null> {
@@ -44,4 +49,3 @@ export const POST: RequestHandler = async (event) => {
     return json({ error: 'Team assignment failed' }, { status: 500 });
   }
 };
-

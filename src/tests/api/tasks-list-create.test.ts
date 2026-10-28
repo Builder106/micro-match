@@ -6,13 +6,15 @@ const { mocks } = vi.hoisted(() => ({
     createTask: vi.fn(),
     getUserRole: vi.fn(),
     getVerificationByUserId: vi.fn(),
-    moderateText: vi.fn()
-  }
+    moderateText: vi.fn(),
+  },
 }));
 
 vi.mock('$lib/server/appwrite', () => ({ getTasks: mocks.getTasks, createTask: mocks.createTask }));
 vi.mock('$lib/server/auth', () => ({ getUserRole: mocks.getUserRole }));
-vi.mock('$lib/server/verifications', () => ({ getVerificationByUserId: mocks.getVerificationByUserId }));
+vi.mock('$lib/server/verifications', () => ({
+  getVerificationByUserId: mocks.getVerificationByUserId,
+}));
 vi.mock('$lib/server/contentsafety', () => ({ moderateText: mocks.moderateText }));
 
 import { GET, POST } from '../../routes/api/tasks/+server';
@@ -24,8 +26,8 @@ function makeEvent(opts: { orgId?: string | null; body?: unknown } = {}) {
     request: new Request('http://localhost/api/tasks', {
       method: 'POST',
       body: opts.body === undefined ? undefined : JSON.stringify(opts.body),
-      headers: { 'content-type': 'application/json' }
-    })
+      headers: { 'content-type': 'application/json' },
+    }),
   });
 }
 
@@ -33,28 +35,54 @@ describe('GET /api/tasks', () => {
   beforeEach(() => mocks.getTasks.mockReset());
 
   it('returns a public read-only projection of every task', async () => {
-    mocks.getTasks.mockResolvedValue([{
-      id: 't1', orgId: 'org-1', title: 'T', shortDescription: 's', description: 'long',
-      tags: ['a'], estimatedMinutes: 10, language: 'en', status: 'active'
-    }]);
+    mocks.getTasks.mockResolvedValue([
+      {
+        id: 't1',
+        orgId: 'org-1',
+        title: 'T',
+        shortDescription: 's',
+        description: 'long',
+        tags: ['a'],
+        estimatedMinutes: 10,
+        language: 'en',
+        status: 'active',
+      },
+    ]);
 
     const res = await GET(createRequestEvent());
     const body = await res.json();
 
-    expect(body).toEqual([{ id: 't1', title: 'T', shortDescription: 's', tags: ['a'], estimatedMinutes: 10, language: 'en' }]);
+    expect(body).toEqual([
+      {
+        id: 't1',
+        title: 'T',
+        shortDescription: 's',
+        tags: ['a'],
+        estimatedMinutes: 10,
+        language: 'en',
+      },
+    ]);
     // orgId/status/description are not part of the public projection
     expect(body[0].orgId).toBeUndefined();
     expect(body[0].description).toBeUndefined();
   });
 });
-const validBody = { title: 'Translate flyer', shortDescription: 'Short', description: 'Long', tags: ['i18n'] };
+const validBody = {
+  title: 'Translate flyer',
+  shortDescription: 'Short',
+  description: 'Long',
+  tags: ['i18n'],
+};
 
 describe('POST /api/tasks', () => {
   beforeEach(() => {
     Object.values(mocks).forEach((m) => m.mockReset());
     mocks.moderateText.mockResolvedValue({ blocked: false, reasons: [] });
     mocks.getVerificationByUserId.mockResolvedValue(undefined);
-    mocks.createTask.mockImplementation(async (input: Record<string, unknown>) => ({ id: 'new-task', ...input }));
+    mocks.createTask.mockImplementation(async (input: Record<string, unknown>) => ({
+      id: 'new-task',
+      ...input,
+    }));
   });
 
   it('returns 403 for non-NGO roles', async () => {
@@ -78,7 +106,10 @@ describe('POST /api/tasks', () => {
 
   it('returns 400 when content moderation blocks the task text', async () => {
     mocks.getUserRole.mockResolvedValue('ngo');
-    mocks.moderateText.mockResolvedValue({ blocked: true, reasons: [{ category: 'Hate', severity: 5 }] });
+    mocks.moderateText.mockResolvedValue({
+      blocked: true,
+      reasons: [{ category: 'Hate', severity: 5 }],
+    });
 
     const res = await POST(makeEvent({ orgId: 'org-1', body: validBody }));
     const body = await res.json();
@@ -88,13 +119,15 @@ describe('POST /api/tasks', () => {
     expect(mocks.createTask).not.toHaveBeenCalled();
   });
 
-  it('derives isVerified from the org\'s verification status', async () => {
+  it("derives isVerified from the org's verification status", async () => {
     mocks.getUserRole.mockResolvedValue('ngo');
     mocks.getVerificationByUserId.mockResolvedValue({ status: 'approved' });
 
     await POST(makeEvent({ orgId: 'org-1', body: validBody }));
 
-    expect(mocks.createTask).toHaveBeenCalledWith(expect.objectContaining({ isVerified: true, status: 'active' }));
+    expect(mocks.createTask).toHaveBeenCalledWith(
+      expect.objectContaining({ isVerified: true, status: 'active' }),
+    );
   });
 
   it('sets isVerified false when the org has no approved verification', async () => {
@@ -117,7 +150,7 @@ describe('POST /api/tasks', () => {
       tags: ['a', 'b'],
       estimatedMinutes: 45,
       maxVolunteers: 3,
-      deadline: '2026-12-31'
+      deadline: '2026-12-31',
     };
     const res = await POST(makeEvent({ orgId: 'org-1', body: fullBody }));
     expect(res.status).toBe(201);
@@ -127,16 +160,18 @@ describe('POST /api/tasks', () => {
     // Test with missing/non-array tags, non-number estimatedMinutes/maxVolunteers, no description/language
     const sparseBody = {
       title: 'Sparse title',
-      shortDescription: 'Sparse short'
+      shortDescription: 'Sparse short',
     };
     const sparseRes = await POST(makeEvent({ orgId: 'org-1', body: sparseBody }));
     expect(sparseRes.status).toBe(201);
-    expect(mocks.createTask).toHaveBeenCalledWith(expect.objectContaining({
-      language: 'English',
-      tags: [],
-      description: '',
-      estimatedMinutes: undefined,
-      maxVolunteers: undefined
-    }));
+    expect(mocks.createTask).toHaveBeenCalledWith(
+      expect.objectContaining({
+        language: 'English',
+        tags: [],
+        description: '',
+        estimatedMinutes: undefined,
+        maxVolunteers: undefined,
+      }),
+    );
   });
 });

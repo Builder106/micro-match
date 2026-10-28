@@ -16,7 +16,7 @@ export async function signUpEmail(
   email: string,
   password: string,
   name?: string,
-  role: 'volunteer' | 'ngo' = 'volunteer'
+  role: 'volunteer' | 'ngo' = 'volunteer',
 ) {
   await account.create({ userId: ID.unique(), email, password, name });
   // account.create() does not log the user in. Without a session here, the
@@ -30,18 +30,27 @@ export async function createRecovery(email: string, url: string): Promise<void> 
   await account.createRecovery({ email, url });
 }
 
-export async function updateRecovery(userId: string, secret: string, password: string): Promise<void> {
+export async function updateRecovery(
+  userId: string,
+  secret: string,
+  password: string,
+): Promise<void> {
   await account.updateRecovery({ userId, secret, password });
 }
 
-export async function signInWithGoogle(options: { role?: 'volunteer' | 'ngo'; returnTo?: 'login' | 'signup' } = {}) {
+export async function signInWithGoogle(
+  options: { role?: 'volunteer' | 'ngo'; returnTo?: 'login' | 'signup' } = {},
+) {
   // Token flow (RFC 6749-style code exchange) instead of session flow.
   // The provider redirects back to our server with userId+secret in the
   // query, the server validates them via the admin SDK and mints a
   // first-party mm_session cookie. This survives Safari/ITP cross-origin
   // cookie blocking, which the old createOAuth2Session flow does not.
   const success = new URL('/api/auth/oauth/callback', window.location.origin);
-  const failure = new URL(options.returnTo === 'signup' ? '/signup' : '/login', window.location.origin);
+  const failure = new URL(
+    options.returnTo === 'signup' ? '/signup' : '/login',
+    window.location.origin,
+  );
   failure.searchParams.set('error', 'oauth');
   if (options.role) {
     success.searchParams.set('role', options.role);
@@ -56,7 +65,11 @@ export async function signInWithGoogle(options: { role?: 'volunteer' | 'ngo'; re
       return;
     }
   }
-  account.createOAuth2Token({ provider: OAuthProvider.Google, success: success.toString(), failure: failure.toString() });
+  account.createOAuth2Token({
+    provider: OAuthProvider.Google,
+    success: success.toString(),
+    failure: failure.toString(),
+  });
 }
 
 export async function signOut() {
@@ -65,9 +78,15 @@ export async function signOut() {
   // (common in Safari/ITP where there's no client session to delete)
   // skipped the server logout call entirely and left mm_session intact,
   // making the user appear signed in after a "sign out" round-trip.
-  try { await account.deleteSessions(); } catch {}
-  try { await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }); } catch {}
-  try { localStorage.removeItem('mm_has_session'); } catch {}
+  try {
+    await account.deleteSessions();
+  } catch {}
+  try {
+    await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+  } catch {}
+  try {
+    localStorage.removeItem('mm_has_session');
+  } catch {}
 }
 
 export async function getJWT(): Promise<string | null> {
@@ -92,7 +111,7 @@ export async function refreshSessionCookie(): Promise<void> {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify({ jwt })
+      body: JSON.stringify({ jwt }),
     });
   } catch {}
 }
@@ -109,7 +128,11 @@ export async function uploadAvatar(file: File): Promise<{ fileId: string; url: s
   // Upload via our server endpoint to apply secure permissions
   const form = new FormData();
   form.append('file', file);
-  const res = await fetch('/api/profile/avatar', { method: 'POST', body: form, credentials: 'include' });
+  const res = await fetch('/api/profile/avatar', {
+    method: 'POST',
+    body: form,
+    credentials: 'include',
+  });
   if (!res.ok) {
     const { error } = await res.json().catch(() => ({ error: 'Upload failed' }));
     throw new Error(error || 'Upload failed');

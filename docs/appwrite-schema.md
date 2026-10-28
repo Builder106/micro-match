@@ -10,7 +10,7 @@ MicroMatch uses **Appwrite Cloud TablesDB API** to manage persistent data.
 
 ### Database ID
 
-* `micromatch` (default database ID)
+- `micromatch` (default database ID)
 
 ---
 
@@ -20,25 +20,25 @@ MicroMatch uses **Appwrite Cloud TablesDB API** to manage persistent data.
 
 Stores micro-volunteering task listings posted by NGOs.
 
-| Attribute | Type | Size / Constraint | Description |
-| :--- | :--- | :--- | :--- |
-| `title` | String | 256 | Task title |
-| `shortDescription` | String | 512 | Short summary for cards |
-| `description` | String | 4096 | Detailed task instructions |
-| `tags` | String Array | 64 | Task tags (e.g.`documentation`, `design`) |
-| `estimatedMinutes` | Integer | Min: 5, Max: 60 | Estimated time to complete (≤30 min) |
-| `language` | String | 32 | Task language (e.g.`English`, `Spanish`) |
-| `orgID` | String | 64 | Appwrite Team / User ID of posting NGO |
-| `status` | String | Enum (`active`, `archived`, `completed`) | Current task lifecycle status |
-| `deadline` | Datetime | Optional | Target completion deadline |
-| `isVerified` | Boolean | Default:`false` | Whether posting NGO is verified 501(c)(3) |
-| `evergreen` | Boolean | Optional; unset means `false` in the app | Curated task that stays in the feed without activity (skips the 30-day auto-archive) |
+| Attribute          | Type         | Size / Constraint                        | Description                                                                          |
+| :----------------- | :----------- | :--------------------------------------- | :----------------------------------------------------------------------------------- |
+| `title`            | String       | 256                                      | Task title                                                                           |
+| `shortDescription` | String       | 512                                      | Short summary for cards                                                              |
+| `description`      | String       | 4096                                     | Detailed task instructions                                                           |
+| `tags`             | String Array | 64                                       | Task tags (e.g.`documentation`, `design`)                                            |
+| `estimatedMinutes` | Integer      | Min: 5, Max: 60                          | Estimated time to complete (≤30 min)                                                 |
+| `language`         | String       | 32                                       | Task language (e.g.`English`, `Spanish`)                                             |
+| `orgID`            | String       | 64                                       | Appwrite Team / User ID of posting NGO                                               |
+| `status`           | String       | Enum (`active`, `archived`, `completed`) | Current task lifecycle status                                                        |
+| `deadline`         | Datetime     | Optional                                 | Target completion deadline                                                           |
+| `isVerified`       | Boolean      | Default:`false`                          | Whether posting NGO is verified 501(c)(3)                                            |
+| `evergreen`        | Boolean      | Optional; unset means `false` in the app | Curated task that stays in the feed without activity (skips the 30-day auto-archive) |
 
 #### Indexes
 
-* `status` (Key, ASC)
-* `deadline` (Key, ASC)
-* `orgID` (Key, ASC)
+- `status` (Key, ASC)
+- `deadline` (Key, ASC)
+- `orgID` (Key, ASC)
 
 ---
 
@@ -46,21 +46,21 @@ Stores micro-volunteering task listings posted by NGOs.
 
 Tracks volunteer task claims and proof-of-work submissions.
 
-| Attribute | Type | Size / Constraint | Description |
-| :--- | :--- | :--- | :--- |
-| `taskId` | String | 64 | Referenced task ID |
-| `volunteerId` | String | 64 | Appwrite User ID of volunteer |
-| `status` | String | Enum (`pending`, `approved`, `rejected`) | Submission status |
-| `notes` | String | 2048 | Volunteer submission notes / links |
-| `proofUrl` | String | 1024 | Optional link or uploaded attachment URL |
-| `submittedAt` | Datetime | Default:`now()` | Timestamp of submission |
-| `reviewNotes` | String | 1024 | Optional feedback from NGO reviewer |
+| Attribute     | Type     | Size / Constraint                        | Description                              |
+| :------------ | :------- | :--------------------------------------- | :--------------------------------------- |
+| `taskId`      | String   | 64                                       | Referenced task ID                       |
+| `volunteerId` | String   | 64                                       | Appwrite User ID of volunteer            |
+| `status`      | String   | Enum (`pending`, `approved`, `rejected`) | Submission status                        |
+| `notes`       | String   | 2048                                     | Volunteer submission notes / links       |
+| `proofUrl`    | String   | 1024                                     | Optional link or uploaded attachment URL |
+| `submittedAt` | Datetime | Default:`now()`                          | Timestamp of submission                  |
+| `reviewNotes` | String   | 1024                                     | Optional feedback from NGO reviewer      |
 
 #### Indexes
 
-* `taskId` (Key, ASC)
-* `volunteerId` (Key, ASC)
-* `status` (Key, ASC)
+- `taskId` (Key, ASC)
+- `volunteerId` (Key, ASC)
+- `status` (Key, ASC)
 
 ---
 
@@ -68,12 +68,12 @@ Tracks volunteer task claims and proof-of-work submissions.
 
 Records badges earned by volunteers.
 
-| Attribute | Type | Size / Constraint | Description |
-| :--- | :--- | :--- | :--- |
-| `userId` | String | 64 | Volunteer user ID |
-| `label` | String | 128 | Badge title |
-| `awardedAt` | Datetime | Default:`now()` | Timestamp awarded |
-| `taskId` | String | 64 | Originating task ID |
+| Attribute   | Type     | Size / Constraint | Description         |
+| :---------- | :------- | :---------------- | :------------------ |
+| `userId`    | String   | 64                | Volunteer user ID   |
+| `label`     | String   | 128               | Badge title         |
+| `awardedAt` | Datetime | Default:`now()`   | Timestamp awarded   |
+| `taskId`    | String   | 64                | Originating task ID |
 
 ---
 
@@ -81,14 +81,14 @@ Records badges earned by volunteers.
 
 Custom badge templates defined by NGOs.
 
-| Attribute | Type | Size / Constraint | Description |
-| :--- | :--- | :--- | :--- |
-| `name` | String | 128 | Badge name |
-| `description` | String | 512 | Description of requirement |
-| `icon` | String | 128 | Iconify icon string |
-| `triggerTag` | String | 64 | Task tag triggering award |
-| `requiredCount` | Integer | Min: 1 | Required claims count |
-| `orgId` | String | 64 | NGO organization owner ID |
+| Attribute       | Type    | Size / Constraint | Description                |
+| :-------------- | :------ | :---------------- | :------------------------- |
+| `name`          | String  | 128               | Badge name                 |
+| `description`   | String  | 512               | Description of requirement |
+| `icon`          | String  | 128               | Iconify icon string        |
+| `triggerTag`    | String  | 64                | Task tag triggering award  |
+| `requiredCount` | Integer | Min: 1            | Required claims count      |
+| `orgId`         | String  | 64                | NGO organization owner ID  |
 
 ---
 
@@ -96,12 +96,12 @@ Custom badge templates defined by NGOs.
 
 ### `avatars`
 
-* **ID**: `avatars`
-* **File Security**: Enabled
-* **Bucket permissions**: No bucket-wide read permission
-* **Avatar file permissions**: Public read, set on each avatar file
-* **Allowed Extensions**: `jpg`, `jpeg`, `png`, `svg`, `webp`, `pdf` when shared with verification uploads
-* **Maximum File Size**: At least 10 MB
+- **ID**: `avatars`
+- **File Security**: Enabled
+- **Bucket permissions**: No bucket-wide read permission
+- **Avatar file permissions**: Public read, set on each avatar file
+- **Allowed Extensions**: `jpg`, `jpeg`, `png`, `svg`, `webp`, `pdf` when shared with verification uploads
+- **Maximum File Size**: At least 10 MB
 
 ### Verification documents
 

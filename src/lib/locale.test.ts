@@ -8,7 +8,7 @@ import {
   negotiateLocale,
   localizedPath,
   localizedHref,
-  redirectToLocale
+  redirectToLocale,
 } from './locale';
 
 type RedirectError = {
@@ -18,7 +18,12 @@ type RedirectError = {
 
 function isRedirectError(error: unknown): error is RedirectError {
   if (typeof error !== 'object' || error === null) return false;
-  return 'status' in error && typeof error.status === 'number' && 'location' in error && typeof error.location === 'string';
+  return (
+    'status' in error &&
+    typeof error.status === 'number' &&
+    'location' in error &&
+    typeof error.location === 'string'
+  );
 }
 
 describe('locale utilities', () => {
@@ -88,15 +93,21 @@ describe('locale utilities', () => {
       expect(negotiateLocale(new Request('http://localhost'), 'es')).toBe('es');
     });
     it('falls back to accept-language header', () => {
-      expect(negotiateLocale(new Request('http://localhost', { headers: { 'accept-language': 'fr' } }))).toBe('fr');
+      expect(
+        negotiateLocale(new Request('http://localhost', { headers: { 'accept-language': 'fr' } })),
+      ).toBe('fr');
     });
     it('ignores an invalid cookie locale in favor of the header', () => {
-      const request = new Request('http://localhost', { headers: { 'accept-language': 'pt-BR, pt;q=0.9' } });
+      const request = new Request('http://localhost', {
+        headers: { 'accept-language': 'pt-BR, pt;q=0.9' },
+      });
       expect(negotiateLocale(request, 'invalid')).toBe('pt');
     });
     it('falls back to default if everything else fails', () => {
       expect(negotiateLocale(new Request('http://localhost'))).toBe('en');
-      const unmatched = new Request('http://localhost', { headers: { 'accept-language': 'xx-YY, zz;q=0.9' } });
+      const unmatched = new Request('http://localhost', {
+        headers: { 'accept-language': 'xx-YY, zz;q=0.9' },
+      });
       expect(negotiateLocale(unmatched)).toBe('en');
     });
   });
@@ -127,7 +138,8 @@ describe('locale utilities', () => {
       } catch (e) {
         error = e;
       }
-      if (!isRedirectError(error)) throw new Error('Expected redirectToLocale to throw a redirect.');
+      if (!isRedirectError(error))
+        throw new Error('Expected redirectToLocale to throw a redirect.');
       expect(error.status).toBe(308);
       expect(error.location).toBe('/es/foo?bar=1');
     });

@@ -15,8 +15,8 @@ export const paraglideOptions = {
         ['de', '/de'],
         ['pt', '/pt'],
         ['zh', '/zh'],
-        ['ar', '/ar']
-      ]
+        ['ar', '/ar'],
+      ],
     },
     {
       pattern: '/:path(.*)?',
@@ -27,8 +27,8 @@ export const paraglideOptions = {
         ['de', '/de/:path(.*)?'],
         ['pt', '/pt/:path(.*)?'],
         ['zh', '/zh/:path(.*)?'],
-        ['ar', '/ar/:path(.*)?']
-      ]
-    }
-  ]
+        ['ar', '/ar/:path(.*)?'],
+      ],
+    },
+  ],
 } satisfies CompilerOptions;

@@ -4,13 +4,29 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 // module's `useAppwrite` flag is false and all CRUD goes through its Maps.
 const { envState } = vi.hoisted(() => ({ envState: {} as Record<string, string | undefined> }));
 vi.mock('$env/dynamic/private', () => ({
-  env: new Proxy(envState, { get: (_, key: string) => envState[key] })
+  env: new Proxy(envState, { get: (_, key: string) => envState[key] }),
 }));
 vi.mock('node-appwrite', () => ({
-  Client: class { setEndpoint() { return this; } setProject() { return this; } setKey() { return this; } },
+  Client: class {
+    setEndpoint() {
+      return this;
+    }
+    setProject() {
+      return this;
+    }
+    setKey() {
+      return this;
+    }
+  },
   TablesDB: class {},
   ID: { unique: () => 'unique' },
-  Query: { equal: () => '', limit: () => '', orderDesc: () => '', lessThanEqual: () => '', lessThan: () => '' }
+  Query: {
+    equal: () => '',
+    limit: () => '',
+    orderDesc: () => '',
+    lessThanEqual: () => '',
+    lessThan: () => '',
+  },
 }));
 
 import {
@@ -31,7 +47,7 @@ import {
   expireTasks,
   autoArchiveTasks,
   setTasksVerifiedForOrg,
-  deleteTask
+  deleteTask,
 } from './appwrite';
 
 async function wipeTasks() {
@@ -53,10 +69,17 @@ describe('appwrite (in-memory mode) — tasks', () => {
   });
 
   it('normalizes empty task statuses to active on create and update', async () => {
-    const task = await createTask({ title: 'Empty status', shortDescription: 'short', tags: [], status: '' as never });
+    const task = await createTask({
+      title: 'Empty status',
+      shortDescription: 'short',
+      tags: [],
+      status: '' as never,
+    });
     expect(task.status).toBe('active');
 
-    await expect(updateTaskStatus(task.id, '' as never)).resolves.toEqual(expect.objectContaining({ status: 'active' }));
+    await expect(updateTaskStatus(task.id, '' as never)).resolves.toEqual(
+      expect.objectContaining({ status: 'active' }),
+    );
   });
 
   it('getTaskById returns the created task and undefined for unknown ids', async () => {
@@ -75,18 +98,36 @@ describe('appwrite (in-memory mode) — tasks', () => {
 
   it('getTasks (feed mode) excludes non-active, expired-deadline, unverified, and stale tasks', async () => {
     const active = await createTask({ title: 'Active', shortDescription: 's', tags: [] });
-    const inactive = await createTask({ title: 'Inactive', shortDescription: 's', tags: [], status: 'expired' });
-    const pastDeadline = await createTask({
-      title: 'PastDeadline', shortDescription: 's', tags: [], deadline: new Date(Date.now() - 1000).toISOString()
+    const inactive = await createTask({
+      title: 'Inactive',
+      shortDescription: 's',
+      tags: [],
+      status: 'expired',
     });
-    const unverified = await createTask({ title: 'Unverified', shortDescription: 's', tags: [], isVerified: false });
+    const pastDeadline = await createTask({
+      title: 'PastDeadline',
+      shortDescription: 's',
+      tags: [],
+      deadline: new Date(Date.now() - 1000).toISOString(),
+    });
+    const unverified = await createTask({
+      title: 'Unverified',
+      shortDescription: 's',
+      tags: [],
+      isVerified: false,
+    });
     const stale = await createTask({
-      title: 'Stale', shortDescription: 's', tags: [],
-      lastActivityAt: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000).toISOString()
+      title: 'Stale',
+      shortDescription: 's',
+      tags: [],
+      lastActivityAt: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000).toISOString(),
     });
     await createTask({
-      title: 'Evergreen', shortDescription: 's', tags: [], evergreen: true,
-      lastActivityAt: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000).toISOString()
+      title: 'Evergreen',
+      shortDescription: 's',
+      tags: [],
+      evergreen: true,
+      lastActivityAt: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000).toISOString(),
     });
     // In-memory mode does not track claims per task, so a volunteer limit never hides a task.
     await createTask({ title: 'Limited', shortDescription: 's', tags: [], maxVolunteers: 1 });
@@ -129,7 +170,10 @@ describe('appwrite (in-memory mode) — tasks', () => {
 
   it('expireTasks flips active tasks past their deadline to expired and counts them', async () => {
     const expired = await createTask({
-      title: 'Expiring', shortDescription: 's', tags: [], deadline: new Date(Date.now() - 1000).toISOString()
+      title: 'Expiring',
+      shortDescription: 's',
+      tags: [],
+      deadline: new Date(Date.now() - 1000).toISOString(),
     });
     const notExpired = await createTask({ title: 'Fine', shortDescription: 's', tags: [] });
 
@@ -142,13 +186,23 @@ describe('appwrite (in-memory mode) — tasks', () => {
 
   it('autoArchiveTasks flips stale active tasks to expired and counts them', async () => {
     const stale = await createTask({
-      title: 'Stale', shortDescription: 's', tags: [],
-      lastActivityAt: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000).toISOString()
+      title: 'Stale',
+      shortDescription: 's',
+      tags: [],
+      lastActivityAt: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000).toISOString(),
     });
-    const fresh = await createTask({ title: 'Fresh', shortDescription: 's', tags: [], lastActivityAt: new Date().toISOString() });
+    const fresh = await createTask({
+      title: 'Fresh',
+      shortDescription: 's',
+      tags: [],
+      lastActivityAt: new Date().toISOString(),
+    });
     const evergreen = await createTask({
-      title: 'Evergreen', shortDescription: 's', tags: [], evergreen: true,
-      lastActivityAt: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000).toISOString()
+      title: 'Evergreen',
+      shortDescription: 's',
+      tags: [],
+      evergreen: true,
+      lastActivityAt: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000).toISOString(),
     });
 
     const count = await autoArchiveTasks();
@@ -248,7 +302,10 @@ describe('appwrite (in-memory mode) — badges', () => {
     expect(analytics.totalVolunteersEngaged).toBe(new Set(all.map((b) => b.userId)).size);
     expect(analytics.topBadgeTypes.length).toBeGreaterThan(0);
     expect(analytics.recentAwards.length).toBe(Math.min(10, all.length));
-    expect(analytics.recentAwards.slice(0, 2).map((a) => a.date)).toEqual(['2099-02-01', '2099-01-01']);
+    expect(analytics.recentAwards.slice(0, 2).map((a) => a.date)).toEqual([
+      '2099-02-01',
+      '2099-01-01',
+    ]);
   });
 
   it('summarizeBadges returns the empty shape for no badges', () => {
@@ -258,7 +315,7 @@ describe('appwrite (in-memory mode) — badges', () => {
       averageTasksPerVolunteer: 0,
       topBadgeTypes: [],
       engagementTrend: [],
-      recentAwards: []
+      recentAwards: [],
     });
   });
 });

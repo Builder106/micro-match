@@ -4,8 +4,8 @@ const { mocks } = vi.hoisted(() => ({
   mocks: {
     getUserRole: vi.fn(),
     addUserToTeam: vi.fn(),
-    removeUserFromTeam: vi.fn()
-  }
+    removeUserFromTeam: vi.fn(),
+  },
 }));
 
 vi.mock('$lib/server/auth', () => ({ getUserRole: mocks.getUserRole }));
@@ -13,7 +13,7 @@ vi.mock('$lib/server/teams', () => ({
   NGO_TEAM_ID: 'ngo-team',
   VOLUNTEER_TEAM_ID: 'volunteer-team',
   addUserToTeam: mocks.addUserToTeam,
-  removeUserFromTeam: mocks.removeUserFromTeam
+  removeUserFromTeam: mocks.removeUserFromTeam,
 }));
 vi.mock('$env/dynamic/private', () => ({ env: {} }));
 
@@ -24,8 +24,8 @@ function makeEvent(opts: { userId?: string | null; authorization?: string } = {}
   return createRequestEvent({
     userId: opts.userId ?? undefined,
     request: new Request('http://test/api/teams/assign', {
-      headers: opts.authorization ? { authorization: opts.authorization } : undefined
-    })
+      headers: opts.authorization ? { authorization: opts.authorization } : undefined,
+    }),
   });
 }
 
@@ -75,13 +75,19 @@ describe('POST /api/teams/assign', () => {
 
     vi.doMock('node-appwrite', () => ({
       Client: class {
-        setEndpoint() { return this; }
-        setProject() { return this; }
-        setJWT() { return this; }
+        setEndpoint() {
+          return this;
+        }
+        setProject() {
+          return this;
+        }
+        setJWT() {
+          return this;
+        }
       },
       Account: class {
         get = vi.fn().mockResolvedValue({ $id: 'jwt-user-1' });
-      }
+      },
     }));
 
     const res = await POST(makeEvent({ authorization: 'Bearer valid-jwt-token' }));
@@ -90,9 +96,19 @@ describe('POST /api/teams/assign', () => {
     // Account.get returning no id
     vi.doMock('node-appwrite', () => ({
       Client: class {
-        setEndpoint() { return this; } setProject() { return this; } setJWT() { return this; }
+        setEndpoint() {
+          return this;
+        }
+        setProject() {
+          return this;
+        }
+        setJWT() {
+          return this;
+        }
       },
-      Account: class { get = vi.fn().mockResolvedValue({}); }
+      Account: class {
+        get = vi.fn().mockResolvedValue({});
+      },
     }));
     const resNoId = await POST(makeEvent({ authorization: 'Bearer valid-jwt-token' }));
     expect(resNoId.status).toBe(401);
@@ -100,9 +116,19 @@ describe('POST /api/teams/assign', () => {
     // Account.get throwing error
     vi.doMock('node-appwrite', () => ({
       Client: class {
-        setEndpoint() { return this; } setProject() { return this; } setJWT() { return this; }
+        setEndpoint() {
+          return this;
+        }
+        setProject() {
+          return this;
+        }
+        setJWT() {
+          return this;
+        }
       },
-      Account: class { get = vi.fn().mockRejectedValue(new Error('jwt bad')); }
+      Account: class {
+        get = vi.fn().mockRejectedValue(new Error('jwt bad'));
+      },
     }));
     const resThrow = await POST(makeEvent({ authorization: 'Bearer valid-jwt-token' }));
     expect(resThrow.status).toBe(401);
@@ -112,12 +138,10 @@ describe('POST /api/teams/assign', () => {
     expect(resNonBearer.status).toBe(401);
   });
 
-
-
   it('returns 500 when the team API throws', async () => {
     mocks.getUserRole.mockResolvedValue('ngo');
     mocks.removeUserFromTeam.mockRejectedValue(new Error('down'));
-    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const res = await POST(makeEvent({ userId: 'user-1' }));
 

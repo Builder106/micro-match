@@ -16,7 +16,7 @@ export const PATCH_ICONS = {
     'M5.6 5h12.8c.9 0 1.6.7 1.6 1.6v7.8c0 .9-.7 1.6-1.6 1.6h-7l-4.2 3.4V16H5.6c-.9 0-1.6-.7-1.6-1.6V6.6C4 5.7 4.7 5 5.6 5zM8 9.4h8M8 12.4h5',
   house: 'M4.2 11.2 12 4.4l7.8 6.8M6.4 9.4v10.2h11.2V9.4M10 19.6v-5.2h4v5.2',
   sun: 'M12 8.4a3.6 3.6 0 1 0 0 7.2 3.6 3.6 0 1 0 0-7.2zM12 3.4v2.2M12 18.4v2.2M3.4 12h2.2M18.4 12h2.2M5.9 5.9l1.6 1.6M16.5 16.5l1.6 1.6M5.9 18.1l1.6-1.6M16.5 7.5l1.6-1.6',
-  paw: 'M12 12.6c-2.8 0-5.4 2.9-5.4 5.2 0 1.5 1.2 2.2 2.6 2.2 1.1 0 1.8-.6 2.8-.6s1.7.6 2.8.6c1.4 0 2.6-.7 2.6-2.2 0-2.3-2.6-5.2-5.4-5.2zM6.2 8.4a1.6 2 0 1 0 0 4 1.6 2 0 1 0 0-4zM9.6 4.4a1.7 2.1 0 1 0 0 4.2 1.7 2.1 0 1 0 0-4.2zM14.4 4.4a1.7 2.1 0 1 0 0 4.2 1.7 2.1 0 1 0 0-4.2zM17.8 8.4a1.6 2 0 1 0 0 4 1.6 2 0 1 0 0-4z'
+  paw: 'M12 12.6c-2.8 0-5.4 2.9-5.4 5.2 0 1.5 1.2 2.2 2.6 2.2 1.1 0 1.8-.6 2.8-.6s1.7.6 2.8.6c1.4 0 2.6-.7 2.6-2.2 0-2.3-2.6-5.2-5.4-5.2zM6.2 8.4a1.6 2 0 1 0 0 4 1.6 2 0 1 0 0-4zM9.6 4.4a1.7 2.1 0 1 0 0 4.2 1.7 2.1 0 1 0 0-4.2zM14.4 4.4a1.7 2.1 0 1 0 0 4.2 1.7 2.1 0 1 0 0-4.2zM17.8 8.4a1.6 2 0 1 0 0 4 1.6 2 0 1 0 0-4z',
 } as const;
 
 export type PatchIcon = keyof typeof PATCH_ICONS;
@@ -33,7 +33,7 @@ export const PATCH_ICON_LABELS: Record<PatchIcon, () => string> = {
   speech: m.icon_speech,
   house: m.icon_house,
   sun: m.icon_sun,
-  paw: m.icon_paw
+  paw: m.icon_paw,
 };
 
 // Keywords from Iconify names that earlier badge definitions used, mapped to a stitched icon.
@@ -47,7 +47,7 @@ const KEYWORDS: [RegExp, PatchIcon][] = [
   [/language|speech|chat|message|translat/, 'speech'],
   [/house|home/, 'house'],
   [/sun|fire|zap|bolt|flash/, 'sun'],
-  [/paw|pet|animal|dog|cat/, 'paw']
+  [/paw|pet|animal|dog|cat/, 'paw'],
 ];
 
 /** The stitched icon for a stored icon name, or null when nothing fits. */

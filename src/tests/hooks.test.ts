@@ -4,12 +4,12 @@ const { envState, mocks } = vi.hoisted(() => ({
   envState: {} as Record<string, string | undefined>,
   mocks: {
     getSession: vi.fn(),
-    getUserRole: vi.fn()
-  }
+    getUserRole: vi.fn(),
+  },
 }));
 
 vi.mock('$env/dynamic/private', () => ({
-  env: new Proxy(envState, { get: (_, key: string) => envState[key] })
+  env: new Proxy(envState, { get: (_, key: string) => envState[key] }),
 }));
 vi.mock('$lib/server/session', () => ({ getSession: mocks.getSession }));
 vi.mock('$lib/server/auth', () => ({ getUserRole: mocks.getUserRole }));
@@ -38,7 +38,7 @@ describe('hooks.server handle — role authorization', () => {
       userId: 'user-1',
       email: 'jane@example.com',
       role: 'ngo',
-      expiresAt: Date.now() + 60_000
+      expiresAt: Date.now() + 60_000,
     });
 
     const event = makeEvent({ mm_session: 'sess-1' });

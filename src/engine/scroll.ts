@@ -10,7 +10,14 @@ const raf = (time: number) => lenis?.raf(time * 1000);
 export function smoothPanel(wrapper: HTMLElement, content: HTMLElement) {
   stopSmoothPanel();
   if (prefersStill()) return;
-  lenis = new Lenis({ wrapper, content, lerp: 0.12, wheelMultiplier: 1, touchMultiplier: 1.2, anchors: true });
+  lenis = new Lenis({
+    wrapper,
+    content,
+    lerp: 0.12,
+    wheelMultiplier: 1,
+    touchMultiplier: 1.2,
+    anchors: true,
+  });
   gsap.ticker.add(raf);
   gsap.ticker.lagSmoothing(0);
 }

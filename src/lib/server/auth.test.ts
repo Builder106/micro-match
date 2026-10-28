@@ -6,39 +6,49 @@ const { envState, mocks } = vi.hoisted(() => ({
   envState: {} as Record<string, string | undefined>,
   mocks: {
     accountGet: vi.fn(),
-    isUserInTeam: vi.fn()
-  }
+    isUserInTeam: vi.fn(),
+  },
 }));
 
 vi.mock('$env/dynamic/private', () => ({
-  env: new Proxy(envState, { get: (_, key: string) => envState[key] })
+  env: new Proxy(envState, { get: (_, key: string) => envState[key] }),
 }));
 vi.mock('node-appwrite', () => ({
   Client: class {
-    setEndpoint() { return this; }
-    setProject() { return this; }
-    setJWT() { return this; }
+    setEndpoint() {
+      return this;
+    }
+    setProject() {
+      return this;
+    }
+    setJWT() {
+      return this;
+    }
   },
-  Account: class { get = mocks.accountGet; }
+  Account: class {
+    get = mocks.accountGet;
+  },
 }));
 vi.mock('./teams', () => ({
   NGO_TEAM_ID: 'ngo-team',
   VOLUNTEER_TEAM_ID: 'volunteer-team',
-  isUserInTeam: mocks.isUserInTeam
+  isUserInTeam: mocks.isUserInTeam,
 }));
 
 import { getUserRole } from './auth';
 import { createRequestEvent } from '../../tests/helpers/createLoadEvent';
 
-function makeEvent(opts: {
-  authorization?: string;
-  localsRole?: string;
-} = {}) {
+function makeEvent(
+  opts: {
+    authorization?: string;
+    localsRole?: string;
+  } = {},
+) {
   return createRequestEvent({
     locals: opts.localsRole ? { userRole: opts.localsRole as App.Locals['userRole'] } : {},
     request: new Request('http://localhost/', {
-      headers: opts.authorization ? { authorization: opts.authorization } : {}
-    })
+      headers: opts.authorization ? { authorization: opts.authorization } : {},
+    }),
   });
 }
 
@@ -93,7 +103,9 @@ describe('getUserRole', () => {
     envState.APPWRITE_ENDPOINT = 'https://fake.appwrite.io/v1';
     envState.APPWRITE_PROJECT_ID = 'proj';
     mocks.accountGet.mockResolvedValue({ $id: 'user-1', prefs: {} });
-    mocks.isUserInTeam.mockImplementation(async (_userId: string, teamId: string) => teamId === 'ngo-team');
+    mocks.isUserInTeam.mockImplementation(
+      async (_userId: string, teamId: string) => teamId === 'ngo-team',
+    );
 
     const role = await getUserRole(makeEvent({ authorization: 'Bearer good-jwt' }));
 
@@ -105,7 +117,9 @@ describe('getUserRole', () => {
     envState.APPWRITE_ENDPOINT = 'https://fake.appwrite.io/v1';
     envState.APPWRITE_PROJECT_ID = 'proj';
     mocks.accountGet.mockResolvedValue({ $id: 'user-1', prefs: {} });
-    mocks.isUserInTeam.mockImplementation(async (_userId: string, teamId: string) => teamId === 'volunteer-team');
+    mocks.isUserInTeam.mockImplementation(
+      async (_userId: string, teamId: string) => teamId === 'volunteer-team',
+    );
 
     expect(await getUserRole(makeEvent({ authorization: 'Bearer good-jwt' }))).toBe('volunteer');
   });
@@ -136,8 +150,12 @@ describe('getUserRole', () => {
       .mockResolvedValueOnce({ $id: 'user-1', prefs: null })
       .mockResolvedValueOnce({ $id: 'user-1', prefs: { role: 'admin' } });
 
-    await expect(getUserRole(makeEvent({ authorization: 'Bearer good-jwt' }))).resolves.toBe('user');
-    await expect(getUserRole(makeEvent({ authorization: 'Bearer good-jwt' }))).resolves.toBe('user');
+    await expect(getUserRole(makeEvent({ authorization: 'Bearer good-jwt' }))).resolves.toBe(
+      'user',
+    );
+    await expect(getUserRole(makeEvent({ authorization: 'Bearer good-jwt' }))).resolves.toBe(
+      'user',
+    );
   });
 
   it('falls back to prefs when an Appwrite user has no id for team checks', async () => {
@@ -155,7 +173,7 @@ describe('getUserRole', () => {
       configurable: true,
       get() {
         throw new Error('locals unavailable');
-      }
+      },
     });
 
     expect(await getUserRole(event)).toBe('anonymous');
@@ -172,12 +190,16 @@ describe('getUserRole', () => {
 
   it('does not accept NGO_API_TOKEN as authentication', async () => {
     envState.NGO_API_TOKEN = 'shared-ngo-token';
-    expect(await getUserRole(makeEvent({ authorization: 'Bearer shared-ngo-token' }))).toBe('anonymous');
+    expect(await getUserRole(makeEvent({ authorization: 'Bearer shared-ngo-token' }))).toBe(
+      'anonymous',
+    );
   });
 
   it('does not accept USER_API_TOKEN as authentication', async () => {
     envState.USER_API_TOKEN = 'shared-user-token';
-    expect(await getUserRole(makeEvent({ authorization: 'Bearer shared-user-token' }))).toBe('anonymous');
+    expect(await getUserRole(makeEvent({ authorization: 'Bearer shared-user-token' }))).toBe(
+      'anonymous',
+    );
   });
 
   it('does not grant a role if the team-membership check itself throws', async () => {

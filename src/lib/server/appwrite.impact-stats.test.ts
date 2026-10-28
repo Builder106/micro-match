@@ -3,13 +3,29 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 // Force in-memory mode by mocking env to empty, matching appwrite.test.ts.
 const { envState } = vi.hoisted(() => ({ envState: {} as Record<string, string | undefined> }));
 vi.mock('$env/dynamic/private', () => ({
-  env: new Proxy(envState, { get: (_, key: string) => envState[key] })
+  env: new Proxy(envState, { get: (_, key: string) => envState[key] }),
 }));
 vi.mock('node-appwrite', () => ({
-  Client: class { setEndpoint() { return this; } setProject() { return this; } setKey() { return this; } },
+  Client: class {
+    setEndpoint() {
+      return this;
+    }
+    setProject() {
+      return this;
+    }
+    setKey() {
+      return this;
+    }
+  },
   TablesDB: class {},
   ID: { unique: () => 'unique' },
-  Query: { equal: () => '', limit: () => '', orderDesc: () => '', lessThanEqual: () => '', lessThan: () => '' }
+  Query: {
+    equal: () => '',
+    limit: () => '',
+    orderDesc: () => '',
+    lessThanEqual: () => '',
+    lessThan: () => '',
+  },
 }));
 
 import {
@@ -19,7 +35,7 @@ import {
   awardBadge,
   deleteTask,
   getTasks,
-  getPublicImpactStats
+  getPublicImpactStats,
 } from './appwrite';
 
 async function wipeTasks() {
@@ -58,7 +74,7 @@ describe('getPublicImpactStats (in-memory mode)', () => {
       tasksCompleted: 2, // claim1, claim2 are 'approved'
       activeVolunteers: 2, // distinct userId among approved claims: u1, u2
       ngosOnboarded: 2, // distinct orgId across tasks: org-a, org-b
-      badgesAwarded: 3
+      badgesAwarded: 3,
     });
   });
 });

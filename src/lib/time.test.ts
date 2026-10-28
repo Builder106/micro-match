@@ -23,7 +23,10 @@ describe('deadlineLabel', () => {
   const inDays = (d: number) => new Date(now + d * 86_400_000 - 1000).toISOString();
   it('describes past, near and far deadlines', () => {
     expect(deadlineLabel(inDays(-2), now)).toMatchObject({ text: 'Closed Oct 14', tone: 'late' });
-    expect(deadlineLabel(new Date(now - 1000).toISOString(), now)).toMatchObject({ text: 'Due today', tone: 'soon' });
+    expect(deadlineLabel(new Date(now - 1000).toISOString(), now)).toMatchObject({
+      text: 'Due today',
+      tone: 'soon',
+    });
     expect(deadlineLabel(inDays(1), now)?.text).toBe('Due tomorrow');
     expect(deadlineLabel(inDays(5), now)?.text).toBe('Due in 5 days');
     expect(deadlineLabel(inDays(30), now)).toMatchObject({ text: 'Due Nov 15', tone: 'normal' });

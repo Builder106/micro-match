@@ -14,41 +14,59 @@ const { envState, mocks, AppwriteCtors, teamIds } = vi.hoisted(() => {
       setTasksVerifiedForOrg: vi.fn(),
       // Spy on what the endpoint persists to user prefs.
       usersGet: vi.fn().mockImplementation(async () => ({ prefs: { ...userPrefs } })),
-      usersUpdatePrefs: vi.fn().mockImplementation(async (_id: string, p: Record<string, unknown>) => {
-        Object.keys(userPrefs).forEach((k) => delete userPrefs[k]);
-        Object.assign(userPrefs, p);
-      })
+      usersUpdatePrefs: vi
+        .fn()
+        .mockImplementation(async (_id: string, p: Record<string, unknown>) => {
+          Object.keys(userPrefs).forEach((k) => delete userPrefs[k]);
+          Object.assign(userPrefs, p);
+        }),
     },
     AppwriteCtors: { userPrefs },
-    teamIds: { ngo: 'team-ngo', volunteer: 'team-vol' }
+    teamIds: { ngo: 'team-ngo', volunteer: 'team-vol' },
   };
 });
 
 vi.mock('$env/dynamic/private', () => ({
-  env: new Proxy(envState, { get: (_, key: string) => envState[key] })
+  env: new Proxy(envState, { get: (_, key: string) => envState[key] }),
 }));
 
 vi.mock('node-appwrite', () => ({
   Client: class {
-    setEndpoint() { return this; }
-    setProject() { return this; }
-    setKey() { return this; }
-    setJWT() { return this; }
+    setEndpoint() {
+      return this;
+    }
+    setProject() {
+      return this;
+    }
+    setKey() {
+      return this;
+    }
+    setJWT() {
+      return this;
+    }
   },
-  Account: class { get = mocks.accountGet; },
-  Users: class { get = mocks.usersGet; updatePrefs = mocks.usersUpdatePrefs; }
+  Account: class {
+    get = mocks.accountGet;
+  },
+  Users: class {
+    get = mocks.usersGet;
+    updatePrefs = mocks.usersUpdatePrefs;
+  },
 }));
 
-
 vi.mock('$lib/server/teams', () => ({
-  get NGO_TEAM_ID() { return teamIds.ngo; },
-  get VOLUNTEER_TEAM_ID() { return teamIds.volunteer; },
+  get NGO_TEAM_ID() {
+    return teamIds.ngo;
+  },
+  get VOLUNTEER_TEAM_ID() {
+    return teamIds.volunteer;
+  },
   addUserToTeam: mocks.addUserToTeam,
-  removeUserFromTeam: mocks.removeUserFromTeam
+  removeUserFromTeam: mocks.removeUserFromTeam,
 }));
 vi.mock('$lib/server/verifications', () => ({
   withdrawVerification: mocks.withdrawVerification,
-  setUserVerificationPref: mocks.setUserVerificationPref
+  setUserVerificationPref: mocks.setUserVerificationPref,
 }));
 vi.mock('$lib/server/appwrite', () => ({ setTasksVerifiedForOrg: mocks.setTasksVerifiedForOrg }));
 
@@ -56,16 +74,17 @@ import { POST } from '../../routes/api/profile/role/+server';
 
 function makeEvent(opts: { userId?: string | null; jwt?: string; body?: unknown }) {
   const headers = opts.jwt ? { authorization: `Bearer ${opts.jwt}` } : undefined;
-  const request = opts.body === undefined
-    ? new Request('http://test/api/profile/role')
-    : new Request('http://test/api/profile/role', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', ...headers },
-      body: JSON.stringify(opts.body)
-    });
+  const request =
+    opts.body === undefined
+      ? new Request('http://test/api/profile/role')
+      : new Request('http://test/api/profile/role', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json', ...headers },
+          body: JSON.stringify(opts.body),
+        });
   return createRequestEvent({
     request,
-    session: opts.userId ? { user: { id: opts.userId } } : null
+    session: opts.userId ? { user: { id: opts.userId } } : null,
   });
 }
 
@@ -77,10 +96,12 @@ describe('POST /api/profile/role', () => {
     teamIds.ngo = 'team-ngo';
     teamIds.volunteer = 'team-vol';
     mocks.usersGet.mockImplementation(async () => ({ prefs: { ...AppwriteCtors.userPrefs } }));
-    mocks.usersUpdatePrefs.mockImplementation(async ({ prefs: p }: { userId: string; prefs: Record<string, unknown> }) => {
-      Object.keys(AppwriteCtors.userPrefs).forEach((k) => delete AppwriteCtors.userPrefs[k]);
-      Object.assign(AppwriteCtors.userPrefs, p);
-    });
+    mocks.usersUpdatePrefs.mockImplementation(
+      async ({ prefs: p }: { userId: string; prefs: Record<string, unknown> }) => {
+        Object.keys(AppwriteCtors.userPrefs).forEach((k) => delete AppwriteCtors.userPrefs[k]);
+        Object.assign(AppwriteCtors.userPrefs, p);
+      },
+    );
   });
 
   it('returns 401 with neither session nor JWT', async () => {
@@ -94,9 +115,9 @@ describe('POST /api/profile/role', () => {
         request: new Request('http://test/api/profile/role', {
           method: 'POST',
           headers: { 'content-type': 'application/json', authorization: authValue },
-          body: JSON.stringify({ newRole: 'ngo' })
+          body: JSON.stringify({ newRole: 'ngo' }),
         }),
-        session: null
+        session: null,
       });
     };
 
@@ -123,10 +144,6 @@ describe('POST /api/profile/role', () => {
     const resErr = await POST(makeEvent({ jwt: 'valid-jwt-token', body: { newRole: 'ngo' } }));
     expect(resErr.status).toBe(401);
   });
-
-
-
-
 
   it('returns 400 for invalid newRole', async () => {
     const res = await POST(makeEvent({ userId: 'u1', body: { newRole: 'staff' } }));

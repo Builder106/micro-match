@@ -1,157 +1,258 @@
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>A claim earns badges only when the NGO approves it</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&family=IBM+Plex+Sans:wght@400;600&display=swap">
-<style>
-:root { color-scheme: light dark; --bg: #ffffff; --ink: #1f2328; --muted: #59636e; --edge: #59636e; --box: #8c959f; --group: #d1d9e0; --groupfill: #f6f8fa; --accent: #0969da; }
-@media (prefers-color-scheme: dark) { :root { --bg: #0d1117; --ink: #f0f6fc; --muted: #9198a1; --edge: #9198a1; --box: #656c76; --group: #3d444d; --groupfill: #151b23; --accent: #4493f8; } }
-html, body { margin: 0; background: var(--bg); }
-main { max-width: 720px; margin: 0 auto; }
-svg { display: block; width: 100%; height: auto; }
-text { font-family: "IBM Plex Sans", system-ui, sans-serif; fill: var(--ink); }
-.mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
-.muted { fill: var(--muted); }
-.accent-text { fill: var(--accent); }
-.bg, .halo { fill: var(--bg); }
-.node { fill: var(--bg); stroke-width: 1.25; }
-.node.box { stroke: var(--box); }
-.node.accent { stroke: var(--accent); stroke-width: 2; }
-.group { fill: var(--groupfill); stroke: var(--group); }
-.boundary { fill: none; stroke: var(--box); stroke-dasharray: 6 6; }
-.edge { fill: none; stroke: var(--edge); stroke-width: 1.5; }
-.edge.accent { stroke: var(--accent); stroke-width: 2; }
-.edge.dashed { stroke-dasharray: 6 5; }
-.lifeline { fill: none; stroke: var(--group); stroke-dasharray: 4 5; }
-.tip { fill: var(--edge); }
-.tip-accent { fill: var(--accent); }
-</style>
-</head>
-<body>
-<main>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 359" role="img" aria-labelledby="diagram-title diagram-desc">
-<title id="diagram-title">A claim earns badges only when the NGO approves it</title>
-<desc id="diagram-desc">An NGO posts a task. A volunteer claims it and sends proof in the same request; notes that fail the safety check stop the claim from being created. The claim waits as pending. If the NGO approves it, the claim is approved and badges are awarded from the org&#x27;s badge rules. If the NGO rejects it, no badge is awarded.</desc>
-<defs>
-<marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path class="tip" d="M0,0 L10,5 L0,10 Z"/></marker>
-<marker id="arrow-accent" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path class="tip-accent" d="M0,0 L10,5 L0,10 Z"/></marker>
-</defs>
-<rect class="bg" width="720" height="359"/>
-<rect class="node box" x="16" y="16" width="300" height="67" rx="6"/>
-<text x="30" y="43" font-size="16" font-weight="600">Open task</text>
-<text x="30" y="64" font-size="14" class="muted">posted by an NGO</text>
-<rect class="node box" x="416" y="16" width="288" height="67" rx="6"/>
-<text x="430" y="43" font-size="16" font-weight="600">No claim</text>
-<text x="430" y="64" font-size="14" class="muted">notes fail the safety check</text>
-<rect class="node accent" x="16" y="146" width="300" height="67" rx="6"/>
-<text x="30" y="173" font-size="16" font-weight="600">Pending claim</text>
-<text x="30" y="194" font-size="14" class="muted">proof URL and notes</text>
-<rect class="node box" x="416" y="146" width="288" height="67" rx="6"/>
-<text x="430" y="173" font-size="16" font-weight="600">Rejected</text>
-<text x="430" y="194" font-size="14" class="muted">no badge</text>
-<rect class="node box" x="16" y="276" width="300" height="67" rx="6"/>
-<text x="30" y="303" font-size="16" font-weight="600">Approved</text>
-<text x="30" y="324" font-size="14" class="muted">badges from the org&#x27;s rules</text>
-<path class="edge" d="M166,83 L166,146" marker-end="url(#arrow)"/>
-<rect class="halo" x="170" y="106.5" width="133.44" height="19"/>
-<text x="174" y="119.5" font-size="14" class="label">volunteer claims</text>
-<path class="edge dashed" d="M316,49.5 L416,49.5" marker-end="url(#arrow)"/>
-<rect class="halo" x="334.56" y="28.5" width="62.88" height="19"/>
-<text x="366" y="41.5" font-size="14" class="label" text-anchor="middle">blocked</text>
-<path class="edge dashed" d="M316,179.5 L416,179.5" marker-end="url(#arrow)"/>
-<rect class="halo" x="318.88" y="158.5" width="94.24" height="19"/>
-<text x="366" y="171.5" font-size="14" class="label" text-anchor="middle">NGO rejects</text>
-<path class="edge accent" d="M166,213 L166,276" marker-end="url(#arrow-accent)"/>
-<rect class="halo" x="170" y="236.5" width="102.08" height="19"/>
-<text x="174" y="249.5" font-size="14" class="label accent-text">NGO approves</text>
-</svg>
-</main>
-<script type="application/json" id="diagram-spec">
-{
-  "title": "A claim earns badges only when the NGO approves it",
-  "desc": "An NGO posts a task. A volunteer claims it and sends proof in the same request; notes that fail the safety check stop the claim from being created. The claim waits as pending. If the NGO approves it, the claim is approved and badges are awarded from the org's badge rules. If the NGO rejects it, no badge is awarded.",
-  "width": 720,
-  "nodes": [
-    {
-      "id": "task",
-      "x": 16,
-      "y": 16,
-      "w": 300,
-      "title": "Open task",
-      "lines": [
-        "posted by an NGO"
-      ]
-    },
-    {
-      "id": "blk",
-      "x": 416,
-      "y": 16,
-      "w": 288,
-      "title": "No claim",
-      "lines": [
-        "notes fail the safety check"
-      ]
-    },
-    {
-      "id": "pend",
-      "x": 16,
-      "y": 146,
-      "w": 300,
-      "accent": true,
-      "title": "Pending claim",
-      "lines": [
-        "proof URL and notes"
-      ]
-    },
-    {
-      "id": "rej",
-      "x": 416,
-      "y": 146,
-      "w": 288,
-      "title": "Rejected",
-      "lines": [
-        "no badge"
-      ]
-    },
-    {
-      "id": "ok",
-      "x": 16,
-      "y": 276,
-      "w": 300,
-      "title": "Approved",
-      "lines": [
-        "badges from the org's rules"
-      ]
-    }
-  ],
-  "edges": [
-    {
-      "from": "task.b",
-      "to": "pend.t",
-      "label": "volunteer claims"
-    },
-    {
-      "from": "task.r",
-      "to": "blk.l",
-      "label": "blocked",
-      "dashed": true
-    },
-    {
-      "from": "pend.r",
-      "to": "rej.l",
-      "label": "NGO rejects",
-      "dashed": true
-    },
-    {
-      "from": "pend.b",
-      "to": "ok.t",
-      "label": "NGO approves",
-      "accent": true
-    }
-  ]
-}
-</script>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>A claim earns badges only when the NGO approves it</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&family=IBM+Plex+Sans:wght@400;600&display=swap"
+    />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #ffffff;
+        --ink: #1f2328;
+        --muted: #59636e;
+        --edge: #59636e;
+        --box: #8c959f;
+        --group: #d1d9e0;
+        --groupfill: #f6f8fa;
+        --accent: #0969da;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0d1117;
+          --ink: #f0f6fc;
+          --muted: #9198a1;
+          --edge: #9198a1;
+          --box: #656c76;
+          --group: #3d444d;
+          --groupfill: #151b23;
+          --accent: #4493f8;
+        }
+      }
+      html,
+      body {
+        margin: 0;
+        background: var(--bg);
+      }
+      main {
+        max-width: 720px;
+        margin: 0 auto;
+      }
+      svg {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      text {
+        font-family: 'IBM Plex Sans', system-ui, sans-serif;
+        fill: var(--ink);
+      }
+      .mono {
+        font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      }
+      .muted {
+        fill: var(--muted);
+      }
+      .accent-text {
+        fill: var(--accent);
+      }
+      .bg,
+      .halo {
+        fill: var(--bg);
+      }
+      .node {
+        fill: var(--bg);
+        stroke-width: 1.25;
+      }
+      .node.box {
+        stroke: var(--box);
+      }
+      .node.accent {
+        stroke: var(--accent);
+        stroke-width: 2;
+      }
+      .group {
+        fill: var(--groupfill);
+        stroke: var(--group);
+      }
+      .boundary {
+        fill: none;
+        stroke: var(--box);
+        stroke-dasharray: 6 6;
+      }
+      .edge {
+        fill: none;
+        stroke: var(--edge);
+        stroke-width: 1.5;
+      }
+      .edge.accent {
+        stroke: var(--accent);
+        stroke-width: 2;
+      }
+      .edge.dashed {
+        stroke-dasharray: 6 5;
+      }
+      .lifeline {
+        fill: none;
+        stroke: var(--group);
+        stroke-dasharray: 4 5;
+      }
+      .tip {
+        fill: var(--edge);
+      }
+      .tip-accent {
+        fill: var(--accent);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 720 359"
+        role="img"
+        aria-labelledby="diagram-title diagram-desc"
+      >
+        <title id="diagram-title">A claim earns badges only when the NGO approves it</title>
+        <desc id="diagram-desc">
+          An NGO posts a task. A volunteer claims it and sends proof in the same request; notes that
+          fail the safety check stop the claim from being created. The claim waits as pending. If
+          the NGO approves it, the claim is approved and badges are awarded from the org&#x27;s
+          badge rules. If the NGO rejects it, no badge is awarded.
+        </desc>
+        <defs>
+          <marker
+            id="arrow"
+            viewBox="0 0 10 10"
+            refX="10"
+            refY="5"
+            markerWidth="9"
+            markerHeight="9"
+            markerUnits="userSpaceOnUse"
+            orient="auto-start-reverse"
+          >
+            <path class="tip" d="M0,0 L10,5 L0,10 Z" />
+          </marker>
+          <marker
+            id="arrow-accent"
+            viewBox="0 0 10 10"
+            refX="10"
+            refY="5"
+            markerWidth="10"
+            markerHeight="10"
+            markerUnits="userSpaceOnUse"
+            orient="auto-start-reverse"
+          >
+            <path class="tip-accent" d="M0,0 L10,5 L0,10 Z" />
+          </marker>
+        </defs>
+        <rect class="bg" width="720" height="359" />
+        <rect class="node box" x="16" y="16" width="300" height="67" rx="6" />
+        <text x="30" y="43" font-size="16" font-weight="600">Open task</text>
+        <text x="30" y="64" font-size="14" class="muted">posted by an NGO</text>
+        <rect class="node box" x="416" y="16" width="288" height="67" rx="6" />
+        <text x="430" y="43" font-size="16" font-weight="600">No claim</text>
+        <text x="430" y="64" font-size="14" class="muted">notes fail the safety check</text>
+        <rect class="node accent" x="16" y="146" width="300" height="67" rx="6" />
+        <text x="30" y="173" font-size="16" font-weight="600">Pending claim</text>
+        <text x="30" y="194" font-size="14" class="muted">proof URL and notes</text>
+        <rect class="node box" x="416" y="146" width="288" height="67" rx="6" />
+        <text x="430" y="173" font-size="16" font-weight="600">Rejected</text>
+        <text x="430" y="194" font-size="14" class="muted">no badge</text>
+        <rect class="node box" x="16" y="276" width="300" height="67" rx="6" />
+        <text x="30" y="303" font-size="16" font-weight="600">Approved</text>
+        <text x="30" y="324" font-size="14" class="muted">badges from the org&#x27;s rules</text>
+        <path class="edge" d="M166,83 L166,146" marker-end="url(#arrow)" />
+        <rect class="halo" x="170" y="106.5" width="133.44" height="19" />
+        <text x="174" y="119.5" font-size="14" class="label">volunteer claims</text>
+        <path class="edge dashed" d="M316,49.5 L416,49.5" marker-end="url(#arrow)" />
+        <rect class="halo" x="334.56" y="28.5" width="62.88" height="19" />
+        <text x="366" y="41.5" font-size="14" class="label" text-anchor="middle">blocked</text>
+        <path class="edge dashed" d="M316,179.5 L416,179.5" marker-end="url(#arrow)" />
+        <rect class="halo" x="318.88" y="158.5" width="94.24" height="19" />
+        <text x="366" y="171.5" font-size="14" class="label" text-anchor="middle">NGO rejects</text>
+        <path class="edge accent" d="M166,213 L166,276" marker-end="url(#arrow-accent)" />
+        <rect class="halo" x="170" y="236.5" width="102.08" height="19" />
+        <text x="174" y="249.5" font-size="14" class="label accent-text">NGO approves</text>
+      </svg>
+    </main>
+    <script type="application/json" id="diagram-spec">
+      {
+        "title": "A claim earns badges only when the NGO approves it",
+        "desc": "An NGO posts a task. A volunteer claims it and sends proof in the same request; notes that fail the safety check stop the claim from being created. The claim waits as pending. If the NGO approves it, the claim is approved and badges are awarded from the org's badge rules. If the NGO rejects it, no badge is awarded.",
+        "width": 720,
+        "nodes": [
+          {
+            "id": "task",
+            "x": 16,
+            "y": 16,
+            "w": 300,
+            "title": "Open task",
+            "lines": ["posted by an NGO"]
+          },
+          {
+            "id": "blk",
+            "x": 416,
+            "y": 16,
+            "w": 288,
+            "title": "No claim",
+            "lines": ["notes fail the safety check"]
+          },
+          {
+            "id": "pend",
+            "x": 16,
+            "y": 146,
+            "w": 300,
+            "accent": true,
+            "title": "Pending claim",
+            "lines": ["proof URL and notes"]
+          },
+          {
+            "id": "rej",
+            "x": 416,
+            "y": 146,
+            "w": 288,
+            "title": "Rejected",
+            "lines": ["no badge"]
+          },
+          {
+            "id": "ok",
+            "x": 16,
+            "y": 276,
+            "w": 300,
+            "title": "Approved",
+            "lines": ["badges from the org's rules"]
+          }
+        ],
+        "edges": [
+          {
+            "from": "task.b",
+            "to": "pend.t",
+            "label": "volunteer claims"
+          },
+          {
+            "from": "task.r",
+            "to": "blk.l",
+            "label": "blocked",
+            "dashed": true
+          },
+          {
+            "from": "pend.r",
+            "to": "rej.l",
+            "label": "NGO rejects",
+            "dashed": true
+          },
+          {
+            "from": "pend.b",
+            "to": "ok.t",
+            "label": "NGO approves",
+            "accent": true
+          }
+        ]
+      }
+    </script>
+  </body>
 </html>

@@ -6,7 +6,24 @@ import globals from 'globals';
 
 export default [
   // Ignores
-  { ignores: ['**/node_modules/**', 'build/**', 'dist/**', '.svelte-kit/**', '.vercel/**', 'coverage/**', 'audit-output/**', 'src/types/**/*.d.ts', 'src/lib/paraglide/**', 'src/paraglide/**', '**/*.min.js', '**/*.min.ts', 'trailer/**', 'ui-demo/**'] },
+  {
+    ignores: [
+      '**/node_modules/**',
+      'build/**',
+      'dist/**',
+      '.svelte-kit/**',
+      '.vercel/**',
+      'coverage/**',
+      'audit-output/**',
+      'src/types/**/*.d.ts',
+      'src/lib/paraglide/**',
+      'src/paraglide/**',
+      '**/*.min.js',
+      '**/*.min.ts',
+      'trailer/**',
+      'ui-demo/**',
+    ],
+  },
 
   // Core JS/TS configs
   js.configs.recommended,
@@ -22,9 +39,9 @@ export default [
         ...globals.node,
         RequestInfo: 'readonly',
         RequestInit: 'readonly',
-        ResponseInit: 'readonly'
-      }
-    }
+        ResponseInit: 'readonly',
+      },
+    },
   },
 
   // Svelte support
@@ -34,16 +51,22 @@ export default [
     languageOptions: {
       parserOptions: {
         parser: tseslint.parser,
-        ecmaVersion: 'latest'
-      }
-    }
+        ecmaVersion: 'latest',
+      },
+    },
   },
 
   // Type-aware: flag calls to APIs marked @deprecated
   {
     files: ['src/**/*.ts', 'src/**/*.svelte', 'scripts/**/*.ts'],
-    languageOptions: { parserOptions: { projectService: true, tsconfigRootDir: import.meta.dirname, extraFileExtensions: ['.svelte'] } },
-    rules: { '@typescript-eslint/no-deprecated': 'error' }
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+        extraFileExtensions: ['.svelte'],
+      },
+    },
+    rules: { '@typescript-eslint/no-deprecated': 'error' },
   },
 
   {
@@ -78,7 +101,10 @@ export default [
     rules: {
       '@typescript-eslint/no-explicit-any': 'error',
       'no-empty': ['error', { allowEmptyCatch: true }],
-      '@typescript-eslint/no-unused-vars': ['error', { caughtErrors: 'none', argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { caughtErrors: 'none', argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
       '@typescript-eslint/no-unused-expressions': 'error',
       '@typescript-eslint/no-this-alias': 'error',
       'no-useless-assignment': 'error',
@@ -106,11 +132,11 @@ export default [
       'no-async-promise-executor': 'error',
       'getter-return': 'error',
       'no-unassigned-vars': 'error',
-      'preserve-caught-error': 'error'
-    }
+      'preserve-caught-error': 'error',
+    },
   },
 
   // Prettier last
   eslintConfigPrettier,
-  ...svelte.configs['flat/prettier']
+  ...svelte.configs['flat/prettier'],
 ];

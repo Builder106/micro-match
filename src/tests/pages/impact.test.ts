@@ -4,14 +4,14 @@ const { mocks } = vi.hoisted(() => ({
   mocks: {
     getTasks: vi.fn(),
     getClaims: vi.fn(),
-    getBadges: vi.fn()
-  }
+    getBadges: vi.fn(),
+  },
 }));
 
 vi.mock('$lib/server/appwrite', () => ({
   getTasks: mocks.getTasks,
   getClaims: mocks.getClaims,
-  getBadges: mocks.getBadges
+  getBadges: mocks.getBadges,
 }));
 
 import { load } from '../../routes/impact/+page.server';
@@ -27,7 +27,7 @@ describe('/impact load', () => {
       { id: 't1', orgId: 'org-1', estimatedMinutes: 15, tags: ['#Spanish', 'health'] },
       { id: 't2', orgId: 'org-2', estimatedMinutes: 20, tags: ['data'] },
       { id: 't3', orgId: 'org-1', estimatedMinutes: 30, tags: ['#Spanish'] },
-      { id: 't4', orgId: 'org-3', estimatedMinutes: 45, tags: [] }
+      { id: 't4', orgId: 'org-3', estimatedMinutes: 45, tags: [] },
     ]);
 
     mocks.getClaims.mockResolvedValue([
@@ -35,12 +35,12 @@ describe('/impact load', () => {
       { id: 'c2', taskId: 't2', userId: 'u2', status: 'approved' },
       { id: 'c3', taskId: 't3', userId: 'u1', status: 'approved' },
       { id: 'c4', taskId: 't4', userId: 'u3', status: 'approved' },
-      { id: 'c5', taskId: 't1', userId: 'u4', status: 'pending' } // Pending claim should be ignored
+      { id: 'c5', taskId: 't1', userId: 'u4', status: 'pending' }, // Pending claim should be ignored
     ]);
 
     mocks.getBadges.mockResolvedValue([
       { id: 'b1', userId: 'u1' },
-      { id: 'b2', userId: 'u2' }
+      { id: 'b2', userId: 'u2' },
     ]);
 
     const result = requireLoadResult(await load(createServerLoadEventFor<typeof load>()));
@@ -57,11 +57,13 @@ describe('/impact load', () => {
       '15m': 1,
       '20m': 1,
       '30m': 1,
-      'other': 1
+      other: 1,
     });
 
     expect(result.stats.causeBreakdown.length).toBeGreaterThan(0);
-    const spanish = result.stats.causeBreakdown.find((c: { name: string; count: number }) => c.name === 'Spanish');
+    const spanish = result.stats.causeBreakdown.find(
+      (c: { name: string; count: number }) => c.name === 'Spanish',
+    );
     expect(spanish).toBeDefined();
     expect(spanish?.count).toBe(2);
   });
@@ -69,7 +71,7 @@ describe('/impact load', () => {
   it('handles claims referencing tasks that no longer exist', async () => {
     mocks.getTasks.mockResolvedValue([]);
     mocks.getClaims.mockResolvedValue([
-      { id: 'c1', taskId: 'deleted-task', userId: 'u1', status: 'approved' }
+      { id: 'c1', taskId: 'deleted-task', userId: 'u1', status: 'approved' },
     ]);
     mocks.getBadges.mockResolvedValue([]);
 
@@ -79,7 +81,6 @@ describe('/impact load', () => {
     expect(result.stats.totalMinutesContributed).toBe(15); // fallback 15 mins
     expect(result.stats.durationCounts['15m']).toBe(1);
   });
-
 
   it('handles empty database records safely', async () => {
     mocks.getTasks.mockResolvedValue([]);

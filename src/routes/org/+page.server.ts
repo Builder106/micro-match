@@ -41,7 +41,9 @@ export const actions: Actions = {
       .split(',')
       .map((t) => t.trim())
       .filter(Boolean);
-    const estimatedMinutes = Number.isFinite(Number(estimatedMinutesRaw)) ? Number(estimatedMinutesRaw) : undefined;
+    const estimatedMinutes = Number.isFinite(Number(estimatedMinutesRaw))
+      ? Number(estimatedMinutesRaw)
+      : undefined;
 
     if (!title || !shortDescription || !description) {
       return { success: false, error: 'Missing required fields' };
@@ -62,9 +64,8 @@ export const actions: Actions = {
       tags,
       estimatedMinutes,
       orgId,
-      isVerified
+      isVerified,
     });
     return { success: true, taskId: created.id };
-  }
+  },
 };
-

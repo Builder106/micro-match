@@ -23,17 +23,29 @@ const rect = (x: number, y: number, w: number, h: number, fabric: number): Block
     [x, y],
     [x + w, y],
     [x + w, y + h],
-    [x, y + h]
+    [x, y + h],
   ],
-  fabric
+  fabric,
 });
-const tri = (a: [number, number], b: [number, number], c: [number, number], fabric: number): BlockPiece => ({
+const tri = (
+  a: [number, number],
+  b: [number, number],
+  c: [number, number],
+  fabric: number,
+): BlockPiece => ({
   points: [a, b, c],
-  fabric
+  fabric,
 });
 
 /** A half-square triangle unit: the square split on a diagonal. `dir` picks which diagonal. */
-function hst(x: number, y: number, s: number, dir: 0 | 1 | 2 | 3, a: number, b: number): BlockPiece[] {
+function hst(
+  x: number,
+  y: number,
+  s: number,
+  dir: 0 | 1 | 2 | 3,
+  a: number,
+  b: number,
+): BlockPiece[] {
   const tl: [number, number] = [x, y];
   const tr: [number, number] = [x + s, y];
   const br: [number, number] = [x + s, y + s];
@@ -51,14 +63,15 @@ function qst(x: number, y: number, s: number, ab: number, lr: number): BlockPiec
     tri([x, y], [x + s, y], c, ab),
     tri([x + s, y], [x + s, y + s], c, lr),
     tri([x + s, y + s], [x, y + s], c, ab),
-    tri([x, y + s], [x, y], c, lr)
+    tri([x, y + s], [x, y], c, lr),
   ];
 }
 
 function ninePatch(): BlockPiece[] {
   const t = S / 3;
   const out: BlockPiece[] = [];
-  for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++) out.push(rect(c * t, r * t, t, t, (r + c) % 2 === 0 ? 0 : 2));
+  for (let r = 0; r < 3; r++)
+    for (let c = 0; c < 3; c++) out.push(rect(c * t, r * t, t, t, (r + c) % 2 === 0 ? 0 : 2));
   return out;
 }
 
@@ -71,10 +84,12 @@ function railFence(): BlockPiece[] {
       for (let i = 0; i < 3; i++) {
         const t = h / 3;
         out.push(
-          horizontal ? rect(qx * h, qy * h + i * t, h, t, i) : rect(qx * h + i * t, qy * h, t, h, i)
+          horizontal
+            ? rect(qx * h, qy * h + i * t, h, t, i)
+            : rect(qx * h + i * t, qy * h, t, h, i),
         );
       }
-    })
+    }),
   );
   return out;
 }
@@ -90,7 +105,7 @@ function pinwheel(): BlockPiece[] {
     tri([S, S], [h, S], c, 0),
     tri([S, h], [S, S], c, 2),
     tri([0, S], [0, h], c, 1),
-    tri([h, S], [0, S], c, 2)
+    tri([h, S], [0, S], c, 2),
   ];
 }
 
@@ -126,7 +141,7 @@ function churnDash(): BlockPiece[] {
     rect(t / 2, t, t / 2, t, 2),
     rect(2.5 * t, t, t / 2, t, 0),
     rect(2 * t, t, t / 2, t, 2),
-    rect(t, t, t, t, 1)
+    rect(t, t, t, t, 1),
   ];
 }
 
@@ -141,7 +156,7 @@ function friendshipStar(): BlockPiece[] {
     ...hst(2 * t, t, t, 1, 2, 0),
     ...hst(t, 2 * t, t, 2, 2, 0),
     ...hst(0, t, t, 3, 2, 0),
-    rect(t, t, t, t, 1)
+    rect(t, t, t, t, 1),
   ];
 }
 
@@ -156,7 +171,7 @@ function ohioStar(): BlockPiece[] {
     ...qst(t, 2 * t, t, 2, 0),
     ...qst(0, t, t, 0, 2),
     ...qst(2 * t, t, t, 0, 2),
-    rect(t, t, t, t, 1)
+    rect(t, t, t, t, 1),
   ];
 }
 
@@ -178,7 +193,12 @@ function courthouse(): BlockPiece[] {
 
 function hourglass(): BlockPiece[] {
   const h = S / 2;
-  return [...qst(0, 0, h, 0, 2), ...qst(h, 0, h, 2, 1), ...qst(0, h, h, 2, 1), ...qst(h, h, h, 0, 2)];
+  return [
+    ...qst(0, 0, h, 0, 2),
+    ...qst(h, 0, h, 2, 1),
+    ...qst(0, h, h, 2, 1),
+    ...qst(h, h, h, 0, 2),
+  ];
 }
 
 function triangles(): BlockPiece[] {
@@ -186,7 +206,8 @@ function triangles(): BlockPiece[] {
   const t = S / n;
   const out: BlockPiece[] = [];
   for (let r = 0; r < n; r++)
-    for (let c = 0; c < n; c++) out.push(...hst(c * t, r * t, t, (r + c) % 2 === 0 ? 1 : 3, (r + c) % 3 === 0 ? 1 : 0, 2));
+    for (let c = 0; c < n; c++)
+      out.push(...hst(c * t, r * t, t, (r + c) % 2 === 0 ? 1 : 3, (r + c) % 3 === 0 ? 1 : 0, 2));
   return out;
 }
 
@@ -202,16 +223,25 @@ export function patternPieces(name: PatternName, w = 1, h = 1): BlockPiece[] {
     ohioStar,
     courthouse,
     hourglass,
-    triangles
+    triangles,
   }[name]();
   const out: BlockPiece[] = [];
   for (let r = 0; r < h; r++)
-    for (let c = 0; c < w; c++) out.push(...one.map((p) => ({ ...p, points: p.points.map(([x, y]) => [x + c * S, y + r * S] as [number, number]) })));
+    for (let c = 0; c < w; c++)
+      out.push(
+        ...one.map((p) => ({
+          ...p,
+          points: p.points.map(([x, y]) => [x + c * S, y + r * S] as [number, number]),
+        })),
+      );
   return out;
 }
 
 function tileRows(p: BlockPiece, h: number): BlockPiece[] {
-  return Array.from({ length: h }, (_, r) => ({ ...p, points: p.points.map(([x, y]) => [x, y + r * S] as [number, number]) }));
+  return Array.from({ length: h }, (_, r) => ({
+    ...p,
+    points: p.points.map(([x, y]) => [x, y + r * S] as [number, number]),
+  }));
 }
 
 /**

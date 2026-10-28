@@ -61,7 +61,10 @@ export function seeded(seed: number): () => number {
 const add = (p: Point, x: number, y: number): Point => ({ x: p.x + x, y: p.y + y });
 
 function centroid(c: Point[]): Point {
-  return { x: c.reduce((s, p) => s + p.x, 0) / c.length, y: c.reduce((s, p) => s + p.y, 0) / c.length };
+  return {
+    x: c.reduce((s, p) => s + p.x, 0) / c.length,
+    y: c.reduce((s, p) => s + p.y, 0) / c.length,
+  };
 }
 
 type Outline = { tl: Point; tr: Point; br: Point; bl: Point };
@@ -75,11 +78,17 @@ export function blockPieces(block: number): Omit<Piece, 'index' | 'block'>[] {
     tl: { x: -half + wob() * 0.6, y: -half + wob() * 0.6 },
     tr: { x: half + wob() * 0.6, y: -half + wob() * 0.6 },
     br: { x: half + wob() * 0.6, y: half + wob() * 0.6 },
-    bl: { x: -half + wob() * 0.6, y: half + wob() * 0.6 }
+    bl: { x: -half + wob() * 0.6, y: half + wob() * 0.6 },
   };
   const first: [Point, Point, Point, Point] = [o.tl, o.tr, o.br, o.bl];
   const out: Omit<Piece, 'index' | 'block'>[] = [
-    { side: 'center', corners: first, seam: [...first, o.tl], center: centroid(first), room: UNIT * 1.6 }
+    {
+      side: 'center',
+      corners: first,
+      seam: [...first, o.tl],
+      center: centroid(first),
+      room: UNIT * 1.6,
+    },
   ];
 
   for (let i = 1; i < PIECES_PER_BLOCK; i++) {
@@ -166,7 +175,7 @@ export function layoutQuilt(count: number): QuiltLayout {
         corners: p.corners.map(move) as Piece['corners'],
         seam: p.seam.map(move),
         center: move(p.center),
-        room: p.room
+        room: p.room,
       });
     });
   });
@@ -178,7 +187,7 @@ export function layoutQuilt(count: number): QuiltLayout {
     height: MARGIN * 2 + rows * blockSize + (rows - 1) * SASHING,
     columns,
     rows,
-    blockSize
+    blockSize,
   };
 }
 

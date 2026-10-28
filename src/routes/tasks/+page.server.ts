@@ -8,7 +8,7 @@ export const load: PageServerLoad = async ({ locals }) => {
   return {
     tasks: translatedTasks.map((task, index) => ({
       ...task,
-      sourceTags: tasks[index]?.tags ?? task.tags
-    }))
+      sourceTags: tasks[index]?.tags ?? task.tags,
+    })),
   };
 };

@@ -5,15 +5,15 @@ const { mocks } = vi.hoisted(() => ({
     getUserRole: vi.fn(),
     createBadgeDefinition: vi.fn(),
     listBadgeDefinitions: vi.fn(),
-    deleteBadgeDefinition: vi.fn()
-  }
+    deleteBadgeDefinition: vi.fn(),
+  },
 }));
 
 vi.mock('$lib/server/auth', () => ({ getUserRole: mocks.getUserRole }));
 vi.mock('$lib/server/badgeDefs', () => ({
   createBadgeDefinition: mocks.createBadgeDefinition,
   listBadgeDefinitions: mocks.listBadgeDefinitions,
-  deleteBadgeDefinition: mocks.deleteBadgeDefinition
+  deleteBadgeDefinition: mocks.deleteBadgeDefinition,
 }));
 
 import { POST, GET, DELETE } from '../../routes/api/badges/manage/+server';
@@ -26,9 +26,10 @@ function makeEvent(opts: { orgId?: string | null; body?: unknown; deleteId?: str
     userId: opts.orgId ?? undefined,
     url,
     request: new Request(url, {
-      method: 'POST', body: opts.body === undefined ? undefined : JSON.stringify(opts.body),
-      headers: opts.body === undefined ? undefined : { 'content-type': 'application/json' }
-    })
+      method: 'POST',
+      body: opts.body === undefined ? undefined : JSON.stringify(opts.body),
+      headers: opts.body === undefined ? undefined : { 'content-type': 'application/json' },
+    }),
   });
 }
 
@@ -37,7 +38,7 @@ const validBadge = {
   color: '#FF6B6B',
   icon: 'hugeicons:trophy-01',
   criteria: 'task-completion',
-  description: 'Awarded for translation work'
+  description: 'Awarded for translation work',
 };
 
 describe('POST /api/badges/manage', () => {
@@ -48,7 +49,7 @@ describe('POST /api/badges/manage', () => {
       id: 'def-1',
       orgId: input.orgId,
       ...input,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     }));
   });
 
@@ -85,12 +86,13 @@ describe('POST /api/badges/manage', () => {
     expect(mocks.createBadgeDefinition).not.toHaveBeenCalled();
   });
 
-
   it('rejects label longer than 100 chars', async () => {
-    const res = await POST(makeEvent({
-      orgId: 'org-1',
-      body: { ...validBadge, label: 'x'.repeat(101) }
-    }));
+    const res = await POST(
+      makeEvent({
+        orgId: 'org-1',
+        body: { ...validBadge, label: 'x'.repeat(101) },
+      }),
+    );
     expect(res.status).toBe(400);
   });
 
@@ -111,70 +113,84 @@ describe('POST /api/badges/manage', () => {
   });
 
   it('rejects unsupported criteria values', async () => {
-    const res = await POST(makeEvent({
-      orgId: 'org-1',
-      body: { ...validBadge, criteria: 'cosmic-rays' }
-    }));
+    const res = await POST(
+      makeEvent({
+        orgId: 'org-1',
+        body: { ...validBadge, criteria: 'cosmic-rays' },
+      }),
+    );
     expect(res.status).toBe(400);
   });
 
   it('requires taskId when criteria=task-specific', async () => {
-    const res = await POST(makeEvent({
-      orgId: 'org-1',
-      body: { ...validBadge, criteria: 'task-specific' /* no taskId */ }
-    }));
+    const res = await POST(
+      makeEvent({
+        orgId: 'org-1',
+        body: { ...validBadge, criteria: 'task-specific' /* no taskId */ },
+      }),
+    );
     expect(res.status).toBe(400);
     const body = await res.json();
     expect(body.error).toMatch(/taskId/);
   });
 
   it('persists trimmed label, sliced description, and the orgId from session', async () => {
-    const res = await POST(makeEvent({
-      orgId: 'org-1',
-      body: {
-        ...validBadge,
-        label: '  Trimmed Hero  ',
-        description: 'x'.repeat(800) // longer than 500 cap
-      }
-    }));
+    const res = await POST(
+      makeEvent({
+        orgId: 'org-1',
+        body: {
+          ...validBadge,
+          label: '  Trimmed Hero  ',
+          description: 'x'.repeat(800), // longer than 500 cap
+        },
+      }),
+    );
 
     expect(res.status).toBe(201);
-    expect(mocks.createBadgeDefinition).toHaveBeenCalledWith(expect.objectContaining({
-      orgId: 'org-1',
-      label: 'Trimmed Hero'
-    }));
+    expect(mocks.createBadgeDefinition).toHaveBeenCalledWith(
+      expect.objectContaining({
+        orgId: 'org-1',
+        label: 'Trimmed Hero',
+      }),
+    );
     const args = mocks.createBadgeDefinition.mock.calls[0]![0] as { description: string };
     expect(args.description.length).toBe(500);
   });
 
   it('returns the created badge in a 201 response with icon and default values', async () => {
-    const res = await POST(makeEvent({
-      orgId: 'org-1',
-      body: {
-        label: 'Simple',
-        icon: '  custom-icon  ',
-        criteria: 'milestone',
-        taskId: '  task-99  ',
-        description: '  simple desc  '
-      }
-    }));
+    const res = await POST(
+      makeEvent({
+        orgId: 'org-1',
+        body: {
+          label: 'Simple',
+          icon: '  custom-icon  ',
+          criteria: 'milestone',
+          taskId: '  task-99  ',
+          description: '  simple desc  ',
+        },
+      }),
+    );
     expect(res.status).toBe(201);
     const body = await res.json();
     expect(body.ok).toBe(true);
     expect(body.badge.id).toBe('def-1');
-    expect(mocks.createBadgeDefinition).toHaveBeenCalledWith(expect.objectContaining({
-      icon: 'custom-icon',
-      criteria: 'milestone',
-      taskId: 'task-99',
-      description: 'simple desc'
-    }));
+    expect(mocks.createBadgeDefinition).toHaveBeenCalledWith(
+      expect.objectContaining({
+        icon: 'custom-icon',
+        criteria: 'milestone',
+        taskId: 'task-99',
+        description: 'simple desc',
+      }),
+    );
   });
 
   it('uses defaults when optional badge fields are omitted', async () => {
-    const res = await POST(makeEvent({
-      orgId: 'org-1',
-      body: { label: 'First contribution' }
-    }));
+    const res = await POST(
+      makeEvent({
+        orgId: 'org-1',
+        body: { label: 'First contribution' },
+      }),
+    );
 
     expect(res.status).toBe(201);
     expect(mocks.createBadgeDefinition).toHaveBeenCalledWith({
@@ -184,10 +200,9 @@ describe('POST /api/badges/manage', () => {
       icon: undefined,
       criteria: 'task-completion',
       taskId: undefined,
-      description: undefined
+      description: undefined,
     });
   });
-
 
   it('returns 500 when createBadgeDefinition throws', async () => {
     mocks.createBadgeDefinition.mockRejectedValue(new Error('db error'));
@@ -195,7 +210,6 @@ describe('POST /api/badges/manage', () => {
     expect(res.status).toBe(500);
   });
 });
-
 
 describe('GET /api/badges/manage', () => {
   beforeEach(() => {
@@ -216,7 +230,9 @@ describe('GET /api/badges/manage', () => {
 
   it('passes the session orgId to the listing helper', async () => {
     mocks.getUserRole.mockResolvedValue('ngo');
-    mocks.listBadgeDefinitions.mockResolvedValue([{ id: 'd1', orgId: 'org-1', label: 'B', color: '#FF6B6B', criteria: 'task-completion' }]);
+    mocks.listBadgeDefinitions.mockResolvedValue([
+      { id: 'd1', orgId: 'org-1', label: 'B', color: '#FF6B6B', criteria: 'task-completion' },
+    ]);
 
     const res = await GET(makeEvent({ orgId: 'org-1' }));
     const body = await res.json();
@@ -242,7 +258,6 @@ describe('DELETE /api/badges/manage', () => {
     const res = await DELETE(makeEvent({ orgId: null, deleteId: 'def-1' }));
     expect(res.status).toBe(401);
   });
-
 
   it('returns 400 when id is missing from query', async () => {
     const res = await DELETE(makeEvent({ orgId: 'org-1' }));

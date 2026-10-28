@@ -19,6 +19,6 @@ export function smilTween(svg: SVGSVGElement, vars: gsap.TweenVars = {}) {
     duration: ms / 1000,
     ease: 'none',
     ...vars,
-    onUpdate: () => svg.setCurrentTime(state.t / 1000)
+    onUpdate: () => svg.setCurrentTime(state.t / 1000),
   });
 }

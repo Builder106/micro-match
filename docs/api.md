@@ -38,7 +38,7 @@ Retrieves public task listings.
 
 - **Authentication**: Optional (Public)
 - **Query Parameters**:
-  - `duration`*(optional)*: Maximum task duration in minutes (e.g.`15`, `20`, `30`).
+  - `duration`_(optional)_: Maximum task duration in minutes (e.g.`15`, `20`, `30`).
 - **Response (200 OK)**:
 
 ```json
@@ -144,9 +144,9 @@ Retrieves claims associated with the authenticated user.
 
 - **Authentication**: Required
 - **Query Parameters**:
-  - `status` *(optional)*: Filter by claim status (`pending`|`approved`|`rejected`).
-  - `limit`*(optional)*: Pagination limit (default`50`, max `100`).
-  - `offset`*(optional)*: Pagination offset (default`0`).
+  - `status` _(optional)_: Filter by claim status (`pending`|`approved`|`rejected`).
+  - `limit`_(optional)_: Pagination limit (default`50`, max `100`).
+  - `offset`_(optional)_: Pagination offset (default`0`).
 - **Response (200 OK)**:
 
 ```json
@@ -293,7 +293,7 @@ Fetches earned badges for the authenticated volunteer or target user.
 
 - **Authentication**: Required
 - **Query Parameters**:
-  - `userId` *(optional)*: Target user ID to fetch badges for.
+  - `userId` _(optional)_: Target user ID to fetch badges for.
 - **Response (200 OK)**: Array of badge records.
 
 ### `GET /api/badges/manage`

@@ -171,8 +171,16 @@ async function ensureDemoUser(): Promise<string> {
   }
   // Create with a long random password — no one signs in as this account;
   // we mutate via admin SDK only.
-  const password = typeof globalThis.crypto !== 'undefined' && 'randomUUID' in globalThis.crypto ? globalThis.crypto.randomUUID() : Math.random().toString(36).slice(2);
-  const created = await users.create({ userId: ID.unique(), email: demoEmail, password, name: demoName });
+  const password =
+    typeof globalThis.crypto !== 'undefined' && 'randomUUID' in globalThis.crypto
+      ? globalThis.crypto.randomUUID()
+      : Math.random().toString(36).slice(2);
+  const created = await users.create({
+    userId: ID.unique(),
+    email: demoEmail,
+    password,
+    name: demoName,
+  });
   console.log(`+ Created demo NGO user ${demoEmail} → ${created.$id}`);
   return created.$id;
 }
@@ -221,15 +229,10 @@ async function listExistingTasks(orgId: string): Promise<Map<string, string>> {
   const res = await tables.listRows({
     databaseId: dbId,
     tableId: tasksTable,
-    queries: [
-    Query.equal('orgID', orgId),
-    Query.limit(100),
-  ]
+    queries: [Query.equal('orgID', orgId), Query.limit(100)],
   });
   const rows = (res.rows ?? []) as TaskRowItem[];
-  return new Map<string, string>(
-    rows.map((r) => [String(r.title ?? ''), String(r.$id)]),
-  );
+  return new Map<string, string>(rows.map((r) => [String(r.title ?? ''), String(r.$id)]));
 }
 
 // getTasks() drops any row whose lastActivityAt is 30+ days stale (auto-archive,
@@ -249,10 +252,10 @@ async function ensureTasks(orgId: string): Promise<{ created: number; refreshed:
         tableId: tasksTable,
         rowId: existingId,
         data: {
-        status: 'active',
-        lastActivityAt: now,
-        evergreen: true,
-      }
+          status: 'active',
+          lastActivityAt: now,
+          evergreen: true,
+        },
       });
       refreshed++;
       continue;
@@ -262,21 +265,21 @@ async function ensureTasks(orgId: string): Promise<{ created: number; refreshed:
       tableId: tasksTable,
       rowId: ID.unique(),
       data: {
-      title: t.title,
-      shortDescription: t.shortDescription,
-      description: t.description,
-      language: t.language,
-      estimatedMinutes: t.estimatedMinutes,
-      tags: t.tags,
-      orgID: orgId,
-      createdAt: now,
-      status: 'active',
-      maxVolunteers: null,
-      deadline: null,
-      isVerified: true,
-      lastActivityAt: now,
-      evergreen: true,
-    }
+        title: t.title,
+        shortDescription: t.shortDescription,
+        description: t.description,
+        language: t.language,
+        estimatedMinutes: t.estimatedMinutes,
+        tags: t.tags,
+        orgID: orgId,
+        createdAt: now,
+        status: 'active',
+        maxVolunteers: null,
+        deadline: null,
+        isVerified: true,
+        lastActivityAt: now,
+        evergreen: true,
+      },
     });
     created++;
   }
@@ -313,7 +316,7 @@ async function ensureVolunteerUser(): Promise<string> {
       userId: ID.unique(),
       email: volunteerEmail,
       password: demoPassword!,
-      name: volunteerName
+      name: volunteerName,
     });
     userId = created.$id;
     console.log(`+ Created demo volunteer ${volunteerEmail} → ${userId}`);
@@ -331,7 +334,10 @@ async function ensureVolunteerUser(): Promise<string> {
     if (status === 409) {
       console.log(`✓ Demo volunteer already in '${volunteerTeamId}' team`);
     } else {
-      console.warn(`! Could not add demo volunteer to '${volunteerTeamId}':`, errObj?.message ?? err);
+      console.warn(
+        `! Could not add demo volunteer to '${volunteerTeamId}':`,
+        errObj?.message ?? err,
+      );
     }
   }
 
@@ -347,11 +353,7 @@ async function ensureBadgeDefinition(orgId: string): Promise<void> {
   const res = await tables.listRows({
     databaseId: dbId,
     tableId: badgeDefsTable,
-    queries: [
-    Query.equal('orgID', orgId),
-    Query.equal('label', badgeLabel),
-    Query.limit(1),
-  ]
+    queries: [Query.equal('orgID', orgId), Query.equal('label', badgeLabel), Query.limit(1)],
   });
   if ((res.rows ?? []).length > 0) {
     console.log(`✓ Badge definition "${badgeLabel}" exists`);
@@ -362,13 +364,13 @@ async function ensureBadgeDefinition(orgId: string): Promise<void> {
     tableId: badgeDefsTable,
     rowId: ID.unique(),
     data: {
-    orgID: orgId,
-    label: badgeLabel,
-    color: '#F59E0B',
-    icon: 'hugeicons:trophy-01',
-    criteria: 'task-completion',
-    taskID: '',
-  }
+      orgID: orgId,
+      label: badgeLabel,
+      color: '#F59E0B',
+      icon: 'hugeicons:trophy-01',
+      criteria: 'task-completion',
+      taskID: '',
+    },
   });
   console.log(`+ Created badge definition "${badgeLabel}"`);
 }
@@ -394,10 +396,7 @@ async function resetDemoLoopState(volunteerId: string): Promise<void> {
   const claimRows = await tables.listRows({
     databaseId: dbId,
     tableId: claimsTable,
-    queries: [
-    Query.equal('userID', volunteerId),
-    Query.limit(100),
-  ]
+    queries: [Query.equal('userID', volunteerId), Query.limit(100)],
   });
   for (const row of (claimRows.rows ?? []) as RowIdItem[]) {
     await tables.deleteRow({ databaseId: dbId, tableId: claimsTable, rowId: row.$id });
@@ -407,10 +406,7 @@ async function resetDemoLoopState(volunteerId: string): Promise<void> {
   const badgeRows = await tables.listRows({
     databaseId: dbId,
     tableId: badgesTable,
-    queries: [
-    Query.equal('userID', volunteerId),
-    Query.limit(100),
-  ]
+    queries: [Query.equal('userID', volunteerId), Query.limit(100)],
   });
   for (const row of (badgeRows.rows ?? []) as RowIdItem[]) {
     await tables.deleteRow({ databaseId: dbId, tableId: badgesTable, rowId: row.$id });

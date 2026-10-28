@@ -1,5 +1,15 @@
 import { describe, it, expect } from 'vitest';
-import { PIECES_PER_BLOCK, UNIT, blockPieces, columnsFor, inset, layoutQuilt, linePath, polygonPath, seeded } from './layout';
+import {
+  PIECES_PER_BLOCK,
+  UNIT,
+  blockPieces,
+  columnsFor,
+  inset,
+  layoutQuilt,
+  linePath,
+  polygonPath,
+  seeded,
+} from './layout';
 
 describe('seeded', () => {
   it('repeats the same sequence for the same seed and stays in 0..1', () => {
@@ -16,7 +26,14 @@ describe('blockPieces', () => {
   it('starts with a center square and wraps strips right, bottom, left, top', () => {
     const pieces = blockPieces(0);
     expect(pieces).toHaveLength(PIECES_PER_BLOCK);
-    expect(pieces.map((p) => p.side).slice(0, 6)).toEqual(['center', 'right', 'bottom', 'left', 'top', 'right']);
+    expect(pieces.map((p) => p.side).slice(0, 6)).toEqual([
+      'center',
+      'right',
+      'bottom',
+      'left',
+      'top',
+      'right',
+    ]);
     expect(pieces[0].seam).toHaveLength(5);
     expect(pieces.slice(1).every((p) => p.seam.length === 2)).toBe(true);
   });
@@ -85,10 +102,15 @@ describe('path helpers', () => {
     { x: 0, y: 0 },
     { x: 10, y: 0 },
     { x: 10, y: 10 },
-    { x: 0, y: 10 }
+    { x: 0, y: 10 },
   ];
   it('writes closed polygons and open lines, rounded to a tenth', () => {
-    expect(polygonPath([{ x: 0.04, y: 1.26 }, { x: 2, y: 3 }])).toBe('M0 1.3L2 3Z');
+    expect(
+      polygonPath([
+        { x: 0.04, y: 1.26 },
+        { x: 2, y: 3 },
+      ]),
+    ).toBe('M0 1.3L2 3Z');
     expect(linePath(sq.slice(0, 2))).toBe('M0 0L10 0');
   });
 

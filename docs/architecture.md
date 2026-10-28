@@ -32,10 +32,10 @@ MicroMatch is built as a SvelteKit full-stack application backed by Appwrite for
 
 MicroMatch uses one Appwrite project for Production and Vercel Preview. The `staging` Preview branch uses separate QA tables and teams.
 
-| Environment | Branch | Appwrite Project ID | Frontend Deployment | Purpose |
-| :--- | :--- | :--- | :--- | :--- |
-| **Production** | `main` | `micromatch-prod` | `micromatch.app` | Live production service |
-| **Preview** | `staging` | `micromatch-prod` | Vercel Preview (`staging` branch alias) | Release candidate checks |
+| Environment    | Branch    | Appwrite Project ID | Frontend Deployment                     | Purpose                  |
+| :------------- | :-------- | :------------------ | :-------------------------------------- | :----------------------- |
+| **Production** | `main`    | `micromatch-prod`   | `micromatch.app`                        | Live production service  |
+| **Preview**    | `staging` | `micromatch-prod`   | Vercel Preview (`staging` branch alias) | Release candidate checks |
 
 - **Shared resources**: Preview and Production share the database, Auth users, and private storage bucket. Their table and team IDs differ. Use dedicated QA accounts and file permissions for Preview writes.
 - **Automated Deployment**: Pushes to `staging` run full CI checks and trigger Vercel deployment via `VERCEL_DEPLOY_HOOK_STAGING`.
@@ -71,13 +71,13 @@ The locale prefix controls both UI messages and the task-content translation tar
 
 MicroMatch uses Appwrite TablesDB (`APPWRITE_DB_ID`):
 
-| Collection / Table | Primary Fields | Description |
-| :--- | :--- | :--- |
-| `tasks` | `$id`, `orgID`, `title`, `description`, `tags`, `estimatedMinutes`, `isVerified`, `language` | Micro-volunteering task listings. |
-| `claims` | `$id`, `taskID`, `userID`, `proofUrl`, `notes`, `status` (`pending`, `approved`, `rejected`) | Volunteer proof-of-work submissions. |
-| `ngoVerifications` | `$id`, `userID`, `orgName`, `country`, `taxId`, `docFileId`, `status`, `reason` | Verification application queue. |
-| `badgeDefinitions` | `$id`, `orgID`, `label`, `icon`, `color`, `criteria` | NGO-scoped & global milestone badge definitions. |
-| `userBadges` | `$id`, `userID`, `badgeDefinitionId`, `awardedAt` | Awarded badge records. |
+| Collection / Table | Primary Fields                                                                               | Description                                      |
+| :----------------- | :------------------------------------------------------------------------------------------- | :----------------------------------------------- |
+| `tasks`            | `$id`, `orgID`, `title`, `description`, `tags`, `estimatedMinutes`, `isVerified`, `language` | Micro-volunteering task listings.                |
+| `claims`           | `$id`, `taskID`, `userID`, `proofUrl`, `notes`, `status` (`pending`, `approved`, `rejected`) | Volunteer proof-of-work submissions.             |
+| `ngoVerifications` | `$id`, `userID`, `orgName`, `country`, `taxId`, `docFileId`, `status`, `reason`              | Verification application queue.                  |
+| `badgeDefinitions` | `$id`, `orgID`, `label`, `icon`, `color`, `criteria`                                         | NGO-scoped & global milestone badge definitions. |
+| `userBadges`       | `$id`, `userID`, `badgeDefinitionId`, `awardedAt`                                            | Awarded badge records.                           |
 
 ---
 

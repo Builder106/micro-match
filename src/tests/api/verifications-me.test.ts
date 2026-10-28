@@ -4,14 +4,14 @@ const { mocks } = vi.hoisted(() => ({
   mocks: {
     getVerificationByUserId: vi.fn(),
     withdrawVerification: vi.fn(),
-    setUserVerificationPref: vi.fn()
-  }
+    setUserVerificationPref: vi.fn(),
+  },
 }));
 
 vi.mock('$lib/server/verifications', () => ({
   getVerificationByUserId: mocks.getVerificationByUserId,
   withdrawVerification: mocks.withdrawVerification,
-  setUserVerificationPref: mocks.setUserVerificationPref
+  setUserVerificationPref: mocks.setUserVerificationPref,
 }));
 
 import { GET, DELETE } from '../../routes/api/verifications/me/+server';

@@ -15,13 +15,16 @@ const LANGUAGE_CODES: Record<string, string> = {
   German: 'de',
   Portuguese: 'pt',
   Chinese: 'zh',
-  Arabic: 'ar'
+  Arabic: 'ar',
 };
 
 /**
  * The `lang` for task text a nonprofit wrote, while it is shown untranslated: the code of the
  * language the task says it is written in. Translated text is in the page's language already.
  */
-export function taskLang(language: string | null | undefined, translated = false): string | undefined {
+export function taskLang(
+  language: string | null | undefined,
+  translated = false,
+): string | undefined {
   return translated || !language ? undefined : LANGUAGE_CODES[language];
 }

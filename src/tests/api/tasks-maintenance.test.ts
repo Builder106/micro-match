@@ -4,14 +4,14 @@ const { mocks } = vi.hoisted(() => ({
   mocks: {
     isUserAdmin: vi.fn(),
     expireTasks: vi.fn(),
-    autoArchiveTasks: vi.fn()
-  }
+    autoArchiveTasks: vi.fn(),
+  },
 }));
 
 vi.mock('$lib/server/teams', () => ({ isUserAdmin: mocks.isUserAdmin }));
 vi.mock('$lib/server/appwrite', () => ({
   expireTasks: mocks.expireTasks,
-  autoArchiveTasks: mocks.autoArchiveTasks
+  autoArchiveTasks: mocks.autoArchiveTasks,
 }));
 
 import { GET, POST } from '../../routes/api/tasks/maintenance/+server';
@@ -21,9 +21,10 @@ function makeEvent(opts: { userId?: string | null; body?: unknown } = {}) {
   return createRequestEvent({
     userId: opts.userId ?? undefined,
     request: new Request('http://test/api/tasks/maintenance', {
-      method: 'POST', body: opts.body === undefined ? undefined : JSON.stringify(opts.body),
-      headers: opts.body === undefined ? undefined : { 'content-type': 'application/json' }
-    })
+      method: 'POST',
+      body: opts.body === undefined ? undefined : JSON.stringify(opts.body),
+      headers: opts.body === undefined ? undefined : { 'content-type': 'application/json' },
+    }),
   });
 }
 

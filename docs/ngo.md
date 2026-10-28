@@ -19,7 +19,7 @@ MicroMatch uses a soft-gate trust system to assign a **Verified NGO** chip to ta
 
 1. Go to `/org`or`/profile` and open the **Verification Card**.
 2. Provide your **Organization Name**, **Country**, and **Tax / Charity Registration ID** (e.g., IRS EIN for US entities).
-3. *(Optional / International)* Upload an official registration document (PDF, PNG, or JPEG) if your organization is outside the US or not indexed in public registries.
+3. _(Optional / International)_ Upload an official registration document (PDF, PNG, or JPEG) if your organization is outside the US or not indexed in public registries.
 4. Submit your application. Status transitions to `Pending`.
 
 ### Automated Enrichment & Review

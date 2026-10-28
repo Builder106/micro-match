@@ -5,18 +5,32 @@ const { envState, mocks } = vi.hoisted(() => ({
   mocks: {
     isUserAdmin: vi.fn(),
     getVerificationByUserId: vi.fn(),
-    getFileDownload: vi.fn()
-  }
+    getFileDownload: vi.fn(),
+  },
 }));
 
 vi.mock('$env/dynamic/private', () => ({
-  env: new Proxy(envState, { get: (_, key: string) => envState[key] })
+  env: new Proxy(envState, { get: (_, key: string) => envState[key] }),
 }));
 vi.mock('$lib/server/teams', () => ({ isUserAdmin: mocks.isUserAdmin }));
-vi.mock('$lib/server/verifications', () => ({ getVerificationByUserId: mocks.getVerificationByUserId }));
+vi.mock('$lib/server/verifications', () => ({
+  getVerificationByUserId: mocks.getVerificationByUserId,
+}));
 vi.mock('node-appwrite', () => ({
-  Client: class { setEndpoint() { return this; } setProject() { return this; } setKey() { return this; } },
-  Storage: class { getFileDownload = mocks.getFileDownload; }
+  Client: class {
+    setEndpoint() {
+      return this;
+    }
+    setProject() {
+      return this;
+    }
+    setKey() {
+      return this;
+    }
+  },
+  Storage: class {
+    getFileDownload = mocks.getFileDownload;
+  },
 }));
 
 import { GET } from '../../routes/api/verifications/[userId]/document/+server';
@@ -26,7 +40,7 @@ import { isHttpError } from '../helpers/httpError';
 function makeEvent(opts: { adminId?: string | null; targetUserId?: string } = {}) {
   return createRequestEvent({
     userId: opts.adminId ?? undefined,
-    params: { userId: opts.targetUserId ?? 'target-1' }
+    params: { userId: opts.targetUserId ?? 'target-1' },
   });
 }
 
@@ -72,7 +86,6 @@ describe('GET /api/verifications/[userId]/document', () => {
     await expectHttpError(GET(makeEvent({ adminId: 'admin-1' })), 404);
   });
 
-
   it('500s when the verifications bucket is not configured', async () => {
     delete envState.APPWRITE_VERIFICATIONS_BUCKET_ID;
     mocks.isUserAdmin.mockResolvedValue(true);
@@ -97,12 +110,11 @@ describe('GET /api/verifications/[userId]/document', () => {
     expect(res2.status).toBe(200);
   });
 
-
   it('500s when the storage fetch throws', async () => {
     mocks.isUserAdmin.mockResolvedValue(true);
     mocks.getVerificationByUserId.mockResolvedValue({ id: 'v1', docFileId: 'file-1' });
     mocks.getFileDownload.mockRejectedValue(new Error('storage down'));
-    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     await expectHttpError(GET(makeEvent({ adminId: 'admin-1' })), 500);
     errSpy.mockRestore();

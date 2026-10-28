@@ -1,9 +1,4 @@
-import {
-  defaultLocale,
-  directionForLocale,
-  localizedPath,
-  type Locale
-} from '$lib/locale';
+import { defaultLocale, directionForLocale, localizedPath, type Locale } from '$lib/locale';
 
 type MessageCopy = {
   subject: string;
@@ -28,120 +23,140 @@ const copy: Record<Locale, EmailCopy> = {
       subject: 'Your organization is verified',
       preheader: 'Your organization can now post verified tasks.',
       heading: 'Your organization is verified',
-      body: (orgName) => `${organization(orgName)} is now verified on MicroMatch. Tasks you post will show a Verified label so volunteers know your organization has been reviewed.`,
+      body: (orgName) =>
+        `${organization(orgName)} is now verified on MicroMatch. Tasks you post will show a Verified label so volunteers know your organization has been reviewed.`,
       action: 'Post a task',
       fallback: "If the button doesn't work, use this link:",
-      footer: 'You received this email because you submitted an NGO verification on MicroMatch.'
+      footer: 'You received this email because you submitted an NGO verification on MicroMatch.',
     },
     rejected: {
       subject: 'One change is needed for verification',
       preheader: 'Review the note and update your submission.',
       heading: 'Your verification needs an update',
-      body: (orgName) => `We reviewed ${organization(orgName)} and need this change before we can approve it.`,
+      body: (orgName) =>
+        `We reviewed ${organization(orgName)} and need this change before we can approve it.`,
       reasonLabel: 'Requested change',
       followUp: 'You can make this change and resubmit from your profile.',
       action: 'Update verification',
       fallback: "If the button doesn't work, use this link:",
-      footer: 'You received this email because you submitted an NGO verification on MicroMatch.'
-    }
+      footer: 'You received this email because you submitted an NGO verification on MicroMatch.',
+    },
   },
   es: {
     approved: {
       subject: 'Tu organización está verificada',
       preheader: 'Tu organización ya puede publicar tareas verificadas.',
       heading: 'Tu organización está verificada',
-      body: (orgName) => `${organization(orgName)} ya está verificada en MicroMatch. Las tareas que publiques mostrarán la etiqueta Verificada para que las personas voluntarias sepan que revisamos la organización.`,
+      body: (orgName) =>
+        `${organization(orgName)} ya está verificada en MicroMatch. Las tareas que publiques mostrarán la etiqueta Verificada para que las personas voluntarias sepan que revisamos la organización.`,
       action: 'Publicar una tarea',
       fallback: 'Si el botón no funciona, usa este enlace:',
-      footer: 'Recibes este correo porque enviaste una solicitud de verificación para una ONG en MicroMatch.'
+      footer:
+        'Recibes este correo porque enviaste una solicitud de verificación para una ONG en MicroMatch.',
     },
     rejected: {
       subject: 'Hace falta un cambio para completar la verificación',
       preheader: 'Lee la nota y actualiza tu solicitud.',
       heading: 'Tu verificación necesita una actualización',
-      body: (orgName) => `Revisamos ${organization(orgName)} y necesitamos este cambio para aprobarla.`,
+      body: (orgName) =>
+        `Revisamos ${organization(orgName)} y necesitamos este cambio para aprobarla.`,
       reasonLabel: 'Cambio solicitado',
       followUp: 'Puedes hacer el cambio y volver a enviar la solicitud desde tu perfil.',
       action: 'Actualizar verificación',
       fallback: 'Si el botón no funciona, usa este enlace:',
-      footer: 'Recibes este correo porque enviaste una solicitud de verificación para una ONG en MicroMatch.'
-    }
+      footer:
+        'Recibes este correo porque enviaste una solicitud de verificación para una ONG en MicroMatch.',
+    },
   },
   fr: {
     approved: {
       subject: 'Votre organisation est vérifiée',
       preheader: 'Votre organisation peut maintenant publier des missions vérifiées.',
       heading: 'Votre organisation est vérifiée',
-      body: (orgName) => `${organization(orgName)} est maintenant vérifiée sur MicroMatch. Les missions que vous publiez porteront la mention Vérifiée pour indiquer aux bénévoles que votre organisation a été examinée.`,
+      body: (orgName) =>
+        `${organization(orgName)} est maintenant vérifiée sur MicroMatch. Les missions que vous publiez porteront la mention Vérifiée pour indiquer aux bénévoles que votre organisation a été examinée.`,
       action: 'Publier une mission',
       fallback: 'Si le bouton ne fonctionne pas, utilisez ce lien :',
-      footer: "Vous recevez ce message car vous avez envoyé une demande de vérification d'organisation à MicroMatch."
+      footer:
+        "Vous recevez ce message car vous avez envoyé une demande de vérification d'organisation à MicroMatch.",
     },
     rejected: {
       subject: 'Une modification est nécessaire pour la vérification',
       preheader: 'Lisez la note et modifiez votre demande.',
       heading: 'Votre demande de vérification doit être modifiée',
-      body: (orgName) => `Nous avons examiné ${organization(orgName)}. Cette modification est nécessaire avant son approbation.`,
+      body: (orgName) =>
+        `Nous avons examiné ${organization(orgName)}. Cette modification est nécessaire avant son approbation.`,
       reasonLabel: 'Modification demandée',
       followUp: 'Vous pourrez modifier votre demande et la renvoyer depuis votre profil.',
       action: 'Modifier la vérification',
       fallback: 'Si le bouton ne fonctionne pas, utilisez ce lien :',
-      footer: "Vous recevez ce message car vous avez envoyé une demande de vérification d'organisation à MicroMatch."
-    }
+      footer:
+        "Vous recevez ce message car vous avez envoyé une demande de vérification d'organisation à MicroMatch.",
+    },
   },
   de: {
     approved: {
       subject: 'Ihre Organisation ist verifiziert',
       preheader: 'Ihre Organisation kann jetzt verifizierte Aufgaben veröffentlichen.',
       heading: 'Ihre Organisation ist verifiziert',
-      body: (orgName) => `${organization(orgName)} ist jetzt auf MicroMatch verifiziert. Ihre Aufgaben erhalten die Kennzeichnung Verifiziert, damit Freiwillige sehen, dass wir Ihre Organisation geprüft haben.`,
+      body: (orgName) =>
+        `${organization(orgName)} ist jetzt auf MicroMatch verifiziert. Ihre Aufgaben erhalten die Kennzeichnung Verifiziert, damit Freiwillige sehen, dass wir Ihre Organisation geprüft haben.`,
       action: 'Aufgabe veröffentlichen',
       fallback: 'Falls die Schaltfläche nicht funktioniert, verwenden Sie diesen Link:',
-      footer: 'Sie erhalten diese E-Mail, weil Sie bei MicroMatch eine Verifizierung für eine gemeinnützige Organisation beantragt haben.'
+      footer:
+        'Sie erhalten diese E-Mail, weil Sie bei MicroMatch eine Verifizierung für eine gemeinnützige Organisation beantragt haben.',
     },
     rejected: {
       subject: 'Für die Verifizierung ist eine Änderung nötig',
       preheader: 'Lesen Sie den Hinweis und aktualisieren Sie Ihren Antrag.',
       heading: 'Ihr Verifizierungsantrag muss aktualisiert werden',
-      body: (orgName) => `Wir haben ${organization(orgName)} geprüft. Vor der Freigabe ist diese Änderung nötig.`,
+      body: (orgName) =>
+        `Wir haben ${organization(orgName)} geprüft. Vor der Freigabe ist diese Änderung nötig.`,
       reasonLabel: 'Gewünschte Änderung',
-      followUp: 'Sie können die Änderung in Ihrem Profil vornehmen und den Antrag erneut einreichen.',
+      followUp:
+        'Sie können die Änderung in Ihrem Profil vornehmen und den Antrag erneut einreichen.',
       action: 'Verifizierung aktualisieren',
       fallback: 'Falls die Schaltfläche nicht funktioniert, verwenden Sie diesen Link:',
-      footer: 'Sie erhalten diese E-Mail, weil Sie bei MicroMatch eine Verifizierung für eine gemeinnützige Organisation beantragt haben.'
-    }
+      footer:
+        'Sie erhalten diese E-Mail, weil Sie bei MicroMatch eine Verifizierung für eine gemeinnützige Organisation beantragt haben.',
+    },
   },
   pt: {
     approved: {
       subject: 'Sua organização foi verificada',
       preheader: 'Sua organização já pode publicar tarefas verificadas.',
       heading: 'Sua organização foi verificada',
-      body: (orgName) => `${organization(orgName)} agora está verificada no MicroMatch. As tarefas que você publicar terão o selo Verificada para que voluntários saibam que sua organização foi analisada.`,
+      body: (orgName) =>
+        `${organization(orgName)} agora está verificada no MicroMatch. As tarefas que você publicar terão o selo Verificada para que voluntários saibam que sua organização foi analisada.`,
       action: 'Publicar uma tarefa',
       fallback: 'Se o botão não funcionar, use este link:',
-      footer: 'Você recebeu este e-mail porque enviou uma solicitação de verificação de ONG ao MicroMatch.'
+      footer:
+        'Você recebeu este e-mail porque enviou uma solicitação de verificação de ONG ao MicroMatch.',
     },
     rejected: {
       subject: 'É preciso fazer uma alteração para concluir a verificação',
       preheader: 'Leia a observação e atualize sua solicitação.',
       heading: 'Sua verificação precisa de uma atualização',
-      body: (orgName) => `Analisamos ${organization(orgName)} e precisamos desta alteração antes de aprová-la.`,
+      body: (orgName) =>
+        `Analisamos ${organization(orgName)} e precisamos desta alteração antes de aprová-la.`,
       reasonLabel: 'Alteração solicitada',
       followUp: 'Você pode fazer a alteração e enviar a solicitação novamente pelo seu perfil.',
       action: 'Atualizar verificação',
       fallback: 'Se o botão não funcionar, use este link:',
-      footer: 'Você recebeu este e-mail porque enviou uma solicitação de verificação de ONG ao MicroMatch.'
-    }
+      footer:
+        'Você recebeu este e-mail porque enviou uma solicitação de verificação de ONG ao MicroMatch.',
+    },
   },
   zh: {
     approved: {
       subject: '您的组织已通过认证',
       preheader: '您的组织现在可以发布已认证的任务。',
       heading: '您的组织已通过认证',
-      body: (orgName) => `${organization(orgName)} 已在 MicroMatch 完成认证。您发布的任务会显示已认证标记，让志愿者知道该组织已经过审核。`,
+      body: (orgName) =>
+        `${organization(orgName)} 已在 MicroMatch 完成认证。您发布的任务会显示已认证标记，让志愿者知道该组织已经过审核。`,
       action: '发布任务',
       fallback: '如果按钮无法使用，请打开此链接：',
-      footer: '您收到此邮件是因为您在 MicroMatch 提交了非营利组织认证申请。'
+      footer: '您收到此邮件是因为您在 MicroMatch 提交了非营利组织认证申请。',
     },
     rejected: {
       subject: '认证申请需要修改一项内容',
@@ -152,31 +167,33 @@ const copy: Record<Locale, EmailCopy> = {
       followUp: '您可以在个人资料中完成修改并重新提交申请。',
       action: '更新认证申请',
       fallback: '如果按钮无法使用，请打开此链接：',
-      footer: '您收到此邮件是因为您在 MicroMatch 提交了非营利组织认证申请。'
-    }
+      footer: '您收到此邮件是因为您在 MicroMatch 提交了非营利组织认证申请。',
+    },
   },
   ar: {
     approved: {
       subject: 'تم التحقق من مؤسستك',
       preheader: 'يمكن لمؤسستك الآن نشر مهام موثّقة.',
       heading: 'تم التحقق من مؤسستك',
-      body: (orgName) => `تم التحقق من ${organization(orgName)} على MicroMatch. ستظهر على المهام التي تنشرها علامة «موثّقة» ليعرف المتطوعون أن المؤسسة خضعت للمراجعة.`,
+      body: (orgName) =>
+        `تم التحقق من ${organization(orgName)} على MicroMatch. ستظهر على المهام التي تنشرها علامة «موثّقة» ليعرف المتطوعون أن المؤسسة خضعت للمراجعة.`,
       action: 'انشر مهمة',
       fallback: 'إذا لم يعمل الزر، استخدم هذا الرابط:',
-      footer: 'تتلقى هذا البريد لأنك أرسلت طلبًا للتحقق من مؤسسة غير ربحية على MicroMatch.'
+      footer: 'تتلقى هذا البريد لأنك أرسلت طلبًا للتحقق من مؤسسة غير ربحية على MicroMatch.',
     },
     rejected: {
       subject: 'يلزم تعديل لإكمال التحقق',
       preheader: 'راجع الملاحظة وحدّث طلبك.',
       heading: 'يحتاج طلب التحقق إلى تعديل',
-      body: (orgName) => `راجعنا طلب ${organization(orgName)} ونحتاج إلى هذا التعديل قبل الموافقة عليه.`,
+      body: (orgName) =>
+        `راجعنا طلب ${organization(orgName)} ونحتاج إلى هذا التعديل قبل الموافقة عليه.`,
       reasonLabel: 'التعديل المطلوب',
       followUp: 'يمكنك إجراء التعديل وإعادة إرسال الطلب من ملفك الشخصي.',
       action: 'حدّث طلب التحقق',
       fallback: 'إذا لم يعمل الزر، استخدم هذا الرابط:',
-      footer: 'تتلقى هذا البريد لأنك أرسلت طلبًا للتحقق من مؤسسة غير ربحية على MicroMatch.'
-    }
-  }
+      footer: 'تتلقى هذا البريد لأنك أرسلت طلبًا للتحقق من مؤسسة غير ربحية على MicroMatch.',
+    },
+  },
 };
 
 type Patch = 'sewn' | 'pinned';
@@ -199,9 +216,17 @@ type RenderInput = {
 };
 
 function escapeHtml(value: string): string {
-  return value.replace(/[&<>"']/g, (character) => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-  })[character] as string);
+  return value.replace(
+    /[&<>"']/g,
+    (character) =>
+      ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+      })[character] as string,
+  );
 }
 
 function escapeWithBreaks(value: string): string {
@@ -287,7 +312,13 @@ function renderMessage(input: RenderInput): string {
 </html>`;
 }
 
-function render(orgName: string, appUrl: string, locale: Locale, rejected = false, reviewReason = '') {
+function render(
+  orgName: string,
+  appUrl: string,
+  locale: Locale,
+  rejected = false,
+  reviewReason = '',
+) {
   const message = copy[locale][rejected ? 'rejected' : 'approved'];
   const route = rejected ? '/profile' : '/org';
   const base = appUrl.replace(/\/$/, '');
@@ -309,15 +340,24 @@ function render(orgName: string, appUrl: string, locale: Locale, rejected = fals
       footer: message.footer,
       href,
       assetBase: base,
-      patch: rejected ? 'pinned' : 'sewn'
-    })
+      patch: rejected ? 'pinned' : 'sewn',
+    }),
   };
 }
 
-export function renderVerificationApproved(orgName: string, appUrl: string, locale: Locale = defaultLocale) {
+export function renderVerificationApproved(
+  orgName: string,
+  appUrl: string,
+  locale: Locale = defaultLocale,
+) {
   return render(orgName, appUrl, locale);
 }
 
-export function renderVerificationRejected(orgName: string, reason: string, appUrl: string, locale: Locale = defaultLocale) {
+export function renderVerificationRejected(
+  orgName: string,
+  reason: string,
+  appUrl: string,
+  locale: Locale = defaultLocale,
+) {
   return render(orgName, appUrl, locale, true, reason);
 }

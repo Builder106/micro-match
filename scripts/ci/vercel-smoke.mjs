@@ -16,13 +16,15 @@ const PAGES = [
   ['/en/impact', 200],
   ['/en/privacy', 200],
   ['/en/login', 200],
-  ['/en/not-a-block', 404]
+  ['/en/not-a-block', 404],
 ];
 
 const config = JSON.parse(await readFile(join(FUNC, '.vc-config.json'), 'utf8'));
 const expected = `nodejs${process.versions.node.split('.')[0]}.x`;
 if (config.runtime !== expected) {
-  console.error(`The function targets ${config.runtime} but this check runs on Node ${process.version}.`);
+  console.error(
+    `The function targets ${config.runtime} but this check runs on Node ${process.version}.`,
+  );
   process.exit(1);
 }
 await stat(join(FUNC, config.handler));
@@ -37,19 +39,26 @@ async function* files(dir) {
 
 const imported = new Set();
 for await (const file of files(join(FUNC, '.svelte-kit/output/server'))) {
-  for (const [, spec] of (await readFile(file, 'utf8')).matchAll(/\bfrom\s*["']([^./"'][^"']*)["']/g)) {
+  for (const [, spec] of (await readFile(file, 'utf8')).matchAll(
+    /\bfrom\s*["']([^./"'][^"']*)["']/g,
+  )) {
     imported.add(spec.startsWith('@') ? spec.split('/').slice(0, 2).join('/') : spec.split('/')[0]);
   }
 }
 const guessed = [];
 for (const name of imported) {
-  const pkg = JSON.parse(await readFile(join(FUNC, 'node_modules', name, 'package.json'), 'utf8').catch(() => 'null'));
+  const pkg = JSON.parse(
+    await readFile(join(FUNC, 'node_modules', name, 'package.json'), 'utf8').catch(() => 'null'),
+  );
   const root = pkg?.exports?.['.'] ?? pkg?.exports;
   const entry = (typeof root === 'object' ? (root.import ?? root.default) : null) ?? pkg?.module;
-  if (pkg && pkg.type !== 'module' && typeof entry === 'string' && entry.endsWith('.js')) guessed.push(name);
+  if (pkg && pkg.type !== 'module' && typeof entry === 'string' && entry.endsWith('.js'))
+    guessed.push(name);
 }
 if (guessed.length) {
-  console.error(`The server imports ${guessed.join(', ')} as ESM from .js files Node must guess the format of. Add them to ssr.noExternal.`);
+  console.error(
+    `The server imports ${guessed.join(', ')} as ESM from .js files Node must guess the format of. Add them to ssr.noExternal.`,
+  );
   process.exit(1);
 }
 

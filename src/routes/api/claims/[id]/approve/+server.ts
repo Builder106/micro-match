@@ -31,7 +31,11 @@ export const POST: RequestHandler = async (event) => {
   let awarded: string[] = [];
   if (updated.userId && updated.taskId) {
     try {
-      awarded = await onTaskApproved(updated.userId, updated.taskId, task.estimatedMinutes ?? undefined);
+      awarded = await onTaskApproved(
+        updated.userId,
+        updated.taskId,
+        task.estimatedMinutes ?? undefined,
+      );
     } catch (err) {
       console.error('Badge awarding failed:', err);
       // Don't fail the approval if badge awarding fails.

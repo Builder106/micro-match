@@ -62,7 +62,11 @@ export function createCamera(viewport: HTMLElement, world: HTMLElement): Camera 
   // Drag to pan. A drag of more than a few pixels swallows the click that follows it.
   let drag: { x: number; y: number; tx: number; ty: number; moved: boolean } | null = null;
   const down = (e: PointerEvent) => {
-    if (e.button !== 0 || (e.target as HTMLElement).closest('input, textarea, select, [data-no-drag]')) return;
+    if (
+      e.button !== 0 ||
+      (e.target as HTMLElement).closest('input, textarea, select, [data-no-drag]')
+    )
+      return;
     drag = { x: e.clientX, y: e.clientY, tx: target.x, ty: target.y, moved: false };
   };
   const move = (e: PointerEvent) => {
@@ -107,7 +111,12 @@ export function createCamera(viewport: HTMLElement, world: HTMLElement): Camera 
   const key = (e: KeyboardEvent) => {
     const t = e.target as HTMLElement;
     if (t.closest('input, textarea, select, [contenteditable], [data-panel]')) return;
-    const step = { ArrowLeft: [KEY_STEP, 0], ArrowRight: [-KEY_STEP, 0], ArrowUp: [0, KEY_STEP], ArrowDown: [0, -KEY_STEP] }[e.key];
+    const step = {
+      ArrowLeft: [KEY_STEP, 0],
+      ArrowRight: [-KEY_STEP, 0],
+      ArrowUp: [0, KEY_STEP],
+      ArrowDown: [0, -KEY_STEP],
+    }[e.key];
     if (!step) return;
     e.preventDefault();
     nudge(step[0], step[1]);
@@ -173,6 +182,6 @@ export function createCamera(viewport: HTMLElement, world: HTMLElement): Camera 
       removeEventListener('resize', resize);
       gsap.set(world, { clearProps: 'transform' });
       world.style.transform = '';
-    }
+    },
   };
 }

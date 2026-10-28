@@ -26,7 +26,7 @@ export function filtersFromParams(params: URLSearchParams): Filters {
     q: (params.get('q') ?? '').trim(),
     max: (TIME_CAPS as readonly number[]).includes(max) ? (max as TimeCap) : null,
     tags: params.getAll('tag').map(normalize).filter(Boolean),
-    sort: sort === 'shortest' || sort === 'az' ? sort : 'newest'
+    sort: sort === 'shortest' || sort === 'az' ? sort : 'newest',
   };
 }
 
@@ -41,26 +41,36 @@ export function paramsFromFilters(f: Filters): string {
   return s ? `?${s}` : '';
 }
 
-const tagsOfTask = (t: FeedTask) => [...new Set([...(t.sourceTags ?? []), ...t.tags].map(normalize))];
+const tagsOfTask = (t: FeedTask) => [
+  ...new Set([...(t.sourceTags ?? []), ...t.tags].map(normalize)),
+];
 
 /** Every tag in the feed, most used first. */
 export function feedTags(tasks: FeedTask[]): { tag: string; count: number }[] {
   const counts = new Map<string, number>();
   tasks.forEach((t) => tagsOfTask(t).forEach((tag) => counts.set(tag, (counts.get(tag) ?? 0) + 1)));
-  return [...counts].map(([tag, count]) => ({ tag, count })).sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag));
+  return [...counts]
+    .map(([tag, count]) => ({ tag, count }))
+    .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag));
 }
 
 export function applyFilters<T extends FeedTask>(tasks: T[], f: Filters): T[] {
   const q = f.q.toLowerCase();
   const out = tasks.filter((t) => {
     const tags = tagsOfTask(t);
-    if (q && ![t.title, t.shortDescription, ...tags].some((s) => s.toLowerCase().includes(q))) return false;
-    if (f.max && !(typeof t.estimatedMinutes === 'number' && t.estimatedMinutes <= f.max)) return false;
+    if (q && ![t.title, t.shortDescription, ...tags].some((s) => s.toLowerCase().includes(q)))
+      return false;
+    if (f.max && !(typeof t.estimatedMinutes === 'number' && t.estimatedMinutes <= f.max))
+      return false;
     return f.tags.every((tag) => tags.includes(tag));
   });
-  if (f.sort === 'shortest') return [...out].sort((a, b) => (a.estimatedMinutes ?? Infinity) - (b.estimatedMinutes ?? Infinity));
+  if (f.sort === 'shortest')
+    return [...out].sort(
+      (a, b) => (a.estimatedMinutes ?? Infinity) - (b.estimatedMinutes ?? Infinity),
+    );
   if (f.sort === 'az') return [...out].sort((a, b) => a.title.localeCompare(b.title));
   return out;
 }
 
-export const hasFilters = (f: Filters) => !!f.q || f.max !== null || f.tags.length > 0 || f.sort !== 'newest';
+export const hasFilters = (f: Filters) =>
+  !!f.q || f.max !== null || f.tags.length > 0 || f.sort !== 'newest';

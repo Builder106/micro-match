@@ -64,7 +64,8 @@ export const GET: RequestHandler = async (event) => {
     try {
       const { NGO_TEAM_ID, VOLUNTEER_TEAM_ID, isUserInTeam } = await import('$lib/server/teams');
       if (NGO_TEAM_ID && (await isUserInTeam(userId, NGO_TEAM_ID))) role = 'ngo';
-      else if (VOLUNTEER_TEAM_ID && (await isUserInTeam(userId, VOLUNTEER_TEAM_ID))) role = 'volunteer';
+      else if (VOLUNTEER_TEAM_ID && (await isUserInTeam(userId, VOLUNTEER_TEAM_ID)))
+        role = 'volunteer';
     } catch (err) {
       if (env.NODE_ENV !== 'production') console.log('Team check failed in OAuth callback:', err);
     }
@@ -78,14 +79,14 @@ export const GET: RequestHandler = async (event) => {
     path: '/',
     sameSite: 'lax',
     secure,
-    maxAge: SESSION_TTL_SECONDS
+    maxAge: SESSION_TTL_SECONDS,
   });
   event.cookies.set('mm_role', role, {
     httpOnly: false,
     path: '/',
     sameSite: 'lax',
     secure,
-    maxAge: SESSION_TTL_SECONDS
+    maxAge: SESSION_TTL_SECONDS,
   });
 
   // 5. Land users without a chosen role on /profile so they can pick one.

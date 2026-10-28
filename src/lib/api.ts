@@ -13,7 +13,7 @@ export function errorMessage(body: unknown, fallback: string): string {
 
 export async function callApi<T>(
   url: string,
-  init: { method?: string; body?: unknown; fallback?: string } = {}
+  init: { method?: string; body?: unknown; fallback?: string } = {},
 ): Promise<ApiResult<T>> {
   const fallback = init.fallback ?? m.api_error_generic();
   try {
@@ -21,7 +21,7 @@ export async function callApi<T>(
       method: init.method ?? (init.body === undefined ? 'GET' : 'POST'),
       credentials: 'include',
       headers: init.body === undefined ? undefined : { 'content-type': 'application/json' },
-      body: init.body === undefined ? undefined : JSON.stringify(init.body)
+      body: init.body === undefined ? undefined : JSON.stringify(init.body),
     });
     const body = await res.json().catch(() => null);
     if (!res.ok) return { ok: false, status: res.status, error: errorMessage(body, fallback) };

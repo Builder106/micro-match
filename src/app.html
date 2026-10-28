@@ -7,7 +7,8 @@
     <script>
       // A scheme pinned from the quilt label's toggle, applied before paint.
       try {
-        document.querySelector('meta[name="color-scheme"]').content = localStorage.getItem('mm-color-scheme') ?? 'light dark';
+        document.querySelector('meta[name="color-scheme"]').content =
+          localStorage.getItem('mm-color-scheme') ?? 'light dark';
       } catch {}
     </script>
     <meta name="theme-color" content="#fdfcf8" media="(prefers-color-scheme: light)" />
@@ -15,7 +16,13 @@
     <link rel="icon" href="%sveltekit.assets%/favicon.ico" sizes="any" />
     <link rel="icon" href="%sveltekit.assets%/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="%sveltekit.assets%/apple-touch-icon.png" />
-    <link rel="preload" href="%sveltekit.assets%/fonts/bricolage-200_800-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link
+      rel="preload"
+      href="%sveltekit.assets%/fonts/bricolage-200_800-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     <script>
       {
         // Intro motion (keyed on html.motion) only plays without a reduced-motion preference.
@@ -24,7 +31,11 @@
         if (!still) document.documentElement.classList.add('motion');
         // The first time the home quilt opens in a session, it is laid out, pinned and quilted.
         try {
-          if (/^\/([a-z]{2}\/?)?$/.test(location.pathname) && !still && !sessionStorage.getItem('mm-entered')) {
+          if (
+            /^\/([a-z]{2}\/?)?$/.test(location.pathname) &&
+            !still &&
+            !sessionStorage.getItem('mm-entered')
+          ) {
             document.documentElement.classList.add('enter');
             sessionStorage.setItem('mm-entered', '1');
           }

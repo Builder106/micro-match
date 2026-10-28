@@ -4,20 +4,30 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 // module's `useAppwrite` flag is false and all CRUD goes through its Map.
 const { envState, appwriteCalls } = vi.hoisted(() => ({
   envState: {} as Record<string, string | undefined>,
-  appwriteCalls: { setEndpoint: vi.fn(), usersGet: vi.fn(), updatePrefs: vi.fn() }
+  appwriteCalls: { setEndpoint: vi.fn(), usersGet: vi.fn(), updatePrefs: vi.fn() },
 }));
 vi.mock('$env/dynamic/private', () => ({
-  env: new Proxy(envState, { get: (_, key: string) => envState[key] })
+  env: new Proxy(envState, { get: (_, key: string) => envState[key] }),
 }));
 
 // In-memory mode must not make Appwrite client calls.
 vi.mock('node-appwrite', () => ({
   Client: class {
-    setEndpoint(...args: unknown[]) { appwriteCalls.setEndpoint(...args); return this; }
-    setProject() { return this; }
-    setKey() { return this; }
+    setEndpoint(...args: unknown[]) {
+      appwriteCalls.setEndpoint(...args);
+      return this;
+    }
+    setProject() {
+      return this;
+    }
+    setKey() {
+      return this;
+    }
   },
-  Users: class { get = appwriteCalls.usersGet; updatePrefs = appwriteCalls.updatePrefs; }
+  Users: class {
+    get = appwriteCalls.usersGet;
+    updatePrefs = appwriteCalls.updatePrefs;
+  },
 }));
 
 import {
@@ -26,7 +36,7 @@ import {
   listVerifications,
   setVerificationStatus,
   withdrawVerification,
-  setUserVerificationPref
+  setUserVerificationPref,
 } from './verifications';
 
 describe('verifications (in-memory mode)', () => {
@@ -43,7 +53,7 @@ describe('verifications (in-memory mode)', () => {
       userId: 'user-1',
       orgName: 'Doctors Without Borders',
       country: 'US',
-      taxId: '13-3433452'
+      taxId: '13-3433452',
     });
     const after = Date.now();
 
@@ -67,7 +77,7 @@ describe('verifications (in-memory mode)', () => {
       userId: 'user-1',
       orgName: 'New Org',
       country: 'CA',
-      taxId: '222'
+      taxId: '222',
     });
 
     expect(updated.orgName).toBe('New Org');
@@ -82,11 +92,18 @@ describe('verifications (in-memory mode)', () => {
 
   it('preserves the uploaded document when a resubmission omits it', async () => {
     await upsertVerification({
-      userId: 'document-user', orgName: 'Org', country: 'US', taxId: '111', docFileId: 'file-1'
+      userId: 'document-user',
+      orgName: 'Org',
+      country: 'US',
+      taxId: '111',
+      docFileId: 'file-1',
     });
 
     const resubmitted = await upsertVerification({
-      userId: 'document-user', orgName: 'Updated Org', country: 'US', taxId: '222'
+      userId: 'document-user',
+      orgName: 'Updated Org',
+      country: 'US',
+      taxId: '222',
     });
 
     expect(resubmitted.docFileId).toBe('file-1');
@@ -112,8 +129,18 @@ describe('verifications (in-memory mode)', () => {
   });
 
   it('rejection stores the reason verbatim', async () => {
-    await upsertVerification({ userId: 'user-3', orgName: 'Org', country: 'GB', taxId: 'CC-1234567' });
-    const rejected = await setVerificationStatus('user-3', 'rejected', 'admin-1', 'Document does not show tax-exempt status.');
+    await upsertVerification({
+      userId: 'user-3',
+      orgName: 'Org',
+      country: 'GB',
+      taxId: 'CC-1234567',
+    });
+    const rejected = await setVerificationStatus(
+      'user-3',
+      'rejected',
+      'admin-1',
+      'Document does not show tax-exempt status.',
+    );
 
     expect(rejected?.status).toBe('rejected');
     expect(rejected?.reason).toBe('Document does not show tax-exempt status.');
@@ -121,7 +148,12 @@ describe('verifications (in-memory mode)', () => {
   });
 
   it('stores an undefined rejection reason when the reviewer omits one', async () => {
-    await upsertVerification({ userId: 'user-no-reason', orgName: 'Org', country: 'US', taxId: '111' });
+    await upsertVerification({
+      userId: 'user-no-reason',
+      orgName: 'Org',
+      country: 'US',
+      taxId: '111',
+    });
 
     const rejected = await setVerificationStatus('user-no-reason', 'rejected', 'admin-1');
 
@@ -180,7 +212,7 @@ describe('verifications (in-memory mode)', () => {
       orgName: 'Org',
       country: 'US',
       taxId: '111',
-      docFileId: 'storage-file-abc'
+      docFileId: 'storage-file-abc',
     });
     const approved = await setVerificationStatus('doc-user', 'approved', 'admin-1');
 

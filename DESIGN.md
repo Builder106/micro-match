@@ -107,16 +107,16 @@ PHONE: the same blocks as a vertical path, two columns, native scroll
 
 ### Where the concept reaches
 
-| Surface | Expression |
-|---|---|
-| Home | the whole quilt; the title and community blocks at its center |
-| Every public page | a block unfolded into a reading panel, its hole chalked on the quilt |
-| Impact (community block) | the whole live quilt large, with honest counts written as sentences |
-| Volunteer dashboard | "Your block": a log cabin block of only your approved claims; pending claims are pinned beside it |
-| Nonprofit dashboard | claims waiting to be sewn in; approving one plays the stitch on that patch |
-| Badge editor | "Design a patch": fabric, embroidered icon, rule, with a live patch preview |
-| Claim page | the patch this task will become, if the nonprofit has designed one |
-| 404 | a hole cut in the quilt with a loose thread |
+| Surface                  | Expression                                                                                        |
+| ------------------------ | ------------------------------------------------------------------------------------------------- |
+| Home                     | the whole quilt; the title and community blocks at its center                                     |
+| Every public page        | a block unfolded into a reading panel, its hole chalked on the quilt                              |
+| Impact (community block) | the whole live quilt large, with honest counts written as sentences                               |
+| Volunteer dashboard      | "Your block": a log cabin block of only your approved claims; pending claims are pinned beside it |
+| Nonprofit dashboard      | claims waiting to be sewn in; approving one plays the stitch on that patch                        |
+| Badge editor             | "Design a patch": fabric, embroidered icon, rule, with a live patch preview                       |
+| Claim page               | the patch this task will become, if the nonprofit has designed one                                |
+| 404                      | a hole cut in the quilt with a loose thread                                                       |
 
 ## Art direction
 
@@ -126,14 +126,14 @@ Quilts were dyed with three classic plant dyes: indigo (blue), madder (red) and 
 (yellow). The palette keeps the brand's cream ground and coral, and reads the coral as
 madder.
 
-| Role | Name | Hex | Use |
-|---|---|---|---|
-| ground | muslin | `#FDFCF8` | page ground (the existing brand cream, kept) |
-| ink | indigo thread | `#1C1F3B` | text, binding, curtain, footer field |
-| muted | faded indigo | `#575B76` | secondary text |
-| line | basting | `rgb(28 31 59 / 0.16)` | hairlines, pinned outlines |
-| accent | madder | `#FF6B6B` | primary actions (text on it is `#000`) |
-| highlight | weld | `#F2B84B` | the chalked next strip, selection, focus ring |
+| Role      | Name          | Hex                    | Use                                           |
+| --------- | ------------- | ---------------------- | --------------------------------------------- |
+| ground    | muslin        | `#FDFCF8`              | page ground (the existing brand cream, kept)  |
+| ink       | indigo thread | `#1C1F3B`              | text, binding, curtain, footer field          |
+| muted     | faded indigo  | `#575B76`              | secondary text                                |
+| line      | basting       | `rgb(28 31 59 / 0.16)` | hairlines, pinned outlines                    |
+| accent    | madder        | `#FF6B6B`              | primary actions (text on it is `#000`)        |
+| highlight | weld          | `#F2B84B`              | the chalked next strip, selection, focus ring |
 
 Patch fabrics come from badge data. The badge editor offers a swatch book (madder, weld,
 indigo, sage, rose, sky, plum, moss, marigold, slate) and accepts any hex. Thread color on a
@@ -252,15 +252,15 @@ once the fonts load, and upload it by hand in the repository settings.
 
 ### Hover treatments (one per role)
 
-| Role | Treatment |
-|---|---|
-| Primary CTA | patch lift plus a running stitch |
-| Secondary CTA | outlined patch whose stitch closes into a solid binding |
-| Corner tags and account tabs | running-stitch underline draws on; the current tab is filled |
-| Blocks on the quilt | the block lifts and turns slightly; opening it unfolds the panel |
-| Task swatches and cards | the swatch lifts and turns slightly; its pinked edge stays put |
-| Quilt patches | lift and show a fabric label with the badge and the task length |
-| Utility links (legal, footer small print) | color only |
+| Role                                      | Treatment                                                        |
+| ----------------------------------------- | ---------------------------------------------------------------- |
+| Primary CTA                               | patch lift plus a running stitch                                 |
+| Secondary CTA                             | outlined patch whose stitch closes into a solid binding          |
+| Corner tags and account tabs              | running-stitch underline draws on; the current tab is filled     |
+| Blocks on the quilt                       | the block lifts and turns slightly; opening it unfolds the panel |
+| Task swatches and cards                   | the swatch lifts and turns slightly; its pinked edge stays put   |
+| Quilt patches                             | lift and show a fabric label with the badge and the task length  |
+| Utility links (legal, footer small print) | color only                                                       |
 
 ## Composition plans (views inside the structure)
 
@@ -280,15 +280,15 @@ once the fonts load, and upload it by hand in the repository settings.
 
 ## Genericness test
 
-| A generic model would... | Changed to |
-|---|---|
-| a navbar over a hero, stacked sections and a footer | the site is one quilt; pages are blocks that unfold; corner tags and a minimap orient |
+| A generic model would...                                | Changed to                                                                                  |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| a navbar over a hero, stacked sections and a footer     | the site is one quilt; pages are blocks that unfold; corner tags and a minimap orient       |
 | show a patchwork grid of equal squares, like a calendar | a sampler of traditional block patterns around a wonky log cabin that grows from the center |
-| use cream, terracotta and a serif | brand cream with indigo ink, madder and weld (the three natural dyes); a grotesk |
-| show stats in KPI tiles | counts written into sentences, sewn on fabric labels |
-| use color-swap hovers | blocks lift; running stitches draw and travel |
-| fill the empty quilt with sample patches | an empty frame with one square chalked in |
-| put legal links in a footer | a quilt label block, as quilters sew one on with the maker details |
+| use cream, terracotta and a serif                       | brand cream with indigo ink, madder and weld (the three natural dyes); a grotesk            |
+| show stats in KPI tiles                                 | counts written into sentences, sewn on fabric labels                                        |
+| use color-swap hovers                                   | blocks lift; running stitches draw and travel                                               |
+| fill the empty quilt with sample patches                | an empty frame with one square chalked in                                                   |
+| put legal links in a footer                             | a quilt label block, as quilters sew one on with the maker details                          |
 
 ## Drawn assets
 

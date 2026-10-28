@@ -10,8 +10,8 @@ const { mocks } = vi.hoisted(() => ({
     setUserVerificationPref: vi.fn(),
     setTasksVerifiedForOrg: vi.fn(),
     sendVerificationApproved: vi.fn(),
-    sendVerificationRejected: vi.fn()
-  }
+    sendVerificationRejected: vi.fn(),
+  },
 }));
 
 vi.mock('$lib/server/teams', () => ({ isUserAdmin: mocks.isUserAdmin }));
@@ -19,33 +19,42 @@ vi.mock('$lib/server/verifications', () => ({
   getVerificationByUserId: mocks.getVerificationByUserId,
   getUserEmailAndLocale: mocks.getUserEmailAndLocale,
   setVerificationStatus: mocks.setVerificationStatus,
-  setUserVerificationPref: mocks.setUserVerificationPref
+  setUserVerificationPref: mocks.setUserVerificationPref,
 }));
 vi.mock('$lib/server/appwrite', () => ({ setTasksVerifiedForOrg: mocks.setTasksVerifiedForOrg }));
 vi.mock('$lib/server/email', () => ({
   sendVerificationApproved: mocks.sendVerificationApproved,
-  sendVerificationRejected: mocks.sendVerificationRejected
+  sendVerificationRejected: mocks.sendVerificationRejected,
 }));
 
 import { POST as approve } from '../../routes/api/verifications/[userId]/approve/+server';
 import { POST as reject } from '../../routes/api/verifications/[userId]/reject/+server';
 
 function makeEvent(opts: { adminId?: string | null; userId?: string; body?: unknown }) {
-  const request = opts.body === undefined
-    ? new Request('http://test/api/verifications/x/approve')
-    : new Request('http://test/api/verifications/x/approve', {
-      method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(opts.body)
-    });
+  const request =
+    opts.body === undefined
+      ? new Request('http://test/api/verifications/x/approve')
+      : new Request('http://test/api/verifications/x/approve', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(opts.body),
+        });
   return createRequestEvent({
     url: 'http://test/api/verifications/x/approve',
-    params: { userId: opts.userId ?? 'target-user' }, request,
-    session: opts.adminId ? { user: { id: opts.adminId } } : null
+    params: { userId: opts.userId ?? 'target-user' },
+    request,
+    session: opts.adminId ? { user: { id: opts.adminId } } : null,
   });
 }
 
 const happyVerification = {
-  id: 'v1', userId: 'target-user', orgName: 'Doctors Without Borders',
-  country: 'US', taxId: '13-3433452', status: 'pending' as const, submittedAt: ''
+  id: 'v1',
+  userId: 'target-user',
+  orgName: 'Doctors Without Borders',
+  country: 'US',
+  taxId: '13-3433452',
+  status: 'pending' as const,
+  submittedAt: '',
 };
 
 describe('POST /api/verifications/[userId]/approve', () => {
@@ -53,7 +62,11 @@ describe('POST /api/verifications/[userId]/approve', () => {
     Object.values(mocks).forEach((m) => m.mockReset());
     mocks.isUserAdmin.mockResolvedValue(true);
     mocks.getVerificationByUserId.mockResolvedValue(happyVerification);
-    mocks.setVerificationStatus.mockResolvedValue({ ...happyVerification, status: 'approved', reviewedBy: 'admin-1' });
+    mocks.setVerificationStatus.mockResolvedValue({
+      ...happyVerification,
+      status: 'approved',
+      reviewedBy: 'admin-1',
+    });
     mocks.setTasksVerifiedForOrg.mockResolvedValue(3);
     mocks.getUserEmailAndLocale.mockResolvedValue({ email: 'jane@example.com', locale: 'en' });
     mocks.sendVerificationApproved.mockResolvedValue({ ok: true, id: 'plunk-1' });
@@ -76,7 +89,6 @@ describe('POST /api/verifications/[userId]/approve', () => {
     const res = await approve(createRequestEvent({ session: { user: { id: 'admin-1' } } }));
     expect(res.status).toBe(400);
   });
-
 
   it('returns 404 when no verification exists for the target user', async () => {
     mocks.getVerificationByUserId.mockResolvedValue(undefined);
@@ -102,7 +114,7 @@ describe('POST /api/verifications/[userId]/approve', () => {
     expect(mocks.sendVerificationApproved).toHaveBeenCalledWith({
       to: 'jane@example.com',
       orgName: 'Doctors Without Borders',
-      locale: 'en'
+      locale: 'en',
     });
     expect(body.tasksUpdated).toBe(3);
     expect(body.email.ok).toBe(true);
@@ -138,7 +150,11 @@ describe('POST /api/verifications/[userId]/reject', () => {
     Object.values(mocks).forEach((m) => m.mockReset());
     mocks.isUserAdmin.mockResolvedValue(true);
     mocks.getVerificationByUserId.mockResolvedValue(happyVerification);
-    mocks.setVerificationStatus.mockResolvedValue({ ...happyVerification, status: 'rejected', reason: 'docs unclear' });
+    mocks.setVerificationStatus.mockResolvedValue({
+      ...happyVerification,
+      status: 'rejected',
+      reason: 'docs unclear',
+    });
     mocks.setTasksVerifiedForOrg.mockResolvedValue(2);
     mocks.getUserEmailAndLocale.mockResolvedValue({ email: 'jane@example.com', locale: 'fr' });
     mocks.sendVerificationRejected.mockResolvedValue({ ok: true, id: 'plunk-2' });
@@ -146,67 +162,86 @@ describe('POST /api/verifications/[userId]/reject', () => {
 
   it('returns 403 for non-admin', async () => {
     mocks.isUserAdmin.mockResolvedValue(false);
-    const res = await reject(makeEvent({ adminId: 'u', userId: 'target-user', body: { reason: 'no' } }));
+    const res = await reject(
+      makeEvent({ adminId: 'u', userId: 'target-user', body: { reason: 'no' } }),
+    );
     expect(res.status).toBe(403);
   });
 
   it('returns 400 when JSON body is invalid in reject', async () => {
-    const res = await reject(createRequestEvent({
-      params: { userId: 'target-user' },
-      session: { user: { id: 'admin-1' } },
-      request: new Request('http://test/api/verifications/x/reject')
-    }));
+    const res = await reject(
+      createRequestEvent({
+        params: { userId: 'target-user' },
+        session: { user: { id: 'admin-1' } },
+        request: new Request('http://test/api/verifications/x/reject'),
+      }),
+    );
     expect(res.status).toBe(400);
   });
 
   it('returns 500 when setVerificationStatus fails in reject', async () => {
     mocks.setVerificationStatus.mockResolvedValue(undefined);
-    const res = await reject(makeEvent({ adminId: 'admin-1', userId: 'target-user', body: { reason: 'bad docs' } }));
+    const res = await reject(
+      makeEvent({ adminId: 'admin-1', userId: 'target-user', body: { reason: 'bad docs' } }),
+    );
     expect(res.status).toBe(500);
   });
 
   it('returns 400 when userId param is missing in reject', async () => {
-    const res = await reject(createRequestEvent({
-      session: { user: { id: 'admin-1' } },
-      request: new Request('http://test/api/verifications/x/reject', {
-        method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ reason: 'some reason' })
-      })
-    }));
+    const res = await reject(
+      createRequestEvent({
+        session: { user: { id: 'admin-1' } },
+        request: new Request('http://test/api/verifications/x/reject', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ reason: 'some reason' }),
+        }),
+      }),
+    );
     expect(res.status).toBe(400);
   });
 
-
   it('rejects empty reason with 400', async () => {
-    const res = await reject(makeEvent({ adminId: 'admin-1', userId: 'target-user', body: { reason: '   ' } }));
+    const res = await reject(
+      makeEvent({ adminId: 'admin-1', userId: 'target-user', body: { reason: '   ' } }),
+    );
     expect(res.status).toBe(400);
     const body = await res.json();
     expect(body.error).toMatch(/reason/);
   });
 
-
   it('rejects reasons longer than 1000 chars with 400', async () => {
     const longReason = 'x'.repeat(1001);
-    const res = await reject(makeEvent({ adminId: 'admin-1', userId: 'target-user', body: { reason: longReason } }));
+    const res = await reject(
+      makeEvent({ adminId: 'admin-1', userId: 'target-user', body: { reason: longReason } }),
+    );
     expect(res.status).toBe(400);
   });
 
   it('returns 404 when verification missing', async () => {
     mocks.getVerificationByUserId.mockResolvedValue(undefined);
-    const res = await reject(makeEvent({ adminId: 'admin-1', userId: 'ghost', body: { reason: 'no' } }));
+    const res = await reject(
+      makeEvent({ adminId: 'admin-1', userId: 'ghost', body: { reason: 'no' } }),
+    );
     expect(res.status).toBe(404);
   });
 
   it('runs the full happy path: status, unverify-tasks, prefs reset, email with reason', async () => {
-    const res = await reject(makeEvent({
-      adminId: 'admin-1',
-      userId: 'target-user',
-      body: { reason: 'Document does not show tax-exempt status.' }
-    }));
+    const res = await reject(
+      makeEvent({
+        adminId: 'admin-1',
+        userId: 'target-user',
+        body: { reason: 'Document does not show tax-exempt status.' },
+      }),
+    );
     const body = await res.json();
 
     expect(res.status).toBe(200);
     expect(mocks.setVerificationStatus).toHaveBeenCalledWith(
-      'target-user', 'rejected', 'admin-1', 'Document does not show tax-exempt status.'
+      'target-user',
+      'rejected',
+      'admin-1',
+      'Document does not show tax-exempt status.',
     );
     expect(mocks.setTasksVerifiedForOrg).toHaveBeenCalledWith('target-user', false);
     expect(mocks.setUserVerificationPref).toHaveBeenCalledWith('target-user', 'rejected');
@@ -214,18 +249,20 @@ describe('POST /api/verifications/[userId]/reject', () => {
       to: 'jane@example.com',
       orgName: 'Doctors Without Borders',
       reason: 'Document does not show tax-exempt status.',
-      locale: 'fr'
+      locale: 'fr',
     });
     expect(body.tasksUpdated).toBe(2);
   });
 
   it('handles email throwing and returns emailResult with error message', async () => {
     mocks.getUserEmailAndLocale.mockRejectedValue(new Error('email service down'));
-    const res = await reject(makeEvent({
-      adminId: 'admin-1',
-      userId: 'target-user',
-      body: { reason: 'wrong docs' }
-    }));
+    const res = await reject(
+      makeEvent({
+        adminId: 'admin-1',
+        userId: 'target-user',
+        body: { reason: 'wrong docs' },
+      }),
+    );
     const body = await res.json();
     expect(res.status).toBe(200);
     expect(body.email.ok).toBe(false);
@@ -235,11 +272,13 @@ describe('POST /api/verifications/[userId]/reject', () => {
   it('does not send a rejection email when the user has no email address', async () => {
     mocks.getUserEmailAndLocale.mockResolvedValue(null);
 
-    const res = await reject(makeEvent({
-      adminId: 'admin-1',
-      userId: 'target-user',
-      body: { reason: 'wrong docs' }
-    }));
+    const res = await reject(
+      makeEvent({
+        adminId: 'admin-1',
+        userId: 'target-user',
+        body: { reason: 'wrong docs' },
+      }),
+    );
     const body = await res.json();
 
     expect(res.status).toBe(200);
@@ -248,25 +287,32 @@ describe('POST /api/verifications/[userId]/reject', () => {
   });
 
   it('treats a null rejection payload as a missing reason', async () => {
-    const res = await reject(makeEvent({
-      adminId: 'admin-1',
-      userId: 'target-user',
-      body: null
-    }));
+    const res = await reject(
+      makeEvent({
+        adminId: 'admin-1',
+        userId: 'target-user',
+        body: null,
+      }),
+    );
 
     expect(res.status).toBe(400);
     expect(mocks.setVerificationStatus).not.toHaveBeenCalled();
   });
 
   it('trims whitespace around the reason before persisting', async () => {
-    await reject(makeEvent({
-      adminId: 'admin-1',
-      userId: 'target-user',
-      body: { reason: '   wrong docs   ' }
-    }));
+    await reject(
+      makeEvent({
+        adminId: 'admin-1',
+        userId: 'target-user',
+        body: { reason: '   wrong docs   ' },
+      }),
+    );
 
     expect(mocks.setVerificationStatus).toHaveBeenCalledWith(
-      'target-user', 'rejected', 'admin-1', 'wrong docs'
+      'target-user',
+      'rejected',
+      'admin-1',
+      'wrong docs',
     );
   });
 });

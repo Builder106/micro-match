@@ -1,8 +1,25 @@
 import { describe, it, expect } from 'vitest';
 import { patternPieces, piecePath, sawtoothBorder, type PatternName } from './blocks';
 
-const area = (pts: [number, number][]) => Math.abs(pts.reduce((s, [x, y], i) => { const [nx, ny] = pts[(i + 1) % pts.length]; return s + x * ny - nx * y; }, 0)) / 2;
-const names: PatternName[] = ['ninePatch', 'railFence', 'pinwheel', 'geese', 'churnDash', 'friendshipStar', 'ohioStar', 'courthouse', 'hourglass', 'triangles'];
+const area = (pts: [number, number][]) =>
+  Math.abs(
+    pts.reduce((s, [x, y], i) => {
+      const [nx, ny] = pts[(i + 1) % pts.length];
+      return s + x * ny - nx * y;
+    }, 0),
+  ) / 2;
+const names: PatternName[] = [
+  'ninePatch',
+  'railFence',
+  'pinwheel',
+  'geese',
+  'churnDash',
+  'friendshipStar',
+  'ohioStar',
+  'courthouse',
+  'hourglass',
+  'triangles',
+];
 
 describe('patternPieces', () => {
   it.each(names)('%s pieces cover its cell exactly once', (name) => {
@@ -38,6 +55,15 @@ describe('sawtoothBorder', () => {
 
 describe('piecePath', () => {
   it('rounds to hundredths and closes the shape', () => {
-    expect(piecePath({ points: [[0, 0], [33.3333, 0], [0, 1]], fabric: 0 })).toBe('M0 0L33.33 0L0 1Z');
+    expect(
+      piecePath({
+        points: [
+          [0, 0],
+          [33.3333, 0],
+          [0, 1],
+        ],
+        fabric: 0,
+      }),
+    ).toBe('M0 0L33.33 0L0 1Z');
   });
 });

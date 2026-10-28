@@ -104,17 +104,17 @@ Verification runs alongside this. An NGO submits its tax ID and a document, and 
 
 ## 🚀 Tech stack
 
-| | |
-| --- | --- |
-| **Framework** | [SvelteKit](https://kit.svelte.dev/) on [Vercel](https://vercel.com/) (`adapter-vercel`, `nodejs22.x` runtime) |
-| **Runtime + package manager** | [Bun](https://bun.sh/) |
-| **Backend** | [Appwrite Cloud](https://appwrite.io/) — Database (TablesDB), Auth, Storage, Teams |
-| **Email** | [Plunk](https://useplunk.com/) as the transactional email provider (server-side HTTP API migration) |
-| **NGO verification** | [ProPublica Nonprofit Explorer API](https://projects.propublica.org/nonprofits/api/) for US 501(c)(3) lookups |
-| **Translation** | Self-hosted [LibreTranslate](https://libretranslate.com/) on an ARM64 Oracle VM behind `translate.micromatch.app` |
-| **Static UI localization** | [Paraglide JS](https://paraglidejs.com/sveltekit) with committed catalogs for English, Spanish, French, German, Portuguese, Chinese, and Arabic |
-| **UI** | Svelte 5 components and plain CSS tokens; GSAP and Lenis for the quilt's camera and panels; artwork drawn with Glaxnimate (see [DESIGN.md](DESIGN.md)) |
-| **Testing** | [Vitest](https://vitest.dev/) (server modules, API endpoints, page loaders, quilt logic) and [Playwright](https://playwright.dev/) (functional flows, responsiveness, visual baselines) |
+|                               |                                                                                                                                                                                         |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Framework**                 | [SvelteKit](https://kit.svelte.dev/) on [Vercel](https://vercel.com/) (`adapter-vercel`, `nodejs22.x` runtime)                                                                          |
+| **Runtime + package manager** | [Bun](https://bun.sh/)                                                                                                                                                                  |
+| **Backend**                   | [Appwrite Cloud](https://appwrite.io/) — Database (TablesDB), Auth, Storage, Teams                                                                                                      |
+| **Email**                     | [Plunk](https://useplunk.com/) as the transactional email provider (server-side HTTP API migration)                                                                                     |
+| **NGO verification**          | [ProPublica Nonprofit Explorer API](https://projects.propublica.org/nonprofits/api/) for US 501(c)(3) lookups                                                                           |
+| **Translation**               | Self-hosted [LibreTranslate](https://libretranslate.com/) on an ARM64 Oracle VM behind `translate.micromatch.app`                                                                       |
+| **Static UI localization**    | [Paraglide JS](https://paraglidejs.com/sveltekit) with committed catalogs for English, Spanish, French, German, Portuguese, Chinese, and Arabic                                         |
+| **UI**                        | Svelte 5 components and plain CSS tokens; GSAP and Lenis for the quilt's camera and panels; artwork drawn with Glaxnimate (see [DESIGN.md](DESIGN.md))                                  |
+| **Testing**                   | [Vitest](https://vitest.dev/) (server modules, API endpoints, page loaders, quilt logic) and [Playwright](https://playwright.dev/) (functional flows, responsiveness, visual baselines) |
 
 ## 🏁 Getting started
 
@@ -162,13 +162,13 @@ bun run verify:libretranslate # live health and API-key smoke check
 
 Stored in Appwrite TablesDB (see [docs/appwrite-schema.md](docs/appwrite-schema.md) for full schema details):
 
-| Table | Holds |
-| --- | --- |
-| `tasks` | Mission cards posted by NGOs (title, tags, time estimate, deadline, status, isVerified) |
-| `claims` | Volunteer submissions for tasks (proofUrl, notes, status: pending / approved / rejected) |
-| `badges` | Awarded badge instances (userId, taskId, label, color) |
-| `badgeDefinitions` | Org-owned badge templates (orgId, label, criteria, taskId for task-specific) |
-| `ngoVerifications` | Verification queue (orgName, country, taxId, docFileId, status, reason) |
+| Table              | Holds                                                                                    |
+| ------------------ | ---------------------------------------------------------------------------------------- |
+| `tasks`            | Mission cards posted by NGOs (title, tags, time estimate, deadline, status, isVerified)  |
+| `claims`           | Volunteer submissions for tasks (proofUrl, notes, status: pending / approved / rejected) |
+| `badges`           | Awarded badge instances (userId, taskId, label, color)                                   |
+| `badgeDefinitions` | Org-owned badge templates (orgId, label, criteria, taskId for task-specific)             |
+| `ngoVerifications` | Verification queue (orgName, country, taxId, docFileId, status, reason)                  |
 
 Plus three Appwrite Teams (`volunteers`, `ngos`, `admins`) for role + moderation gating. Storage uses separate `avatars` and `verifications` buckets with file-level permissions. To automatically provision the database tables, attributes, and storage buckets:
 

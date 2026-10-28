@@ -8,7 +8,7 @@ describe('richParts', () => {
       { tag: 'docs', text: 'the guide' },
       { tag: null, text: ' or ' },
       { tag: 'code', text: 'GET /api' },
-      { tag: null, text: '.' }
+      { tag: null, text: '.' },
     ]);
   });
   it('keeps text without tags whole, and a sentence that is all one tag', () => {

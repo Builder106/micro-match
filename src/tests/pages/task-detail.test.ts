@@ -6,19 +6,33 @@ const { envState, mocks } = vi.hoisted(() => ({
     getTaskById: vi.fn(),
     usersGet: vi.fn(),
     getVerificationByUserId: vi.fn(),
-    getPatchDesignForTask: vi.fn()
-  }
+    getPatchDesignForTask: vi.fn(),
+  },
 }));
 
 vi.mock('$env/dynamic/private', () => ({
-  env: new Proxy(envState, { get: (_, key: string) => envState[key] })
+  env: new Proxy(envState, { get: (_, key: string) => envState[key] }),
 }));
 vi.mock('$lib/server/appwrite', () => ({ getTaskById: mocks.getTaskById }));
-vi.mock('$lib/server/verifications', () => ({ getVerificationByUserId: mocks.getVerificationByUserId }));
+vi.mock('$lib/server/verifications', () => ({
+  getVerificationByUserId: mocks.getVerificationByUserId,
+}));
 vi.mock('$lib/server/quilt', () => ({ getPatchDesignForTask: mocks.getPatchDesignForTask }));
 vi.mock('node-appwrite', () => ({
-  Client: class { setEndpoint() { return this; } setProject() { return this; } setKey() { return this; } },
-  Users: class { get = mocks.usersGet; }
+  Client: class {
+    setEndpoint() {
+      return this;
+    }
+    setProject() {
+      return this;
+    }
+    setKey() {
+      return this;
+    }
+  },
+  Users: class {
+    get = mocks.usersGet;
+  },
 }));
 
 import { load } from '../../routes/task/[id]/+page.server';
@@ -30,7 +44,7 @@ function makeEvent(opts: { userId?: string; taskId?: string; search?: string } =
   return createServerLoadEventFor<typeof load>({
     params: { id: taskId },
     url: `http://test/task/${taskId}${opts.search ?? ''}`,
-    userId: opts.userId
+    userId: opts.userId,
   });
 }
 
@@ -58,35 +72,59 @@ describe('/task/[id] load', () => {
   });
 
   it('marks isOwner true when the session user matches the task orgId', async () => {
-    mocks.getTaskById.mockResolvedValue({ id: 'task-1', orgId: 'org-1', title: 'T', description: 'D' });
+    mocks.getTaskById.mockResolvedValue({
+      id: 'task-1',
+      orgId: 'org-1',
+      title: 'T',
+      description: 'D',
+    });
     const result = requireLoadResult(await load(makeEvent({ userId: 'org-1' })));
     expect(result.isOwner).toBe(true);
   });
 
   it('marks isOwner false for a different user', async () => {
-    mocks.getTaskById.mockResolvedValue({ id: 'task-1', orgId: 'org-1', title: 'T', description: 'D' });
+    mocks.getTaskById.mockResolvedValue({
+      id: 'task-1',
+      orgId: 'org-1',
+      title: 'T',
+      description: 'D',
+    });
     const result = requireLoadResult(await load(makeEvent({ userId: 'user-2' })));
     expect(result.isOwner).toBe(false);
   });
 
   it('skips the org-name lookup when Appwrite is not configured', async () => {
-    mocks.getTaskById.mockResolvedValue({ id: 'task-1', orgId: 'org-1', title: 'T', description: 'D' });
+    mocks.getTaskById.mockResolvedValue({
+      id: 'task-1',
+      orgId: 'org-1',
+      title: 'T',
+      description: 'D',
+    });
     const result = requireLoadResult(await load(makeEvent()));
     expect(result.orgName).toBeNull();
     expect(mocks.usersGet).not.toHaveBeenCalled();
 
     // Also when task has no orgId
-    mocks.getTaskById.mockResolvedValue({ id: 'task-2', orgId: undefined, title: 'T2', description: 'D2' });
+    mocks.getTaskById.mockResolvedValue({
+      id: 'task-2',
+      orgId: undefined,
+      title: 'T2',
+      description: 'D2',
+    });
     const resultNoOrg = requireLoadResult(await load(makeEvent({ taskId: 'task-2' })));
     expect(resultNoOrg.orgName).toBeNull();
   });
-
 
   it('looks up the org display name when Appwrite is configured', async () => {
     envState.APPWRITE_ENDPOINT = 'https://fake.appwrite.io/v1';
     envState.APPWRITE_PROJECT_ID = 'proj';
     envState.APPWRITE_API_KEY = 'key';
-    mocks.getTaskById.mockResolvedValue({ id: 'task-1', orgId: 'org-1', title: 'T', description: 'D' });
+    mocks.getTaskById.mockResolvedValue({
+      id: 'task-1',
+      orgId: 'org-1',
+      title: 'T',
+      description: 'D',
+    });
     mocks.usersGet.mockResolvedValue({ prefs: { orgName: 'Acme NGO' } });
 
     const result = requireLoadResult(await load(makeEvent()));
@@ -97,7 +135,12 @@ describe('/task/[id] load', () => {
     envState.APPWRITE_ENDPOINT = 'https://fake.appwrite.io/v1';
     envState.APPWRITE_PROJECT_ID = 'proj';
     envState.APPWRITE_API_KEY = 'key';
-    mocks.getTaskById.mockResolvedValue({ id: 'task-1', orgId: 'org-1', title: 'T', description: 'D' });
+    mocks.getTaskById.mockResolvedValue({
+      id: 'task-1',
+      orgId: 'org-1',
+      title: 'T',
+      description: 'D',
+    });
     mocks.usersGet.mockResolvedValue({ name: 'Fallback Org Name', prefs: {} });
 
     const result = requireLoadResult(await load(makeEvent()));
@@ -124,17 +167,24 @@ describe('/task/[id] load', () => {
     expect(resultCatch.orgName).toBeNull();
   });
 
-
-
   it('does not request a translation when there is no ?lang= param', async () => {
-    mocks.getTaskById.mockResolvedValue({ id: 'task-1', orgId: 'org-1', title: 'T', description: 'D' });
+    mocks.getTaskById.mockResolvedValue({
+      id: 'task-1',
+      orgId: 'org-1',
+      title: 'T',
+      description: 'D',
+    });
     const result = requireLoadResult(await load(makeEvent()));
     expect(result.translatedTo).toBeNull();
   });
 
-
   it('returns original task content and defers a supported ?lang= translation to the client', async () => {
-    mocks.getTaskById.mockResolvedValue({ id: 'task-1', orgId: 'org-1', title: 'Hello', description: 'World' });
+    mocks.getTaskById.mockResolvedValue({
+      id: 'task-1',
+      orgId: 'org-1',
+      title: 'Hello',
+      description: 'World',
+    });
 
     const result = requireLoadResult(await load(makeEvent({ search: '?lang=es' })));
 
@@ -144,7 +194,12 @@ describe('/task/[id] load', () => {
   });
 
   it('ignores unsupported translation codes', async () => {
-    mocks.getTaskById.mockResolvedValue({ id: 'task-1', orgId: 'org-1', title: 'Hello', description: 'World' });
+    mocks.getTaskById.mockResolvedValue({
+      id: 'task-1',
+      orgId: 'org-1',
+      title: 'Hello',
+      description: 'World',
+    });
 
     const result = requireLoadResult(await load(makeEvent({ search: '?lang=zh-Hans' })));
 
@@ -155,12 +210,26 @@ describe('/task/[id] load', () => {
 
   describe('the nonprofit name and patch', () => {
     beforeEach(() => {
-      mocks.getTaskById.mockResolvedValue({ id: 'task-1', orgId: 'org-1', title: 'T', shortDescription: 'S', tags: [] });
-      mocks.getPatchDesignForTask.mockResolvedValue({ color: '#FF6B6B', thread: '#1C1F3B', icon: 'heart', label: 'Helper' });
+      mocks.getTaskById.mockResolvedValue({
+        id: 'task-1',
+        orgId: 'org-1',
+        title: 'T',
+        shortDescription: 'S',
+        tags: [],
+      });
+      mocks.getPatchDesignForTask.mockResolvedValue({
+        color: '#FF6B6B',
+        thread: '#1C1F3B',
+        icon: 'heart',
+        label: 'Helper',
+      });
     });
 
     it('uses the registered name from an approved verification, and returns the patch', async () => {
-      mocks.getVerificationByUserId.mockResolvedValue({ status: 'approved', orgName: 'Riverside clinic' });
+      mocks.getVerificationByUserId.mockResolvedValue({
+        status: 'approved',
+        orgName: 'Riverside clinic',
+      });
       const result = requireLoadResult(await load(makeEvent()));
       expect(result.orgName).toBe('Riverside clinic');
       expect(result.patch).toMatchObject({ label: 'Helper' });

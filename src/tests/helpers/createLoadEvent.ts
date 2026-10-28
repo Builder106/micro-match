@@ -7,7 +7,7 @@ export type PageLoadEvent<
   Params extends Record<string, string> = Record<string, never>,
   Data extends Record<string, unknown> = Record<string, unknown>,
   ParentData extends Record<string, unknown> = DefaultParentData,
-  RouteId extends string | null = never
+  RouteId extends string | null = never,
 > = LoadEvent<Params, Data, ParentData, RouteId>;
 
 type LoadTracing = ServerLoadEvent['tracing'];
@@ -34,22 +34,26 @@ const noopSpan = new Proxy({} as LoadSpan, {
     }
 
     return () => noopSpan;
-  }
+  },
 });
 
 const createNoopTracing = (): LoadTracing => ({
   enabled: false,
   root: noopSpan,
-  current: noopSpan
+  current: noopSpan,
 });
 
 export interface MockCookies extends Cookies {
   _store: Map<string, string>;
   get: ReturnType<typeof vi.fn<(name: string) => string | undefined>>;
   getAll: ReturnType<typeof vi.fn<() => Array<{ name: string; value: string }>>>;
-  set: ReturnType<typeof vi.fn<(name: string, value: string, opts: CookieSerializeOptions) => void>>;
+  set: ReturnType<
+    typeof vi.fn<(name: string, value: string, opts: CookieSerializeOptions) => void>
+  >;
   delete: ReturnType<typeof vi.fn<(name: string, opts: CookieSerializeOptions) => void>>;
-  serialize: ReturnType<typeof vi.fn<(name: string, value: string, opts?: CookieSerializeOptions) => string>>;
+  serialize: ReturnType<
+    typeof vi.fn<(name: string, value: string, opts?: CookieSerializeOptions) => string>
+  >;
 }
 
 export function createMockCookies(initial: Record<string, string> = {}): MockCookies {
@@ -65,7 +69,10 @@ export function createMockCookies(initial: Record<string, string> = {}): MockCoo
     delete: vi.fn((name: string, _opts: CookieSerializeOptions) => {
       store.delete(name);
     }),
-    serialize: vi.fn((name: string, value: string, _opts?: CookieSerializeOptions) => `${name}=${encodeURIComponent(value)}`)
+    serialize: vi.fn(
+      (name: string, value: string, _opts?: CookieSerializeOptions) =>
+        `${name}=${encodeURIComponent(value)}`,
+    ),
   };
 
   return cookies;
@@ -74,7 +81,7 @@ export function createMockCookies(initial: Record<string, string> = {}): MockCoo
 export interface CreateServerLoadEventOptions<
   Params extends Record<string, string> = Record<string, never>,
   ParentData extends Record<string, unknown> = DefaultParentData,
-  RouteId extends string | null = never
+  RouteId extends string | null = never,
 > {
   url?: URL | string;
   params?: Params;
@@ -104,7 +111,7 @@ export interface CreatePageLoadEventOptions<
   Params extends Record<string, string> = Record<string, never>,
   Data extends Record<string, unknown> = Record<string, unknown>,
   ParentData extends Record<string, unknown> = DefaultParentData,
-  RouteId extends string | null = never
+  RouteId extends string | null = never,
 > {
   url?: URL | string;
   params?: Params;
@@ -122,17 +129,18 @@ export interface CreatePageLoadEventOptions<
 export function createServerLoadEvent<
   Params extends Record<string, string> = Record<string, never>,
   ParentData extends Record<string, unknown> = DefaultParentData,
-  RouteId extends string | null = never
+  RouteId extends string | null = never,
 >(
-  options: CreateServerLoadEventOptions<Params, ParentData, RouteId> = {}
+  options: CreateServerLoadEventOptions<Params, ParentData, RouteId> = {},
 ): ServerLoadEvent<Params, ParentData, RouteId> {
-  const url = options.url instanceof URL
-    ? options.url
-    : typeof options.url === 'string'
-      ? new URL(options.url, 'http://localhost:5173')
-      : options.request
-        ? new URL(options.request.url)
-        : new URL('http://localhost:5173/');
+  const url =
+    options.url instanceof URL
+      ? options.url
+      : typeof options.url === 'string'
+        ? new URL(options.url, 'http://localhost:5173')
+        : options.request
+          ? new URL(options.request.url)
+          : new URL('http://localhost:5173/');
 
   const routeId = (
     typeof options.route === 'object' && options.route !== null
@@ -147,24 +155,28 @@ export function createServerLoadEvent<
     cookies = createMockCookies(options.cookies as Record<string, string> | undefined);
   }
 
-  const session = options.session !== undefined
-    ? options.session
-    : options.userId != null
-      ? { user: { id: options.userId, email: options.email ?? 'jane@example.com' } }
-      : (options.locals?.session ?? undefined);
+  const session =
+    options.session !== undefined
+      ? options.session
+      : options.userId != null
+        ? { user: { id: options.userId, email: options.email ?? 'jane@example.com' } }
+        : (options.locals?.session ?? undefined);
 
   const resolvedLocals: App.Locals = {
     userRole: options.userRole ?? options.locals?.userRole ?? 'anonymous',
-    ...(options.locals ? { ...options.locals, userRole: options.locals.userRole ?? undefined } : {}),
+    ...(options.locals
+      ? { ...options.locals, userRole: options.locals.userRole ?? undefined }
+      : {}),
     ...(options.userRole ? { userRole: options.userRole } : {}),
-    ...(session !== undefined ? { session } : {})
+    ...(session !== undefined ? { session } : {}),
   };
 
   const request = options.request ?? new Request(url.href);
 
-  const mockFetch = (options.fetch ?? vi.fn(
-    typeof globalThis.fetch === 'function' ? globalThis.fetch : async () => new Response('ok')
-  )) as typeof fetch;
+  const mockFetch = (options.fetch ??
+    vi.fn(
+      typeof globalThis.fetch === 'function' ? globalThis.fetch : async () => new Response('ok'),
+    )) as typeof fetch;
 
   const untrackFn: <T>(fn: () => T) => T = options.untrack ?? ((fn) => fn());
 
@@ -174,7 +186,7 @@ export function createServerLoadEvent<
     getClientAddress: options.getClientAddress ?? vi.fn(() => '127.0.0.1'),
     locals: resolvedLocals,
     params: (options.params ?? {}) as Params,
-    parent: options.parent ?? vi.fn(async () => ((options.parentData ?? {}) as ParentData)),
+    parent: options.parent ?? vi.fn(async () => (options.parentData ?? {}) as ParentData),
     platform: options.platform,
     request,
     route: { id: routeId },
@@ -185,27 +197,29 @@ export function createServerLoadEvent<
     isRemoteRequest: options.isRemoteRequest ?? false,
     depends: options.depends ?? vi.fn(),
     untrack: untrackFn,
-    tracing: options.tracing ?? createNoopTracing()
+    tracing: options.tracing ?? createNoopTracing(),
   };
 }
 
 export function createRequestEvent<
   Params extends Record<string, string> = Record<string, never>,
   ParentData extends Record<string, unknown> = DefaultParentData,
-  RouteId extends string | null = never
+  RouteId extends string | null = never,
 >(
-  options: CreateServerLoadEventOptions<Params, ParentData, RouteId> = {}
+  options: CreateServerLoadEventOptions<Params, ParentData, RouteId> = {},
 ): RequestEvent<Params, RouteId> {
   return {
     ...createServerLoadEvent(options),
-    request: options.request ?? new Request(
-      options.url instanceof URL
-        ? options.url
-        : typeof options.url === 'string'
-          ? new URL(options.url, 'http://localhost:5173')
-          : 'http://localhost:5173/'
-    ),
-    setHeaders: options.setHeaders ?? vi.fn()
+    request:
+      options.request ??
+      new Request(
+        options.url instanceof URL
+          ? options.url
+          : typeof options.url === 'string'
+            ? new URL(options.url, 'http://localhost:5173')
+            : 'http://localhost:5173/',
+      ),
+    setHeaders: options.setHeaders ?? vi.fn(),
   };
 }
 
@@ -213,13 +227,14 @@ export function createPageLoadEvent<
   Params extends Record<string, string> = Record<string, string>,
   Data extends Record<string, unknown> = Record<string, unknown>,
   ParentData extends Record<string, unknown> = DefaultParentData,
-  RouteId extends string | null = never
+  RouteId extends string | null = never,
 >(
-  options: CreatePageLoadEventOptions<Params, Data, ParentData, RouteId> = {}
+  options: CreatePageLoadEventOptions<Params, Data, ParentData, RouteId> = {},
 ): PageLoadEvent<Params, Data, ParentData, RouteId> {
-  const url = typeof options.url === 'string'
-    ? new URL(options.url, 'http://localhost:5173')
-    : (options.url ?? new URL('http://localhost:5173/'));
+  const url =
+    typeof options.url === 'string'
+      ? new URL(options.url, 'http://localhost:5173')
+      : (options.url ?? new URL('http://localhost:5173/'));
 
   const routeId = (
     typeof options.route === 'object' && options.route !== null
@@ -227,9 +242,10 @@ export function createPageLoadEvent<
       : (options.route ?? null)
   ) as RouteId;
 
-  const mockFetch = (options.fetch ?? vi.fn(
-    typeof globalThis.fetch === 'function' ? globalThis.fetch : async () => new Response('ok')
-  )) as typeof fetch;
+  const mockFetch = (options.fetch ??
+    vi.fn(
+      typeof globalThis.fetch === 'function' ? globalThis.fetch : async () => new Response('ok'),
+    )) as typeof fetch;
 
   const untrackFn: <T>(fn: () => T) => T = options.untrack ?? ((fn) => fn());
 
@@ -238,12 +254,12 @@ export function createPageLoadEvent<
     params: (options.params ?? {}) as Params,
     route: { id: routeId },
     data: (options.data ?? {}) as Data,
-    parent: options.parent ?? vi.fn(async () => ((options.parentData ?? {}) as ParentData)),
+    parent: options.parent ?? vi.fn(async () => (options.parentData ?? {}) as ParentData),
     fetch: mockFetch,
     depends: options.depends ?? vi.fn(),
     untrack: untrackFn,
     setHeaders: options.setHeaders ?? vi.fn(),
-    tracing: options.tracing ?? createNoopTracing()
+    tracing: options.tracing ?? createNoopTracing(),
   };
 }
 
@@ -252,23 +268,23 @@ export interface CreateLoadEvent {
     Params extends Record<string, string> = Record<string, never>,
     Data extends Record<string, unknown> = Record<string, unknown>,
     ParentData extends Record<string, unknown> = DefaultParentData,
-    RouteId extends string | null = never
+    RouteId extends string | null = never,
   >(
-    options: CreatePageLoadEventOptions<Params, Data, ParentData, RouteId> & { type: 'page' }
+    options: CreatePageLoadEventOptions<Params, Data, ParentData, RouteId> & { type: 'page' },
   ): PageLoadEvent<Params, Data, ParentData, RouteId>;
   <
     Params extends Record<string, string> = Record<string, never>,
     ParentData extends Record<string, unknown> = DefaultParentData,
-    RouteId extends string | null = never
+    RouteId extends string | null = never,
   >(
-    options?: CreateServerLoadEventOptions<Params, ParentData, RouteId> & { type?: 'server' }
+    options?: CreateServerLoadEventOptions<Params, ParentData, RouteId> & { type?: 'server' },
   ): ServerLoadEvent<Params, ParentData, RouteId>;
 }
 
 export const createLoadEvent: CreateLoadEvent = ((
   options:
     | (CreateServerLoadEventOptions & { type?: 'server' })
-    | (CreatePageLoadEventOptions & { type: 'page' }) = {}
+    | (CreatePageLoadEventOptions & { type: 'page' }) = {},
 ): ServerLoadEvent | PageLoadEvent => {
   if ('type' in options && options.type === 'page') {
     return createPageLoadEvent(options);
@@ -284,7 +300,11 @@ export function requireLoadResult<T>(result: T | void): T {
 }
 
 export function createServerLoadEventFor<Handler extends (...args: never[]) => unknown>(
-  options: CreateServerLoadEventOptions<Record<string, string>, DefaultParentData, string | null> = {}
+  options: CreateServerLoadEventOptions<
+    Record<string, string>,
+    DefaultParentData,
+    string | null
+  > = {},
 ): Parameters<Handler>[0] {
   return createServerLoadEvent(options) as Parameters<Handler>[0];
 }

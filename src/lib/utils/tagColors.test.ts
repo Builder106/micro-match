@@ -24,4 +24,3 @@ describe('getTagStyle', () => {
     expect(getTagStyle('')).toEqual({ bg: '#F1F5F9', color: '#334155' });
   });
 });
-

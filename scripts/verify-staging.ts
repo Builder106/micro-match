@@ -38,7 +38,7 @@ async function verifyStaging() {
     ['APPWRITE_BADGE_DEFS_TABLE_ID', 'badgeDefinitions_qa'],
     ['APPWRITE_NGO_TEAM_ID', 'ngo_qa'],
     ['APPWRITE_VOLUNTEER_TEAM_ID', 'volunteer_qa'],
-    ['APPWRITE_ADMIN_TEAM_ID', 'admins_qa']
+    ['APPWRITE_ADMIN_TEAM_ID', 'admins_qa'],
   ]);
   for (const [name, expected] of expectedQaResources) {
     if (process.env[name] !== expected) {
@@ -51,10 +51,7 @@ async function verifyStaging() {
     process.exit(1);
   }
 
-  const client = new Client()
-    .setEndpoint(endpoint)
-    .setProject(projectId)
-    .setKey(apiKey);
+  const client = new Client().setEndpoint(endpoint).setProject(projectId).setKey(apiKey);
 
   const tables = new TablesDB(client);
   const storage = new Storage(client);
@@ -66,13 +63,15 @@ async function verifyStaging() {
   const requiredTables = [tasksTable, claimsTable, badgesTable, verificationsTable, badgeDefsTable];
   for (const tableId of requiredTables) {
     try {
-      const queries = tableId === tasksTable
-        ? [Query.select(['evergreen']), Query.limit(1)]
-        : [Query.limit(1)];
+      const queries =
+        tableId === tasksTable ? [Query.select(['evergreen']), Query.limit(1)] : [Query.limit(1)];
       const rows = await tables.listRows({ databaseId: dbId, tableId, queries });
       console.log(`✓ Table "${tableId}" is accessible (${rows.total} rows).`);
     } catch (err) {
-      console.error(`✗ Failed to read table "${tableId}"${tableId === tasksTable ? ' with its evergreen column' : ''}:`, err instanceof Error ? err.message : err);
+      console.error(
+        `✗ Failed to read table "${tableId}"${tableId === tasksTable ? ' with its evergreen column' : ''}:`,
+        err instanceof Error ? err.message : err,
+      );
       hasError = true;
     }
   }
@@ -83,11 +82,16 @@ async function verifyStaging() {
       const files = await storage.listFiles({ bucketId, queries: [Query.limit(1)] });
       console.log(`✓ Storage bucket "${bucketId}" is accessible (${files.total} files).`);
     } catch (err) {
-      console.error(`✗ Failed to access bucket "${bucketId}":`, err instanceof Error ? err.message : err);
+      console.error(
+        `✗ Failed to access bucket "${bucketId}":`,
+        err instanceof Error ? err.message : err,
+      );
       hasError = true;
     }
   }
-  console.log('Check in Appwrite Console: verification bucket file security is enabled and bucket-wide read permissions are empty.');
+  console.log(
+    'Check in Appwrite Console: verification bucket file security is enabled and bucket-wide read permissions are empty.',
+  );
 
   // Verify Teams
   const requiredTeams = [ngoTeam, volunteerTeam, adminTeam];
@@ -96,7 +100,10 @@ async function verifyStaging() {
       const team = await teams.get({ teamId });
       console.log(`✓ Team "${team.name}" (${team.$id}) is accessible.`);
     } catch (err) {
-      console.error(`✗ Failed to access team "${teamId}":`, err instanceof Error ? err.message : err);
+      console.error(
+        `✗ Failed to access team "${teamId}":`,
+        err instanceof Error ? err.message : err,
+      );
       hasError = true;
     }
   }
@@ -107,7 +114,9 @@ async function verifyStaging() {
   }
 
   console.log('\nSUCCESS: Configured Preview Appwrite resources are accessible.');
-  console.log('Preview uses the dedicated QA table and team IDs. Auth users and storage remain shared.');
+  console.log(
+    'Preview uses the dedicated QA table and team IDs. Auth users and storage remain shared.',
+  );
 }
 
 verifyStaging().catch((err) => {

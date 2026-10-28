@@ -24,12 +24,20 @@
   }
 }
 
-main[data-kind='read'] { --panel-w: min(56vw, 52rem); }
-main[data-kind='work'] { --panel-w: calc(100vw - clamp(14rem, 22vw, 21rem)); }
-main[data-kind='narrow'] { --panel-w: min(36rem, 46vw); }
+main[data-kind='read'] {
+  --panel-w: min(56vw, 52rem);
+}
+main[data-kind='work'] {
+  --panel-w: calc(100vw - clamp(14rem, 22vw, 21rem));
+}
+main[data-kind='narrow'] {
+  --panel-w: min(36rem, 46vw);
+}
 
 /* ---------- the world ---------- */
-.quilt-view { background: var(--c-wall); }
+.quilt-view {
+  background: var(--c-wall);
+}
 .quilt-world {
   --cell: clamp(15rem, 18.5vw, 20rem);
   --sash: 1.5rem;
@@ -44,7 +52,10 @@ main[data-kind='narrow'] { --panel-w: min(36rem, 46vw); }
   width: max-content;
   background: var(--c-sash);
   border-radius: 4px;
-  box-shadow: 0 0 0 10px var(--c-binding), 0 0 0 11.5px color-mix(in srgb, var(--c-shade) 60%, transparent), 0 40px 70px -20px color-mix(in srgb, var(--c-shade) 35%, transparent);
+  box-shadow:
+    0 0 0 10px var(--c-binding),
+    0 0 0 11.5px color-mix(in srgb, var(--c-shade) 60%, transparent),
+    0 40px 70px -20px color-mix(in srgb, var(--c-shade) 35%, transparent);
 }
 .cornerstone {
   position: absolute;
@@ -57,7 +68,11 @@ main[data-kind='narrow'] { --panel-w: min(36rem, 46vw); }
 }
 
 @media (min-width: 900px) {
-  html, body { height: 100%; overflow: hidden; }
+  html,
+  body {
+    height: 100%;
+    overflow: hidden;
+  }
   .quilt-view {
     position: fixed;
     inset: 0;
@@ -66,8 +81,12 @@ main[data-kind='narrow'] { --panel-w: min(36rem, 46vw); }
     cursor: grab;
     user-select: none;
   }
-  .quilt-view.is-dragging { cursor: grabbing; }
-  .quilt-view.is-dragging * { cursor: grabbing !important; }
+  .quilt-view.is-dragging {
+    cursor: grabbing;
+  }
+  .quilt-view.is-dragging * {
+    cursor: grabbing !important;
+  }
   .quilt-world {
     position: absolute;
     left: 0;
@@ -78,7 +97,9 @@ main[data-kind='narrow'] { --panel-w: min(36rem, 46vw); }
       calc(50vh - var(--sash) / 2 - var(--by) * var(--pitch))
     );
   }
-  main.has-panel .quilt-world { --sx: calc((100vw - var(--panel-w) - 2rem) / 2); }
+  main.has-panel .quilt-world {
+    --sx: calc((100vw - var(--panel-w) - 2rem) / 2);
+  }
 }
 
 /* ---------- blocks ---------- */
@@ -94,22 +115,36 @@ main[data-kind='narrow'] { --panel-w: min(36rem, 46vw); }
   isolation: isolate;
   display: grid;
   place-items: center;
-  transition: translate 0.45s cubic-bezier(0.16, 1, 0.3, 1), rotate 0.45s cubic-bezier(0.16, 1, 0.3, 1), filter 0.45s;
+  transition:
+    translate 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    rotate 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.45s;
 }
-.block__face > .cloth, .title__border { z-index: -1; }
+.block__face > .cloth,
+.title__border {
+  z-index: -1;
+}
 .block__hole {
   position: absolute;
   inset: 0;
   display: none;
   background:
-    repeating-linear-gradient(45deg, color-mix(in srgb, var(--c-fg) 6%, transparent) 0 2px, transparent 2px 9px),
+    repeating-linear-gradient(
+      45deg,
+      color-mix(in srgb, var(--c-fg) 6%, transparent) 0 2px,
+      transparent 2px 9px
+    ),
     var(--c-hole);
   outline: 3px dashed var(--c-weld);
   outline-offset: -8px;
   box-shadow: inset 0 6px 14px color-mix(in srgb, var(--c-shade) 18%, transparent);
 }
-.block.is-open .block__face { visibility: hidden; }
-.block.is-open .block__hole { display: block; }
+.block.is-open .block__face {
+  visibility: hidden;
+}
+.block.is-open .block__hole {
+  display: block;
+}
 @media (hover: hover) {
   .block:has(.sig__link:hover) .block__face,
   .block:has(.community__link:hover) .block__face {
@@ -134,9 +169,17 @@ main[data-kind='narrow'] { --panel-w: min(36rem, 46vw); }
   gap: 0.35rem;
   padding: clamp(0.8rem, 1.2vw, 1.15rem);
   background: var(--c-sig);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c-fg) 10%, transparent), 0 1px 0 color-mix(in srgb, var(--c-shade) 12%, transparent);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--c-fg) 10%, transparent),
+    0 1px 0 color-mix(in srgb, var(--c-shade) 12%, transparent);
 }
-.is-wide .sig { width: 64%; aspect-ratio: auto; height: 74%; grid-template-columns: 1fr; align-content: start; }
+.is-wide .sig {
+  width: 64%;
+  aspect-ratio: auto;
+  height: 74%;
+  grid-template-columns: 1fr;
+  align-content: start;
+}
 .sig__icon {
   width: 1.7rem;
   height: 1.7rem;
@@ -156,13 +199,36 @@ main[data-kind='narrow'] { --panel-w: min(36rem, 46vw); }
   letter-spacing: -0.02em;
   line-height: 1.04;
 }
-.sig__link { outline: none; }
-.sig__link::after { content: ''; position: absolute; inset: 0; z-index: 1; }
-.sig__link:focus-visible::after { outline: 3px solid var(--c-weld); outline-offset: -3px; }
-.sig__line { font-size: clamp(0.8rem, 0.95vw, 0.9rem); line-height: 1.38; color: var(--c-muted); text-wrap: pretty; overflow-wrap: break-word; }
+.sig__link {
+  outline: none;
+}
+.sig__link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.sig__link:focus-visible::after {
+  outline: 3px solid var(--c-weld);
+  outline-offset: -3px;
+}
+.sig__line {
+  font-size: clamp(0.8rem, 0.95vw, 0.9rem);
+  line-height: 1.38;
+  color: var(--c-muted);
+  text-wrap: pretty;
+  overflow-wrap: break-word;
+}
 
 /* Tasks: real open tasks pinned to the block as small swatches. */
-.tasks__swatches { list-style: none; padding: 0; display: grid; gap: 0.4rem; width: 100%; margin-top: 0.5rem; }
+.tasks__swatches {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+  width: 100%;
+  margin-top: 0.5rem;
+}
 .tasks__swatch {
   position: relative;
   z-index: 2;
@@ -176,15 +242,38 @@ main[data-kind='narrow'] { --panel-w: min(36rem, 46vw); }
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c-fg) 18%, transparent);
   font-size: 0.82rem;
   line-height: 1.25;
-  transition: translate 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s;
+  transition:
+    translate 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.3s;
 }
-.tasks__min { font-family: var(--f-display); font-weight: 700; color: var(--c-fg); white-space: nowrap; }
-.tasks__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-@media (hover: hover) { .tasks__swatch:hover { translate: 3px 0; box-shadow: inset 0 0 0 1.5px var(--c-fg); } }
+.tasks__min {
+  font-family: var(--f-display);
+  font-weight: 700;
+  color: var(--c-fg);
+  white-space: nowrap;
+}
+.tasks__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@media (hover: hover) {
+  .tasks__swatch:hover {
+    translate: 3px 0;
+    box-shadow: inset 0 0 0 1.5px var(--c-fg);
+  }
+}
 
 /* Title block */
-.block--title .block__face { place-items: stretch; }
-.title__border { position: absolute; inset: 0; width: 100%; height: 100%; }
+.block--title .block__face {
+  place-items: stretch;
+}
+.title__border {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
 .title__sig {
   margin: 6.25%;
   display: grid;
@@ -194,26 +283,93 @@ main[data-kind='narrow'] { --panel-w: min(36rem, 46vw); }
   background: var(--c-sig);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c-fg) 8%, transparent);
 }
-.title__headline { font-size: clamp(2.5rem, 3.9vw, 4.4rem); margin-left: -0.05em; }
-.title__headline span { display: block; }
-p.title__headline span { display: inline; }
-.title__lede { font-size: clamp(1rem, 1.15vw, 1.15rem); line-height: 1.5; max-width: 36ch; }
-.title__ctas { display: flex; flex-wrap: wrap; gap: 0.6rem; }
-.title__hint { font-size: var(--t-xs); color: var(--c-muted); }
-.hint--touch { display: none; }
-@media (hover: none), (pointer: coarse) { .hint--touch { display: inline; } .hint--pointer { display: none; } }
+.title__headline {
+  font-size: clamp(2.5rem, 3.9vw, 4.4rem);
+  margin-left: -0.05em;
+}
+.title__headline span {
+  display: block;
+}
+p.title__headline span {
+  display: inline;
+}
+.title__lede {
+  font-size: clamp(1rem, 1.15vw, 1.15rem);
+  line-height: 1.5;
+  max-width: 36ch;
+}
+.title__ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.title__hint {
+  font-size: var(--t-xs);
+  color: var(--c-muted);
+}
+.hint--touch {
+  display: none;
+}
+@media (hover: none), (pointer: coarse) {
+  .hint--touch {
+    display: inline;
+  }
+  .hint--pointer {
+    display: none;
+  }
+}
 
 /* Community block: the live log cabin */
-.block--community .block__face { place-items: stretch; grid-template-rows: minmax(0, 1fr) auto; background: var(--c-backing); }
-.block--community .quilt { min-height: 0; height: 100%; width: auto; max-width: 100%; justify-self: center; align-self: center; }
-.block--community .quilt__svg { width: 100%; height: 100%; }
-.community__caption { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding: 0.7rem 1.1rem 0.9rem; border-top: 1.5px dashed var(--c-line); font-size: 0.88rem; color: var(--c-muted); }
-.community__title { font-family: var(--f-display); font-weight: 700; font-size: 1.1rem; color: var(--c-fg); letter-spacing: -0.015em; white-space: nowrap; }
-.community__link { text-decoration: underline dashed 1.5px; text-underline-offset: 0.2em; }
-@media (hover: hover) { .community__link:hover { text-decoration-style: solid; text-decoration-color: var(--c-accent); } }
+.block--community .block__face {
+  place-items: stretch;
+  grid-template-rows: minmax(0, 1fr) auto;
+  background: var(--c-backing);
+}
+.block--community .quilt {
+  min-height: 0;
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  justify-self: center;
+  align-self: center;
+}
+.block--community .quilt__svg {
+  width: 100%;
+  height: 100%;
+}
+.community__caption {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.7rem 1.1rem 0.9rem;
+  border-top: 1.5px dashed var(--c-line);
+  font-size: 0.88rem;
+  color: var(--c-muted);
+}
+.community__title {
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--c-fg);
+  letter-spacing: -0.015em;
+  white-space: nowrap;
+}
+.community__link {
+  text-decoration: underline dashed 1.5px;
+  text-underline-offset: 0.2em;
+}
+@media (hover: hover) {
+  .community__link:hover {
+    text-decoration-style: solid;
+    text-decoration-color: var(--c-accent);
+  }
+}
 
 /* Quilt label: on the back of the quilt, a cream label sewn on by hand */
-.block--label .block__face { background: var(--c-binding); }
+.block--label .block__face {
+  background: var(--c-binding);
+}
 .label__tag {
   position: relative;
   color-scheme: light; /* a cream label in any light; its tokens resolve light */
@@ -226,19 +382,60 @@ p.title__headline span { display: inline; }
   line-height: 1.4;
   box-shadow: 0 6px 0 -2px rgb(0 0 0 / 0.25);
 }
-.label__tag::before { content: ''; position: absolute; inset: 5px; border: 1.5px dashed color-mix(in srgb, var(--c-fg) 40%, transparent); pointer-events: none; }
-.label__title { font-family: var(--f-display); font-weight: 700; font-size: 1rem; margin-bottom: 0.35rem; }
-.label__tag ul { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0 0.85rem; margin-top: 0.4rem; }
-.label__tag a, .theme-toggle { position: relative; z-index: 2; display: inline-block; padding-block: 0.3rem; text-decoration: underline 1px; text-underline-offset: 0.18em; }
-@media (hover: hover) { .label__tag a:hover, .theme-toggle:hover { color: var(--c-danger); } }
+.label__tag::before {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border: 1.5px dashed color-mix(in srgb, var(--c-fg) 40%, transparent);
+  pointer-events: none;
+}
+.label__title {
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 0.35rem;
+}
+.label__tag ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.85rem;
+  margin-top: 0.4rem;
+}
+.label__tag a,
+.theme-toggle {
+  position: relative;
+  z-index: 2;
+  display: inline-block;
+  padding-block: 0.3rem;
+  text-decoration: underline 1px;
+  text-underline-offset: 0.18em;
+}
+@media (hover: hover) {
+  .label__tag a:hover,
+  .theme-toggle:hover {
+    color: var(--c-danger);
+  }
+}
 /* The toggle names the scheme it switches to. Which one is on screen is read from the same
    meta the root color-scheme follows, so the label is right before any script runs. */
-.theme-toggle__light { display: none; }
-:root:has(> head > meta[name='color-scheme'][content='dark']) .theme-toggle__dark { display: none; }
-:root:has(> head > meta[name='color-scheme'][content='dark']) .theme-toggle__light { display: inline; }
+.theme-toggle__light {
+  display: none;
+}
+:root:has(> head > meta[name='color-scheme'][content='dark']) .theme-toggle__dark {
+  display: none;
+}
+:root:has(> head > meta[name='color-scheme'][content='dark']) .theme-toggle__light {
+  display: inline;
+}
 @media (prefers-color-scheme: dark) {
-  :root:not(:has(> head > meta[name='color-scheme'][content='light'])) .theme-toggle__dark { display: none; }
-  :root:not(:has(> head > meta[name='color-scheme'][content='light'])) .theme-toggle__light { display: inline; }
+  :root:not(:has(> head > meta[name='color-scheme'][content='light'])) .theme-toggle__dark {
+    display: none;
+  }
+  :root:not(:has(> head > meta[name='color-scheme'][content='light'])) .theme-toggle__light {
+    display: inline;
+  }
 }
 
 /* ---------- corner tags ---------- */
@@ -263,30 +460,99 @@ p.title__headline span { display: inline; }
   padding: 0.4rem 0.95rem 0.4rem 0.6rem;
   background: var(--c-sig);
   border-radius: 3px;
-  box-shadow: 0 0 0 1.5px var(--c-fg), 0 5px 0 -1px color-mix(in srgb, var(--c-shade) 22%, transparent);
+  box-shadow:
+    0 0 0 1.5px var(--c-fg),
+    0 5px 0 -1px color-mix(in srgb, var(--c-shade) 22%, transparent);
   rotate: -0.8deg;
 }
-.tag--ways { rotate: 0.7deg; padding-left: 0.95rem; }
-.tag::after { content: ''; position: absolute; inset: 4px; border: 1px dashed color-mix(in srgb, var(--c-fg) 32%, transparent); border-radius: 2px; pointer-events: none; }
-.tag__home { display: inline-flex; align-items: center; min-height: 1.6rem; gap: 0.5rem; font-family: var(--f-display); font-weight: 760; font-size: 1.12rem; letter-spacing: -0.03em; }
-.tag__mark { width: 1.6rem; height: 1.44rem; flex: none; transition: rotate 0.45s cubic-bezier(0.16, 1, 0.3, 1); }
-@media (hover: hover) { .tag__home:hover .tag__mark { rotate: -10deg; } }
-.tag__where { font-size: 0.86rem; color: var(--c-muted); padding-left: 0.85rem; border-left: 1.5px dashed var(--c-line); white-space: nowrap; }
-.tag__link { position: relative; padding-block: 0.3rem; font-size: 0.95rem; font-weight: 560; }
+.tag--ways {
+  rotate: 0.7deg;
+  padding-left: 0.95rem;
+}
+.tag::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px dashed color-mix(in srgb, var(--c-fg) 32%, transparent);
+  border-radius: 2px;
+  pointer-events: none;
+}
+.tag__home {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.6rem;
+  gap: 0.5rem;
+  font-family: var(--f-display);
+  font-weight: 760;
+  font-size: 1.12rem;
+  letter-spacing: -0.03em;
+}
+.tag__mark {
+  width: 1.6rem;
+  height: 1.44rem;
+  flex: none;
+  transition: rotate 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@media (hover: hover) {
+  .tag__home:hover .tag__mark {
+    rotate: -10deg;
+  }
+}
+.tag__where {
+  font-size: 0.86rem;
+  color: var(--c-muted);
+  padding-left: 0.85rem;
+  border-left: 1.5px dashed var(--c-line);
+  white-space: nowrap;
+}
+.tag__link {
+  position: relative;
+  padding-block: 0.3rem;
+  font-size: 0.95rem;
+  font-weight: 560;
+}
 .tag__link::before {
-  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px;
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
   background: linear-gradient(90deg, currentColor 55%, transparent 0) 0 0 / 8px 2px repeat-x;
   clip-path: inset(0 100% 0 0);
   transition: clip-path 0.45s cubic-bezier(0.65, 0, 0.35, 1);
 }
-@media (hover: hover) { .tag__link:hover::before { clip-path: inset(0 0 0 0); } }
-.tag__link:focus-visible::before, .tag__link[aria-current='page']::before { clip-path: inset(0 0 0 0); }
-.tag__link--strong { font-family: var(--f-display); font-weight: 700; }
+@media (hover: hover) {
+  .tag__link:hover::before {
+    clip-path: inset(0 0 0 0);
+  }
+}
+.tag__link:focus-visible::before,
+.tag__link[aria-current='page']::before {
+  clip-path: inset(0 0 0 0);
+}
+.tag__link--strong {
+  font-family: var(--f-display);
+  font-weight: 700;
+}
 
 /* ---------- minimap ---------- */
-.minimap { position: fixed; z-index: 30; right: 1.1rem; bottom: 1.1rem; width: 10.5rem; transition: translate 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
-.has-panel .minimap { right: auto; left: 1.1rem; }
-main[data-kind='work'] .minimap, main[data-kind='narrow'] .minimap { display: none; }
+.minimap {
+  position: fixed;
+  z-index: 30;
+  right: 1.1rem;
+  bottom: 1.1rem;
+  width: 10.5rem;
+  transition: translate 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.has-panel .minimap {
+  right: auto;
+  left: 1.1rem;
+}
+main[data-kind='work'] .minimap,
+main[data-kind='narrow'] .minimap {
+  display: none;
+}
 .minimap__hit {
   position: relative;
   display: block;
@@ -295,7 +561,9 @@ main[data-kind='work'] .minimap, main[data-kind='narrow'] .minimap { display: no
   overflow: hidden;
   background: var(--c-sash);
   border-radius: 3px;
-  box-shadow: 0 0 0 4px var(--c-binding), 0 8px 18px color-mix(in srgb, var(--c-shade) 25%, transparent);
+  box-shadow:
+    0 0 0 4px var(--c-binding),
+    0 8px 18px color-mix(in srgb, var(--c-shade) 25%, transparent);
   cursor: pointer;
 }
 .minimap__block {
@@ -306,8 +574,19 @@ main[data-kind='work'] .minimap, main[data-kind='narrow'] .minimap { display: no
   height: calc(var(--h) / 4 * 100% - 4px);
   opacity: 0.85;
 }
-.minimap__block.is-open { opacity: 1; outline: 2px dashed var(--c-weld); outline-offset: -2px; background: var(--c-hole) !important; }
-.minimap__view { position: absolute; border: 2px solid var(--c-fg); border-radius: 2px; box-shadow: 0 0 0 999px color-mix(in srgb, var(--c-shade) 18%, transparent); pointer-events: none; }
+.minimap__block.is-open {
+  opacity: 1;
+  outline: 2px dashed var(--c-weld);
+  outline-offset: -2px;
+  background: var(--c-hole) !important;
+}
+.minimap__view {
+  position: absolute;
+  border: 2px solid var(--c-fg);
+  border-radius: 2px;
+  box-shadow: 0 0 0 999px color-mix(in srgb, var(--c-shade) 18%, transparent);
+  pointer-events: none;
+}
 
 /* ---------- the panel a block unfolds into ---------- */
 .panel {
@@ -320,16 +599,47 @@ main[data-kind='work'] .minimap, main[data-kind='narrow'] .minimap { display: no
   display: grid;
   background: var(--c-paper);
   border-radius: 3px;
-  box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--c-fg) 85%, transparent), 0 30px 60px -18px color-mix(in srgb, var(--c-shade) 45%, transparent);
+  box-shadow:
+    0 0 0 1.5px color-mix(in srgb, var(--c-fg) 85%, transparent),
+    0 30px 60px -18px color-mix(in srgb, var(--c-shade) 45%, transparent);
   overflow: hidden;
   cursor: auto;
 }
-.panel__face { position: absolute; inset: 0; z-index: 3; visibility: hidden; opacity: 0; }
+.panel__face {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  visibility: hidden;
+  opacity: 0;
+}
 /* The panel is bound with a strip of its own block's cloth, so every page wears its pattern. */
-.panel__band { position: absolute; left: 0; top: 0; bottom: 0; width: 14px; overflow: hidden; z-index: 2; display: flex; flex-direction: column; box-shadow: inset -1.5px 0 0 color-mix(in srgb, var(--c-fg) 35%, transparent); }
-.panel__band .cloth { position: relative; flex: none; width: 56px; height: 56px; inset: auto; }
-.panel { padding-left: 14px; }
-.panel__body { display: grid; grid-template-rows: auto minmax(0, 1fr); min-height: 0; }
+.panel__band {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 14px;
+  overflow: hidden;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  box-shadow: inset -1.5px 0 0 color-mix(in srgb, var(--c-fg) 35%, transparent);
+}
+.panel__band .cloth {
+  position: relative;
+  flex: none;
+  width: 56px;
+  height: 56px;
+  inset: auto;
+}
+.panel {
+  padding-left: 14px;
+}
+.panel__body {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 0;
+}
 .panel__selvedge {
   display: flex;
   align-items: center;
@@ -338,8 +648,15 @@ main[data-kind='work'] .minimap, main[data-kind='narrow'] .minimap { display: no
   border-bottom: 1.5px dashed var(--c-line);
   font-size: 0.9rem;
 }
-.panel__swatch { width: 1rem; height: 1rem; border-radius: 2px; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c-fg) 25%, transparent); }
-.panel__where { color: var(--c-muted); }
+.panel__swatch {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c-fg) 25%, transparent);
+}
+.panel__where {
+  color: var(--c-muted);
+}
 .panel__close {
   margin-left: auto;
   display: inline-flex;
@@ -351,22 +668,68 @@ main[data-kind='work'] .minimap, main[data-kind='narrow'] .minimap { display: no
   font-family: var(--f-display);
   font-weight: 680;
   box-shadow: inset 0 0 0 1.5px var(--c-fg);
-  transition: background-color 0.25s, color 0.25s;
+  transition:
+    background-color 0.25s,
+    color 0.25s;
 }
-.panel__close svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; transition: rotate 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-@media (hover: hover) { .panel__close:hover { background: var(--c-fg); color: var(--c-bg); } .panel__close:hover svg { rotate: 90deg; } }
-.panel__close:focus-visible { background: var(--c-fg); color: var(--c-bg); }
-.panel__scroll { min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
-.panel__content { padding: clamp(1.6rem, 3vw, 3rem) clamp(1.4rem, 3.4vw, 3.6rem) 4.5rem; }
-.panel__content h1:focus { outline: none; }
+.panel__close svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  transition: rotate 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@media (hover: hover) {
+  .panel__close:hover {
+    background: var(--c-fg);
+    color: var(--c-bg);
+  }
+  .panel__close:hover svg {
+    rotate: 90deg;
+  }
+}
+.panel__close:focus-visible {
+  background: var(--c-fg);
+  color: var(--c-bg);
+}
+.panel__scroll {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.panel__content {
+  padding: clamp(1.6rem, 3vw, 3rem) clamp(1.4rem, 3.4vw, 3.6rem) 4.5rem;
+}
+.panel__content h1:focus {
+  outline: none;
+}
 
 /* With a panel open the quilt steps back: a muslin scrim keeps it present but quiet. */
-.quilt-view::after { content: ''; position: fixed; inset: 0; z-index: 35; pointer-events: none; background: color-mix(in srgb, var(--c-wall) 0%, transparent); transition: background-color 0.6s; }
-.quilt-view.has-panel::after { background: color-mix(in srgb, var(--c-wall) 42%, transparent); }
-main[data-kind='work'] .quilt-view.has-panel::after, main[data-kind='narrow'] .quilt-view.has-panel::after { background: color-mix(in srgb, var(--c-wall) 62%, transparent); }
+.quilt-view::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 35;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--c-wall) 0%, transparent);
+  transition: background-color 0.6s;
+}
+.quilt-view.has-panel::after {
+  background: color-mix(in srgb, var(--c-wall) 42%, transparent);
+}
+main[data-kind='work'] .quilt-view.has-panel::after,
+main[data-kind='narrow'] .quilt-view.has-panel::after {
+  background: color-mix(in srgb, var(--c-wall) 62%, transparent);
+}
 
 /* The quilting line: a running stitch down the middle of the sashing, block edge to block edge. */
-.seam { position: absolute; pointer-events: none; --thread: color-mix(in srgb, var(--c-fg) 40%, transparent); }
+.seam {
+  position: absolute;
+  pointer-events: none;
+  --thread: color-mix(in srgb, var(--c-fg) 40%, transparent);
+}
 .seam--h {
   left: calc(var(--x) * var(--pitch) + var(--sash));
   top: calc(var(--y) * var(--pitch) + var(--sash) / 2 - 1px);
@@ -383,8 +746,18 @@ main[data-kind='work'] .quilt-view.has-panel::after, main[data-kind='narrow'] .q
 }
 
 /* ---------- later loads: the quilt is pieced together (transform only, one shot) ---------- */
-@keyframes lay-down { from { transform: translateY(-18px) rotate(-2.5deg) scale(0.96); } to { transform: none; } }
-html.motion:not(.enter) .quilt-world .block { animation: lay-down 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: calc(var(--o) * 45ms + 80ms); }
+@keyframes lay-down {
+  from {
+    transform: translateY(-18px) rotate(-2.5deg) scale(0.96);
+  }
+  to {
+    transform: none;
+  }
+}
+html.motion:not(.enter) .quilt-world .block {
+  animation: lay-down 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--o) * 45ms + 80ms);
+}
 
 /* ---------- first home visit in a session: laid out, pinned, then quilted from the center out.
    Each block is carried in from its own side of the frame, nearest the heart first; the title
@@ -402,27 +775,102 @@ html.motion:not(.enter) .quilt-world .block { animation: lay-down 0.9s cubic-bez
   --fo: 0;
   --wait: calc((var(--ed) - 1) * 230ms + mod(var(--o) * 37, 60) * 1ms);
 }
-.quilt-world .block--title { --fo: 1; }
+.quilt-world .block--title {
+  --fo: 1;
+}
 @keyframes piece-in {
-  from { transform: translate(var(--fx), var(--fy)) rotate(var(--ft)) scale(var(--fs)); opacity: var(--fo); }
-  30% { opacity: 1; }
-  to { transform: none; opacity: 1; }
+  from {
+    transform: translate(var(--fx), var(--fy)) rotate(var(--ft)) scale(var(--fs));
+    opacity: var(--fo);
+  }
+  30% {
+    opacity: 1;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
 }
-@keyframes held { from { opacity: 1; } to { opacity: 0; } }
+@keyframes held {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
 @keyframes pin-in {
-  from { transform: scale(2.2) rotate(45deg); opacity: 0; }
-  35% { opacity: 1; }
-  72% { transform: scale(0.86) rotate(-4deg); }
-  to { transform: none; opacity: 1; }
+  from {
+    transform: scale(2.2) rotate(45deg);
+    opacity: 0;
+  }
+  35% {
+    opacity: 1;
+  }
+  72% {
+    transform: scale(0.86) rotate(-4deg);
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
 }
-@keyframes sew-h { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0); } }
-@keyframes sew-h-rev { from { clip-path: inset(0 0 0 100%); } to { clip-path: inset(0); } }
-@keyframes sew-v { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0); } }
-@keyframes sew-v-rev { from { clip-path: inset(100% 0 0 0); } to { clip-path: inset(0); } }
-@keyframes tag-in { from { transform: translateY(-16px) scale(1.04); opacity: 0; } to { transform: none; opacity: 1; } }
-@keyframes map-in { from { transform: translateY(18px) rotate(3deg); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes sew-h {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0);
+  }
+}
+@keyframes sew-h-rev {
+  from {
+    clip-path: inset(0 0 0 100%);
+  }
+  to {
+    clip-path: inset(0);
+  }
+}
+@keyframes sew-v {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0);
+  }
+}
+@keyframes sew-v-rev {
+  from {
+    clip-path: inset(100% 0 0 0);
+  }
+  to {
+    clip-path: inset(0);
+  }
+}
+@keyframes tag-in {
+  from {
+    transform: translateY(-16px) scale(1.04);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes map-in {
+  from {
+    transform: translateY(18px) rotate(3deg);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
 
-html.enter .quilt-world .block { animation: piece-in 1s cubic-bezier(0.16, 1, 0.3, 1) var(--wait) both; }
+html.enter .quilt-world .block {
+  animation: piece-in 1s cubic-bezier(0.16, 1, 0.3, 1) var(--wait) both;
+}
 /* The shadow of a piece still held above the table, gone once it lies flat. */
 html.enter .quilt-world .block::before {
   content: '';
@@ -436,26 +884,52 @@ html.enter .cornerstone {
   animation: pin-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
   animation-delay: calc(480ms + hypot(var(--x) - 3, var(--y) - 2) * 120ms);
 }
-html.enter .seam { animation: 0.55s cubic-bezier(0.65, 0, 0.35, 1) calc(760ms + var(--d) * 170ms) both; }
-html.enter .seam--h { animation-name: sew-h; }
-html.enter .seam--h.is-rev { animation-name: sew-h-rev; }
-html.enter .seam--v { animation-name: sew-v; }
-html.enter .seam--v.is-rev { animation-name: sew-v-rev; }
-html.enter .tag { animation: tag-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both; }
-html.enter .tag--ways { animation-delay: 0.63s; }
-html.enter .minimap { animation: map-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1.15s both; }
+html.enter .seam {
+  animation: 0.55s cubic-bezier(0.65, 0, 0.35, 1) calc(760ms + var(--d) * 170ms) both;
+}
+html.enter .seam--h {
+  animation-name: sew-h;
+}
+html.enter .seam--h.is-rev {
+  animation-name: sew-h-rev;
+}
+html.enter .seam--v {
+  animation-name: sew-v;
+}
+html.enter .seam--v.is-rev {
+  animation-name: sew-v-rev;
+}
+html.enter .tag {
+  animation: tag-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both;
+}
+html.enter .tag--ways {
+  animation-delay: 0.63s;
+}
+html.enter .minimap {
+  animation: map-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1.15s both;
+}
 
 /* ---------- phone: the quilt read top to bottom ---------- */
 @media (max-width: 899px) {
-  .quilt-view { padding: 5.2rem 0.85rem 2rem; min-height: 100dvh; overflow-x: clip; }
+  .quilt-view {
+    padding: 5.2rem 0.85rem 2rem;
+    min-height: 100dvh;
+    overflow-x: clip;
+  }
   .quilt-world {
     --sash: 0.6rem;
     width: auto;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-rows: none;
-    box-shadow: 0 0 0 6px var(--c-binding), 0 20px 40px -16px color-mix(in srgb, var(--c-shade) 35%, transparent);
+    box-shadow:
+      0 0 0 6px var(--c-binding),
+      0 20px 40px -16px color-mix(in srgb, var(--c-shade) 35%, transparent);
   }
-  .cornerstone, .seam, .minimap { display: none; }
+  .cornerstone,
+  .seam,
+  .minimap {
+    display: none;
+  }
   /* The phone reads the quilt top to bottom, so pieces are laid from above, in reading order. */
   .quilt-world .block {
     --fx: 0px;
@@ -465,33 +939,112 @@ html.enter .minimap { animation: map-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1.15s
     --wait: calc(min(var(--o), 5) * 90ms);
   }
   /* Square at least, taller when a language needs more lines: the face joins the flow. */
-  .block { grid-column: auto; grid-row: auto; order: var(--o); aspect-ratio: 1; }
-  .block__face { position: relative; min-height: 100%; }
-  .block:not(.block--title, .block--community, .block--label, .is-wide) .sig { height: auto; min-height: 80%; margin-block: 8%; }
-  .block--title, .block--community, .block.is-wide { grid-column: 1 / -1; aspect-ratio: auto; }
-  .block--title .block__face, .block--community .block__face, .block.is-wide .block__face { position: relative; }
-  .block--title .title__sig { margin: 1.4rem; padding: 1.4rem 1.2rem; }
-  .title__headline { font-size: clamp(2.3rem, 11vw, 3.4rem); }
-  .is-wide .block__face { padding: 1.6rem 1rem; }
-  .is-wide .sig { width: 100%; height: auto; }
-  .sig { width: 84%; aspect-ratio: auto; height: 80%; padding: 0.7rem; gap: 0.2rem; }
-  .sig__icon { width: 1.3rem; height: 1.3rem; }
-  .sig__title { font-size: 1.02rem; }
-  .sig__line { font-size: 0.74rem; line-height: 1.3; }
-  .tag__where { display: none; }
-  .community__caption { flex-direction: column; gap: 0.2rem; }
-  .block--community .quilt { height: auto; width: 100%; }
-  .block--label { grid-column: 1 / -1; aspect-ratio: auto; }
-  .block--label .block__face { position: relative; padding: 2rem 1rem; }
-  .label__tag { width: min(100%, 22rem); }
-  .tag { min-height: 2.6rem; }
-  .tags { left: 0.6rem; right: 0.6rem; }
-  .panel { top: 4.5rem; left: 0.5rem; right: 0.5rem; bottom: 0.5rem; width: auto; }
-  html:has(main.has-panel) { overflow: hidden; }
+  .block {
+    grid-column: auto;
+    grid-row: auto;
+    order: var(--o);
+    aspect-ratio: 1;
+  }
+  .block__face {
+    position: relative;
+    min-height: 100%;
+  }
+  .block:not(.block--title, .block--community, .block--label, .is-wide) .sig {
+    height: auto;
+    min-height: 80%;
+    margin-block: 8%;
+  }
+  .block--title,
+  .block--community,
+  .block.is-wide {
+    grid-column: 1 / -1;
+    aspect-ratio: auto;
+  }
+  .block--title .block__face,
+  .block--community .block__face,
+  .block.is-wide .block__face {
+    position: relative;
+  }
+  .block--title .title__sig {
+    margin: 1.4rem;
+    padding: 1.4rem 1.2rem;
+  }
+  .title__headline {
+    font-size: clamp(2.3rem, 11vw, 3.4rem);
+  }
+  .is-wide .block__face {
+    padding: 1.6rem 1rem;
+  }
+  .is-wide .sig {
+    width: 100%;
+    height: auto;
+  }
+  .sig {
+    width: 84%;
+    aspect-ratio: auto;
+    height: 80%;
+    padding: 0.7rem;
+    gap: 0.2rem;
+  }
+  .sig__icon {
+    width: 1.3rem;
+    height: 1.3rem;
+  }
+  .sig__title {
+    font-size: 1.02rem;
+  }
+  .sig__line {
+    font-size: 0.74rem;
+    line-height: 1.3;
+  }
+  .tag__where {
+    display: none;
+  }
+  .community__caption {
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  .block--community .quilt {
+    height: auto;
+    width: 100%;
+  }
+  .block--label {
+    grid-column: 1 / -1;
+    aspect-ratio: auto;
+  }
+  .block--label .block__face {
+    position: relative;
+    padding: 2rem 1rem;
+  }
+  .label__tag {
+    width: min(100%, 22rem);
+  }
+  .tag {
+    min-height: 2.6rem;
+  }
+  .tags {
+    left: 0.6rem;
+    right: 0.6rem;
+  }
+  .panel {
+    top: 4.5rem;
+    left: 0.5rem;
+    right: 0.5rem;
+    bottom: 0.5rem;
+    width: auto;
+  }
+  html:has(main.has-panel) {
+    overflow: hidden;
+  }
 }
 /* Narrow phones: the mark alone names home (the link keeps its label), so long sign-in
    labels in other languages fit beside it. */
 @media (max-width: 419px) {
-  .tag__brand { display: none; }
-  .tag--ways { gap: 0.7rem; padding-inline: 0.75rem; }
+  .tag__brand {
+    display: none;
+  }
+  .tag--ways {
+    gap: 0.7rem;
+    padding-inline: 0.75rem;
+  }
 }

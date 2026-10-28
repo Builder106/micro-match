@@ -16,8 +16,26 @@ import { seedNonprofit, signInAs, type Seeded } from './harness';
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'];
 const LOCALES = ['en', 'es', 'fr', 'de', 'pt', 'zh', 'ar'] as const;
 const PUBLIC = [
-  '/', '/how-it-works', '/for-volunteers', '/for-nonprofits', '/impact', '/about', '/contact', '/help', '/docs', '/docs/api',
-  '/privacy', '/terms', '/cookies', '/contents', '/not-a-block', '/tasks', '/login', '/signup', '/forgot-password', '/reset-password'
+  '/',
+  '/how-it-works',
+  '/for-volunteers',
+  '/for-nonprofits',
+  '/impact',
+  '/about',
+  '/contact',
+  '/help',
+  '/docs',
+  '/docs/api',
+  '/privacy',
+  '/terms',
+  '/cookies',
+  '/contents',
+  '/not-a-block',
+  '/tasks',
+  '/login',
+  '/signup',
+  '/forgot-password',
+  '/reset-password',
 ];
 const at = (locale: string, path: string) => `/${locale}${path === '/' ? '' : path}`;
 
@@ -26,7 +44,7 @@ let seeded: Seeded;
 test.beforeAll(async ({ browser }) => {
   seeded = await seedNonprofit(browser, 'a11y', [
     { title: 'Check alt text on a donation page', minutes: 10, tags: ['accessibility'] },
-    { title: 'Translate a clinic sign-up form', minutes: 20, tags: ['translation'] }
+    { title: 'Translate a clinic sign-up form', minutes: 20, tags: ['translation'] },
   ]);
 });
 
@@ -43,9 +61,29 @@ async function axe(page: Page, label: string) {
   const results = await new AxeBuilder({ page }).withTags(TAGS).analyze();
   mkdirSync('test-results/a11y', { recursive: true });
   const file = `test-results/a11y/${label.replace(/[^a-z0-9]+/gi, '_')}.json`;
-  writeFileSync(file, JSON.stringify({ url: page.url(), violations: results.violations, incomplete: results.incomplete, passes: results.passes.length }, null, 2));
+  writeFileSync(
+    file,
+    JSON.stringify(
+      {
+        url: page.url(),
+        violations: results.violations,
+        incomplete: results.incomplete,
+        passes: results.passes.length,
+      },
+      null,
+      2,
+    ),
+  );
   const brief = (items: typeof results.violations) =>
-    items.map((v) => `${v.id}: ${v.nodes.slice(0, 4).map((n) => n.target.join(' ')).join(' | ')}`).join('\n');
+    items
+      .map(
+        (v) =>
+          `${v.id}: ${v.nodes
+            .slice(0, 4)
+            .map((n) => n.target.join(' '))
+            .join(' | ')}`,
+      )
+      .join('\n');
   expect(results.violations, `${label} violations\n${brief(results.violations)}`).toEqual([]);
   const measured: { target: string; ratio: number | null; needed: number | null }[] = [];
   const left = [];
@@ -93,7 +131,7 @@ async function measureContrast(page: Page, selector: string) {
       x: Math.max(0, Math.min(...rects.map((r) => r.left))),
       y: Math.max(0, Math.min(...rects.map((r) => r.top))),
       right: Math.min(innerWidth, Math.max(...rects.map((r) => r.right))),
-      bottom: Math.min(innerHeight, Math.max(...rects.map((r) => r.bottom)))
+      bottom: Math.min(innerHeight, Math.max(...rects.map((r) => r.bottom))),
     };
     // Inert or covered text is not presented to anyone, so it has no contrast to meet.
     const mid = document.elementFromPoint((box.x + box.right) / 2, (box.y + box.bottom) / 2);
@@ -103,12 +141,20 @@ async function measureContrast(page: Page, selector: string) {
     // line does not read as background.
     const hide = document.createElement('style');
     hide.id = 'measure-hide-text';
-    hide.textContent = '* { color: transparent !important; -webkit-text-fill-color: transparent !important; text-shadow: none !important; }';
+    hide.textContent =
+      '* { color: transparent !important; -webkit-text-fill-color: transparent !important; text-shadow: none !important; }';
     document.head.appendChild(hide);
-    return { color, needed: large ? 3 : 4.5, clip: { x: box.x, y: box.y, width: box.right - box.x, height: box.bottom - box.y } };
+    return {
+      color,
+      needed: large ? 3 : 4.5,
+      clip: { x: box.x, y: box.y, width: box.right - box.x, height: box.bottom - box.y },
+    };
   });
   if (!info) return null;
-  const shot = info.clip.width > 0 && info.clip.height > 0 ? await page.screenshot({ clip: info.clip, animations: 'disabled' }) : null;
+  const shot =
+    info.clip.width > 0 && info.clip.height > 0
+      ? await page.screenshot({ clip: info.clip, animations: 'disabled' })
+      : null;
   await page.evaluate(() => {
     document.getElementById('measure-hide-text')?.remove();
   });
@@ -125,7 +171,8 @@ async function measureContrast(page: Page, selector: string) {
       g.drawImage(img, 0, 0);
       const px = g.getImageData(0, 0, c.width, c.height).data;
       const lin = (v: number) => ((v /= 255) <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
-      const lum = (r: number, gg: number, b: number) => 0.2126 * lin(r) + 0.7152 * lin(gg) + 0.0722 * lin(b);
+      const lum = (r: number, gg: number, b: number) =>
+        0.2126 * lin(r) + 0.7152 * lin(gg) + 0.0722 * lin(b);
       const [r, gg, b] = color.match(/[\d.]+/g)!.map(Number);
       const text = lum(r, gg, b);
       const ratios: number[] = [];
@@ -137,7 +184,7 @@ async function measureContrast(page: Page, selector: string) {
       // The 2nd percentile: the worst background the text sits on, ignoring stray antialiased pixels.
       return ratios[Math.floor(ratios.length * 0.02)];
     },
-    { png: shot.toString('base64'), color: info.color }
+    { png: shot.toString('base64'), color: info.color },
   );
   return { ratio: Math.round(ratio * 100) / 100, needed: info.needed };
 }
@@ -184,7 +231,7 @@ test.describe('axe, signed-in surfaces and states', () => {
     { name: 'design a patch', role: 'ngo', path: () => '/badges/manage' },
     { name: 'patch stats', role: 'ngo', path: () => '/badges/analytics' },
     { name: 'nonprofit profile', role: 'ngo', path: () => '/profile' },
-    { name: 'verification queue', role: 'admin', path: () => '/admin/verifications' }
+    { name: 'verification queue', role: 'admin', path: () => '/admin/verifications' },
   ];
   for (const scheme of ['light', 'dark'] as const) {
     for (const locale of ['en', 'ar'] as const) {
@@ -253,7 +300,9 @@ test.describe('keyboard', () => {
     await expect(page.locator('#main')).toBeFocused();
   });
 
-  test('a block opens from the keyboard, Escape folds it back and focus returns', async ({ page }) => {
+  test('a block opens from the keyboard, Escape folds it back and focus returns', async ({
+    page,
+  }) => {
     await page.goto('/en');
     const help = page.getByRole('link', { name: 'Help', exact: true });
     await help.focus();
@@ -277,18 +326,29 @@ test.describe('keyboard', () => {
           const style = (e: Element, pseudo?: string) => getComputedStyle(e, pseudo);
           const ring = (e: Element) => {
             const s = style(e);
-            return (s.outlineStyle !== 'none' && parseFloat(s.outlineWidth) > 0) || s.boxShadow !== 'none';
+            return (
+              (s.outlineStyle !== 'none' && parseFloat(s.outlineWidth) > 0) ||
+              s.boxShadow !== 'none'
+            );
           };
           // A focus style may sit on the element, a pseudo-element, or a card around it.
           const shown =
             ring(el) ||
             ['::before', '::after'].some((p) => {
               const s = style(el, p);
-              return (s.outlineStyle !== 'none' && parseFloat(s.outlineWidth) > 0) || (s.content !== 'none' && s.clipPath === 'none');
+              return (
+                (s.outlineStyle !== 'none' && parseFloat(s.outlineWidth) > 0) ||
+                (s.content !== 'none' && s.clipPath === 'none')
+              );
             }) ||
-            !!el.closest('.swatch-card, .block, .seg label, .swatch, .icon-pick')?.matches(':has(:focus-visible)') ||
+            !!el
+              .closest('.swatch-card, .block, .seg label, .swatch, .icon-pick')
+              ?.matches(':has(:focus-visible)') ||
             el.matches('.patch-btn, .panel__close, .link, .tag__link, .theme-toggle, summary');
-          return { key: `${el.tagName}#${el.id}.${el.className}:${el.textContent?.trim().slice(0, 30)}`, shown };
+          return {
+            key: `${el.tagName}#${el.id}.${el.className}:${el.textContent?.trim().slice(0, 30)}`,
+            shown,
+          };
         });
         if (!stop) break;
         expect(stop.shown, `no visible focus on ${stop.key} (${path})`).toBe(true);
@@ -301,7 +361,8 @@ test.describe('keyboard', () => {
 
   test('arrow keys move the quilt', async ({ page }) => {
     await page.goto('/en');
-    const read = () => page.locator('.quilt-world').evaluate((el) => getComputedStyle(el).transform);
+    const read = () =>
+      page.locator('.quilt-world').evaluate((el) => getComputedStyle(el).transform);
     const before = await read();
     await page.keyboard.press('ArrowRight');
     await page.keyboard.press('ArrowDown');
@@ -318,7 +379,11 @@ test.describe('keyboard', () => {
     // A modal dialog keeps focus off the page behind it; Tab may leave for the browser's own UI.
     for (let i = 0; i < 6; i++) {
       await page.keyboard.press('Tab');
-      expect(await dialog.evaluate((d) => d.contains(document.activeElement) || document.activeElement === document.body)).toBe(true);
+      expect(
+        await dialog.evaluate(
+          (d) => d.contains(document.activeElement) || document.activeElement === document.body,
+        ),
+      ).toBe(true);
     }
     await page.keyboard.press('Escape');
     await expect(dialog).toBeHidden();
@@ -326,7 +391,10 @@ test.describe('keyboard', () => {
 });
 
 test.describe('focus not obscured', () => {
-  for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+  for (const viewport of [
+    { width: 1440, height: 900 },
+    { width: 390, height: 844 },
+  ]) {
     test(`panel controls stay visible when focused at ${viewport.width}px`, async ({ page }) => {
       await page.setViewportSize(viewport);
       const found: string[] = [];
@@ -334,7 +402,11 @@ test.describe('focus not obscured', () => {
         await page.goto(path);
         const hidden = await page.evaluate(async () => {
           const out: string[] = [];
-          const els = [...document.querySelectorAll<HTMLElement>('[data-panel] a, [data-panel] button, [data-panel] input, [data-panel] select, [data-panel] textarea, [data-panel] summary')];
+          const els = [
+            ...document.querySelectorAll<HTMLElement>(
+              '[data-panel] a, [data-panel] button, [data-panel] input, [data-panel] select, [data-panel] textarea, [data-panel] summary',
+            ),
+          ];
           for (const el of els) {
             if (el.closest('details:not([open])') && !el.matches('summary')) continue;
             el.focus();
@@ -344,7 +416,7 @@ test.describe('focus not obscured', () => {
             const pts = [
               [r.left + r.width / 2, r.top + r.height / 2],
               [r.left + 2, r.top + 2],
-              [r.right - 2, r.bottom - 2]
+              [r.right - 2, r.bottom - 2],
             ];
             const visible = pts.some(([x, y]) => {
               const top = document.elementFromPoint(x, y);
@@ -362,23 +434,50 @@ test.describe('focus not obscured', () => {
 });
 
 test.describe('target size', () => {
-  for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+  for (const viewport of [
+    { width: 1440, height: 900 },
+    { width: 390, height: 844 },
+  ]) {
     test(`controls are at least 24 by 24 px at ${viewport.width}px`, async ({ page, context }) => {
       await page.setViewportSize(viewport);
       await signInAs(context, 'ngo', `a11y-target-${viewport.width}`);
       const found: string[] = [];
-      for (const path of ['/en', '/en/tasks', '/en/help', '/en/contents', '/en/badges/manage', '/en/org', '/en/dashboard']) {
+      for (const path of [
+        '/en',
+        '/en/tasks',
+        '/en/help',
+        '/en/contents',
+        '/en/badges/manage',
+        '/en/org',
+        '/en/dashboard',
+      ]) {
         await page.goto(path);
         const small = await page.evaluate(() => {
           const out: string[] = [];
-          const els = document.querySelectorAll<HTMLElement>('a, button, input:not([type=hidden]), select, textarea, summary, [role=button], label:has(> input[type=radio])');
+          const els = document.querySelectorAll<HTMLElement>(
+            'a, button, input:not([type=hidden]), select, textarea, summary, [role=button], label:has(> input[type=radio])',
+          );
           for (const el of els) {
             const s = getComputedStyle(el);
-            if (s.visibility === 'hidden' || s.display === 'none' || el.closest('[aria-hidden=true], .sr-only')) continue;
-            if (el.matches('input[type=radio], input[type=checkbox], input[type=file]') && el.closest('label')) continue;
+            if (
+              s.visibility === 'hidden' ||
+              s.display === 'none' ||
+              el.closest('[aria-hidden=true], .sr-only')
+            )
+              continue;
+            if (
+              el.matches('input[type=radio], input[type=checkbox], input[type=file]') &&
+              el.closest('label')
+            )
+              continue;
             if (el.classList.contains('sr-only')) continue;
             // Inline links in a sentence are exempt (WCAG 2.5.8 inline exception).
-            if (s.display === 'inline' && el.closest('p, li, dd, span') && el.parentElement?.textContent?.trim() !== el.textContent?.trim()) continue;
+            if (
+              s.display === 'inline' &&
+              el.closest('p, li, dd, span') &&
+              el.parentElement?.textContent?.trim() !== el.textContent?.trim()
+            )
+              continue;
             // A title link may stretch its hit area over its card or block with a pseudo-element.
             const stretch = ['::before', '::after'].some((p) => {
               const ps = getComputedStyle(el, p);
@@ -386,7 +485,10 @@ test.describe('target size', () => {
             });
             const r = (stretch && el.offsetParent ? el.offsetParent : el).getBoundingClientRect();
             if (!r.width || !r.height) continue;
-            if (r.width < 24 || r.height < 24) out.push(`${el.tagName}.${el.className} "${el.textContent?.trim().slice(0, 24)}" ${Math.round(r.width)}x${Math.round(r.height)}`);
+            if (r.width < 24 || r.height < 24)
+              out.push(
+                `${el.tagName}.${el.className} "${el.textContent?.trim().slice(0, 24)}" ${Math.round(r.width)}x${Math.round(r.height)}`,
+              );
           }
           return out;
         });
@@ -398,7 +500,8 @@ test.describe('target size', () => {
 });
 
 test.describe('reflow, zoom and text spacing', () => {
-  const SPACING = '* { line-height: 1.5 !important; letter-spacing: 0.12em !important; word-spacing: 0.16em !important; } p { margin-bottom: 2em !important; }';
+  const SPACING =
+    '* { line-height: 1.5 !important; letter-spacing: 0.12em !important; word-spacing: 0.16em !important; } p { margin-bottom: 2em !important; }';
 
   async function clipped(page: Page) {
     return page.evaluate(() => {
@@ -406,20 +509,39 @@ test.describe('reflow, zoom and text spacing', () => {
       const over = document.documentElement.scrollWidth - window.innerWidth;
       if (over > 0) out.push(`page overflows by ${over}px`);
       const scroller = document.querySelector('.panel__scroll');
-      if (scroller && scroller.scrollWidth > scroller.clientWidth + 1) out.push('panel overflows sideways');
-      for (const el of document.querySelectorAll<HTMLElement>('[data-panel] *, .tags *, .label__tag *')) {
+      if (scroller && scroller.scrollWidth > scroller.clientWidth + 1)
+        out.push('panel overflows sideways');
+      for (const el of document.querySelectorAll<HTMLElement>(
+        '[data-panel] *, .tags *, .label__tag *',
+      )) {
         const s = getComputedStyle(el);
-        if (!/hidden|clip/.test(s.overflowX + s.overflowY) || !el.textContent?.trim() || el.closest('.intro-line, .sr-only')) continue;
-        if (el.scrollWidth > el.clientWidth + 2 || el.scrollHeight > el.clientHeight + 2) out.push(`clipped: ${el.className} "${el.textContent.trim().slice(0, 30)}"`);
+        if (
+          !/hidden|clip/.test(s.overflowX + s.overflowY) ||
+          !el.textContent?.trim() ||
+          el.closest('.intro-line, .sr-only')
+        )
+          continue;
+        if (el.scrollWidth > el.clientWidth + 2 || el.scrollHeight > el.clientHeight + 2)
+          out.push(`clipped: ${el.className} "${el.textContent.trim().slice(0, 30)}"`);
       }
       return out;
     });
   }
 
-  for (const [label, viewport] of [['320px reflow', { width: 320, height: 640 }], ['200% zoom', { width: 720, height: 450 }], ['400% zoom', { width: 360, height: 225 }]] as const) {
+  for (const [label, viewport] of [
+    ['320px reflow', { width: 320, height: 640 }],
+    ['200% zoom', { width: 720, height: 450 }],
+    ['400% zoom', { width: 360, height: 225 }],
+  ] as const) {
     test(`${label}`, async ({ page }) => {
       await page.setViewportSize(viewport);
-      for (const path of ['/en/help', '/en/tasks', '/en/signup?role=ngo', '/de/for-nonprofits', '/ar/docs']) {
+      for (const path of [
+        '/en/help',
+        '/en/tasks',
+        '/en/signup?role=ngo',
+        '/de/for-nonprofits',
+        '/ar/docs',
+      ]) {
         await page.goto(path);
         expect(await clipped(page), `${path}`).toEqual([]);
       }
@@ -427,7 +549,10 @@ test.describe('reflow, zoom and text spacing', () => {
   }
 
   test('text spacing overrides keep everything readable', async ({ page }) => {
-    for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+    for (const viewport of [
+      { width: 1440, height: 900 },
+      { width: 390, height: 844 },
+    ]) {
       await page.setViewportSize(viewport);
       for (const path of ['/en', '/en/help', '/en/tasks', '/en/login', '/de/contents']) {
         await page.goto(path);
@@ -450,7 +575,9 @@ test.describe('reflow, zoom and text spacing', () => {
 
 test.describe('language and titles', () => {
   for (const locale of LOCALES) {
-    test(`every ${locale} page has its own title and the right language and direction`, async ({ page }) => {
+    test(`every ${locale} page has its own title and the right language and direction`, async ({
+      page,
+    }) => {
       const titles = new Set<string>();
       for (const path of PUBLIC.filter((p) => p !== '/not-a-block')) {
         await page.goto(at(locale, path));
@@ -477,7 +604,11 @@ test.describe('language and titles', () => {
     await page.goto('/en/contents');
     const links = page.locator('.langs-list a');
     await expect(links).toHaveCount(LOCALES.length);
-    for (const locale of LOCALES) await expect(page.locator(`.langs-list a[hreflang="${locale}"]`)).toHaveAttribute('lang', locale);
+    for (const locale of LOCALES)
+      await expect(page.locator(`.langs-list a[hreflang="${locale}"]`)).toHaveAttribute(
+        'lang',
+        locale,
+      );
     await page.locator('.langs-list a[hreflang="es"]').click();
     await expect(page).toHaveURL(/\/es\/contents$/);
     await expect(page.getByRole('heading', { level: 1, name: 'Índice' })).toBeVisible();
@@ -489,7 +620,11 @@ test.describe('content on hover', () => {
     // One approved claim, so the community quilt has a patch to hover.
     const volunteer = await browser.newContext({ baseURL: test.info().project.use.baseURL });
     await signInAs(volunteer, 'volunteer', 'a11y-hover');
-    const claim = await (await volunteer.request.post(`/api/tasks/${seeded.taskIds[0]}/claim`, { data: { proofUrl: 'https://example.org/proof', notes: 'Done.' } })).json();
+    const claim = await (
+      await volunteer.request.post(`/api/tasks/${seeded.taskIds[0]}/claim`, {
+        data: { proofUrl: 'https://example.org/proof', notes: 'Done.' },
+      })
+    ).json();
     const ngo = await browser.newContext({ baseURL: test.info().project.use.baseURL });
     await signInAs(ngo, 'ngo', 'a11y');
     expect((await ngo.request.post(`/api/claims/${claim.id}/approve`)).ok()).toBe(true);
@@ -515,31 +650,43 @@ test.describe('non-text contrast', () => {
   // The input edge is half-strength indigo, so it is composited over the input's own fill
   // before it is compared with the surface around the input.
   async function edges(page: Page) {
-    return page.locator('.input').first().evaluate((el) => {
-      // Any CSS color syntax (rgb, color(), oklab) comes back as RGBA through a canvas.
-      const g = document.createElement('canvas').getContext('2d', { willReadFrequently: true })!;
-      const parse = (c: string): [number, number, number, number] => {
-        g.clearRect(0, 0, 1, 1);
-        g.fillStyle = c;
-        g.fillRect(0, 0, 1, 1);
-        const [r, gg, b, a] = g.getImageData(0, 0, 1, 1).data;
-        return [r, gg, b, a / 255];
-      };
-      const over = (top: number[], under: number[]) => top.slice(0, 3).map((v, i) => v * top[3] + under[i] * (1 - top[3]));
-      const lin = (v: number) => ((v /= 255) <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
-      const lum = (c: number[]) => 0.2126 * lin(c[0]) + 0.7152 * lin(c[1]) + 0.0722 * lin(c[2]);
-      const ratio = (a: number[], b: number[]) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
-      let around: Element | null = el.parentElement;
-      while (around && parse(getComputedStyle(around).backgroundColor)[3] === 0) around = around.parentElement;
-      const outside = parse(getComputedStyle(around ?? document.body).backgroundColor);
-      const fill = over(parse(getComputedStyle(el).backgroundColor), outside);
-      const edge = over(parse(getComputedStyle(el).borderTopColor), [...fill, 1]);
-      return Math.min(ratio(edge, outside), ratio(edge, fill));
-    });
+    return page
+      .locator('.input')
+      .first()
+      .evaluate((el) => {
+        // Any CSS color syntax (rgb, color(), oklab) comes back as RGBA through a canvas.
+        const g = document.createElement('canvas').getContext('2d', { willReadFrequently: true })!;
+        const parse = (c: string): [number, number, number, number] => {
+          g.clearRect(0, 0, 1, 1);
+          g.fillStyle = c;
+          g.fillRect(0, 0, 1, 1);
+          const [r, gg, b, a] = g.getImageData(0, 0, 1, 1).data;
+          return [r, gg, b, a / 255];
+        };
+        const over = (top: number[], under: number[]) =>
+          top.slice(0, 3).map((v, i) => v * top[3] + under[i] * (1 - top[3]));
+        const lin = (v: number) =>
+          (v /= 255) <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+        const lum = (c: number[]) => 0.2126 * lin(c[0]) + 0.7152 * lin(c[1]) + 0.0722 * lin(c[2]);
+        const ratio = (a: number[], b: number[]) => {
+          const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p);
+          return (x + 0.05) / (y + 0.05);
+        };
+        let around: Element | null = el.parentElement;
+        while (around && parse(getComputedStyle(around).backgroundColor)[3] === 0)
+          around = around.parentElement;
+        const outside = parse(getComputedStyle(around ?? document.body).backgroundColor);
+        const fill = over(parse(getComputedStyle(el).backgroundColor), outside);
+        const edge = over(parse(getComputedStyle(el).borderTopColor), [...fill, 1]);
+        return Math.min(ratio(edge, outside), ratio(edge, fill));
+      });
   }
 
   for (const scheme of ['light', 'dark'] as const) {
-    test(`control edges meet 3:1 at rest and when focused (${scheme})`, async ({ page, context }) => {
+    test(`control edges meet 3:1 at rest and when focused (${scheme})`, async ({
+      page,
+      context,
+    }) => {
       await page.emulateMedia({ colorScheme: scheme });
       await signInAs(context, 'ngo', `a11y-edges-${scheme}`);
       const found: string[] = [];
@@ -561,7 +708,11 @@ test.describe('forced colors', () => {
   test('focus stays visible with forced colors', async ({ page }) => {
     await page.emulateMedia({ forcedColors: 'active' });
     await page.goto('/en/login');
-    for (const target of [page.getByLabel('Email'), page.getByRole('button', { name: 'Sign in', exact: true }), page.getByRole('link', { name: 'Forgot your password?' })]) {
+    for (const target of [
+      page.getByLabel('Email'),
+      page.getByRole('button', { name: 'Sign in', exact: true }),
+      page.getByRole('link', { name: 'Forgot your password?' }),
+    ]) {
       await target.focus();
       await page.keyboard.press('Shift+Tab');
       await page.keyboard.press('Tab');

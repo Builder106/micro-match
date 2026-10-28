@@ -21,7 +21,10 @@ export type ModerationResult = {
 
 const DEFAULT_CATEGORIES: ModerationCategory[] = ['Hate', 'SelfHarm', 'Sexual', 'Violence'];
 
-export async function moderateText(text: string, categories: ModerationCategory[] = DEFAULT_CATEGORIES): Promise<ModerationResult> {
+export async function moderateText(
+  text: string,
+  categories: ModerationCategory[] = DEFAULT_CATEGORIES,
+): Promise<ModerationResult> {
   const endpoint = env.AZURE_CONTENT_SAFETY_ENDPOINT;
   const apiKey = env.AZURE_CONTENT_SAFETY_KEY;
 
@@ -40,13 +43,13 @@ export async function moderateText(text: string, categories: ModerationCategory[
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Ocp-Apim-Subscription-Key': apiKey
+        'Ocp-Apim-Subscription-Key': apiKey,
       },
       body: JSON.stringify({
         text,
         categories,
-        outputType: 'EightSeverityLevels'
-      })
+        outputType: 'EightSeverityLevels',
+      }),
     });
 
     if (!res.ok) {
@@ -57,11 +60,14 @@ export async function moderateText(text: string, categories: ModerationCategory[
     const data = (await res.json()) as SafetyResponse;
 
     // Normalize categories array (API response shape can vary by version)
-    const items: Array<{ category: string; severity: number }> =
-      (data?.categoriesAnalysis || data?.categories || []).map((c) => ({
-        category: String(c.category ?? ''),
-        severity: Number(c.severity ?? 0)
-      }));
+    const items: Array<{ category: string; severity: number }> = (
+      data?.categoriesAnalysis ||
+      data?.categories ||
+      []
+    ).map((c) => ({
+      category: String(c.category ?? ''),
+      severity: Number(c.severity ?? 0),
+    }));
 
     const reasons = items
       .filter(Boolean)
@@ -76,4 +82,3 @@ export async function moderateText(text: string, categories: ModerationCategory[
     return { blocked: false, reasons: [] };
   }
 }
-

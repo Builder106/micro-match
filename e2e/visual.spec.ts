@@ -24,18 +24,18 @@ const PAGES = [
   ['login', '/en/login'],
   ['signup', '/en/signup'],
   ['forgot-password', '/en/forgot-password'],
-  ['reset-password', '/en/reset-password']
+  ['reset-password', '/en/reset-password'],
 ] as const;
 const SIGNED_IN = [
   ['volunteer-dashboard', '/en/dashboard', 'volunteer'],
   ['nonprofit-dashboard', '/en/dashboard', 'ngo'],
   ['post-a-task', '/en/org', 'ngo'],
-  ['design-a-patch', '/en/badges/manage', 'ngo']
+  ['design-a-patch', '/en/badges/manage', 'ngo'],
 ] as const;
 
 const SIZES = [
   { name: 'desktop', viewport: { width: 1440, height: 900 }, isMobile: false },
-  { name: 'phone', viewport: { width: 390, height: 844 }, isMobile: true }
+  { name: 'phone', viewport: { width: 390, height: 844 }, isMobile: true },
 ];
 
 for (const size of SIZES) {
@@ -63,7 +63,9 @@ for (const size of SIZES) {
         await signInAs(context, role, `visual-${size.name}`);
         await page.goto(path, { waitUntil: 'networkidle' });
         await page.waitForTimeout(1600);
-        await expect(page).toHaveScreenshot(`${size.name}-${name}.png`, { mask: [page.locator('.num')] });
+        await expect(page).toHaveScreenshot(`${size.name}-${name}.png`, {
+          mask: [page.locator('.num')],
+        });
       });
     }
   });

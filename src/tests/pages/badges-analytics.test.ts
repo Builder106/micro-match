@@ -3,7 +3,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 const { mocks } = vi.hoisted(() => ({ mocks: { getTasks: vi.fn(), getBadgeAnalytics: vi.fn() } }));
-vi.mock('$lib/server/appwrite', () => ({ getTasks: mocks.getTasks, getBadgeAnalytics: mocks.getBadgeAnalytics }));
+vi.mock('$lib/server/appwrite', () => ({
+  getTasks: mocks.getTasks,
+  getBadgeAnalytics: mocks.getBadgeAnalytics,
+}));
 
 import { load } from '../../routes/badges/analytics/+page.server';
 import { createServerLoadEventFor, requireLoadResult } from '../helpers/createLoadEvent';
@@ -11,7 +14,7 @@ import { createServerLoadEventFor, requireLoadResult } from '../helpers/createLo
 function makeEvent(opts: { userRole?: App.Locals['userRole']; userId?: string } = {}) {
   return createServerLoadEventFor<typeof load>({
     userRole: opts.userRole,
-    userId: opts.userId
+    userId: opts.userId,
   });
 }
 
@@ -34,10 +37,14 @@ describe('/badges/analytics load', () => {
     expect(result.analytics).toEqual({ totalBadgesAwarded: 5 });
 
     // Test with user without email
-    const result2 = requireLoadResult(await load(createServerLoadEventFor<typeof load>({
-      userRole: 'ngo',
-      session: { user: { id: 'org-2' } }
-    })));
+    const result2 = requireLoadResult(
+      await load(
+        createServerLoadEventFor<typeof load>({
+          userRole: 'ngo',
+          session: { user: { id: 'org-2' } },
+        }),
+      ),
+    );
     expect(result2.user).toEqual({ id: 'org-2', email: undefined });
   });
 

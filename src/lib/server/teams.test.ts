@@ -4,30 +4,36 @@ const { envState, mocks } = vi.hoisted(() => ({
   envState: {
     APPWRITE_ENDPOINT: 'https://fake.appwrite.io/v1',
     APPWRITE_PROJECT_ID: 'proj',
-    APPWRITE_API_KEY: 'key'
+    APPWRITE_API_KEY: 'key',
   } as Record<string, string | undefined>,
   mocks: {
     listMemberships: vi.fn(),
     deleteMembership: vi.fn(),
-    createMembership: vi.fn()
-  }
+    createMembership: vi.fn(),
+  },
 }));
 
 vi.mock('$env/dynamic/private', () => ({
-  env: new Proxy(envState, { get: (_, key: string) => envState[key] })
+  env: new Proxy(envState, { get: (_, key: string) => envState[key] }),
 }));
 vi.mock('node-appwrite', () => ({
   Client: class {
-    setEndpoint() { return this; }
-    setProject() { return this; }
-    setKey() { return this; }
+    setEndpoint() {
+      return this;
+    }
+    setProject() {
+      return this;
+    }
+    setKey() {
+      return this;
+    }
   },
   Teams: class {
     listMemberships = mocks.listMemberships;
     deleteMembership = mocks.deleteMembership;
     createMembership = mocks.createMembership;
   },
-  Query: { equal: (k: string, v: string) => `${k}=${v}`, limit: (n: number) => `limit=${n}` }
+  Query: { equal: (k: string, v: string) => `${k}=${v}`, limit: (n: number) => `limit=${n}` },
 }));
 
 import { isUserInTeam, removeUserFromTeam, addUserToTeam, isUserAdmin } from './teams';
@@ -45,7 +51,10 @@ describe('isUserInTeam', () => {
   it('returns true when the membership list is non-empty', async () => {
     mocks.listMemberships.mockResolvedValue({ total: 1, memberships: [{ $id: 'm1' }] });
     expect(await isUserInTeam('user-1', 'team-1')).toBe(true);
-    expect(mocks.listMemberships).toHaveBeenCalledWith({ teamId: 'team-1', queries: expect.any(Array) });
+    expect(mocks.listMemberships).toHaveBeenCalledWith({
+      teamId: 'team-1',
+      queries: expect.any(Array),
+    });
 
     // When total is undefined, but memberships array has items
     mocks.listMemberships.mockResolvedValue({ memberships: [{ $id: 'm1' }] });
@@ -63,7 +72,7 @@ describe('isUserInTeam', () => {
 
   it('fails open to false when the Teams API throws', async () => {
     mocks.listMemberships.mockRejectedValue(new Error('appwrite down'));
-    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => { });
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     expect(await isUserInTeam('user-1', 'team-1')).toBe(false);
     expect(warnSpy).toHaveBeenCalled();
@@ -102,7 +111,7 @@ describe('removeUserFromTeam', () => {
 
   it('swallows errors from the Teams API', async () => {
     mocks.listMemberships.mockRejectedValue(new Error('down'));
-    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => { });
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     await expect(removeUserFromTeam('user-1', 'team-1')).resolves.toBeUndefined();
     expect(warnSpy).toHaveBeenCalled();
@@ -122,15 +131,23 @@ describe('addUserToTeam', () => {
   it('creates a membership with the given roles and default roles array', async () => {
     mocks.createMembership.mockResolvedValue({ $id: 'm1' });
     await addUserToTeam('user-1', 'team-1', ['member']);
-    expect(mocks.createMembership).toHaveBeenCalledWith({ teamId: 'team-1', roles: ['member'], userId: 'user-1' });
+    expect(mocks.createMembership).toHaveBeenCalledWith({
+      teamId: 'team-1',
+      roles: ['member'],
+      userId: 'user-1',
+    });
 
     await addUserToTeam('user-1', 'team-1');
-    expect(mocks.createMembership).toHaveBeenCalledWith({ teamId: 'team-1', roles: [], userId: 'user-1' });
+    expect(mocks.createMembership).toHaveBeenCalledWith({
+      teamId: 'team-1',
+      roles: [],
+      userId: 'user-1',
+    });
   });
 
   it('swallows errors from the Teams API', async () => {
     mocks.createMembership.mockRejectedValue(new Error('down'));
-    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => { });
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     await expect(addUserToTeam('user-1', 'team-1')).resolves.toBeUndefined();
     expect(warnSpy).toHaveBeenCalled();

@@ -3,14 +3,15 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const { mocks } = vi.hoisted(() => ({
   mocks: {
     getTaskById: vi.fn(),
-    translateTask: vi.fn()
-  }
+    translateTask: vi.fn(),
+  },
 }));
 
 vi.mock('$lib/server/appwrite', () => ({ getTaskById: mocks.getTaskById }));
 vi.mock('$lib/server/taskTranslation', () => ({
-  isSupportedTaskLocale: (value?: string | null) => ['en', 'es', 'fr', 'de', 'pt', 'zh', 'ar'].includes(value ?? ''),
-  translateTask: mocks.translateTask
+  isSupportedTaskLocale: (value?: string | null) =>
+    ['en', 'es', 'fr', 'de', 'pt', 'zh', 'ar'].includes(value ?? ''),
+  translateTask: mocks.translateTask,
 }));
 
 import { GET } from '../../routes/api/tasks/[id]/translation/+server';
@@ -18,7 +19,7 @@ import { GET } from '../../routes/api/tasks/[id]/translation/+server';
 function makeEvent(search = '?lang=es', taskId = 'task-1'): Parameters<typeof GET>[0] {
   return {
     params: { id: taskId },
-    url: new URL(`http://test/api/tasks/${taskId}/translation${search}`)
+    url: new URL(`http://test/api/tasks/${taskId}/translation${search}`),
   } as Parameters<typeof GET>[0];
 }
 
@@ -38,25 +39,52 @@ describe('GET /api/tasks/[id]/translation', () => {
 
   it('translates task display fields in one server-side request', async () => {
     const task = {
-      id: 'task-1', title: 'Tag photos', shortDescription: 'Add tags', description: 'Tag each photo.', tags: ['data', 'history']
+      id: 'task-1',
+      title: 'Tag photos',
+      shortDescription: 'Add tags',
+      description: 'Tag each photo.',
+      tags: ['data', 'history'],
     };
     mocks.getTaskById.mockResolvedValue(task);
-    mocks.translateTask.mockResolvedValue({ ...task, title: 'Etiquetar fotos', shortDescription: 'Añade etiquetas', description: 'Etiqueta cada foto.', tags: ['datos', 'historia'], translation: { locale: 'es', status: 'translated' } });
+    mocks.translateTask.mockResolvedValue({
+      ...task,
+      title: 'Etiquetar fotos',
+      shortDescription: 'Añade etiquetas',
+      description: 'Etiqueta cada foto.',
+      tags: ['datos', 'historia'],
+      translation: { locale: 'es', status: 'translated' },
+    });
 
     const response = await GET(makeEvent());
 
     expect(mocks.translateTask).toHaveBeenCalledWith(task, 'es');
     expect(response.headers.get('Cache-Control')).toBe('private, max-age=900');
     await expect(response.json()).resolves.toEqual({
-      task: { ...task, title: 'Etiquetar fotos', shortDescription: 'Añade etiquetas', description: 'Etiqueta cada foto.', tags: ['datos', 'historia'], translation: { locale: 'es', status: 'translated' } }
+      task: {
+        ...task,
+        title: 'Etiquetar fotos',
+        shortDescription: 'Añade etiquetas',
+        description: 'Etiqueta cada foto.',
+        tags: ['datos', 'historia'],
+        translation: { locale: 'es', status: 'translated' },
+      },
     });
 
     // When task has no description
     const noDescTask = {
-      id: 'task-2', title: 'Task 2', shortDescription: 'Short 2', tags: ['t']
+      id: 'task-2',
+      title: 'Task 2',
+      shortDescription: 'Short 2',
+      tags: ['t'],
     };
     mocks.getTaskById.mockResolvedValue(noDescTask);
-    mocks.translateTask.mockResolvedValue({ ...noDescTask, title: 'T2', shortDescription: 'S2', tags: ['t-es'], translation: { locale: 'es', status: 'translated' } });
+    mocks.translateTask.mockResolvedValue({
+      ...noDescTask,
+      title: 'T2',
+      shortDescription: 'S2',
+      tags: ['t-es'],
+      translation: { locale: 'es', status: 'translated' },
+    });
     const res2 = await GET(makeEvent('?lang=es', 'task-2'));
     expect(res2.status).toBe(200);
   });

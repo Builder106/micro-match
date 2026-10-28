@@ -29,7 +29,11 @@ export const POST: RequestHandler = async (event) => {
     if (!userId) return json({ error: 'Not signed in' }, { status: 401 });
 
     const bucketId = env.APPWRITE_AVATARS_BUCKET_ID;
-    if (!bucketId) return json({ error: 'Avatar bucket not configured (set APPWRITE_AVATARS_BUCKET_ID)' }, { status: 500 });
+    if (!bucketId)
+      return json(
+        { error: 'Avatar bucket not configured (set APPWRITE_AVATARS_BUCKET_ID)' },
+        { status: 500 },
+      );
 
     const form = await event.request.formData();
     const file = form.get('file');
@@ -49,8 +53,8 @@ export const POST: RequestHandler = async (event) => {
       permissions: [
         Permission.read(Role.any()),
         Permission.update(Role.user(userId)),
-        Permission.delete(Role.user(userId))
-      ]
+        Permission.delete(Role.user(userId)),
+      ],
     });
 
     const fileId: string = created?.$id;
@@ -61,4 +65,3 @@ export const POST: RequestHandler = async (event) => {
     return json({ error: 'Upload failed' }, { status: 500 });
   }
 };
-

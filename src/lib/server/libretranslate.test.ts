@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
 const { envState } = vi.hoisted(() => ({ envState: {} as Record<string, string | undefined> }));
 vi.mock('$env/dynamic/private', () => ({
-  env: new Proxy(envState, { get: (_, key: string) => envState[key] })
+  env: new Proxy(envState, { get: (_, key: string) => envState[key] }),
 }));
 
 import { translateText, translateTexts } from './libretranslate';
@@ -24,7 +24,7 @@ describe('translateText', () => {
     vi.stubGlobal('fetch', fetchMock);
 
     await expect(translateText({ text: 'Hello world unique-missing-key', to: 'es' })).resolves.toBe(
-      'Hello world unique-missing-key'
+      'Hello world unique-missing-key',
     );
     expect(fetchMock).not.toHaveBeenCalled();
   });
@@ -35,7 +35,7 @@ describe('translateText', () => {
 
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({ translatedText: ['Hola mundo'] })
+      json: async () => ({ translatedText: ['Hola mundo'] }),
     });
     vi.stubGlobal('fetch', fetchMock);
 
@@ -52,10 +52,10 @@ describe('translateText', () => {
           source: 'auto',
           target: 'es',
           format: 'text',
-          api_key: 'server-only-key'
+          api_key: 'server-only-key',
         }),
-        signal: expect.any(AbortSignal)
-      })
+        signal: expect.any(AbortSignal),
+      }),
     );
   });
 
@@ -64,12 +64,15 @@ describe('translateText', () => {
     envState.LIBRETRANSLATE_API_KEY = 'server-only-key';
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({ translatedText: ['Título', 'Descripción', 'datos'] })
+      json: async () => ({ translatedText: ['Título', 'Descripción', 'datos'] }),
     });
     vi.stubGlobal('fetch', fetchMock);
 
     await expect(
-      translateTexts({ texts: ['Title unique-batch', 'Description unique-batch', 'data unique-batch'], to: 'es' })
+      translateTexts({
+        texts: ['Title unique-batch', 'Description unique-batch', 'data unique-batch'],
+        to: 'es',
+      }),
     ).resolves.toEqual(['Título', 'Descripción', 'datos']);
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
@@ -81,9 +84,9 @@ describe('translateText', () => {
           source: 'auto',
           target: 'es',
           format: 'text',
-          api_key: 'server-only-key'
-        })
-      })
+          api_key: 'server-only-key',
+        }),
+      }),
     );
   });
 
@@ -91,7 +94,10 @@ describe('translateText', () => {
     envState.LIBRETRANSLATE_ENDPOINT = 'https://translate.example.com';
     envState.LIBRETRANSLATE_API_KEY = 'server-only-key';
 
-    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ translatedText: ['Bonjour unique-cache'] }) });
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ translatedText: ['Bonjour unique-cache'] }),
+    });
     vi.stubGlobal('fetch', fetchMock);
 
     const first = await translateText({ text: 'Hi unique-cache', to: 'fr' });
@@ -110,12 +116,26 @@ describe('translateText', () => {
     let resolveSecond!: () => void;
     const fetchMock = vi
       .fn()
-      .mockImplementationOnce(() => new Promise<Response>((resolve) => {
-        resolveFirst = () => resolve({ ok: true, json: async () => ({ translatedText: ['Bonjour'] }) } as Response);
-      }))
-      .mockImplementationOnce(() => new Promise<Response>((resolve) => {
-        resolveSecond = () => resolve({ ok: true, json: async () => ({ translatedText: ['Bonjour'] }) } as Response);
-      }));
+      .mockImplementationOnce(
+        () =>
+          new Promise<Response>((resolve) => {
+            resolveFirst = () =>
+              resolve({
+                ok: true,
+                json: async () => ({ translatedText: ['Bonjour'] }),
+              } as Response);
+          }),
+      )
+      .mockImplementationOnce(
+        () =>
+          new Promise<Response>((resolve) => {
+            resolveSecond = () =>
+              resolve({
+                ok: true,
+                json: async () => ({ translatedText: ['Bonjour'] }),
+              } as Response);
+          }),
+      );
     vi.stubGlobal('fetch', fetchMock);
 
     const first = translateText({ text: 'Concurrent cache key', to: 'fr' });
@@ -124,7 +144,9 @@ describe('translateText', () => {
     resolveSecond();
 
     await expect(Promise.all([first, second])).resolves.toEqual(['Bonjour', 'Bonjour']);
-    await expect(translateText({ text: 'Concurrent cache key', to: 'fr' })).resolves.toBe('Bonjour');
+    await expect(translateText({ text: 'Concurrent cache key', to: 'fr' })).resolves.toBe(
+      'Bonjour',
+    );
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
@@ -132,7 +154,9 @@ describe('translateText', () => {
     envState.LIBRETRANSLATE_ENDPOINT = 'https://translate.example.com';
     envState.LIBRETRANSLATE_API_KEY = 'server-only-key';
 
-    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ translatedText: ['Bonjour expired'] }) });
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue({ ok: true, json: async () => ({ translatedText: ['Bonjour expired'] }) });
     vi.stubGlobal('fetch', fetchMock);
 
     await translateText({ text: 'Hi expired-cache', to: 'fr' });
@@ -153,7 +177,9 @@ describe('translateText', () => {
     envState.LIBRETRANSLATE_ENDPOINT = 'https://translate.example.com';
     envState.LIBRETRANSLATE_API_KEY = 'server-only-key';
 
-    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ translatedText: ['Traducido'] }) });
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue({ ok: true, json: async () => ({ translatedText: ['Traducido'] }) });
     vi.stubGlobal('fetch', fetchMock);
 
     const emptyRes = await translateTexts({ texts: [], to: 'es' });
@@ -171,7 +197,7 @@ describe('translateText', () => {
       const parsed = JSON.parse(opts.body);
       return {
         ok: true,
-        json: async () => ({ translatedText: parsed.q.map((text: string) => `trans-${text}`) })
+        json: async () => ({ translatedText: parsed.q.map((text: string) => `trans-${text}`) }),
       };
     });
     vi.stubGlobal('fetch', fetchMock);
@@ -182,8 +208,6 @@ describe('translateText', () => {
     expect(results).toHaveLength(505);
     expect(fetchMock).toHaveBeenCalled();
   });
-
-
 
   it.each([403, 429, 500])('falls back to the original text for HTTP %s', async (status) => {
     envState.LIBRETRANSLATE_ENDPOINT = 'https://translate.example.com';
@@ -215,7 +239,10 @@ describe('translateText', () => {
 
   it.each([
     { name: 'malformed response', response: { ok: true, json: async () => ({}) } },
-    { name: 'empty response', response: { ok: true, json: async () => ({ translatedText: '  ' }) } }
+    {
+      name: 'empty response',
+      response: { ok: true, json: async () => ({ translatedText: '  ' }) },
+    },
   ])('falls back for a $name', async ({ response }) => {
     envState.LIBRETRANSLATE_ENDPOINT = 'https://translate.example.com';
     envState.LIBRETRANSLATE_API_KEY = 'server-only-key';

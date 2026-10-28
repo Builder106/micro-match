@@ -30,14 +30,17 @@ export function createSession(input: {
   ttlSeconds?: number;
 }): SessionRecord {
   purgeExpired();
-  const id = typeof globalThis.crypto !== 'undefined' && 'randomUUID' in globalThis.crypto ? globalThis.crypto.randomUUID() : randomUUID();
+  const id =
+    typeof globalThis.crypto !== 'undefined' && 'randomUUID' in globalThis.crypto
+      ? globalThis.crypto.randomUUID()
+      : randomUUID();
   const ttl = Math.max(60, input.ttlSeconds ?? SESSION_TTL_SECONDS);
   const record: SessionRecord = {
     id,
     userId: input.userId,
     email: input.email,
     role: input.role,
-    expiresAt: now() + ttl * 1000
+    expiresAt: now() + ttl * 1000,
   };
   sessions.set(id, record);
   return record;
@@ -56,4 +59,3 @@ export function getSession(id: string): SessionRecord | null {
 export function deleteSession(id: string): void {
   sessions.delete(id);
 }
-

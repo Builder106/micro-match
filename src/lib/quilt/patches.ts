@@ -5,7 +5,12 @@ import type { BadgeDefinition, Claim, Task } from '$lib/types';
 import { fabricFor, threadFor } from './fabrics';
 import { resolvePatchIcon, type PatchIcon } from './icons';
 
-export type PatchDesign = { color: string; thread: string; icon: PatchIcon | null; label: string | null };
+export type PatchDesign = {
+  color: string;
+  thread: string;
+  icon: PatchIcon | null;
+  label: string | null;
+};
 
 export type QuiltPatch = PatchDesign & {
   id: string;
@@ -26,16 +31,22 @@ export function badgeForTask(taskId: string, defs: BadgeDefinition[]): BadgeDefi
 }
 
 /** Cloth, thread, icon and label for a badge definition (or plain muslin without one). */
-export function designFor(def: Pick<BadgeDefinition, 'color' | 'icon' | 'label'> | undefined | null): PatchDesign {
+export function designFor(
+  def: Pick<BadgeDefinition, 'color' | 'icon' | 'label'> | undefined | null,
+): PatchDesign {
   return {
     color: fabricFor(def?.color),
     thread: threadFor(def?.color),
     icon: resolvePatchIcon(def?.icon),
-    label: def?.label ?? null
+    label: def?.label ?? null,
   };
 }
 
-export function patchFromClaim(claim: Claim, task: Task | undefined, defs: BadgeDefinition[]): QuiltPatch {
+export function patchFromClaim(
+  claim: Claim,
+  task: Task | undefined,
+  defs: BadgeDefinition[],
+): QuiltPatch {
   return {
     ...designFor(badgeForTask(claim.taskId, defs)),
     id: claim.id,
@@ -43,7 +54,7 @@ export function patchFromClaim(claim: Claim, task: Task | undefined, defs: Badge
     taskId: claim.taskId,
     taskTitle: task?.title ?? null,
     minutes: typeof task?.estimatedMinutes === 'number' ? task.estimatedMinutes : null,
-    sewnAt: claim.reviewedAt ?? claim.createdAt ?? null
+    sewnAt: claim.reviewedAt ?? claim.createdAt ?? null,
   };
 }
 

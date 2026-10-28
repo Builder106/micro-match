@@ -3,22 +3,24 @@
 import { describe, it, expect, vi } from 'vitest';
 
 const { envState } = vi.hoisted(() => ({
-  envState: { NODE_ENV: 'development' } as Record<string, string | undefined>
+  envState: { NODE_ENV: 'development' } as Record<string, string | undefined>,
 }));
 
 vi.mock('$env/dynamic/private', () => ({
-  env: new Proxy(envState, { get: (_, key: string) => envState[key] })
+  env: new Proxy(envState, { get: (_, key: string) => envState[key] }),
 }));
 
-
-
 import { load, actions } from '../../routes/profile/+page.server';
-import { createRequestEvent, createServerLoadEventFor, requireLoadResult } from '../helpers/createLoadEvent';
+import {
+  createRequestEvent,
+  createServerLoadEventFor,
+  requireLoadResult,
+} from '../helpers/createLoadEvent';
 
 function makeLoadEvent(opts: { userRole?: App.Locals['userRole']; userId?: string } = {}) {
   return createServerLoadEventFor<typeof load>({
     userRole: opts.userRole,
-    userId: opts.userId
+    userId: opts.userId,
   });
 }
 
@@ -37,16 +39,24 @@ describe('/profile load', () => {
   });
 
   it('returns the session user when signed in', async () => {
-    const result = requireLoadResult(await load(makeLoadEvent({ userRole: 'ngo', userId: 'org-1' })));
+    const result = requireLoadResult(
+      await load(makeLoadEvent({ userRole: 'ngo', userId: 'org-1' })),
+    );
     expect(result).toEqual({ userRole: 'ngo', user: { id: 'org-1', email: 'jane@example.com' } });
 
-    const resultNoEmail = requireLoadResult(await load(createServerLoadEventFor<typeof load>({
-      session: { user: { id: 'user-2' } }
-    })));
-    expect(resultNoEmail).toEqual({ userRole: 'anonymous', user: { id: 'user-2', email: undefined } });
+    const resultNoEmail = requireLoadResult(
+      await load(
+        createServerLoadEventFor<typeof load>({
+          session: { user: { id: 'user-2' } },
+        }),
+      ),
+    );
+    expect(resultNoEmail).toEqual({
+      userRole: 'anonymous',
+      user: { id: 'user-2', email: undefined },
+    });
   });
 });
-
 
 function makeActionEvent(opts: { userId?: string; fields?: Record<string, string> }) {
   const form = new FormData();
@@ -54,7 +64,7 @@ function makeActionEvent(opts: { userId?: string; fields?: Record<string, string
   return createRequestEvent({
     userId: opts.userId,
     request: new Request('http://localhost/profile', { method: 'POST', body: form }),
-    fetch: vi.fn<typeof fetch>()
+    fetch: vi.fn<typeof fetch>(),
   });
 }
 
@@ -65,18 +75,32 @@ describe('/profile action (update)', () => {
   });
 
   it('acknowledges the update with the trimmed field values or empty defaults', async () => {
-    const result = requireLoadResult(await actions.default(makeActionEvent({
-      userId: 'user-1',
-      fields: { displayName: '  Jane  ', role: 'ngo', bio: 'Hello', orgName: 'Acme' }
-    })));
+    const result = requireLoadResult(
+      await actions.default(
+        makeActionEvent({
+          userId: 'user-1',
+          fields: { displayName: '  Jane  ', role: 'ngo', bio: 'Hello', orgName: 'Acme' },
+        }),
+      ),
+    );
 
-    expect(result).toEqual({ ok: true, role: 'ngo', displayName: 'Jane', bio: 'Hello', orgName: 'Acme' });
+    expect(result).toEqual({
+      ok: true,
+      role: 'ngo',
+      displayName: 'Jane',
+      bio: 'Hello',
+      orgName: 'Acme',
+    });
 
     // Test with empty fields object (all defaults '')
-    const resultEmpty = requireLoadResult(await actions.default(makeActionEvent({
-      userId: 'user-1',
-      fields: {}
-    })));
+    const resultEmpty = requireLoadResult(
+      await actions.default(
+        makeActionEvent({
+          userId: 'user-1',
+          fields: {},
+        }),
+      ),
+    );
     expect(resultEmpty).toEqual({ ok: true, role: '', displayName: '', bio: '', orgName: '' });
   });
 
@@ -84,7 +108,7 @@ describe('/profile action (update)', () => {
     envState.NODE_ENV = 'development';
     const brokenEvent = createRequestEvent({
       userId: 'user-1',
-      request: new Request('http://localhost/profile', { method: 'POST' })
+      request: new Request('http://localhost/profile', { method: 'POST' }),
     });
     vi.spyOn(brokenEvent.request, 'formData').mockRejectedValue(new Error('formData failed'));
 

@@ -29,8 +29,18 @@ export function startIdle() {
   let lastInput = 0;
   let speed = 1;
   const wake = () => (lastInput = gsap.ticker.time);
-  if (!touch) addEventListener('pointermove', (e: PointerEvent) => { aim.x = e.clientX / innerWidth - 0.5; aim.y = e.clientY / innerHeight - 0.5; wake(); }, { passive: true });
-  for (const type of ['pointerdown', 'keydown', 'wheel', 'scroll'] as const) addEventListener(type, wake, { passive: true, capture: true });
+  if (!touch)
+    addEventListener(
+      'pointermove',
+      (e: PointerEvent) => {
+        aim.x = e.clientX / innerWidth - 0.5;
+        aim.y = e.clientY / innerHeight - 0.5;
+        wake();
+      },
+      { passive: true },
+    );
+  for (const type of ['pointerdown', 'keydown', 'wheel', 'scroll'] as const)
+    addEventListener(type, wake, { passive: true, capture: true });
   gsap.ticker.add((time, deltaMs) => {
     const r = gsap.ticker.deltaRatio();
     speed += ((time - lastInput < REST_AFTER ? 1 : 0) - speed) * (1 - Math.pow(0.9, r));

@@ -12,31 +12,47 @@ const { mocks } = vi.hoisted(() => ({
       APPWRITE_ENDPOINT: 'https://fake.appwrite.io/v1',
       APPWRITE_PROJECT_ID: 'proj',
       APPWRITE_API_KEY: 'key',
-      NODE_ENV: 'test'
+      NODE_ENV: 'test',
     },
     ngoTeamId: 'ngo-team',
-    volunteerTeamId: 'volunteer-team'
-  }
+    volunteerTeamId: 'volunteer-team',
+  },
 }));
 
 vi.mock('$env/dynamic/private', () => ({
-  env: mocks.env
+  env: mocks.env,
 }));
 vi.mock('$lib/server/session', () => ({
   createSession: mocks.createSession,
-  SESSION_TTL_SECONDS: 1209600
+  SESSION_TTL_SECONDS: 1209600,
 }));
 vi.mock('node-appwrite', () => ({
   Client: class {
-    setEndpoint() { return this; } setProject() { return this; } setKey() { return this; }
+    setEndpoint() {
+      return this;
+    }
+    setProject() {
+      return this;
+    }
+    setKey() {
+      return this;
+    }
   },
-  Account: class { createSession = mocks.accountCreateSession; },
-  Users: class { get = mocks.usersGet; }
+  Account: class {
+    createSession = mocks.accountCreateSession;
+  },
+  Users: class {
+    get = mocks.usersGet;
+  },
 }));
 vi.mock('$lib/server/teams', () => ({
-  get NGO_TEAM_ID() { return mocks.ngoTeamId; },
-  get VOLUNTEER_TEAM_ID() { return mocks.volunteerTeamId; },
-  isUserInTeam: mocks.isUserInTeam
+  get NGO_TEAM_ID() {
+    return mocks.ngoTeamId;
+  },
+  get VOLUNTEER_TEAM_ID() {
+    return mocks.volunteerTeamId;
+  },
+  isUserInTeam: mocks.isUserInTeam,
 }));
 
 import { GET } from '../../routes/api/auth/oauth/callback/+server';
@@ -49,7 +65,7 @@ function makeEvent(search: string, protocol = 'https:'): MockEvent {
   const cookies = createMockCookies();
   const event = createRequestEvent({
     url: `${protocol}//test/api/auth/oauth/callback${search}`,
-    cookies
+    cookies,
   });
   const setCalls: MockEvent['setCalls'] = [];
   cookies.set.mockImplementation((name, value, opts) => {
@@ -127,21 +143,28 @@ describe('GET /api/auth/oauth/callback', () => {
     const event = makeEvent('?userId=u1&secret=s1');
     await expectRedirect(GET(event), 303, '/profile');
 
-    expect(mocks.createSession).toHaveBeenCalledWith({ userId: 'u1', email: 'jane@example.com', role: 'user' });
+    expect(mocks.createSession).toHaveBeenCalledWith({
+      userId: 'u1',
+      email: 'jane@example.com',
+      role: 'user',
+    });
     expect(event.setCalls.map((c: { name: string }) => c.name)).toEqual(['mm_session', 'mm_role']);
   });
 
-  it.each(['ngo', 'volunteer'] as const)('keeps a selected %s role for profile setup', async (role) => {
-    mocks.accountCreateSession.mockResolvedValue({});
-    mocks.usersGet.mockResolvedValue({ email: 'jane@example.com', prefs: {} });
-    mocks.isUserInTeam.mockResolvedValue(false);
+  it.each(['ngo', 'volunteer'] as const)(
+    'keeps a selected %s role for profile setup',
+    async (role) => {
+      mocks.accountCreateSession.mockResolvedValue({});
+      mocks.usersGet.mockResolvedValue({ email: 'jane@example.com', prefs: {} });
+      mocks.isUserInTeam.mockResolvedValue(false);
 
-    await expectRedirect(
-      GET(makeEvent(`?userId=u1&secret=s1&role=${role}`)),
-      303,
-      `/profile?role=${role}`
-    );
-  });
+      await expectRedirect(
+        GET(makeEvent(`?userId=u1&secret=s1&role=${role}`)),
+        303,
+        `/profile?role=${role}`,
+      );
+    },
+  );
 
   it('redirects to /dashboard when prefs.role is already set', async () => {
     mocks.accountCreateSession.mockResolvedValue({});
@@ -162,7 +185,11 @@ describe('GET /api/auth/oauth/callback', () => {
     await expectRedirect(GET(makeEvent('?userId=u1&secret=s1')), 303, '/dashboard');
 
     expect(mocks.isUserInTeam).not.toHaveBeenCalled();
-    expect(mocks.createSession).toHaveBeenCalledWith({ userId: 'u1', email: 'jane@example.com', role: 'ngo' });
+    expect(mocks.createSession).toHaveBeenCalledWith({
+      userId: 'u1',
+      email: 'jane@example.com',
+      role: 'ngo',
+    });
   });
 
   it('keeps the default role when team identifiers are unavailable', async () => {
@@ -179,20 +206,36 @@ describe('GET /api/auth/oauth/callback', () => {
   it('team membership can override prefs to grant ngo/volunteer role', async () => {
     mocks.accountCreateSession.mockResolvedValue({});
     mocks.usersGet.mockResolvedValue({ email: 'jane@example.com', prefs: {} });
-    mocks.isUserInTeam.mockImplementation(async (_id: string, teamId: string) => teamId === 'volunteer-team');
+    mocks.isUserInTeam.mockImplementation(
+      async (_id: string, teamId: string) => teamId === 'volunteer-team',
+    );
 
     await expectRedirect(GET(makeEvent('?userId=u1&secret=s1')), 303, '/profile');
-    expect(mocks.createSession).toHaveBeenCalledWith({ userId: 'u1', email: 'jane@example.com', role: 'volunteer' });
+    expect(mocks.createSession).toHaveBeenCalledWith({
+      userId: 'u1',
+      email: 'jane@example.com',
+      role: 'volunteer',
+    });
 
     // NGO team
-    mocks.isUserInTeam.mockImplementation(async (_id: string, teamId: string) => teamId === 'ngo-team');
+    mocks.isUserInTeam.mockImplementation(
+      async (_id: string, teamId: string) => teamId === 'ngo-team',
+    );
     await expectRedirect(GET(makeEvent('?userId=u1&secret=s1')), 303, '/profile');
-    expect(mocks.createSession).toHaveBeenCalledWith({ userId: 'u1', email: 'jane@example.com', role: 'ngo' });
+    expect(mocks.createSession).toHaveBeenCalledWith({
+      userId: 'u1',
+      email: 'jane@example.com',
+      role: 'ngo',
+    });
 
     // Team check throwing
     mocks.isUserInTeam.mockRejectedValue(new Error('team error'));
     await expectRedirect(GET(makeEvent('?userId=u1&secret=s1')), 303, '/profile');
-    expect(mocks.createSession).toHaveBeenLastCalledWith({ userId: 'u1', email: 'jane@example.com', role: 'user' });
+    expect(mocks.createSession).toHaveBeenLastCalledWith({
+      userId: 'u1',
+      email: 'jane@example.com',
+      role: 'user',
+    });
   });
 
   it('handles OAuth failures without development diagnostics in production', async () => {
@@ -218,16 +261,25 @@ describe('GET /api/auth/oauth/callback', () => {
     const httpEvent = makeEvent('?userId=u1&secret=s1', 'http:');
     await expectRedirect(GET(httpEvent), 303, '/profile');
     expect(httpEvent.setCalls).toEqual([
-      expect.objectContaining({ name: 'mm_session', opts: expect.objectContaining({ secure: false }) }),
-      expect.objectContaining({ name: 'mm_role', opts: expect.objectContaining({ secure: false }) })
+      expect.objectContaining({
+        name: 'mm_session',
+        opts: expect.objectContaining({ secure: false }),
+      }),
+      expect.objectContaining({
+        name: 'mm_role',
+        opts: expect.objectContaining({ secure: false }),
+      }),
     ]);
 
     mocks.env.NODE_ENV = 'production';
     const productionEvent = makeEvent('?userId=u1&secret=s1', 'http:');
     await expectRedirect(GET(productionEvent), 303, '/profile');
     expect(productionEvent.setCalls).toEqual([
-      expect.objectContaining({ name: 'mm_session', opts: expect.objectContaining({ secure: true }) }),
-      expect.objectContaining({ name: 'mm_role', opts: expect.objectContaining({ secure: true }) })
+      expect.objectContaining({
+        name: 'mm_session',
+        opts: expect.objectContaining({ secure: true }),
+      }),
+      expect.objectContaining({ name: 'mm_role', opts: expect.objectContaining({ secure: true }) }),
     ]);
   });
 });

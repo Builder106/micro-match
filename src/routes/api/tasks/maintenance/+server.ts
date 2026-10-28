@@ -16,16 +16,13 @@ export const GET: RequestHandler = async (event) => {
 
   try {
     // Run both maintenance operations
-    const [expiredCount, archivedCount] = await Promise.all([
-      expireTasks(),
-      autoArchiveTasks()
-    ]);
+    const [expiredCount, archivedCount] = await Promise.all([expireTasks(), autoArchiveTasks()]);
 
     return json({
       success: true,
       expiredCount,
       archivedCount,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   } catch (error) {
     console.error('Task maintenance error:', error);
@@ -54,15 +51,15 @@ export const POST: RequestHandler = async (event) => {
         break;
       }
       case 'both': {
-        const [expired, archived] = await Promise.all([
-          expireTasks(),
-          autoArchiveTasks()
-        ]);
+        const [expired, archived] = await Promise.all([expireTasks(), autoArchiveTasks()]);
         result = { expiredCount: expired, archivedCount: archived };
         break;
       }
       default:
-        return json({ error: 'Invalid action. Use "expire", "archive", or "both"' }, { status: 400 });
+        return json(
+          { error: 'Invalid action. Use "expire", "archive", or "both"' },
+          { status: 400 },
+        );
     }
 
     return json({ success: true, ...result });

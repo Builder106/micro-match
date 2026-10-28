@@ -27,7 +27,7 @@ export const load: LayoutServerLoad = async ({ locals, url }) => {
   const [isAdmin, patches, tasks] = await Promise.all([
     userId ? isUserAdmin(userId) : Promise.resolve(false),
     orEmpty('quilt patches', getQuiltPatches()),
-    orEmpty('open tasks', getTasks())
+    orEmpty('open tasks', getTasks()),
   ]);
   return {
     userRole,
@@ -38,9 +38,15 @@ export const load: LayoutServerLoad = async ({ locals, url }) => {
     openTasks: {
       count: tasks.length,
       upTo: Object.fromEntries(
-        [15, 20, 30].map((cap) => [cap, tasks.filter((t) => typeof t.estimatedMinutes === 'number' && t.estimatedMinutes <= cap).length])
+        [15, 20, 30].map((cap) => [
+          cap,
+          tasks.filter((t) => typeof t.estimatedMinutes === 'number' && t.estimatedMinutes <= cap)
+            .length,
+        ]),
       ) as Record<15 | 20 | 30, number>,
-      preview: await translateTasks(tasks.slice(0, TASK_PREVIEW), locale).catch(() => tasks.slice(0, TASK_PREVIEW))
-    }
+      preview: await translateTasks(tasks.slice(0, TASK_PREVIEW), locale).catch(() =>
+        tasks.slice(0, TASK_PREVIEW),
+      ),
+    },
   };
 };

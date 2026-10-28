@@ -12,7 +12,9 @@ describe('sitemap', () => {
     expect(xml.match(/<url>/g)).toHaveLength(SITEMAP_PATHS.length * locales.length);
   });
   it('is served as XML from the request origin', async () => {
-    const res = await GET({ url: new URL('http://127.0.0.1:4173/sitemap.xml') } as Parameters<typeof GET>[0]);
+    const res = await GET({ url: new URL('http://127.0.0.1:4173/sitemap.xml') } as Parameters<
+      typeof GET
+    >[0]);
     expect(res.headers.get('content-type')).toMatch(/application\/xml/);
     expect(await res.text()).toContain('http://127.0.0.1:4173/en/how-it-works');
   });

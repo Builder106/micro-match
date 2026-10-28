@@ -3,7 +3,7 @@ import {
   createLoadEvent,
   createServerLoadEvent,
   createPageLoadEvent,
-  createMockCookies
+  createMockCookies,
 } from './createLoadEvent';
 
 describe('createMockCookies helper', () => {
@@ -16,7 +16,7 @@ describe('createMockCookies helper', () => {
 
     expect(cookies.getAll()).toEqual([
       { name: 'theme', value: 'dark' },
-      { name: 'session', value: 'xyz' }
+      { name: 'session', value: 'xyz' },
     ]);
 
     cookies.set('locale', 'es', { path: '/' });
@@ -52,22 +52,22 @@ describe('createServerLoadEvent helper', () => {
     const event = createServerLoadEvent({
       userRole: 'ngo',
       userId: 'org-123',
-      email: 'ngo@example.org'
+      email: 'ngo@example.org',
     });
 
     expect(event.locals.userRole).toBe('ngo');
     expect(event.locals.session).toEqual({
       user: {
         id: 'org-123',
-        email: 'ngo@example.org'
-      }
+        email: 'ngo@example.org',
+      },
     });
   });
 
   it('accepts string url and string route', () => {
     const event = createServerLoadEvent({
       url: 'http://localhost:5173/tasks?status=open',
-      route: '/tasks'
+      route: '/tasks',
     });
 
     expect(event.url.pathname).toBe('/tasks');
@@ -77,7 +77,7 @@ describe('createServerLoadEvent helper', () => {
 
   it('supports initial cookies object', () => {
     const event = createServerLoadEvent({
-      cookies: { mm_session: 'sess-abc' }
+      cookies: { mm_session: 'sess-abc' },
     });
 
     expect(event.cookies.get('mm_session')).toBe('sess-abc');
@@ -89,7 +89,7 @@ describe('createPageLoadEvent helper', () => {
     const event = createPageLoadEvent({
       data: { initialCount: 5 },
       params: { id: 'task-1' },
-      route: '/task/[id]'
+      route: '/task/[id]',
     });
 
     expect(event.data).toEqual({ initialCount: 5 });
@@ -115,7 +115,7 @@ describe('createLoadEvent entrypoint', () => {
   it('creates PageLoadEvent when type is page', () => {
     const event = createLoadEvent({
       type: 'page',
-      data: { hello: 'world' }
+      data: { hello: 'world' },
     });
     expect(event.data).toEqual({ hello: 'world' });
     expect('depends' in event).toBe(true);

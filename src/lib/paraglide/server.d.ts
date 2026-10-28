@@ -87,10 +87,11 @@
  * }
  * ```
  */
-export declare function paraglideMiddleware<T>(request: Request, resolve: (args: {
-    request: Request;
-    locale: import("./runtime.js").Locale;
-}) => T | Promise<T>, options?: {
+export declare function paraglideMiddleware<T>(
+  request: Request,
+  resolve: (args: { request: Request; locale: import('./runtime.js').Locale }) => T | Promise<T>,
+  options?: {
     effectiveRequestUrl?: string | URL | ((request: Request) => string | URL);
     onRedirect?: (response: Response) => void;
-}): Promise<Response>;
+  },
+): Promise<Response>;

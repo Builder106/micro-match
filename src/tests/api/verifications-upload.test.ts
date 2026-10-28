@@ -5,33 +5,58 @@ const { envState, mocks, teamState } = vi.hoisted(() => ({
   teamState: { adminTeamId: 'admins-team' },
   mocks: {
     accountGet: vi.fn(),
-    createFile: vi.fn()
-  }
+    createFile: vi.fn(),
+  },
 }));
 
 vi.mock('$env/dynamic/private', () => ({
-  env: new Proxy(envState, { get: (_, key: string) => envState[key] })
+  env: new Proxy(envState, { get: (_, key: string) => envState[key] }),
 }));
 vi.mock('$lib/server/teams', () => ({
-  get ADMIN_TEAM_ID() { return teamState.adminTeamId; }
+  get ADMIN_TEAM_ID() {
+    return teamState.adminTeamId;
+  },
 }));
 vi.mock('node-appwrite', () => ({
   Client: class {
-    setEndpoint() { return this; } setProject() { return this; } setKey() { return this; } setJWT() { return this; }
+    setEndpoint() {
+      return this;
+    }
+    setProject() {
+      return this;
+    }
+    setKey() {
+      return this;
+    }
+    setJWT() {
+      return this;
+    }
   },
-  Account: class { get = mocks.accountGet; },
-  Storage: class { createFile = mocks.createFile; },
+  Account: class {
+    get = mocks.accountGet;
+  },
+  Storage: class {
+    createFile = mocks.createFile;
+  },
   ID: { unique: () => 'file-id' },
-  Permission: { read: (r: string) => `read:${r}`, update: (r: string) => `update:${r}`, delete: (r: string) => `delete:${r}` },
-  Role: { user: (id: string) => `user:${id}`, team: (id: string) => `team:${id}` }
+  Permission: {
+    read: (r: string) => `read:${r}`,
+    update: (r: string) => `update:${r}`,
+    delete: (r: string) => `delete:${r}`,
+  },
+  Role: { user: (id: string) => `user:${id}`, team: (id: string) => `team:${id}` },
 }));
 
 import { POST } from '../../routes/api/verifications/upload/+server';
 import { createRequestEvent } from '../helpers/createLoadEvent';
 
-function makeEvent(opts: {
-  userId?: string | null; authorization?: string; file?: File | null | 'missing';
-} = {}) {
+function makeEvent(
+  opts: {
+    userId?: string | null;
+    authorization?: string;
+    file?: File | null | 'missing';
+  } = {},
+) {
   const form = new FormData();
   if (opts.file !== 'missing') {
     form.set('file', opts.file ?? new File(['x'], 'doc.pdf', { type: 'application/pdf' }));
@@ -39,9 +64,10 @@ function makeEvent(opts: {
   return createRequestEvent({
     userId: opts.userId ?? undefined,
     request: new Request('http://test/api/verifications/upload', {
-      method: 'POST', body: form,
-      headers: opts.authorization ? { authorization: opts.authorization } : undefined
-    })
+      method: 'POST',
+      body: form,
+      headers: opts.authorization ? { authorization: opts.authorization } : undefined,
+    }),
   });
 }
 
@@ -76,9 +102,6 @@ describe('POST /api/verifications/upload', () => {
     expect(resErr.status).toBe(401);
   });
 
-
-
-
   it('returns 500 when the verifications bucket is not configured', async () => {
     delete envState.APPWRITE_VERIFICATIONS_BUCKET_ID;
     const res = await POST(makeEvent({ userId: 'user-1' }));
@@ -89,10 +112,12 @@ describe('POST /api/verifications/upload', () => {
     envState.APPWRITE_AVATARS_BUCKET_ID = 'verif-bucket';
     const res = await POST(makeEvent({ userId: 'user-1' }));
     expect(res.status).toBe(200);
-    expect(mocks.createFile).toHaveBeenCalledWith(expect.objectContaining({
-      bucketId: 'verif-bucket',
-      permissions: expect.not.arrayContaining(['read:any'])
-    }));
+    expect(mocks.createFile).toHaveBeenCalledWith(
+      expect.objectContaining({
+        bucketId: 'verif-bucket',
+        permissions: expect.not.arrayContaining(['read:any']),
+      }),
+    );
   });
 
   it('returns 400 when no file is present', async () => {
@@ -101,11 +126,9 @@ describe('POST /api/verifications/upload', () => {
   });
 
   it('returns 400 when the file exceeds the 10MB cap', async () => {
-    const bigFile = new File(
-      [new Uint8Array(10 * 1024 * 1024 + 1)],
-      'large.pdf',
-      { type: 'application/pdf' }
-    );
+    const bigFile = new File([new Uint8Array(10 * 1024 * 1024 + 1)], 'large.pdf', {
+      type: 'application/pdf',
+    });
     const res = await POST(makeEvent({ userId: 'user-1', file: bigFile }));
     expect(res.status).toBe(400);
   });
@@ -124,7 +147,7 @@ describe('POST /api/verifications/upload', () => {
       bucketId: 'verif-bucket',
       fileId: 'file-id',
       file: expect.anything(),
-      permissions: expect.arrayContaining(['read:team:admins-team'])
+      permissions: expect.arrayContaining(['read:team:admins-team']),
     });
     expect(body).toEqual({ fileId: 'file-1' });
   });
@@ -139,13 +162,13 @@ describe('POST /api/verifications/upload', () => {
       bucketId: 'verif-bucket',
       fileId: 'file-id',
       file: expect.anything(),
-      permissions: ['read:user:user-1', 'update:user:user-1', 'delete:user:user-1']
+      permissions: ['read:user:user-1', 'update:user:user-1', 'delete:user:user-1'],
     });
   });
 
   it('returns 500 when the upload throws', async () => {
     mocks.createFile.mockRejectedValue(new Error('down'));
-    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const res = await POST(makeEvent({ userId: 'user-1' }));
     expect(res.status).toBe(500);

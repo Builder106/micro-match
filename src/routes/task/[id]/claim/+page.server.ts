@@ -19,7 +19,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
       estimatedMinutes: task.estimatedMinutes,
       tags: task.tags,
       isVerified: task.isVerified,
-      language: task.language
-    }
+      language: task.language,
+    },
   };
 };

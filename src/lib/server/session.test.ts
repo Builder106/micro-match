@@ -24,7 +24,12 @@ describe('session store', () => {
   });
 
   it('getSession returns null and purges an expired session', () => {
-    const created = createSession({ userId: 'u4', email: 'd@example.com', role: 'user', ttlSeconds: 60 });
+    const created = createSession({
+      userId: 'u4',
+      email: 'd@example.com',
+      role: 'user',
+      ttlSeconds: 60,
+    });
     vi.spyOn(Date, 'now').mockReturnValue(created.expiresAt + 1);
 
     expect(getSession(created.id)).toBeNull();
@@ -34,7 +39,12 @@ describe('session store', () => {
   });
 
   it('clamps ttlSeconds to a 60s floor', () => {
-    const created = createSession({ userId: 'u5', email: 'e@example.com', role: 'user', ttlSeconds: 1 });
+    const created = createSession({
+      userId: 'u5',
+      email: 'e@example.com',
+      role: 'user',
+      ttlSeconds: 1,
+    });
     expect(created.expiresAt - Date.now()).toBeCloseTo(60_000, -2);
   });
 
@@ -49,7 +59,12 @@ describe('session store', () => {
   });
 
   it('purges expired sessions as a side effect of creating a new one', () => {
-    const expiring = createSession({ userId: 'u7', email: 'g@example.com', role: 'user', ttlSeconds: 60 });
+    const expiring = createSession({
+      userId: 'u7',
+      email: 'g@example.com',
+      role: 'user',
+      ttlSeconds: 60,
+    });
     const clock = vi.spyOn(Date, 'now').mockReturnValue(expiring.expiresAt + 1);
     createSession({ userId: 'u8', email: 'h@example.com', role: 'user' });
     clock.mockRestore();
@@ -62,7 +77,11 @@ describe('session store', () => {
     const cryptoDescriptor = Object.getOwnPropertyDescriptor(globalThis, 'crypto');
     try {
       Reflect.deleteProperty(globalThis, 'crypto');
-      const s = createSession({ userId: 'u-fallback', email: 'fallback@example.com', role: 'user' });
+      const s = createSession({
+        userId: 'u-fallback',
+        email: 'fallback@example.com',
+        role: 'user',
+      });
       expect(s.id).toBeTruthy();
     } finally {
       if (cryptoDescriptor) Object.defineProperty(globalThis, 'crypto', cryptoDescriptor);

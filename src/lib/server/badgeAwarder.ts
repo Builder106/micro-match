@@ -9,10 +9,7 @@ import type { BadgeDefinition } from '$lib/types';
 import { awardBadge, listBadgesByUser } from './appwrite';
 import { checkMilestoneCriteria, evaluateBadgeCriteria, type BadgeAction } from './badgeCriteria';
 
-export async function processBadgeAwards(
-  userId: string,
-  action: BadgeAction
-): Promise<string[]> {
+export async function processBadgeAwards(userId: string, action: BadgeAction): Promise<string[]> {
   const awardedIds: string[] = [];
 
   try {
@@ -47,14 +44,14 @@ export async function processBadgeAwards(
 async function awardForDefinition(
   userId: string,
   def: BadgeDefinition,
-  action: BadgeAction
+  action: BadgeAction,
 ): Promise<string | null> {
   try {
     const badge = await awardBadge({
       userId,
       taskId: action.taskId,
       label: def.label,
-      color: def.color
+      color: def.color,
     });
     return badge.id;
   } catch (err) {
@@ -67,13 +64,13 @@ async function awardForDefinition(
 export async function onTaskApproved(
   userId: string,
   taskId: string,
-  completionTimeMinutes?: number
+  completionTimeMinutes?: number,
 ): Promise<string[]> {
   return processBadgeAwards(userId, {
     type: 'task-completed',
     taskId,
     taskTimeMinutes: completionTimeMinutes,
-    completedAt: new Date().toISOString()
+    completedAt: new Date().toISOString(),
   });
 }
 
@@ -81,7 +78,7 @@ export async function onTaskApproved(
 export async function onTaskCompleted(
   userId: string,
   taskId: string,
-  completionTimeMinutes: number
+  completionTimeMinutes: number,
 ): Promise<string[]> {
   return onTaskApproved(userId, taskId, completionTimeMinutes);
 }

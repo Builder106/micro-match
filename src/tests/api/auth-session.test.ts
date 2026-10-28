@@ -9,28 +9,44 @@ const { mocks } = vi.hoisted(() => ({
       APPWRITE_ENDPOINT: 'https://fake.appwrite.io/v1',
       APPWRITE_PROJECT_ID: 'proj',
       APPWRITE_API_KEY: 'key',
-      NODE_ENV: 'test'
+      NODE_ENV: 'test',
     },
     ngoTeamId: 'ngo-team',
-    volunteerTeamId: 'volunteer-team'
-  }
+    volunteerTeamId: 'volunteer-team',
+  },
 }));
 
 vi.mock('$env/dynamic/private', () => ({
-  env: mocks.env
+  env: mocks.env,
 }));
 vi.mock('node-appwrite', () => ({
-  Client: class { setEndpoint() { return this; } setProject() { return this; } setJWT() { return this; } },
-  Account: class { get = mocks.accountGet; }
+  Client: class {
+    setEndpoint() {
+      return this;
+    }
+    setProject() {
+      return this;
+    }
+    setJWT() {
+      return this;
+    }
+  },
+  Account: class {
+    get = mocks.accountGet;
+  },
 }));
 vi.mock('$lib/server/session', () => ({
   createSession: mocks.createSession,
-  SESSION_TTL_SECONDS: 1209600
+  SESSION_TTL_SECONDS: 1209600,
 }));
 vi.mock('$lib/server/teams', () => ({
-  get NGO_TEAM_ID() { return mocks.ngoTeamId; },
-  get VOLUNTEER_TEAM_ID() { return mocks.volunteerTeamId; },
-  isUserInTeam: mocks.isUserInTeam
+  get NGO_TEAM_ID() {
+    return mocks.ngoTeamId;
+  },
+  get VOLUNTEER_TEAM_ID() {
+    return mocks.volunteerTeamId;
+  },
+  isUserInTeam: mocks.isUserInTeam,
 }));
 
 import { POST } from '../../routes/api/auth/session/+server';
@@ -47,13 +63,14 @@ function makeEvent(body: unknown, protocol = 'https:'): MockEvent {
   cookies.set = vi.fn((name, value, opts) => {
     setCalls.push({ name, value, opts });
   });
-  const request = body === undefined
-    ? new Request(`${protocol}//test/api/auth/session`, { body: '', method: 'POST' })
-    : new Request(`${protocol}//test/api/auth/session`, {
-      body: JSON.stringify(body),
-      method: 'POST',
-      headers: { 'content-type': 'application/json' }
-    });
+  const request =
+    body === undefined
+      ? new Request(`${protocol}//test/api/auth/session`, { body: '', method: 'POST' })
+      : new Request(`${protocol}//test/api/auth/session`, {
+          body: JSON.stringify(body),
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+        });
   return Object.assign(createRequestEvent({ request, cookies }), { setCalls });
 }
 
@@ -62,7 +79,11 @@ describe('POST /api/auth/session', () => {
     mocks.accountGet.mockReset();
     mocks.createSession.mockReset();
     mocks.isUserInTeam.mockReset();
-    mocks.createSession.mockImplementation((input: Record<string, unknown>) => ({ id: 'sess-1', ...input, expiresAt: Date.now() + 1000 }));
+    mocks.createSession.mockImplementation((input: Record<string, unknown>) => ({
+      id: 'sess-1',
+      ...input,
+      expiresAt: Date.now() + 1000,
+    }));
     mocks.env.APPWRITE_ENDPOINT = 'https://fake.appwrite.io/v1';
     mocks.env.APPWRITE_PROJECT_ID = 'proj';
     mocks.env.APPWRITE_API_KEY = 'key';
@@ -91,7 +112,7 @@ describe('POST /api/auth/session', () => {
       expect(res.status).toBe(503);
       expect(await res.json()).toEqual({ error: 'Authentication service is unavailable' });
       expect(mocks.accountGet).not.toHaveBeenCalled();
-    }
+    },
   );
 
   it('returns 400 on invalid JSON', async () => {
@@ -122,13 +143,26 @@ describe('POST /api/auth/session', () => {
     const body = await res.json();
 
     expect(res.status).toBe(200);
-    expect(body).toEqual({ ok: true, role: 'user', email: 'jane@example.com', roleSource: 'default' });
-    expect(mocks.createSession).toHaveBeenCalledWith({ userId: 'user-1', email: 'jane@example.com', role: 'user' });
+    expect(body).toEqual({
+      ok: true,
+      role: 'user',
+      email: 'jane@example.com',
+      roleSource: 'default',
+    });
+    expect(mocks.createSession).toHaveBeenCalledWith({
+      userId: 'user-1',
+      email: 'jane@example.com',
+      role: 'user',
+    });
     expect(event.setCalls.map((c: { name: string }) => c.name)).toEqual(['mm_session', 'mm_role']);
   });
 
   it('derives role="ngo" from prefs when set', async () => {
-    mocks.accountGet.mockResolvedValue({ $id: 'user-1', email: 'jane@example.com', prefs: { role: 'ngo' } });
+    mocks.accountGet.mockResolvedValue({
+      $id: 'user-1',
+      email: 'jane@example.com',
+      prefs: { role: 'ngo' },
+    });
     const res = await POST(makeEvent({ jwt: 'good-jwt' }));
     const body = await res.json();
     expect(body.role).toBe('ngo');
@@ -136,7 +170,11 @@ describe('POST /api/auth/session', () => {
   });
 
   it('derives role="volunteer" from prefs when set', async () => {
-    mocks.accountGet.mockResolvedValue({ $id: 'user-1', email: 'jane@example.com', prefs: { role: 'volunteer' } });
+    mocks.accountGet.mockResolvedValue({
+      $id: 'user-1',
+      email: 'jane@example.com',
+      prefs: { role: 'volunteer' },
+    });
 
     const res = await POST(makeEvent({ jwt: 'good-jwt' }));
 
@@ -145,7 +183,11 @@ describe('POST /api/auth/session', () => {
 
   it('uses an empty preference object and skips teams when no API key is configured', async () => {
     mocks.env.APPWRITE_API_KEY = '';
-    mocks.accountGet.mockResolvedValue({ $id: 'user-1', email: 'jane@example.com', prefs: undefined });
+    mocks.accountGet.mockResolvedValue({
+      $id: 'user-1',
+      email: 'jane@example.com',
+      prefs: undefined,
+    });
 
     const res = await POST(makeEvent({ jwt: 'good-jwt' }));
 
@@ -165,8 +207,14 @@ describe('POST /api/auth/session', () => {
   });
 
   it('team membership overrides prefs when an API key is configured', async () => {
-    mocks.accountGet.mockResolvedValue({ $id: 'user-1', email: 'jane@example.com', prefs: { role: 'volunteer' } });
-    mocks.isUserInTeam.mockImplementation(async (_id: string, teamId: string) => teamId === 'ngo-team');
+    mocks.accountGet.mockResolvedValue({
+      $id: 'user-1',
+      email: 'jane@example.com',
+      prefs: { role: 'volunteer' },
+    });
+    mocks.isUserInTeam.mockImplementation(
+      async (_id: string, teamId: string) => teamId === 'ngo-team',
+    );
 
     const res = await POST(makeEvent({ jwt: 'good-jwt' }));
     const body = await res.json();
@@ -177,7 +225,9 @@ describe('POST /api/auth/session', () => {
 
   it('sets role="volunteer" via team membership', async () => {
     mocks.accountGet.mockResolvedValue({ $id: 'user-1', email: 'jane@example.com', prefs: {} });
-    mocks.isUserInTeam.mockImplementation(async (_id: string, teamId: string) => teamId === 'volunteer-team');
+    mocks.isUserInTeam.mockImplementation(
+      async (_id: string, teamId: string) => teamId === 'volunteer-team',
+    );
 
     const res = await POST(makeEvent({ jwt: 'good-jwt' }, 'http:'));
     const body = await res.json();
@@ -202,7 +252,7 @@ describe('POST /api/auth/session', () => {
       email: 'jane@example.com',
       get prefs() {
         throw new Error('prefs property getter crashed');
-      }
+      },
     };
     mocks.accountGet.mockResolvedValue(brokenUser);
 
@@ -229,7 +279,7 @@ describe('POST /api/auth/session', () => {
       email: 'jane@example.com',
       get prefs() {
         throw new Error('prefs property getter crashed');
-      }
+      },
     });
     expect((await POST(makeEvent({ jwt: 'good-jwt' }))).status).toBe(200);
 
@@ -251,17 +301,25 @@ describe('POST /api/auth/session', () => {
     const httpEvent = makeEvent({ jwt: 'good-jwt' }, 'http:');
     await POST(httpEvent);
     expect(httpEvent.setCalls).toEqual([
-      expect.objectContaining({ name: 'mm_session', opts: expect.objectContaining({ secure: false }) }),
-      expect.objectContaining({ name: 'mm_role', opts: expect.objectContaining({ secure: false }) })
+      expect.objectContaining({
+        name: 'mm_session',
+        opts: expect.objectContaining({ secure: false }),
+      }),
+      expect.objectContaining({
+        name: 'mm_role',
+        opts: expect.objectContaining({ secure: false }),
+      }),
     ]);
 
     mocks.env.NODE_ENV = 'production';
     const productionEvent = makeEvent({ jwt: 'good-jwt' }, 'http:');
     await POST(productionEvent);
     expect(productionEvent.setCalls).toEqual([
-      expect.objectContaining({ name: 'mm_session', opts: expect.objectContaining({ secure: true }) }),
-      expect.objectContaining({ name: 'mm_role', opts: expect.objectContaining({ secure: true }) })
+      expect.objectContaining({
+        name: 'mm_session',
+        opts: expect.objectContaining({ secure: true }),
+      }),
+      expect.objectContaining({ name: 'mm_role', opts: expect.objectContaining({ secure: true }) }),
     ]);
   });
-
 });

@@ -6,15 +6,15 @@ const { mocks } = vi.hoisted(() => ({
     getClaimById: vi.fn(),
     getTaskById: vi.fn(),
     updateClaimStatus: vi.fn(),
-    onTaskApproved: vi.fn()
-  }
+    onTaskApproved: vi.fn(),
+  },
 }));
 
 vi.mock('$lib/server/auth', () => ({ getUserRole: mocks.getUserRole }));
 vi.mock('$lib/server/appwrite', () => ({
   getClaimById: mocks.getClaimById,
   getTaskById: mocks.getTaskById,
-  updateClaimStatus: mocks.updateClaimStatus
+  updateClaimStatus: mocks.updateClaimStatus,
 }));
 vi.mock('$lib/server/badgeAwarder', () => ({ onTaskApproved: mocks.onTaskApproved }));
 
@@ -23,7 +23,10 @@ import { POST as reject } from '../../routes/api/claims/[id]/reject/+server';
 import { createRequestEvent } from '../helpers/createLoadEvent';
 
 function makeEvent(opts: { reviewerId?: string | null; claimId?: string }) {
-  return createRequestEvent({ userId: opts.reviewerId ?? undefined, params: { id: opts.claimId ?? 'claim-1' } });
+  return createRequestEvent({
+    userId: opts.reviewerId ?? undefined,
+    params: { id: opts.claimId ?? 'claim-1' },
+  });
 }
 
 const claimOnOwnedTask = {
@@ -31,7 +34,7 @@ const claimOnOwnedTask = {
   taskId: 'task-owned',
   userId: 'volunteer-1',
   status: 'pending' as const,
-  createdAt: ''
+  createdAt: '',
 };
 
 const ownedTask = {
@@ -44,7 +47,7 @@ const ownedTask = {
   tags: [],
   createdAt: '',
   status: 'active' as const,
-  estimatedMinutes: 15
+  estimatedMinutes: 15,
 };
 
 describe('POST /api/claims/[id]/approve', () => {
@@ -53,7 +56,11 @@ describe('POST /api/claims/[id]/approve', () => {
     mocks.getUserRole.mockResolvedValue('ngo');
     mocks.getClaimById.mockResolvedValue(claimOnOwnedTask);
     mocks.getTaskById.mockResolvedValue(ownedTask);
-    mocks.updateClaimStatus.mockResolvedValue({ ...claimOnOwnedTask, status: 'approved', reviewedBy: 'ngo-1' });
+    mocks.updateClaimStatus.mockResolvedValue({
+      ...claimOnOwnedTask,
+      status: 'approved',
+      reviewedBy: 'ngo-1',
+    });
     mocks.onTaskApproved.mockResolvedValue(['badge-1']);
   });
 
@@ -71,10 +78,11 @@ describe('POST /api/claims/[id]/approve', () => {
   });
 
   it('returns 400 when claim id param is missing', async () => {
-    const res = await approve(createRequestEvent<Record<string, string>>({ userId: 'ngo-1', params: {} }));
+    const res = await approve(
+      createRequestEvent<Record<string, string>>({ userId: 'ngo-1', params: {} }),
+    );
     expect(res.status).toBe(400);
   });
-
 
   it('returns 404 when the claim does not exist', async () => {
     mocks.getClaimById.mockResolvedValue(undefined);
@@ -100,7 +108,6 @@ describe('POST /api/claims/[id]/approve', () => {
     expect(res.status).toBe(200);
     expect(mocks.onTaskApproved).not.toHaveBeenCalled();
   });
-
 
   it('returns 403 when the calling NGO does not own the task (cross-org IDOR)', async () => {
     const res = await approve(makeEvent({ reviewerId: 'some-other-ngo' }));
@@ -152,7 +159,11 @@ describe('POST /api/claims/[id]/reject', () => {
     mocks.getUserRole.mockResolvedValue('ngo');
     mocks.getClaimById.mockResolvedValue(claimOnOwnedTask);
     mocks.getTaskById.mockResolvedValue(ownedTask);
-    mocks.updateClaimStatus.mockResolvedValue({ ...claimOnOwnedTask, status: 'rejected', reviewedBy: 'ngo-1' });
+    mocks.updateClaimStatus.mockResolvedValue({
+      ...claimOnOwnedTask,
+      status: 'rejected',
+      reviewedBy: 'ngo-1',
+    });
   });
 
   it('returns 403 for non-NGO role', async () => {
@@ -179,7 +190,9 @@ describe('POST /api/claims/[id]/reject', () => {
   });
 
   it('returns 400 when claim id param is missing', async () => {
-    const res = await reject(createRequestEvent<Record<string, string>>({ userId: 'ngo-1', params: {} }));
+    const res = await reject(
+      createRequestEvent<Record<string, string>>({ userId: 'ngo-1', params: {} }),
+    );
     expect(res.status).toBe(400);
   });
 

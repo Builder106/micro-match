@@ -18,7 +18,8 @@ async function lookupOrgName(orgId: string | undefined): Promise<string | null> 
     const users = new Users(client);
     const u = await users.get<import('$lib/types').UserPreferences>({ userId: orgId });
     const prefs = u?.prefs ?? {};
-    const orgName = typeof prefs.orgName === 'string' && prefs.orgName.trim() ? prefs.orgName.trim() : null;
+    const orgName =
+      typeof prefs.orgName === 'string' && prefs.orgName.trim() ? prefs.orgName.trim() : null;
     return orgName ?? u?.name ?? null;
   } catch {
     return null;
@@ -47,7 +48,10 @@ export const load: PageServerLoad = async ({ params, url, locals }) => {
   const currentUserId = session?.user?.id;
   const isOwner = !!currentUserId && currentUserId === task.orgId;
 
-  const [orgName, patch] = await Promise.all([nonprofitName(task.orgId), getPatchDesignForTask(task)]);
+  const [orgName, patch] = await Promise.all([
+    nonprofitName(task.orgId),
+    getPatchDesignForTask(task),
+  ]);
 
   // The page renders its original task immediately. The client fetches the
   // optional translation after navigation, so slow provider responses never
@@ -59,7 +63,7 @@ export const load: PageServerLoad = async ({ params, url, locals }) => {
       isOwner,
       orgName,
       patch,
-      translatedTo: to
+      translatedTo: to,
     };
   }
 

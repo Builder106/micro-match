@@ -12,7 +12,7 @@ import { isHttpError } from '../helpers/httpError';
 function makeEvent(opts: { userRole?: App.Locals['userRole']; taskId?: string } = {}) {
   return createServerLoadEventFor<typeof load>({
     params: { id: opts.taskId ?? 'task-1' },
-    userRole: opts.userRole ?? 'anonymous'
+    userRole: opts.userRole ?? 'anonymous',
   });
 }
 
@@ -42,7 +42,6 @@ describe('/task/[id]/claim load', () => {
     }
   });
 
-
   it('404s when the task does not exist', async () => {
     mocks.getTaskById.mockResolvedValue(undefined);
     try {
@@ -56,14 +55,25 @@ describe('/task/[id]/claim load', () => {
 
   it('returns a trimmed-down task projection for a signed-in role', async () => {
     mocks.getTaskById.mockResolvedValue({
-      id: 'task-1', orgId: 'org-1', title: 'T', shortDescription: 'S', description: 'long',
-      estimatedMinutes: 20, tags: ['a'], isVerified: true
+      id: 'task-1',
+      orgId: 'org-1',
+      title: 'T',
+      shortDescription: 'S',
+      description: 'long',
+      estimatedMinutes: 20,
+      tags: ['a'],
+      isVerified: true,
     });
 
     const result = requireLoadResult(await load(makeEvent({ userRole: 'volunteer' })));
 
     expect(result.task).toEqual({
-      id: 'task-1', title: 'T', shortDescription: 'S', estimatedMinutes: 20, tags: ['a'], isVerified: true
+      id: 'task-1',
+      title: 'T',
+      shortDescription: 'S',
+      estimatedMinutes: 20,
+      tags: ['a'],
+      isVerified: true,
     });
     expect(result.task.orgId).toBeUndefined();
     expect(result.task.description).toBeUndefined();

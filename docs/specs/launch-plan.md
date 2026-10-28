@@ -83,7 +83,7 @@ Reduces founder hours during fall-semester crunch. MIT-licensed, F-1 safe.
 
 - **WSA + club leader outreach.** Identify 5–10 student org presidents from the WSA roster or last year's org fair. Email mid-August: "I have a tool that lets your members earn verifiable badges for community work — can I post 2–3 of your fall tasks on it?" Pre-seed half a dozen yeses so launch week has fresh org-side activity.
 - **The Argus pitch.** Email the features editor 2–3 weeks before classes. Angle: student-built free tool for the Wesleyan community, with verifiable badges and concrete fall-semester tasks already live. Aim for a piece in week 1 of classes, not week 4.
-- **Physical materials.** Print one tabling card with a single QR code → badge vault landing page. Pitch on the card is "track your community service hours and get verifiable badges" — *not* "join a volunteering marketplace." The vault is the wedge; the marketplace is what users discover after they're on the platform.
+- **Physical materials.** Print one tabling card with a single QR code → badge vault landing page. Pitch on the card is "track your community service hours and get verifiable badges" — _not_ "join a volunteering marketplace." The vault is the wedge; the marketplace is what users discover after they're on the platform.
 
 ### Launch week (WesFest / student-org fair / orientation)
 
@@ -123,4 +123,4 @@ Drop in this priority order if time compresses:
 1. Argus pre-pitch (can do during week 0 if needed)
 2. Contributor onboarding (can happen post-launch)
 3. Concierge seed past the first 3 orgs
-4. *Never drop:* the badge vault, the faculty sponsor name, the tabling card.
+4. _Never drop:_ the badge vault, the faculty sponsor name, the tabling card.

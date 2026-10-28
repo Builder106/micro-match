@@ -11,9 +11,13 @@ let seeded: Seeded;
 
 test.beforeAll(async ({ browser }) => {
   seeded = await seedNonprofit(browser, 'flow', [
-    { title: 'Translate a medical flyer into Spanish', minutes: 15, tags: ['translation', 'health'] },
+    {
+      title: 'Translate a medical flyer into Spanish',
+      minutes: 15,
+      tags: ['translation', 'health'],
+    },
     { title: 'Tag historical photos for an archive', minutes: 5, tags: ['data', 'history'] },
-    { title: 'Proofread a plain-language climate explainer', minutes: 25, tags: ['environment'] }
+    { title: 'Proofread a plain-language climate explainer', minutes: 25, tags: ['environment'] },
   ]);
 });
 
@@ -24,9 +28,13 @@ async function fakeAppwrite(page: Page, { failSignIn = false } = {}) {
     const req = route.request();
     const path = new URL(req.url()).pathname;
     calls.push({ method: req.method(), path, body: req.postDataJSON?.() ?? null });
-    if (failSignIn && path.endsWith('/sessions/email')) return route.fulfill({ status: 401, json: { message: 'Invalid credentials', code: 401 } });
+    if (failSignIn && path.endsWith('/sessions/email'))
+      return route.fulfill({ status: 401, json: { message: 'Invalid credentials', code: 401 } });
     if (path.endsWith('/jwts')) return route.fulfill({ status: 201, json: { jwt: 'e2e-jwt' } });
-    return route.fulfill({ status: 201, json: { $id: 'e2e-user', email: 'e2e@example.test', name: 'E2E', prefs: {} } });
+    return route.fulfill({
+      status: 201,
+      json: { $id: 'e2e-user', email: 'e2e@example.test', name: 'E2E', prefs: {} },
+    });
   });
   return calls;
 }
@@ -52,17 +60,27 @@ test('browse the feed and filter it by time, search and tag', async ({ page }) =
 
 test('open a task and see the patch it becomes', async ({ page }) => {
   await page.goto('/en/tasks');
-  await page.locator('[data-panel]').getByRole('link', { name: 'Translate a medical flyer into Spanish', exact: true }).click();
+  await page
+    .locator('[data-panel]')
+    .getByRole('link', { name: 'Translate a medical flyer into Spanish', exact: true })
+    .click();
   await expect(page).toHaveURL(new RegExp(`/en/task/${seeded.taskIds[0]}$`));
-  await expect(page.getByRole('heading', { level: 1, name: 'Translate a medical flyer into Spanish' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'Translate a medical flyer into Spanish' }),
+  ).toBeVisible();
   await expect(page.getByText(`sewn in as a ${seeded.badge} patch`)).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Sign in to claim' })).toHaveAttribute('href', new RegExp(`/en/login\\?next=/task/${seeded.taskIds[0]}/claim`));
+  await expect(page.getByRole('link', { name: 'Sign in to claim' })).toHaveAttribute(
+    'href',
+    new RegExp(`/en/login\\?next=/task/${seeded.taskIds[0]}/claim`),
+  );
 });
 
 test('sign up: the role comes first, then the account', async ({ page }) => {
   const calls = await fakeAppwrite(page);
   await page.goto('/en/signup');
-  await expect(page.getByRole('heading', { level: 1, name: 'Which side of the quilt?' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'Which side of the quilt?' }),
+  ).toBeVisible();
   await page.getByRole('button', { name: /I want to volunteer/ }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Join as a volunteer' })).toBeVisible();
 
@@ -71,8 +89,12 @@ test('sign up: the role comes first, then the account', async ({ page }) => {
   await page.getByLabel('Password').fill('quilting-bee');
   await page.getByRole('button', { name: 'Create my account' }).click();
 
-  await expect.poll(() => calls.find((c) => c.path.endsWith('/account/prefs'))?.body).toEqual({ prefs: { role: 'volunteer' } });
-  expect(calls.find((c) => c.method === 'POST' && c.path.endsWith('/account'))?.body).toMatchObject({ email: 'ada@example.test', name: 'Ada' });
+  await expect
+    .poll(() => calls.find((c) => c.path.endsWith('/account/prefs'))?.body)
+    .toEqual({ prefs: { role: 'volunteer' } });
+  expect(calls.find((c) => c.method === 'POST' && c.path.endsWith('/account'))?.body).toMatchObject(
+    { email: 'ada@example.test', name: 'Ada' },
+  );
   // Without a real Appwrite the server cannot mint a session, so the dashboard sends us to sign in.
   await expect(page).toHaveURL(/\/en\/login/);
 });
@@ -83,8 +105,13 @@ test('sign in sends the credentials, and a wrong password says so', async ({ pag
   await page.getByLabel('Email').fill('ada@example.test');
   await page.getByLabel('Password').fill('wrong');
   await page.getByRole('button', { name: 'Sign in' }).click();
-  await expect(page.getByRole('alert')).toHaveText('That email and password do not match an account.');
-  expect(calls.find((c) => c.path.endsWith('/sessions/email'))?.body).toEqual({ email: 'ada@example.test', password: 'wrong' });
+  await expect(page.getByRole('alert')).toHaveText(
+    'That email and password do not match an account.',
+  );
+  expect(calls.find((c) => c.path.endsWith('/sessions/email'))?.body).toEqual({
+    email: 'ada@example.test',
+    password: 'wrong',
+  });
 
   await page.unrouteAll();
   await fakeAppwrite(page);
@@ -106,14 +133,25 @@ test('a volunteer claims a task and sends proof', async ({ page, context }) => {
 
   await expect(page).toHaveURL(/\/en\/dashboard\?pinned=1/);
   await expect(page.getByRole('status').filter({ hasText: 'Your work is pinned' })).toBeVisible();
-  await expect(page.locator('[data-panel]').getByRole('link', { name: 'Translate a medical flyer into Spanish', exact: true })).toBeVisible();
+  await expect(
+    page
+      .locator('[data-panel]')
+      .getByRole('link', { name: 'Translate a medical flyer into Spanish', exact: true }),
+  ).toBeVisible();
 });
 
-test('the nonprofit approves it, and the badge and patch appear', async ({ browser, page, context }) => {
+test('the nonprofit approves it, and the badge and patch appear', async ({
+  browser,
+  page,
+  context,
+}) => {
   await signInAs(context, 'ngo', 'flow');
   await page.goto('/en/dashboard');
   const review = page.getByRole('listitem').filter({ hasText: 'Kept the clinical terms exact.' });
-  await expect(review.getByRole('link', { name: 'Open their work' })).toHaveAttribute('href', 'https://docs.example.org/flyer-es');
+  await expect(review.getByRole('link', { name: 'Open their work' })).toHaveAttribute(
+    'href',
+    'https://docs.example.org/flyer-es',
+  );
   await review.getByRole('button', { name: 'Approve and sew in' }).click();
   await expect(review.getByRole('status')).toHaveText('Sewn in. 1 badge awarded.');
 
@@ -125,9 +163,15 @@ test('the nonprofit approves it, and the badge and patch appear', async ({ brows
   await vpage.goto('/en/dashboard');
   const block = vpage.getByRole('group', { name: 'Your block, one patch' });
   await expect(block).toBeVisible();
-  await expect(block.getByRole('button', { name: `${seeded.badge}, a 15 minute task` })).toBeVisible();
+  await expect(
+    block.getByRole('button', { name: `${seeded.badge}, a 15 minute task` }),
+  ).toBeVisible();
   // The same approval is also sewn into the community quilt behind the panel.
-  await expect(vpage.getByRole('group', { name: 'The MicroMatch quilt, one patch' }).getByRole('button', { name: `${seeded.badge}, a 15 minute task` })).toBeAttached();
+  await expect(
+    vpage
+      .getByRole('group', { name: 'The MicroMatch quilt, one patch' })
+      .getByRole('button', { name: `${seeded.badge}, a 15 minute task` }),
+  ).toBeAttached();
   await volunteer.close();
 
   await page.goto('/en');
@@ -155,14 +199,22 @@ test('with reduced motion the intro and the panel flight do not play', async ({ 
   await page.getByRole('link', { name: 'Help', exact: true }).click();
   const transforms = new Set<string>();
   for (let i = 0; i < 10; i++) {
-    transforms.add(await page.locator('.panel').first().evaluate((el) => getComputedStyle(el).transform).catch(() => 'none'));
+    transforms.add(
+      await page
+        .locator('.panel')
+        .first()
+        .evaluate((el) => getComputedStyle(el).transform)
+        .catch(() => 'none'),
+    );
     await page.waitForTimeout(30);
   }
   expect([...transforms]).toEqual(['none']);
   await expect(page.getByRole('heading', { level: 1, name: 'Help' })).toBeVisible();
 });
 
-test("the quilt's ambient motion comes to rest five seconds after the last input", async ({ page }) => {
+test("the quilt's ambient motion comes to rest five seconds after the last input", async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/en');
   await page.mouse.move(700, 450);

@@ -17,14 +17,21 @@ export const POST: RequestHandler = async (event) => {
   if (body?.notes) {
     const moderation = await moderateText(body.notes);
     if (moderation.blocked) {
-      return json({ error: 'Content failed safety checks', reasons: moderation.reasons }, { status: 400 });
+      return json(
+        { error: 'Content failed safety checks', reasons: moderation.reasons },
+        { status: 400 },
+      );
     }
   }
   const sessionUserId = event.locals.session?.user?.id;
-  const claim = await createClaim({ taskId: id, proofUrl: body?.proofUrl, notes: body?.notes, userId: sessionUserId ?? undefined });
+  const claim = await createClaim({
+    taskId: id,
+    proofUrl: body?.proofUrl,
+    notes: body?.notes,
+    userId: sessionUserId ?? undefined,
+  });
 
   // Badges are awarded on approval (not claim), in /api/claims/[id]/approve.
 
   return json(claim, { status: 201 });
 };
-

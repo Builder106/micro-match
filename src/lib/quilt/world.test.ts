@@ -1,5 +1,21 @@
 import { describe, it, expect } from 'vitest';
-import { BLOCKS, GRID, HOME_FOCUS, block, blockCenter, blockForPath, cameraFor, clampCamera, clothFill, focusForPath, panelKindForPath, phonePath, seams, toPixels, worldSize } from './world';
+import {
+  BLOCKS,
+  GRID,
+  HOME_FOCUS,
+  block,
+  blockCenter,
+  blockForPath,
+  cameraFor,
+  clampCamera,
+  clothFill,
+  focusForPath,
+  panelKindForPath,
+  phonePath,
+  seams,
+  toPixels,
+  worldSize,
+} from './world';
 
 describe('seams', () => {
   const all = seams();
@@ -22,13 +38,18 @@ describe('the quilt map', () => {
   it('tiles the grid exactly once', () => {
     const cells = new Set<string>();
     BLOCKS.forEach((b) => {
-      for (let c = b.col; c < b.col + b.w; c++) for (let r = b.row; r < b.row + b.h; r++) cells.add(`${c},${r}`);
+      for (let c = b.col; c < b.col + b.w; c++)
+        for (let r = b.row; r < b.row + b.h; r++) cells.add(`${c},${r}`);
     });
     expect(cells.size).toBe(GRID.cols * GRID.rows);
     expect(BLOCKS.reduce((s, b) => s + b.w * b.h, 0)).toBe(GRID.cols * GRID.rows);
   });
   it('has a phone order that starts with the title and community blocks', () => {
-    expect(phonePath().slice(0, 3).map((b) => b.id)).toEqual(['title', 'community', 'tasks']);
+    expect(
+      phonePath()
+        .slice(0, 3)
+        .map((b) => b.id),
+    ).toEqual(['title', 'community', 'tasks']);
     expect(block('tasks').w).toBe(2);
   });
 });
@@ -48,7 +69,7 @@ describe('blockForPath', () => {
     ['/en/docs', 'docs'],
     ['/en/how-it-works', 'how'],
     ['/en/about/', 'about'],
-    ['/en/nope', null]
+    ['/en/nope', null],
   ])('%s opens %s', (path, id) => expect(blockForPath(path)).toBe(id));
 });
 
@@ -67,7 +88,10 @@ describe('camera math', () => {
   const m = { cell: 300, sash: 20 };
   it('converts pitch units to pixels', () => {
     expect(toPixels({ x: 0, y: 0 }, m)).toEqual({ x: 10, y: 10 });
-    expect(toPixels(blockCenter(block('how')), m)).toEqual({ x: 10 + 3.5 * 320, y: 10 + 0.5 * 320 });
+    expect(toPixels(blockCenter(block('how')), m)).toEqual({
+      x: 10 + 3.5 * 320,
+      y: 10 + 0.5 * 320,
+    });
     expect(worldSize(m)).toEqual({ w: 5 * 320 + 20, h: 4 * 320 + 20 });
   });
   it('focuses the home center or the route block', () => {

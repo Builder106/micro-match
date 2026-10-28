@@ -7,7 +7,10 @@ import { GET } from '../../routes/api/badges/+server';
 import { createRequestEvent } from '../helpers/createLoadEvent';
 
 function makeEvent(opts: { userId?: string; query?: string } = {}) {
-  return createRequestEvent({ userId: opts.userId ?? undefined, url: `http://test/api/badges${opts.query ?? ''}` });
+  return createRequestEvent({
+    userId: opts.userId ?? undefined,
+    url: `http://test/api/badges${opts.query ?? ''}`,
+  });
 }
 
 describe('GET /api/badges', () => {
