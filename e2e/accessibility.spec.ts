@@ -627,7 +627,9 @@ test.describe('content on hover', () => {
     ).json();
     const ngo = await browser.newContext({ baseURL: test.info().project.use.baseURL });
     await signInAs(ngo, 'ngo', 'a11y');
-    expect((await ngo.request.post(`/api/claims/${claim.id}/approve`)).ok()).toBe(true);
+    expect((await ngo.request.post(`/api/claims/${claim.id}/approve`, { data: {} })).ok()).toBe(
+      true,
+    );
     await volunteer.close();
     await ngo.close();
 

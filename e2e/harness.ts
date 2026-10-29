@@ -21,7 +21,10 @@ async function call<T>(
   path: string,
   data?: unknown,
 ): Promise<T> {
-  const res = await request.fetch(path, { method, data });
+  const res = await request.fetch(path, {
+    method,
+    data: data ?? (method === 'GET' ? undefined : {}),
+  });
   if (!res.ok()) throw new Error(`${method} ${path} -> ${res.status()} ${await res.text()}`);
   return (await res.json()) as T;
 }
