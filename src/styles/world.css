@@ -356,6 +356,8 @@ p.title__headline span {
   white-space: nowrap;
 }
 .community__link {
+  display: inline-block;
+  min-height: 26px;
   text-decoration: underline dashed 1.5px;
   text-underline-offset: 0.2em;
 }
