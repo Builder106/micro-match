@@ -1,9 +1,9 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import { goto } from '$app/navigation';
   import Seo from '#lib/components/Seo.svelte';
   import Link from '#lib/components/Link.svelte';
   import TaskSwatch from '#lib/components/TaskSwatch.svelte';
+  import { go } from '#lib/go.js';
   import { TIME_CAPS, applyFilters, feedTags, filtersFromParams, hasFilters, paramsFromFilters, EMPTY_FILTERS, type Filters, type TimeCap } from '#lib/feed.js';
   import * as m from '#lib/paraglide/messages.js';
   import type { PageData } from './$types';
@@ -18,7 +18,7 @@
   // Keep the URL in step with the filters, so a filtered feed can be shared or bookmarked.
   $effect(() => {
     const search = paramsFromFilters(filters);
-    if (search !== page.url.search) void goto(`${page.url.pathname}${search}`, { state: {}, shallow: true, replace: true });
+    if (search !== page.url.search) void go(`/tasks${search}`, data.locale, { state: {}, shallow: true, replace: true });
   });
 
   const setMax = (cap: TimeCap | null) => (filters = { ...filters, max: cap });

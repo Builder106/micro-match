@@ -25,7 +25,12 @@
       const client = await import('#lib/appwrite.client.js');
       await client.signInEmail(email, password);
       await client.refreshSessionCookie();
-      await go(next, locale, { refreshAll: true });
+      try {
+        await go(next, locale, { refreshAll: true });
+      } catch (navigationError) {
+        if (next === '/dashboard') throw navigationError;
+        await go('/dashboard', locale, { refreshAll: true });
+      }
     } catch {
       error = m.login_error();
     } finally {
