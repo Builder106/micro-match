@@ -10,13 +10,13 @@ const { mocks } = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('$lib/server/auth', () => ({ getUserRole: mocks.getUserRole }));
-vi.mock('$lib/server/appwrite', () => ({
+vi.mock('#lib/server/auth.js', () => ({ getUserRole: mocks.getUserRole }));
+vi.mock('#lib/server/appwrite.js', () => ({
   getClaimById: mocks.getClaimById,
   getTaskById: mocks.getTaskById,
   updateClaimStatus: mocks.updateClaimStatus,
 }));
-vi.mock('$lib/server/badgeAwarder', () => ({ onTaskApproved: mocks.onTaskApproved }));
+vi.mock('#lib/server/badgeAwarder.js', () => ({ onTaskApproved: mocks.onTaskApproved }));
 
 import { POST as approve } from '../../routes/api/claims/[id]/approve/+server';
 import { POST as reject } from '../../routes/api/claims/[id]/reject/+server';

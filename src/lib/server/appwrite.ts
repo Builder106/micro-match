@@ -1,16 +1,25 @@
 // src/lib/server/appwrite.ts
-import { env } from '$env/dynamic/private';
-import type { Task, Claim, Badge } from '$lib/types';
+import {
+  APPWRITE_ENDPOINT,
+  APPWRITE_PROJECT_ID,
+  APPWRITE_API_KEY,
+  APPWRITE_DB_ID,
+  APPWRITE_TASKS_TABLE_ID,
+  APPWRITE_CLAIMS_TABLE_ID,
+  APPWRITE_BADGES_TABLE_ID,
+} from '$app/env/private';
+
+import type { Task, Claim, Badge } from '#lib/types.js';
 
 const useAppwrite =
   process.env.PLAYWRIGHT_A11Y_HARNESS !== '1' &&
-  !!env.APPWRITE_ENDPOINT &&
-  !!env.APPWRITE_PROJECT_ID &&
-  !!env.APPWRITE_API_KEY &&
-  !!env.APPWRITE_DB_ID &&
-  !!env.APPWRITE_TASKS_TABLE_ID &&
-  !!env.APPWRITE_CLAIMS_TABLE_ID &&
-  !!env.APPWRITE_BADGES_TABLE_ID;
+  !!APPWRITE_ENDPOINT &&
+  !!APPWRITE_PROJECT_ID &&
+  !!APPWRITE_API_KEY &&
+  !!APPWRITE_DB_ID &&
+  !!APPWRITE_TASKS_TABLE_ID &&
+  !!APPWRITE_CLAIMS_TABLE_ID &&
+  !!APPWRITE_BADGES_TABLE_ID;
 
 const inMemory = {
   tasks: new Map<string, Task>(),
@@ -37,16 +46,16 @@ async function withAppwrite<T>(
 ): Promise<T> {
   const { Client, TablesDB, ID, Query } = await import('node-appwrite');
   const client = new Client()
-    .setEndpoint(env.APPWRITE_ENDPOINT!)
-    .setProject(env.APPWRITE_PROJECT_ID!)
-    .setKey(env.APPWRITE_API_KEY!);
+    .setEndpoint(APPWRITE_ENDPOINT!)
+    .setProject(APPWRITE_PROJECT_ID!)
+    .setKey(APPWRITE_API_KEY!);
   const tables = new TablesDB(client);
   return fn({
     tables,
-    dbId: env.APPWRITE_DB_ID!,
-    tasksTable: env.APPWRITE_TASKS_TABLE_ID!,
-    claimsTable: env.APPWRITE_CLAIMS_TABLE_ID!,
-    badgesTable: env.APPWRITE_BADGES_TABLE_ID!,
+    dbId: APPWRITE_DB_ID!,
+    tasksTable: APPWRITE_TASKS_TABLE_ID!,
+    claimsTable: APPWRITE_CLAIMS_TABLE_ID!,
+    badgesTable: APPWRITE_BADGES_TABLE_ID!,
     ID,
     Query,
   });

@@ -1,6 +1,6 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { getClaims } from '$lib/server/appwrite';
-import { getUserRole } from '$lib/server/auth';
+import { getClaims } from '#lib/server/appwrite.js';
+import { getUserRole } from '#lib/server/auth.js';
 
 export const GET: RequestHandler = async (event) => {
   const { locals, request, url } = event;

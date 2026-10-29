@@ -6,9 +6,10 @@ const { envState } = vi.hoisted(() => ({
   envState: { NODE_ENV: 'development' } as Record<string, string | undefined>,
 }));
 
-vi.mock('$env/dynamic/private', () => ({
-  env: new Proxy(envState, { get: (_, key: string) => envState[key] }),
-}));
+vi.mock(
+  '$app/env/private',
+  () => new Proxy(envState, { get: (_, key: string) => envState[key], has: () => true }),
+);
 
 import { load, actions } from '../../routes/profile/+page.server';
 import {

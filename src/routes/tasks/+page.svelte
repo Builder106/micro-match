@@ -1,16 +1,16 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import { replaceState } from '$app/navigation';
-  import Seo from '$lib/components/Seo.svelte';
-  import Link from '$lib/components/Link.svelte';
-  import TaskSwatch from '$lib/components/TaskSwatch.svelte';
-  import { TIME_CAPS, applyFilters, feedTags, filtersFromParams, hasFilters, paramsFromFilters, EMPTY_FILTERS, type Filters, type TimeCap } from '$lib/feed';
-  import * as m from '$lib/paraglide/messages.js';
+  import { goto } from '$app/navigation';
+  import Seo from '#lib/components/Seo.svelte';
+  import Link from '#lib/components/Link.svelte';
+  import TaskSwatch from '#lib/components/TaskSwatch.svelte';
+  import { TIME_CAPS, applyFilters, feedTags, filtersFromParams, hasFilters, paramsFromFilters, EMPTY_FILTERS, type Filters, type TimeCap } from '#lib/feed.js';
+  import * as m from '#lib/paraglide/messages.js';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
 
-  let filters = $state<Filters>(filtersFromParams(page.url.searchParams));
+  let filters = $state<Filters>(filtersFromParams(new URLSearchParams(page.url.search)));
   const tags = $derived(feedTags(data.tasks).slice(0, 12));
   const shown = $derived(applyFilters(data.tasks, filters));
   const role = $derived(page.data.userRole ?? 'anonymous');
@@ -18,7 +18,8 @@
   // Keep the URL in step with the filters, so a filtered feed can be shared or bookmarked.
   $effect(() => {
     const search = paramsFromFilters(filters);
-    if (search !== page.url.search) replaceState(`${page.url.pathname}${search}`, {});
+    // eslint-disable-next-line svelte/no-navigation-without-resolve -- this rewrites only the query string of the current route
+    if (search !== page.url.search) void goto(`${page.url.pathname}${search}`, { state: {}, shallow: true, replace: true });
   });
 
   const setMax = (cap: TimeCap | null) => (filters = { ...filters, max: cap });

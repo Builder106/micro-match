@@ -5,13 +5,13 @@
   import { tick } from 'svelte';
   import { page } from '$app/state';
   import { afterNavigate, beforeNavigate, onNavigate } from '$app/navigation';
-  import QuiltWorld from '$lib/components/world/QuiltWorld.svelte';
-  import Panel from '$lib/components/world/Panel.svelte';
-  import CornerTags from '$lib/components/world/CornerTags.svelte';
-  import { block, blockForPath, panelKindForPath, type BlockId } from '$lib/quilt/world';
-  import { canonicalPath } from '$lib/site';
+  import QuiltWorld from '#lib/components/world/QuiltWorld.svelte';
+  import Panel from '#lib/components/world/Panel.svelte';
+  import CornerTags from '#lib/components/world/CornerTags.svelte';
+  import { block, blockForPath, panelKindForPath, type BlockId } from '#lib/quilt/world.js';
+  import { canonicalPath } from '#lib/site.js';
   import { contentIn, contentOut, fold, unfold, resetPanelScroll, smoothPanel, stopSmoothPanel } from '$engine';
-  import * as m from '$lib/paraglide/messages.js';
+  import * as m from '#lib/paraglide/messages.js';
 
   let { children, data } = $props();
 
@@ -37,9 +37,9 @@
   const blockName = $derived(currentBlock ? names[currentBlock]() : page.status >= 400 ? m.missing_name() : m.tag_contents());
   const where = $derived(
     page.status >= 400
-      ? m.where_missing()
-      : currentBlock
-        ? m.where_block({ name: names[currentBlock]() })
+    ? m.where_missing()
+    : currentBlock
+      ? m.where_block({ name: names[currentBlock]() })
         : canonicalPath(page.url.pathname) === '/contents'
           ? m.where_contents()
           : m.tag_on_quilt()
@@ -58,18 +58,22 @@
   let pending: Promise<void> | null = null;
 
   beforeNavigate((nav) => {
+    if (nav.shallow && nav.type === 'goto') return;
     if (!nav.to || nav.willUnload || samePage(nav.from?.url, nav.to.url) || !panel) return;
     const toPanel = panelKindForPath(nav.to.url.pathname);
     stopSmoothPanel();
     pending = toPanel ? contentOut(panel) : fold(panel, world?.rectOf(openId) ?? null);
   });
 
-  onNavigate(async () => {
+  onNavigate(async ({ shallow, type }) => {
+    if (shallow && type === 'goto') return;
     if (pending) await pending;
     pending = null;
   });
 
   afterNavigate(async (nav) => {
+    if (nav.shallow && nav.type === 'goto') return;
+
     const path = page.url.pathname;
     const toKind = panelKindForPath(path);
     const id = blockForPath(path);
@@ -113,16 +117,32 @@
   }
 </script>
 
-<svelte:window onkeydown={onKey} />
+<svelte:window onkeydown={onKey}></svelte:window>
 
 <a class="skip-link" href="#main">{m.skip_to_content()}</a>
-<CornerTags {where} {signedIn} role={data.userRole} hasPanel={!!kind} />
 
-<main id="main" tabindex="-1" class:has-panel={!!kind} data-kind={kind ?? undefined}>
+<CornerTags
+  where={where}
+  signedIn={signedIn}
+  role={data.userRole}
+  hasPanel={!!kind}
+/>
+
+<main
+  id="main"
+  tabindex="-1"
+  class:has-panel={!!kind}
+  data-kind={kind ?? undefined}
+>
   {#if kind}
-    <Panel {kind} def={currentBlock ? block(currentBlock) : null} where={blockName} bind:panel bind:scroller bind:content>
-      {@render children()}
-    </Panel>
+    <Panel
+      kind={kind}
+      def={currentBlock ? block(currentBlock) : null}
+      where={blockName}
+      bind:panel
+      bind:scroller
+      bind:content
+    >{@render children()}</Panel>
   {:else}
     {@render children()}
   {/if}
@@ -133,9 +153,9 @@
     total={data.quilt.total}
     tasks={data.openTasks.preview}
     taskCount={data.openTasks.count}
-    {signedIn}
+    signedIn={signedIn}
     role={data.userRole}
-    {openId}
+    openId={openId}
     hasPanel={!!kind}
   />
 </main>

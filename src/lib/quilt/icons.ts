@@ -1,7 +1,7 @@
 // Embroidered patch icons. Path data comes from design/glaxnimate/patch-icons.svg (24 x 24,
 // stroked, round caps). Badge definitions store an icon name; this maps any name, including
 // the older Iconify names, to the icon that gets stitched on the patch.
-import * as m from '$lib/paraglide/messages.js';
+import * as m from '#lib/paraglide/messages.js';
 
 export const PATCH_ICONS = {
   heart:

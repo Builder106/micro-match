@@ -46,7 +46,7 @@ MicroMatch uses one Appwrite project for Production and Vercel Preview. The `sta
 
 ## 2. Server Architecture & Modules
 
-The backend logic resides in `$lib/server/` with isolated domain modules:
+The backend logic resides in `#lib/server/` with isolated domain modules:
 
 - **[`appwrite.ts`](file:///Users/yinkavaughan/My%20Drive%20%28yvaughan@wesleyan.edu%29/CS/projects/swe/micro-match/src/lib/server/appwrite.ts)**: Appwrite server client initialization, database helpers, and session context handling.
 - **[`verifications.ts`](file:///Users/yinkavaughan/My%20Drive%20%28yvaughan@wesleyan.edu%29/CS/projects/swe/micro-match/src/lib/server/verifications.ts)**: Verification CRUD, status transitions, backfilling `isVerified` on tasks, and in-memory fallback for local dev.

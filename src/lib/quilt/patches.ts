@@ -1,7 +1,7 @@
 // A patch is one claim on the quilt. Its cloth and embroidered icon come from the badge the
 // task's nonprofit designed: a badge for that exact task first, then the nonprofit's badge
 // for any completed task. Without a badge the patch is plain, undyed muslin.
-import type { BadgeDefinition, Claim, Task } from '$lib/types';
+import type { BadgeDefinition, Claim, Task } from '#lib/types.js';
 import { fabricFor, threadFor } from './fabrics';
 import { resolvePatchIcon, type PatchIcon } from './icons';
 

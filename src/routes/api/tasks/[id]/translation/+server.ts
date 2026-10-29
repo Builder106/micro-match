@@ -1,6 +1,6 @@
 import type { RequestHandler } from './$types';
-import { getTaskById } from '$lib/server/appwrite';
-import { isSupportedTaskLocale, translateTask } from '$lib/server/taskTranslation';
+import { getTaskById } from '#lib/server/appwrite.js';
+import { isSupportedTaskLocale, translateTask } from '#lib/server/taskTranslation.js';
 
 export const GET: RequestHandler = async ({ params, url }) => {
   const to = url.searchParams.get('lang');

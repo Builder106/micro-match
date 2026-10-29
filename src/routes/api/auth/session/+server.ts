@@ -1,26 +1,33 @@
-import { env } from '$env/dynamic/private';
+import {
+  APPWRITE_ENDPOINT,
+  APPWRITE_PROJECT_ID,
+  APPWRITE_API_KEY,
+  NODE_ENV,
+} from '$app/env/private';
+
 import type { RequestHandler } from '@sveltejs/kit';
-import { createSession, SESSION_TTL_SECONDS } from '$lib/server/session';
+import { createSession, SESSION_TTL_SECONDS } from '#lib/server/session.js';
 
 export const POST: RequestHandler = async (event) => {
   try {
     const body = (await event.request.json()) as { jwt?: string | null };
     const jwt = (body?.jwt ?? '').trim();
     if (!jwt) return Response.json({ error: 'Missing jwt' }, { status: 400 });
-    if (!env.APPWRITE_ENDPOINT || !env.APPWRITE_PROJECT_ID) {
+    if (!APPWRITE_ENDPOINT || !APPWRITE_PROJECT_ID) {
       return Response.json({ error: 'Authentication service is unavailable' }, { status: 503 });
     }
 
     const { Client, Account } = await import('node-appwrite');
     const client = new Client()
-      .setEndpoint(env.APPWRITE_ENDPOINT!)
-      .setProject(env.APPWRITE_PROJECT_ID!)
+      .setEndpoint(APPWRITE_ENDPOINT!)
+      .setProject(APPWRITE_PROJECT_ID!)
       .setJWT(jwt);
     const account = new Account(client);
 
-    let user: import('node-appwrite').Models.User<import('$lib/types').UserPreferences> | undefined;
+    let user:
+      import('node-appwrite').Models.User<import('#lib/types.js').UserPreferences> | undefined;
     try {
-      user = await account.get<import('$lib/types').UserPreferences>();
+      user = await account.get<import('#lib/types.js').UserPreferences>();
     } catch {
       return Response.json({ error: 'Invalid jwt' }, { status: 401 });
     }
@@ -46,10 +53,11 @@ export const POST: RequestHandler = async (event) => {
       }
 
       // optionally check teams
-      if (env.APPWRITE_API_KEY) {
+      if (APPWRITE_API_KEY) {
         try {
           const { NGO_TEAM_ID, VOLUNTEER_TEAM_ID, isUserInTeam } =
-            await import('$lib/server/teams');
+            await import('#lib/server/teams.js');
+
           if (NGO_TEAM_ID && (await isUserInTeam(userId, NGO_TEAM_ID))) {
             role = 'ngo';
             roleSource = 'team_membership';
@@ -58,16 +66,16 @@ export const POST: RequestHandler = async (event) => {
             roleSource = 'team_membership';
           }
         } catch (err) {
-          if (env.NODE_ENV !== 'production') console.log('Team check failed:', err);
+          if (NODE_ENV !== 'production') console.log('Team check failed:', err);
         }
       }
     } catch (err) {
-      if (env.NODE_ENV !== 'production') console.log('Role determination failed:', err);
+      if (NODE_ENV !== 'production') console.log('Role determination failed:', err);
     }
 
     const session = createSession({ userId, email, role });
 
-    const secure = event.url.protocol === 'https:' || env.NODE_ENV === 'production';
+    const secure = event.url.protocol === 'https:' || NODE_ENV === 'production';
     event.cookies.set('mm_session', session.id, {
       httpOnly: true,
       path: '/',
@@ -89,7 +97,7 @@ export const POST: RequestHandler = async (event) => {
 
     return Response.json({ ok: true, role, email, roleSource });
   } catch (err) {
-    if (env.NODE_ENV !== 'production') console.error('Session API error:', err);
+    if (NODE_ENV !== 'production') console.error('Session API error:', err);
     return Response.json({ error: 'Bad request' }, { status: 400 });
   }
 };

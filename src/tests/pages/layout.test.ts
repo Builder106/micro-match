@@ -9,12 +9,12 @@ const { mocks } = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('$lib/server/teams', () => ({
+vi.mock('#lib/server/teams.js', () => ({
   isUserAdmin: mocks.isUserAdmin,
 }));
-vi.mock('$lib/server/appwrite', () => ({ getTasks: mocks.getTasks }));
-vi.mock('$lib/server/quilt', () => ({ getQuiltPatches: mocks.getQuiltPatches }));
-vi.mock('$lib/server/taskTranslation', () => ({ translateTasks: mocks.translateTasks }));
+vi.mock('#lib/server/appwrite.js', () => ({ getTasks: mocks.getTasks }));
+vi.mock('#lib/server/quilt.js', () => ({ getQuiltPatches: mocks.getQuiltPatches }));
+vi.mock('#lib/server/taskTranslation.js', () => ({ translateTasks: mocks.translateTasks }));
 
 const emptyQuilt = {
   quilt: { patches: [], total: 0 },

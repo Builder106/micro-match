@@ -1,6 +1,6 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { getClaimById, getTaskById, updateClaimStatus } from '$lib/server/appwrite';
-import { getUserRole } from '$lib/server/auth';
+import { getClaimById, getTaskById, updateClaimStatus } from '#lib/server/appwrite.js';
+import { getUserRole } from '#lib/server/auth.js';
 
 export const POST: RequestHandler = async (event) => {
   const role = await getUserRole(event);

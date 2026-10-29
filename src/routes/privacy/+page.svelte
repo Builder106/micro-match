@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import Seo from '$lib/components/Seo.svelte';
-  import * as m from '$lib/paraglide/messages.js';
+  import Seo from '#lib/components/Seo.svelte';
+  import * as m from '#lib/paraglide/messages.js';
 </script>
 
 <Seo title={m.privacy_meta_title()} description={m.privacy_meta_description()} />

@@ -1,16 +1,16 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import Seo from '$lib/components/Seo.svelte';
-  import Link from '$lib/components/Link.svelte';
-  import Rich from '$lib/components/Rich.svelte';
-  import PatchPreview from '$lib/components/PatchPreview.svelte';
-  import { callApi } from '$lib/api';
-  import { go } from '$lib/go';
-  import { isHttpUrl, NOTES_MAX } from '$lib/claim';
-  import { minutesLabel } from '$lib/time';
-  import { taskLang } from '$lib/translation';
-  import type { Locale } from '$lib/locale';
-  import * as m from '$lib/paraglide/messages.js';
+  import Seo from '#lib/components/Seo.svelte';
+  import Link from '#lib/components/Link.svelte';
+  import Rich from '#lib/components/Rich.svelte';
+  import PatchPreview from '#lib/components/PatchPreview.svelte';
+  import { callApi } from '#lib/api.js';
+  import { go } from '#lib/go.js';
+  import { isHttpUrl, NOTES_MAX } from '#lib/claim.js';
+  import { minutesLabel } from '#lib/time.js';
+  import { taskLang } from '#lib/translation.js';
+  import type { Locale } from '#lib/locale.js';
+  import * as m from '#lib/paraglide/messages.js';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
@@ -34,7 +34,7 @@
       fallback: m.claim_error()
     });
     submitting = false;
-    if (res.ok) await go('/dashboard?pinned=1', locale, { invalidateAll: true });
+    if (res.ok) await go('/dashboard?pinned=1', locale, { refreshAll: true });
     else error = res.error;
   }
 </script>

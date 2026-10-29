@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
-import { getTasks } from '$lib/server/appwrite';
-import { translateTasks } from '$lib/server/taskTranslation';
+import { getTasks } from '#lib/server/appwrite.js';
+import { translateTasks } from '#lib/server/taskTranslation.js';
 
 export const load: PageServerLoad = async ({ locals }) => {
   const tasks = await getTasks();

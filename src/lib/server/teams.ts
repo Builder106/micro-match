@@ -1,11 +1,19 @@
-import { env } from '$env/dynamic/private';
+import {
+  APPWRITE_ENDPOINT,
+  APPWRITE_PROJECT_ID,
+  APPWRITE_API_KEY,
+  APPWRITE_NGO_TEAM_ID,
+  APPWRITE_VOLUNTEER_TEAM_ID,
+  APPWRITE_ADMIN_TEAM_ID,
+} from '$app/env/private';
 
 export async function getTeamsClient() {
   const { Client, Teams, Query } = await import('node-appwrite');
   const client = new Client()
-    .setEndpoint(env.APPWRITE_ENDPOINT!)
-    .setProject(env.APPWRITE_PROJECT_ID!)
-    .setKey(env.APPWRITE_API_KEY!);
+    .setEndpoint(APPWRITE_ENDPOINT!)
+    .setProject(APPWRITE_PROJECT_ID!)
+    .setKey(APPWRITE_API_KEY!);
+
   return { teams: new Teams(client), Query } as const;
 }
 
@@ -63,9 +71,9 @@ export async function addUserToTeam(userId: string, teamId?: string, roles: stri
   }
 }
 
-export const NGO_TEAM_ID = env.APPWRITE_NGO_TEAM_ID;
-export const VOLUNTEER_TEAM_ID = env.APPWRITE_VOLUNTEER_TEAM_ID;
-export const ADMIN_TEAM_ID = env.APPWRITE_ADMIN_TEAM_ID;
+export const NGO_TEAM_ID = APPWRITE_NGO_TEAM_ID;
+export const VOLUNTEER_TEAM_ID = APPWRITE_VOLUNTEER_TEAM_ID;
+export const ADMIN_TEAM_ID = APPWRITE_ADMIN_TEAM_ID;
 
 export async function isUserAdmin(userId?: string | null): Promise<boolean> {
   if (

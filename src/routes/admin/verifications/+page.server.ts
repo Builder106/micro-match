@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
-import { isUserAdmin } from '$lib/server/teams';
+import { isUserAdmin } from '#lib/server/teams.js';
 
 export const load: PageServerLoad = async ({ locals }) => {
   const session = locals.session;

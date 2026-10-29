@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 const { mocks } = vi.hoisted(() => ({ mocks: { isUserAdmin: vi.fn() } }));
-vi.mock('$lib/server/teams', () => ({ isUserAdmin: mocks.isUserAdmin }));
+vi.mock('#lib/server/teams.js', () => ({ isUserAdmin: mocks.isUserAdmin }));
 
 import { load } from '../../routes/admin/verifications/+page.server';
 import { createServerLoadEvent } from '../helpers/createLoadEvent';

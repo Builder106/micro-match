@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import type { Task } from '$lib/types';
+import type { Task } from '#lib/types.js';
 
 // This module reads env once at import time to compute `useAppwrite`, so the
 // Appwrite-backed branch needs its own file with truthy env set inside
@@ -23,9 +23,10 @@ const { mocks, envState } = vi.hoisted(() => ({
   } as Record<string, string | undefined>,
 }));
 
-vi.mock('$env/dynamic/private', () => ({
-  env: new Proxy(envState, { get: (_, key: string) => envState[key] }),
-}));
+vi.mock(
+  '$app/env/private',
+  () => new Proxy(envState, { get: (_, key: string) => envState[key], has: () => true }),
+);
 vi.mock('node-appwrite', () => ({
   Client: class {
     setEndpoint() {

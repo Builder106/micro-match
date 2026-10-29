@@ -1,8 +1,8 @@
 import type { LayoutServerLoad } from './$types';
-import { isUserAdmin } from '$lib/server/teams';
-import { getTasks } from '$lib/server/appwrite';
-import { getQuiltPatches } from '$lib/server/quilt';
-import { translateTasks } from '$lib/server/taskTranslation';
+import { isUserAdmin } from '#lib/server/teams.js';
+import { getTasks } from '#lib/server/appwrite.js';
+import { getQuiltPatches } from '#lib/server/quilt.js';
+import { translateTasks } from '#lib/server/taskTranslation.js';
 
 /** The community block shows the newest four log cabin blocks; /impact shows them all. */
 const QUILT_LIMIT = 52;

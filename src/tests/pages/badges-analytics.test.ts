@@ -3,7 +3,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 const { mocks } = vi.hoisted(() => ({ mocks: { getTasks: vi.fn(), getBadgeAnalytics: vi.fn() } }));
-vi.mock('$lib/server/appwrite', () => ({
+vi.mock('#lib/server/appwrite.js', () => ({
   getTasks: mocks.getTasks,
   getBadgeAnalytics: mocks.getBadgeAnalytics,
 }));

@@ -1,13 +1,14 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { createClaim, getTaskById } from '$lib/server/appwrite';
-import { getUserRole } from '$lib/server/auth';
-import { moderateText } from '$lib/server/contentsafety';
+import { createClaim, getTaskById } from '#lib/server/appwrite.js';
+import { getUserRole } from '#lib/server/auth.js';
+import { moderateText } from '#lib/server/contentsafety.js';
 
 export const POST: RequestHandler = async (event) => {
   const role = await getUserRole(event);
   if (role === 'anonymous') return Response.json({ error: 'Unauthorized' }, { status: 401 });
   const { params, request } = event;
   const { id } = params;
+  if (!id) return Response.json({ error: 'Missing task id' }, { status: 400 });
   const task = await getTaskById(id);
   if (!task) return Response.json({ error: 'Task not found' }, { status: 404 });
 

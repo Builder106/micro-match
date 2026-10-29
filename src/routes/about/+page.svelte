@@ -1,7 +1,7 @@
 <script lang="ts">
-  import Seo from '$lib/components/Seo.svelte';
-  import Rich from '$lib/components/Rich.svelte';
-  import * as m from '$lib/paraglide/messages.js';
+  import Seo from '#lib/components/Seo.svelte';
+  import Rich from '#lib/components/Rich.svelte';
+  import * as m from '#lib/paraglide/messages.js';
 </script>
 
 <Seo title={m.about_meta_title()} description={m.about_meta_description()} />

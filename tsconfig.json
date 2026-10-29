@@ -4,20 +4,17 @@
     "moduleResolution": "Bundler",
     "target": "ES2020",
     "lib": ["ES2020", "DOM"],
-    "allowJs": true,
     "checkJs": false,
     "strict": true,
-    "skipLibCheck": true,
-    "types": ["bun", "svelte", "@sveltejs/kit"]
+    "types": ["$app/types", "bun", "svelte"]
   },
   "include": [
     "src/**/*",
     "scripts/**/*",
-    "svelte.config.js",
     "vite.config.ts",
     "vitest.config.ts",
     ".svelte-kit/ambient.d.ts"
   ],
   "exclude": ["node_modules", "dist"],
-  "extends": "./.svelte-kit/tsconfig.json"
+  "extends": "$app/tsconfig"
 }

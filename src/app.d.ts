@@ -11,7 +11,7 @@ declare namespace App {
     user?: SessionUser | null;
   }
   interface Locals {
-    locale?: import('$lib/locale').Locale;
+    locale?: import('#lib/locale.js').Locale;
     session?: Session | null;
     userRole?: 'anonymous' | 'user' | 'ngo' | 'volunteer';
     isAdmin?: boolean;
@@ -21,7 +21,7 @@ declare namespace App {
     };
   }
   interface PageData {
-    locale?: import('$lib/locale').Locale;
+    locale?: import('#lib/locale.js').Locale;
     origin?: string;
     userRole?: 'anonymous' | 'user' | 'ngo' | 'volunteer';
     isAdmin?: boolean;

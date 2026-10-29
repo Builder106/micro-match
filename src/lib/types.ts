@@ -92,7 +92,7 @@ export interface VolunteerUserData {
   approvedClaimsCount: number;
   totalHours: number;
   recommendations: Task[];
-  patches: import('$lib/quilt/patches').QuiltPatch[];
+  patches: import('#lib/quilt/patches.js').QuiltPatch[];
 }
 
 export interface NgoUserData {
@@ -103,7 +103,7 @@ export interface NgoUserData {
   approvedClaimsCount: number;
   totalHours: number;
   myClaims: EnrichedClaim[];
-  patches: import('$lib/quilt/patches').QuiltPatch[];
+  patches: import('#lib/quilt/patches.js').QuiltPatch[];
 }
 
 export type DashboardUserData = VolunteerUserData | NgoUserData;

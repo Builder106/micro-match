@@ -5,7 +5,7 @@
 // inserts a Badge row keyed to the volunteer. Dedupe on (userId, label)
 // so the same template only awards once.
 
-import type { BadgeDefinition } from '$lib/types';
+import type { BadgeDefinition } from '#lib/types.js';
 import { awardBadge, listBadgesByUser } from './appwrite';
 import { checkMilestoneCriteria, evaluateBadgeCriteria, type BadgeAction } from './badgeCriteria';
 

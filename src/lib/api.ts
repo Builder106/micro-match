@@ -1,6 +1,6 @@
 // JSON calls to the app's own API, with the error shape the endpoints return
 // ({ error, reasons }) turned into one readable message.
-import * as m from '$lib/paraglide/messages.js';
+import * as m from '#lib/paraglide/messages.js';
 
 export type ApiResult<T> = { ok: true; data: T } | { ok: false; status: number; error: string };
 

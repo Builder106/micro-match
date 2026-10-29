@@ -14,15 +14,17 @@ const { mocks } = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('$lib/server/teams', () => ({ isUserAdmin: mocks.isUserAdmin }));
-vi.mock('$lib/server/verifications', () => ({
+vi.mock('#lib/server/teams.js', () => ({ isUserAdmin: mocks.isUserAdmin }));
+vi.mock('#lib/server/verifications.js', () => ({
   getVerificationByUserId: mocks.getVerificationByUserId,
   getUserEmailAndLocale: mocks.getUserEmailAndLocale,
   setVerificationStatus: mocks.setVerificationStatus,
   setUserVerificationPref: mocks.setUserVerificationPref,
 }));
-vi.mock('$lib/server/appwrite', () => ({ setTasksVerifiedForOrg: mocks.setTasksVerifiedForOrg }));
-vi.mock('$lib/server/email', () => ({
+vi.mock('#lib/server/appwrite.js', () => ({
+  setTasksVerifiedForOrg: mocks.setTasksVerifiedForOrg,
+}));
+vi.mock('#lib/server/email.js', () => ({
   sendVerificationApproved: mocks.sendVerificationApproved,
   sendVerificationRejected: mocks.sendVerificationRejected,
 }));

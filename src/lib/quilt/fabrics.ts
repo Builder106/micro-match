@@ -1,6 +1,6 @@
 // Fabric colors for patches. A patch takes its color from the badge its nonprofit designed;
 // these swatches are the badge editor's suggestions, and any valid hex works.
-import * as m from '$lib/paraglide/messages.js';
+import * as m from '#lib/paraglide/messages.js';
 
 export type Swatch = { name: () => string; hex: string };
 

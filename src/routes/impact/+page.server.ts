@@ -1,7 +1,7 @@
 import type { PageServerLoad } from './$types';
-import { getTasks, getClaims, getBadges } from '$lib/server/appwrite';
-import { getTagStyle } from '$lib/utils/tagColors';
-import { getQuiltPatches } from '$lib/server/quilt';
+import { getTasks, getClaims, getBadges } from '#lib/server/appwrite.js';
+import { getTagStyle } from '#lib/utils/tagColors.js';
+import { getQuiltPatches } from '#lib/server/quilt.js';
 
 export const load: PageServerLoad = async () => {
   const [tasks, claims, badges, patches] = await Promise.all([

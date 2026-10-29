@@ -1,12 +1,12 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { getUserRole } from '$lib/server/auth';
+import { getUserRole } from '#lib/server/auth.js';
 import {
   NGO_TEAM_ID,
   VOLUNTEER_TEAM_ID,
   addUserToTeam,
   removeUserFromTeam,
-} from '$lib/server/teams';
-import { env } from '$env/dynamic/private';
+} from '#lib/server/teams.js';
+import { APPWRITE_ENDPOINT, APPWRITE_PROJECT_ID } from '$app/env/private';
 
 async function getUserId(event: Parameters<RequestHandler>[0]): Promise<string | null> {
   const sessionUserId = event.locals.session?.user?.id ?? undefined;
@@ -17,8 +17,8 @@ async function getUserId(event: Parameters<RequestHandler>[0]): Promise<string |
     const jwt = authHeader.slice(7).trim();
     const { Client, Account } = await import('node-appwrite');
     const client = new Client()
-      .setEndpoint(env.APPWRITE_ENDPOINT || '')
-      .setProject(env.APPWRITE_PROJECT_ID || '')
+      .setEndpoint(APPWRITE_ENDPOINT || '')
+      .setProject(APPWRITE_PROJECT_ID || '')
       .setJWT(jwt);
     const account = new Account(client);
     const me = await account.get();

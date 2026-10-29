@@ -2,9 +2,9 @@
   // The title block at the heart of the quilt: a sawtooth border around a large signed center.
   // It is the home page's heading; on other routes the same words are not a heading.
   import Link from '../Link.svelte';
-  import { sawtoothBorder, piecePath } from '$lib/quilt/blocks';
-  import { block, clothFill } from '$lib/quilt/world';
-  import * as m from '$lib/paraglide/messages.js';
+  import { sawtoothBorder, piecePath } from '#lib/quilt/blocks.js';
+  import { block, clothFill } from '#lib/quilt/world.js';
+  import * as m from '#lib/paraglide/messages.js';
 
   let { isHome }: { isHome: boolean } = $props();
 

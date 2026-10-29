@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { badgeForTask, bySewnDate, designFor, patchFromClaim, type QuiltPatch } from './patches';
 import { MUSLIN } from './fabrics';
-import type { BadgeDefinition, Claim, Task } from '$lib/types';
+import type { BadgeDefinition, Claim, Task } from '#lib/types.js';
 
 const def = (over: Partial<BadgeDefinition>): BadgeDefinition => ({
   id: 'd',

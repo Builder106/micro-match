@@ -1,7 +1,7 @@
 import type { Actions, PageServerLoad } from './$types';
-import { createTask } from '$lib/server/appwrite';
-import { getUserRole } from '$lib/server/auth';
-import { getVerificationByUserId } from '$lib/server/verifications';
+import { createTask } from '#lib/server/appwrite.js';
+import { getUserRole } from '#lib/server/auth.js';
+import { getVerificationByUserId } from '#lib/server/verifications.js';
 import { error, redirect } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ locals }) => {

@@ -1,16 +1,16 @@
 <script lang="ts">
   import { page } from '$app/state';
   import { refreshAll } from '$app/navigation';
-  import Seo from '$lib/components/Seo.svelte';
-  import Link from '$lib/components/Link.svelte';
-  import Quilt from '$lib/components/Quilt.svelte';
-  import PatchPreview from '$lib/components/PatchPreview.svelte';
-  import TaskSwatch from '$lib/components/TaskSwatch.svelte';
-  import AccountTabs from '$lib/components/AccountTabs.svelte';
-  import { callApi } from '$lib/api';
-  import { relativeTime, minutesLabel } from '$lib/time';
-  import * as m from '$lib/paraglide/messages.js';
-  import type { EnrichedClaim, Task } from '$lib/types';
+  import Seo from '#lib/components/Seo.svelte';
+  import Link from '#lib/components/Link.svelte';
+  import Quilt from '#lib/components/Quilt.svelte';
+  import PatchPreview from '#lib/components/PatchPreview.svelte';
+  import TaskSwatch from '#lib/components/TaskSwatch.svelte';
+  import AccountTabs from '#lib/components/AccountTabs.svelte';
+  import { callApi } from '#lib/api.js';
+  import { relativeTime, minutesLabel } from '#lib/time.js';
+  import * as m from '#lib/paraglide/messages.js';
+  import type { EnrichedClaim, Task } from '#lib/types.js';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();

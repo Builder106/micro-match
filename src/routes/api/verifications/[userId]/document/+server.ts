@@ -1,8 +1,15 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { error } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
-import { isUserAdmin } from '$lib/server/teams';
-import { getVerificationByUserId } from '$lib/server/verifications';
+
+import {
+  APPWRITE_VERIFICATIONS_BUCKET_ID,
+  APPWRITE_ENDPOINT,
+  APPWRITE_PROJECT_ID,
+  APPWRITE_API_KEY,
+} from '$app/env/private';
+
+import { isUserAdmin } from '#lib/server/teams.js';
+import { getVerificationByUserId } from '#lib/server/verifications.js';
 
 /**
  * GET /api/verifications/:userId/document
@@ -20,15 +27,15 @@ export const GET: RequestHandler = async (event) => {
   const v = await getVerificationByUserId(targetUserId);
   if (!v?.docFileId) throw error(404, 'No document on file');
 
-  const bucketId = env.APPWRITE_VERIFICATIONS_BUCKET_ID;
+  const bucketId = APPWRITE_VERIFICATIONS_BUCKET_ID;
   if (!bucketId) throw error(500, 'Verification bucket not configured');
 
   try {
     const { Client, Storage } = await import('node-appwrite');
     const client = new Client()
-      .setEndpoint(env.APPWRITE_ENDPOINT!)
-      .setProject(env.APPWRITE_PROJECT_ID!)
-      .setKey(env.APPWRITE_API_KEY!);
+      .setEndpoint(APPWRITE_ENDPOINT!)
+      .setProject(APPWRITE_PROJECT_ID!)
+      .setKey(APPWRITE_API_KEY!);
     const storage = new Storage(client);
     const buffer = await storage.getFileDownload({ bucketId, fileId: v.docFileId });
 

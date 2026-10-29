@@ -8,14 +8,14 @@ const { mocks } = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('$lib/server/auth', () => ({ getUserRole: mocks.getUserRole }));
-vi.mock('$lib/server/teams', () => ({
+vi.mock('#lib/server/auth.js', () => ({ getUserRole: mocks.getUserRole }));
+vi.mock('#lib/server/teams.js', () => ({
   NGO_TEAM_ID: 'ngo-team',
   VOLUNTEER_TEAM_ID: 'volunteer-team',
   addUserToTeam: mocks.addUserToTeam,
   removeUserFromTeam: mocks.removeUserFromTeam,
 }));
-vi.mock('$env/dynamic/private', () => ({ env: {} }));
+vi.mock('$app/env/private', () => new Proxy({}, { get: () => undefined, has: () => true }));
 
 import { POST } from '../../routes/api/teams/assign/+server';
 import { createRequestEvent } from '../helpers/createLoadEvent';

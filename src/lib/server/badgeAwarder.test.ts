@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import type { Badge, BadgeDefinition } from '$lib/types';
+import type { Badge, BadgeDefinition } from '#lib/types.js';
 
 const { mockAwardBadge, mockListBadgesByUser, mockEvaluate, mockMilestone } = vi.hoisted(() => ({
   mockAwardBadge: vi.fn<(input: Omit<Badge, 'id' | 'awardedAt'>) => Promise<Badge>>(),

@@ -5,8 +5,8 @@
   import Link from '../Link.svelte';
   import ThemeToggle from '../ThemeToggle.svelte';
   import LanguagePicker from '../LanguagePicker.svelte';
-  import { block } from '$lib/quilt/world';
-  import * as m from '$lib/paraglide/messages.js';
+  import { block } from '#lib/quilt/world.js';
+  import * as m from '#lib/paraglide/messages.js';
 
   let { open = false }: { open?: boolean } = $props();
   const def = block('label');

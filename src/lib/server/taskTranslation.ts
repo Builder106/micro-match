@@ -1,6 +1,6 @@
-import type { Task } from '$lib/types';
-import { isSupportedTranslationCode, type TranslationCode } from '$lib/translation';
-import { translateTexts } from '$lib/server/libretranslate';
+import type { Task } from '#lib/types.js';
+import { isSupportedTranslationCode, type TranslationCode } from '#lib/translation.js';
+import { translateTexts } from '#lib/server/libretranslate.js';
 
 export type Locale = Exclude<TranslationCode, ''> | 'en';
 

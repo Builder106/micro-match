@@ -1,6 +1,6 @@
 <script lang="ts">
-  import Seo from '$lib/components/Seo.svelte';
-  import * as m from '$lib/paraglide/messages.js';
+  import Seo from '#lib/components/Seo.svelte';
+  import * as m from '#lib/paraglide/messages.js';
 </script>
 
 <Seo title={m.contact_meta_title()} description={m.contact_meta_description()} />

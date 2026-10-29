@@ -26,9 +26,10 @@ const { envState, mocks, AppwriteCtors, teamIds } = vi.hoisted(() => {
   };
 });
 
-vi.mock('$env/dynamic/private', () => ({
-  env: new Proxy(envState, { get: (_, key: string) => envState[key] }),
-}));
+vi.mock(
+  '$app/env/private',
+  () => new Proxy(envState, { get: (_, key: string) => envState[key], has: () => true }),
+);
 
 vi.mock('node-appwrite', () => ({
   Client: class {
@@ -54,7 +55,7 @@ vi.mock('node-appwrite', () => ({
   },
 }));
 
-vi.mock('$lib/server/teams', () => ({
+vi.mock('#lib/server/teams.js', () => ({
   get NGO_TEAM_ID() {
     return teamIds.ngo;
   },
@@ -64,11 +65,13 @@ vi.mock('$lib/server/teams', () => ({
   addUserToTeam: mocks.addUserToTeam,
   removeUserFromTeam: mocks.removeUserFromTeam,
 }));
-vi.mock('$lib/server/verifications', () => ({
+vi.mock('#lib/server/verifications.js', () => ({
   withdrawVerification: mocks.withdrawVerification,
   setUserVerificationPref: mocks.setUserVerificationPref,
 }));
-vi.mock('$lib/server/appwrite', () => ({ setTasksVerifiedForOrg: mocks.setTasksVerifiedForOrg }));
+vi.mock('#lib/server/appwrite.js', () => ({
+  setTasksVerifiedForOrg: mocks.setTasksVerifiedForOrg,
+}));
 
 import { POST } from '../../routes/api/profile/role/+server';
 

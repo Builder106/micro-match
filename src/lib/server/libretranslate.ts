@@ -1,15 +1,8 @@
-import { env } from '$env/dynamic/private';
-import { isSupportedTranslationCode } from '$lib/translation';
+import { LIBRETRANSLATE_ENDPOINT, LIBRETRANSLATE_API_KEY } from '$app/env/private';
+import { isSupportedTranslationCode } from '#lib/translation.js';
 
-type TranslateParams = {
-  text: string;
-  to: string;
-};
-
-type CacheEntry = {
-  value: string;
-  expiresAt: number;
-};
+type TranslateParams = { text: string; to: string };
+type CacheEntry = { value: string; expiresAt: number };
 
 const TRANSLATION_TIMEOUT_MS = 30_000;
 const TRANSLATION_CACHE_TTL_MS = 15 * 60 * 1000;
@@ -48,8 +41,8 @@ export async function translateTexts({
 }): Promise<string[]> {
   if (!texts.length || !isSupportedTranslationCode(to)) return texts;
 
-  const endpoint = env.LIBRETRANSLATE_ENDPOINT?.replace(/\/+$/, '');
-  const apiKey = env.LIBRETRANSLATE_API_KEY;
+  const endpoint = LIBRETRANSLATE_ENDPOINT?.replace(/\/+$/, '');
+  const apiKey = LIBRETRANSLATE_API_KEY;
   if (!endpoint || !apiKey) return texts;
 
   const translations = [...texts];
@@ -85,6 +78,7 @@ export async function translateTexts({
       translatedText?: string[] | string;
       error?: string;
     }
+
     const data = (await response.json()) as LibreTranslateResponse | null;
     const translated =
       typeof data === 'object' && data !== null && 'translatedText' in data

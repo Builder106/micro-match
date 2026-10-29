@@ -1,8 +1,8 @@
 <script lang="ts">
   // The pieced cloth of one sampler block: its traditional pattern in the block's fabrics,
   // a faint weave, and a running quilting stitch just inside the edge.
-  import { patternPieces, piecePath } from '$lib/quilt/blocks';
-  import { clothFill, type BlockDef } from '$lib/quilt/world';
+  import { patternPieces, piecePath } from '#lib/quilt/blocks.js';
+  import { clothFill, type BlockDef } from '#lib/quilt/world.js';
 
   let { def, class: className = '' }: { def: BlockDef; class?: string } = $props();
 

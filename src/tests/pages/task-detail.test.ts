@@ -10,14 +10,15 @@ const { envState, mocks } = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('$env/dynamic/private', () => ({
-  env: new Proxy(envState, { get: (_, key: string) => envState[key] }),
-}));
-vi.mock('$lib/server/appwrite', () => ({ getTaskById: mocks.getTaskById }));
-vi.mock('$lib/server/verifications', () => ({
+vi.mock(
+  '$app/env/private',
+  () => new Proxy(envState, { get: (_, key: string) => envState[key], has: () => true }),
+);
+vi.mock('#lib/server/appwrite.js', () => ({ getTaskById: mocks.getTaskById }));
+vi.mock('#lib/server/verifications.js', () => ({
   getVerificationByUserId: mocks.getVerificationByUserId,
 }));
-vi.mock('$lib/server/quilt', () => ({ getPatchDesignForTask: mocks.getPatchDesignForTask }));
+vi.mock('#lib/server/quilt.js', () => ({ getPatchDesignForTask: mocks.getPatchDesignForTask }));
 vi.mock('node-appwrite', () => ({
   Client: class {
     setEndpoint() {

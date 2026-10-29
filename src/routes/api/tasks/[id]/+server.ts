@@ -4,8 +4,8 @@ import {
   getTaskById,
   updateTaskStatus,
   updateTaskLastActivity,
-} from '$lib/server/appwrite';
-import { getUserRole } from '$lib/server/auth';
+} from '#lib/server/appwrite.js';
+import { getUserRole } from '#lib/server/auth.js';
 
 export const PATCH: RequestHandler = async (event) => {
   const { params, request } = event;

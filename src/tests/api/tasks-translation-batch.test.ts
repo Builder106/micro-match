@@ -4,8 +4,8 @@ const { mocks } = vi.hoisted(() => ({
   mocks: { getTaskById: vi.fn(), translateTasks: vi.fn() },
 }));
 
-vi.mock('$lib/server/appwrite', () => ({ getTaskById: mocks.getTaskById }));
-vi.mock('$lib/server/taskTranslation', () => ({
+vi.mock('#lib/server/appwrite.js', () => ({ getTaskById: mocks.getTaskById }));
+vi.mock('#lib/server/taskTranslation.js', () => ({
   MAX_TASK_TRANSLATION_BATCH_SIZE: 50,
   isSupportedTaskLocale: (value: unknown) =>
     ['en', 'es', 'fr', 'de', 'pt', 'zh', 'ar'].includes(value as string),

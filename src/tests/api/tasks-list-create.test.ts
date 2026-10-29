@@ -10,12 +10,15 @@ const { mocks } = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('$lib/server/appwrite', () => ({ getTasks: mocks.getTasks, createTask: mocks.createTask }));
-vi.mock('$lib/server/auth', () => ({ getUserRole: mocks.getUserRole }));
-vi.mock('$lib/server/verifications', () => ({
+vi.mock('#lib/server/appwrite.js', () => ({
+  getTasks: mocks.getTasks,
+  createTask: mocks.createTask,
+}));
+vi.mock('#lib/server/auth.js', () => ({ getUserRole: mocks.getUserRole }));
+vi.mock('#lib/server/verifications.js', () => ({
   getVerificationByUserId: mocks.getVerificationByUserId,
 }));
-vi.mock('$lib/server/contentsafety', () => ({ moderateText: mocks.moderateText }));
+vi.mock('#lib/server/contentsafety.js', () => ({ moderateText: mocks.moderateText }));
 
 import { GET, POST } from '../../routes/api/tasks/+server';
 import { createRequestEvent } from '../helpers/createLoadEvent';

@@ -1,9 +1,9 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import Seo from '$lib/components/Seo.svelte';
-  import Link from '$lib/components/Link.svelte';
-  import Swatch from '$lib/components/art/Swatch.svelte';
-  import * as m from '$lib/paraglide/messages.js';
+  import Seo from '#lib/components/Seo.svelte';
+  import Link from '#lib/components/Link.svelte';
+  import Swatch from '#lib/components/art/Swatch.svelte';
+  import * as m from '#lib/paraglide/messages.js';
 
   const upTo = $derived((page.data.openTasks?.upTo ?? { 15: 0, 20: 0, 30: 0 }) as Record<15 | 20 | 30, number>);
   const caps = [

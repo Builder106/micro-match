@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import { canonicalPath } from '$lib/site';
-  import { locales, type Locale } from '$lib/locale';
+  import { canonicalPath } from '#lib/site.js';
+  import { locales, type Locale } from '#lib/locale.js';
 
   type JsonLdValue = string | number | boolean | null | JsonLdValue[] | { [key: string]: JsonLdValue };
   type Props = { title: string; description: string; noindex?: boolean; jsonLd?: { [key: string]: JsonLdValue } };

@@ -2,7 +2,7 @@
 // target on the GSAP ticker. Drag, wheel, arrow keys and keyboard focus all set the target.
 // The page itself never scrolls on desktop, so nothing here fights native scrolling.
 import { gsap } from 'gsap';
-import { clampCamera, cameraFor, worldSize, type Metrics, type Point } from '$lib/quilt/world';
+import { clampCamera, cameraFor, worldSize, type Metrics, type Point } from '#lib/quilt/world.js';
 import { idle } from './idle';
 import { prefersStill } from './env';
 

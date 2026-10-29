@@ -1,10 +1,10 @@
 import type { RequestHandler } from './$types';
-import { getTaskById } from '$lib/server/appwrite';
+import { getTaskById } from '#lib/server/appwrite.js';
 import {
   isSupportedTaskLocale,
   MAX_TASK_TRANSLATION_BATCH_SIZE,
   translateTasks,
-} from '$lib/server/taskTranslation';
+} from '#lib/server/taskTranslation.js';
 
 export const POST: RequestHandler = async ({ request }) => {
   interface TranslationRequestBody {

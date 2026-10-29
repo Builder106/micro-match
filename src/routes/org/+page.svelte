@@ -1,13 +1,13 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import Seo from '$lib/components/Seo.svelte';
-  import AccountTabs from '$lib/components/AccountTabs.svelte';
-  import VerificationCard from '$lib/components/VerificationCard.svelte';
-  import { callApi } from '$lib/api';
-  import { go } from '$lib/go';
-  import { TASK_MINUTES, LIMITS, parseTags } from '$lib/taskForm';
-  import type { Locale } from '$lib/locale';
-  import * as m from '$lib/paraglide/messages.js';
+  import Seo from '#lib/components/Seo.svelte';
+  import AccountTabs from '#lib/components/AccountTabs.svelte';
+  import VerificationCard from '#lib/components/VerificationCard.svelte';
+  import { callApi } from '#lib/api.js';
+  import { go } from '#lib/go.js';
+  import { TASK_MINUTES, LIMITS, parseTags } from '#lib/taskForm.js';
+  import type { Locale } from '#lib/locale.js';
+  import * as m from '#lib/paraglide/messages.js';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
@@ -54,7 +54,7 @@
       fallback: m.org_error()
     });
     submitting = false;
-    if (res.ok) await go(`/task/${res.data.id}`, locale, { invalidateAll: true });
+    if (res.ok) await go(`/task/${res.data.id}`, locale, { refreshAll: true });
     else error = res.error;
   }
 </script>

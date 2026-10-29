@@ -1,5 +1,13 @@
-import { env } from '$env/dynamic/private';
-import { defaultLocale, type Locale } from '$lib/locale';
+import {
+  PLUNK_SECRET_KEY,
+  PLUNK_FROM_ADDRESS,
+  NODE_ENV,
+  PLUNK_API_URL,
+  PLUNK_FROM_NAME,
+  PUBLIC_APP_URL,
+} from '$app/env/private';
+
+import { defaultLocale, type Locale } from '#lib/locale.js';
 import { renderVerificationApproved, renderVerificationRejected } from './emailTemplates';
 
 export type SendArgs = {
@@ -34,11 +42,11 @@ function responseError(data: PlunkResponse | null, status: number): string {
 export async function sendEmail(
   args: SendArgs,
 ): Promise<{ ok: boolean; id?: string; error?: string }> {
-  const apiKey = env.PLUNK_SECRET_KEY?.trim();
-  const fromAddress = env.PLUNK_FROM_ADDRESS?.trim();
+  const apiKey = PLUNK_SECRET_KEY?.trim();
+  const fromAddress = PLUNK_FROM_ADDRESS?.trim();
 
   if (!apiKey || !fromAddress) {
-    if (env.NODE_ENV !== 'production') {
+    if (NODE_ENV !== 'production') {
       console.log(`[email:dev] would send to ${args.to} — ${args.subject} (Plunk not configured)`);
     }
     return { ok: false, error: 'Plunk not configured (set PLUNK_SECRET_KEY, PLUNK_FROM_ADDRESS)' };
@@ -46,14 +54,18 @@ export async function sendEmail(
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), SEND_TIMEOUT_MS);
-  const apiUrl = (env.PLUNK_API_URL?.trim() || DEFAULT_API_URL).replace(/\/+$/, '');
+  const apiUrl = (PLUNK_API_URL?.trim() || DEFAULT_API_URL).replace(/\/+$/, '');
   const body =
     args.html === undefined || args.html === null ? textToHtml(args.text ?? '') : args.html;
+
   const payload = {
     to: args.to,
     subject: args.subject,
     body,
-    from: { name: env.PLUNK_FROM_NAME?.trim() || DEFAULT_FROM_NAME, email: fromAddress },
+    from: {
+      name: PLUNK_FROM_NAME?.trim() || DEFAULT_FROM_NAME,
+      email: fromAddress,
+    },
   };
 
   try {
@@ -66,9 +78,12 @@ export async function sendEmail(
       body: JSON.stringify(payload),
       signal: controller.signal,
     });
+
     const data = (await res.json().catch(() => null)) as PlunkResponse | null;
+
     if (!res.ok || data?.success !== true)
       return { ok: false, error: responseError(data, res.status) };
+
     return { ok: true, id: data.data?.emails?.[0]?.email };
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : 'network error' };
@@ -78,7 +93,7 @@ export async function sendEmail(
 }
 
 function appUrl(): string {
-  return (env.PUBLIC_APP_URL || 'http://localhost:5173').replace(/\/$/, '');
+  return (PUBLIC_APP_URL || 'http://localhost:5173').replace(/\/$/, '');
 }
 
 export async function sendVerificationApproved(args: {

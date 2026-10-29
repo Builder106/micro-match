@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Task } from '$lib/types';
+import type { Task } from '#lib/types.js';
 
 const { translateTexts } = vi.hoisted(() => ({
   translateTexts: vi.fn(),
 }));
-vi.mock('$lib/server/libretranslate', () => ({ translateTexts }));
+vi.mock('#lib/server/libretranslate.js', () => ({ translateTexts }));
 
 import { isSupportedTaskLocale, translateTask, translateTasks } from './taskTranslation';
 

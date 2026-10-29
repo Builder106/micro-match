@@ -3,15 +3,15 @@
   import { page } from '$app/state';
   import { refreshAll } from '$app/navigation';
   import Link from './Link.svelte';
-  import { appNav, isCurrent, hrefFor, type Role } from '$lib/site';
-  import type { Locale } from '$lib/locale';
-  import * as m from '$lib/paraglide/messages.js';
+  import { appNav, isCurrent, hrefFor, type Role } from '#lib/site.js';
+  import type { Locale } from '#lib/locale.js';
+  import * as m from '#lib/paraglide/messages.js';
 
   const role = $derived((page.data.userRole ?? 'anonymous') as Role);
   const items = $derived(appNav(role, Boolean(page.data.isAdmin)).filter((i) => i.href !== '/tasks'));
 
   async function signOut() {
-    const client = await import('$lib/appwrite.client');
+    const client = await import('#lib/appwrite.client.js');
     await client.signOut();
     await refreshAll();
     location.assign(hrefFor('/', (page.data.locale as Locale | undefined) ?? 'en'));

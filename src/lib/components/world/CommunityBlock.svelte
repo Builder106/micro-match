@@ -2,9 +2,9 @@
   // The community block: the live log cabin. Every patch in it is a claim a person approved.
   import Link from '../Link.svelte';
   import Quilt from '../Quilt.svelte';
-  import { block } from '$lib/quilt/world';
-  import type { QuiltPatch } from '$lib/quilt/patches';
-  import * as m from '$lib/paraglide/messages.js';
+  import { block } from '#lib/quilt/world.js';
+  import type { QuiltPatch } from '#lib/quilt/patches.js';
+  import * as m from '#lib/paraglide/messages.js';
 
   let { patches, total, open = false }: { patches: QuiltPatch[]; total: number; open?: boolean } = $props();
   const def = block('community');

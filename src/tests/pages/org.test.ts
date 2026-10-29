@@ -10,9 +10,9 @@ const { mocks } = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('$lib/server/appwrite', () => ({ createTask: mocks.createTask }));
-vi.mock('$lib/server/auth', () => ({ getUserRole: mocks.getUserRole }));
-vi.mock('$lib/server/verifications', () => ({
+vi.mock('#lib/server/appwrite.js', () => ({ createTask: mocks.createTask }));
+vi.mock('#lib/server/auth.js', () => ({ getUserRole: mocks.getUserRole }));
+vi.mock('#lib/server/verifications.js', () => ({
   getVerificationByUserId: mocks.getVerificationByUserId,
 }));
 

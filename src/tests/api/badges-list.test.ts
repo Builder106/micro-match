@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 const { mocks } = vi.hoisted(() => ({ mocks: { listBadgesByUser: vi.fn() } }));
-vi.mock('$lib/server/appwrite', () => ({ listBadgesByUser: mocks.listBadgesByUser }));
+vi.mock('#lib/server/appwrite.js', () => ({ listBadgesByUser: mocks.listBadgesByUser }));
 
 import { GET } from '../../routes/api/badges/+server';
 import { createRequestEvent } from '../helpers/createLoadEvent';

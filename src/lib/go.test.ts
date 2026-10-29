@@ -7,8 +7,8 @@ import { go } from './go';
 
 describe('go', () => {
   it('navigates with the locale prefix', async () => {
-    await go('/dashboard?pinned=1', 'en', { invalidateAll: true });
-    expect(goto).toHaveBeenCalledWith('/en/dashboard?pinned=1', { invalidateAll: true });
+    await go('/dashboard?pinned=1', 'en', { refreshAll: true });
+    expect(goto).toHaveBeenCalledWith('/en/dashboard?pinned=1', { refreshAll: true });
     await go('/tasks');
     expect(goto).toHaveBeenLastCalledWith('/en/tasks', undefined);
   });

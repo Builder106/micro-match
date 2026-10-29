@@ -8,8 +8,8 @@ const { mocks } = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('$lib/server/teams', () => ({ isUserAdmin: mocks.isUserAdmin }));
-vi.mock('$lib/server/appwrite', () => ({
+vi.mock('#lib/server/teams.js', () => ({ isUserAdmin: mocks.isUserAdmin }));
+vi.mock('#lib/server/appwrite.js', () => ({
   expireTasks: mocks.expireTasks,
   autoArchiveTasks: mocks.autoArchiveTasks,
 }));

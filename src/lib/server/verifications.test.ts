@@ -6,9 +6,10 @@ const { envState, appwriteCalls } = vi.hoisted(() => ({
   envState: {} as Record<string, string | undefined>,
   appwriteCalls: { setEndpoint: vi.fn(), usersGet: vi.fn(), updatePrefs: vi.fn() },
 }));
-vi.mock('$env/dynamic/private', () => ({
-  env: new Proxy(envState, { get: (_, key: string) => envState[key] }),
-}));
+vi.mock(
+  '$app/env/private',
+  () => new Proxy(envState, { get: (_, key: string) => envState[key], has: () => true }),
+);
 
 // In-memory mode must not make Appwrite client calls.
 vi.mock('node-appwrite', () => ({

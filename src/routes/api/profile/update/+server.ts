@@ -1,5 +1,11 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
+
+import {
+  APPWRITE_ENDPOINT,
+  APPWRITE_PROJECT_ID,
+  APPWRITE_API_KEY,
+  NODE_ENV,
+} from '$app/env/private';
 
 /**
  * POST /api/profile/update
@@ -27,8 +33,8 @@ async function getUserId(event: Parameters<RequestHandler>[0]): Promise<string |
     const jwt = auth.slice(7).trim();
     const { Client, Account } = await import('node-appwrite');
     const client = new Client()
-      .setEndpoint(env.APPWRITE_ENDPOINT || '')
-      .setProject(env.APPWRITE_PROJECT_ID || '')
+      .setEndpoint(APPWRITE_ENDPOINT || '')
+      .setProject(APPWRITE_PROJECT_ID || '')
       .setJWT(jwt);
     const acct = new Account(client);
     const me = await acct.get();
@@ -63,16 +69,16 @@ export const POST: RequestHandler = async (event) => {
 
   const { Client, Users } = await import('node-appwrite');
   const client = new Client()
-    .setEndpoint(env.APPWRITE_ENDPOINT!)
-    .setProject(env.APPWRITE_PROJECT_ID!)
-    .setKey(env.APPWRITE_API_KEY!);
+    .setEndpoint(APPWRITE_ENDPOINT!)
+    .setProject(APPWRITE_PROJECT_ID!)
+    .setKey(APPWRITE_API_KEY!);
   const users = new Users(client);
 
   if (displayName !== undefined && displayName.length > 0) {
     try {
       await users.updateName({ userId, name: displayName });
     } catch (err) {
-      if (env.NODE_ENV !== 'production') console.error('updateName failed', err);
+      if (NODE_ENV !== 'production') console.error('updateName failed', err);
       return Response.json({ error: 'Could not update name' }, { status: 500 });
     }
   }
@@ -81,14 +87,14 @@ export const POST: RequestHandler = async (event) => {
   // (role, verificationStatus, etc).
   if (bio !== undefined || orgName !== undefined || avatarFileId !== undefined) {
     try {
-      const me = await users.get<import('$lib/types').UserPreferences>({ userId });
-      const next: import('$lib/types').UserPreferences = { ...(me?.prefs ?? {}) };
+      const me = await users.get<import('#lib/types.js').UserPreferences>({ userId });
+      const next: import('#lib/types.js').UserPreferences = { ...(me?.prefs ?? {}) };
       if (bio !== undefined) next.bio = bio;
       if (orgName !== undefined) next.orgName = orgName;
       if (avatarFileId !== undefined) next.avatarFileId = avatarFileId;
       await users.updatePrefs({ userId, prefs: next });
     } catch (err) {
-      if (env.NODE_ENV !== 'production') console.error('updatePrefs failed', err);
+      if (NODE_ENV !== 'production') console.error('updatePrefs failed', err);
       return Response.json({ error: 'Could not update profile' }, { status: 500 });
     }
   }
