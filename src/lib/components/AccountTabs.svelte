@@ -1,7 +1,7 @@
 <script lang="ts">
   // The tools inside the "Your block" panel. Real links, the current one marked.
   import { page } from '$app/state';
-  import { invalidateAll } from '$app/navigation';
+  import { refreshAll } from '$app/navigation';
   import Link from './Link.svelte';
   import { appNav, isCurrent, hrefFor, type Role } from '$lib/site';
   import type { Locale } from '$lib/locale';
@@ -13,7 +13,7 @@
   async function signOut() {
     const client = await import('$lib/appwrite.client');
     await client.signOut();
-    await invalidateAll();
+    await refreshAll();
     location.assign(hrefFor('/', (page.data.locale as Locale | undefined) ?? 'en'));
   }
 </script>
