@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { invalidateAll } from '$app/navigation';
+  import { refreshAll } from '$app/navigation';
   import Seo from '$lib/components/Seo.svelte';
   import AccountTabs from '$lib/components/AccountTabs.svelte';
   import PatchDesigner from '$lib/components/PatchDesigner.svelte';
@@ -40,14 +40,14 @@
     note = m.badges_ready({ name: label.trim() });
     label = '';
     description = '';
-    await invalidateAll();
+    await refreshAll();
   }
 
   async function remove(id: string, name: string) {
     if (!confirm(m.badges_delete_confirm({ name }))) return;
     const res = await callApi(`/api/badges/manage?id=${encodeURIComponent(id)}`, { method: 'DELETE', fallback: m.badges_delete_error() });
     note = res.ok ? m.badges_deleted({ name }) : res.error;
-    if (res.ok) await invalidateAll();
+    if (res.ok) await refreshAll();
   }
 </script>
 

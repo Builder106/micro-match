@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import { invalidateAll } from '$app/navigation';
+  import { refreshAll } from '$app/navigation';
   import Seo from '$lib/components/Seo.svelte';
   import Link from '$lib/components/Link.svelte';
   import Quilt from '$lib/components/Quilt.svelte';
@@ -52,7 +52,7 @@
           ? { kind: 'approved', text: awarded === 0 ? m.dash_sewn() : awarded === 1 ? m.dash_sewn_awarded_one() : m.dash_sewn_awarded({ count: awarded }) }
           : { kind: 'rejected', text: m.dash_rejected() }
     };
-    setTimeout(() => void invalidateAll(), 1400);
+    setTimeout(() => void refreshAll(), 1400);
   }
 </script>
 
