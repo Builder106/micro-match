@@ -8,11 +8,12 @@ const { envState, mocks } = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('$env/dynamic/private', () => ({
-  env: new Proxy(envState, { get: (_, key: string) => envState[key] }),
-}));
-vi.mock('$lib/server/session', () => ({ getSession: mocks.getSession }));
-vi.mock('$lib/server/auth', () => ({ getUserRole: mocks.getUserRole }));
+vi.mock(
+  '$app/env/private',
+  () => new Proxy(envState, { get: (_, key: string) => envState[key], has: () => true }),
+);
+vi.mock('#lib/server/session.js', () => ({ getSession: mocks.getSession }));
+vi.mock('#lib/server/auth.js', () => ({ getUserRole: mocks.getUserRole }));
 
 import { handle } from '../hooks.server';
 import { createRequestEvent } from './helpers/createLoadEvent';

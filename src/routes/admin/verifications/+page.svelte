@@ -1,12 +1,12 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import Seo from '$lib/components/Seo.svelte';
-  import AccountTabs from '$lib/components/AccountTabs.svelte';
-  import { callApi } from '$lib/api';
-  import { relativeTime } from '$lib/time';
-  import { countryName } from '$lib/verification';
-  import type { NgoVerification } from '$lib/types';
-  import * as m from '$lib/paraglide/messages.js';
+  import Seo from '#lib/components/Seo.svelte';
+  import AccountTabs from '#lib/components/AccountTabs.svelte';
+  import { callApi } from '#lib/api.js';
+  import { relativeTime } from '#lib/time.js';
+  import { countryName } from '#lib/verification.js';
+  import type { NgoVerification } from '#lib/types.js';
+  import * as m from '#lib/paraglide/messages.js';
 
   type Row = NgoVerification & {
     propublica?: { found: true; orgName: string; status: 'active' | 'revoked' | 'unknown'; ntee?: string; rulingDate?: string } | { found: false; error?: string } | null;

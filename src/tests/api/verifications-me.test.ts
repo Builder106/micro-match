@@ -8,7 +8,7 @@ const { mocks } = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('$lib/server/verifications', () => ({
+vi.mock('#lib/server/verifications.js', () => ({
   getVerificationByUserId: mocks.getVerificationByUserId,
   withdrawVerification: mocks.withdrawVerification,
   setUserVerificationPref: mocks.setUserVerificationPref,

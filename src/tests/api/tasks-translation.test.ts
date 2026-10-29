@@ -7,8 +7,8 @@ const { mocks } = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('$lib/server/appwrite', () => ({ getTaskById: mocks.getTaskById }));
-vi.mock('$lib/server/taskTranslation', () => ({
+vi.mock('#lib/server/appwrite.js', () => ({ getTaskById: mocks.getTaskById }));
+vi.mock('#lib/server/taskTranslation.js', () => ({
   isSupportedTaskLocale: (value?: string | null) =>
     ['en', 'es', 'fr', 'de', 'pt', 'zh', 'ar'].includes(value ?? ''),
   translateTask: mocks.translateTask,

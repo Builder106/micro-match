@@ -2,8 +2,8 @@
   // Internal links carry the visitor's locale prefix. SvelteKit's resolve() cannot add it,
   // so every internal link in the app goes through this one component.
   import { page } from '$app/state';
-  import { hrefFor } from '$lib/site';
-  import type { Locale } from '$lib/locale';
+  import { hrefFor } from '#lib/site.js';
+  import type { Locale } from '#lib/locale.js';
   import type { HTMLAnchorAttributes } from 'svelte/elements';
 
   let { href, children, ...rest }: HTMLAnchorAttributes & { href: string } = $props();

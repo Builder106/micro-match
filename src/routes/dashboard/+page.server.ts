@@ -1,8 +1,8 @@
 import type { PageServerLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
-import { getTasks, getClaims } from '$lib/server/appwrite';
-import type { Claim, EnrichedClaim, NgoUserData, Task, VolunteerUserData } from '$lib/types';
-import { getQuiltPatches } from '$lib/server/quilt';
+import { getTasks, getClaims } from '#lib/server/appwrite.js';
+import type { Claim, EnrichedClaim, NgoUserData, Task, VolunteerUserData } from '#lib/types.js';
+import { getQuiltPatches } from '#lib/server/quilt.js';
 
 function enrichClaims(claims: Claim[], tasks: Task[]): EnrichedClaim[] {
   const taskMap = new Map(tasks.map((t) => [t.id, t]));

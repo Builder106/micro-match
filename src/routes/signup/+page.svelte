@@ -1,11 +1,11 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import Seo from '$lib/components/Seo.svelte';
-  import Rich from '$lib/components/Rich.svelte';
-  import PatchPreview from '$lib/components/PatchPreview.svelte';
-  import { go } from '$lib/go';
-  import type { Locale } from '$lib/locale';
-  import * as m from '$lib/paraglide/messages.js';
+  import Seo from '#lib/components/Seo.svelte';
+  import Rich from '#lib/components/Rich.svelte';
+  import PatchPreview from '#lib/components/PatchPreview.svelte';
+  import { go } from '#lib/go.js';
+  import type { Locale } from '#lib/locale.js';
+  import * as m from '#lib/paraglide/messages.js';
 
   const locale = $derived((page.data.locale as Locale | undefined) ?? 'en');
   const fromQuery = page.url.searchParams.get('role');
@@ -20,7 +20,7 @@
   let submitting = $state(false);
 
   async function google() {
-    const client = await import('$lib/appwrite.client');
+    const client = await import('#lib/appwrite.client.js');
     client.signInWithGoogle({ role: role ?? undefined, returnTo: 'signup' });
   }
 
@@ -34,11 +34,11 @@
     error = '';
     submitting = true;
     try {
-      const client = await import('$lib/appwrite.client');
+      const client = await import('#lib/appwrite.client.js');
       await client.signUpEmail(email, password, `${firstName} ${lastName}`.trim() || undefined, role);
       await client.refreshSessionCookie();
       await client.assignTeamForCurrentRole();
-      await go(role === 'ngo' ? '/org' : '/dashboard', locale, { invalidateAll: true });
+      await go(role === 'ngo' ? '/org' : '/dashboard', locale, { refreshAll: true });
     } catch {
       error = m.signup_error();
     } finally {

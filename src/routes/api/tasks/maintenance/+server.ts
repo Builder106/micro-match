@@ -1,6 +1,6 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { expireTasks, autoArchiveTasks } from '$lib/server/appwrite';
-import { isUserAdmin } from '$lib/server/teams';
+import { expireTasks, autoArchiveTasks } from '#lib/server/appwrite.js';
+import { isUserAdmin } from '#lib/server/teams.js';
 
 // Sweeps and mutates tasks across every org, so it's gated to platform
 // admins rather than any NGO — an NGO role only proves ownership of its

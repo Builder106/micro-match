@@ -1,13 +1,13 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { isUserAdmin } from '$lib/server/teams';
+import { isUserAdmin } from '#lib/server/teams.js';
 import {
   getVerificationByUserId,
   getUserEmailAndLocale,
   setUserVerificationPref,
   setVerificationStatus,
-} from '$lib/server/verifications';
-import { setTasksVerifiedForOrg } from '$lib/server/appwrite';
-import { sendVerificationApproved } from '$lib/server/email';
+} from '#lib/server/verifications.js';
+import { setTasksVerifiedForOrg } from '#lib/server/appwrite.js';
+import { sendVerificationApproved } from '#lib/server/email.js';
 
 export const POST: RequestHandler = async (event) => {
   const session = event.locals.session;

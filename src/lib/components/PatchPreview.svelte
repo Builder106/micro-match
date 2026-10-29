@@ -1,8 +1,8 @@
 <script lang="ts">
   // One patch on its own: hand-cut cloth in the badge's color, its embroidered icon and a
   // running stitch. Pinned patches (claims still waiting for a person) are only basted on.
-  import { PATCH_ICONS, type PatchIcon } from '$lib/quilt/icons';
-  import { fabricFor, threadFor } from '$lib/quilt/fabrics';
+  import { PATCH_ICONS, type PatchIcon } from '#lib/quilt/icons.js';
+  import { fabricFor, threadFor } from '#lib/quilt/fabrics.js';
 
   type Props = { color?: string | null; icon?: PatchIcon | null; pinned?: boolean; size?: string; label?: string };
   let { color = null, icon = null, pinned = false, size = '6rem', label }: Props = $props();

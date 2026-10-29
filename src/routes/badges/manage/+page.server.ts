@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
-import { getTasks } from '$lib/server/appwrite';
-import { listBadgeDefinitions } from '$lib/server/badgeDefs';
+import { getTasks } from '#lib/server/appwrite.js';
+import { listBadgeDefinitions } from '#lib/server/badgeDefs.js';
 import { error } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ locals }) => {

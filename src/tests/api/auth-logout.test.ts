@@ -6,8 +6,15 @@ const { mocks } = vi.hoisted(() => {
   const env: { NODE_ENV: string | undefined } = { NODE_ENV: undefined };
   return { mocks: { deleteSession: vi.fn(), env } };
 });
-vi.mock('$lib/server/session', () => ({ deleteSession: mocks.deleteSession }));
-vi.mock('$env/dynamic/private', () => ({ env: mocks.env }));
+vi.mock('#lib/server/session.js', () => ({ deleteSession: mocks.deleteSession }));
+vi.mock(
+  '$app/env/private',
+  () =>
+    new Proxy(mocks.env, {
+      get: (_, key: string) => (mocks.env as Record<string, string | undefined>)[key],
+      has: () => true,
+    }),
+);
 
 import { POST } from '../../routes/api/auth/logout/+server';
 
@@ -23,7 +30,7 @@ function makeEvent(opts: { sessionCookie?: string; protocol?: string } = {}): Mo
   });
   const setCalls: MockEvent['setCalls'] = [];
   cookies.set.mockImplementation((name, value, opts) => {
-    setCalls.push({ name, value, opts });
+    setCalls.push({ name, value, opts: opts ?? {} });
   });
   return Object.assign(event, { setCalls });
 }

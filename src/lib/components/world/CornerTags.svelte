@@ -3,7 +3,7 @@
   // ways out (the contents page and your own block). They replace a navigation bar.
   import Link from '../Link.svelte';
   import Mark from '../art/Mark.svelte';
-  import * as m from '$lib/paraglide/messages.js';
+  import * as m from '#lib/paraglide/messages.js';
 
   let { where, signedIn, role, hasPanel }: { where: string; signedIn: boolean; role: string; hasPanel: boolean } = $props();
 </script>

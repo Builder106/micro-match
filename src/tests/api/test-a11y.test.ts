@@ -14,24 +14,24 @@ const { mocks } = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('$lib/server/appwrite', () => ({
+vi.mock('#lib/server/appwrite.js', () => ({
   createTask: mocks.createTask,
   getTaskById: mocks.getTaskById,
   createClaim: mocks.createClaim,
   awardBadge: mocks.awardBadge,
 }));
 
-vi.mock('$lib/server/badgeDefs', () => ({
+vi.mock('#lib/server/badgeDefs.js', () => ({
   listBadgeDefinitions: mocks.listBadgeDefinitions,
   createBadgeDefinition: mocks.createBadgeDefinition,
 }));
 
-vi.mock('$lib/server/session', () => ({
+vi.mock('#lib/server/session.js', () => ({
   createSession: mocks.createSession,
   SESSION_TTL_SECONDS: 86400,
 }));
 
-vi.mock('$lib/server/verifications', () => ({
+vi.mock('#lib/server/verifications.js', () => ({
   upsertVerification: mocks.upsertVerification,
 }));
 

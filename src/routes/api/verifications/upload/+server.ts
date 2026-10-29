@@ -1,6 +1,13 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
-import { ADMIN_TEAM_ID } from '$lib/server/teams';
+
+import {
+  APPWRITE_ENDPOINT,
+  APPWRITE_PROJECT_ID,
+  APPWRITE_VERIFICATIONS_BUCKET_ID,
+  APPWRITE_API_KEY,
+} from '$app/env/private';
+
+import { ADMIN_TEAM_ID } from '#lib/server/teams.js';
 
 /**
  * POST /api/verifications/upload
@@ -23,8 +30,8 @@ export const POST: RequestHandler = async (event) => {
         if (jwt) {
           const { Client, Account } = await import('node-appwrite');
           const c = new Client()
-            .setEndpoint(env.APPWRITE_ENDPOINT || '')
-            .setProject(env.APPWRITE_PROJECT_ID || '')
+            .setEndpoint(APPWRITE_ENDPOINT || '')
+            .setProject(APPWRITE_PROJECT_ID || '')
             .setJWT(jwt);
           const account = new Account(c);
           const me = await account.get();
@@ -34,10 +41,13 @@ export const POST: RequestHandler = async (event) => {
     }
     if (!userId) return Response.json({ error: 'Not signed in' }, { status: 401 });
 
-    const bucketId = env.APPWRITE_VERIFICATIONS_BUCKET_ID;
+    const bucketId = APPWRITE_VERIFICATIONS_BUCKET_ID;
+
     if (!bucketId)
       return Response.json(
-        { error: 'Verification bucket not configured (set APPWRITE_VERIFICATIONS_BUCKET_ID)' },
+        {
+          error: 'Verification bucket not configured (set APPWRITE_VERIFICATIONS_BUCKET_ID)',
+        },
         { status: 500 },
       );
 
@@ -59,9 +69,9 @@ export const POST: RequestHandler = async (event) => {
 
     const { Client, Storage, ID, Permission, Role } = await import('node-appwrite');
     const client = new Client()
-      .setEndpoint(env.APPWRITE_ENDPOINT || '')
-      .setProject(env.APPWRITE_PROJECT_ID || '')
-      .setKey(env.APPWRITE_API_KEY || '');
+      .setEndpoint(APPWRITE_ENDPOINT || '')
+      .setProject(APPWRITE_PROJECT_ID || '')
+      .setKey(APPWRITE_API_KEY || '');
     const storage = new Storage(client);
 
     const permissions = [

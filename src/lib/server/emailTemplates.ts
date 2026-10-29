@@ -1,4 +1,4 @@
-import { defaultLocale, directionForLocale, localizedPath, type Locale } from '$lib/locale';
+import { defaultLocale, directionForLocale, localizedPath, type Locale } from '#lib/locale.js';
 
 type MessageCopy = {
   subject: string;

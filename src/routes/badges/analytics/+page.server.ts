@@ -1,5 +1,5 @@
 import type { PageServerLoad } from './$types';
-import { getTasks, getBadgeAnalytics } from '$lib/server/appwrite';
+import { getTasks, getBadgeAnalytics } from '#lib/server/appwrite.js';
 
 export const load: PageServerLoad = async ({ locals }) => {
   const userRole = locals.userRole ?? 'anonymous';

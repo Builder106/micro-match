@@ -1,10 +1,10 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import Seo from '$lib/components/Seo.svelte';
-  import Link from '$lib/components/Link.svelte';
-  import { hrefFor } from '$lib/site';
-  import type { Locale } from '$lib/locale';
-  import * as m from '$lib/paraglide/messages.js';
+  import Seo from '#lib/components/Seo.svelte';
+  import Link from '#lib/components/Link.svelte';
+  import { hrefFor } from '#lib/site.js';
+  import type { Locale } from '#lib/locale.js';
+  import * as m from '#lib/paraglide/messages.js';
 
   const locale = $derived((page.data.locale as Locale | undefined) ?? 'en');
   let email = $state('');
@@ -17,7 +17,7 @@
     error = '';
     submitting = true;
     try {
-      const client = await import('$lib/appwrite.client');
+      const client = await import('#lib/appwrite.client.js');
       await client.createRecovery(email, `${location.origin}${hrefFor('/reset-password', locale)}`);
       sent = true;
     } catch {

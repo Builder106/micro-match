@@ -5,8 +5,8 @@
   import type { Snippet } from 'svelte';
   import Link from '../Link.svelte';
   import BlockCloth from './BlockCloth.svelte';
-  import { PATCH_ICONS, type PatchIcon } from '$lib/quilt/icons';
-  import type { BlockDef } from '$lib/quilt/world';
+  import { PATCH_ICONS, type PatchIcon } from '#lib/quilt/icons.js';
+  import type { BlockDef } from '#lib/quilt/world.js';
 
   type Props = {
     def: BlockDef;

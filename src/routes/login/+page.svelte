@@ -1,12 +1,12 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import Seo from '$lib/components/Seo.svelte';
-  import Link from '$lib/components/Link.svelte';
-  import Rich from '$lib/components/Rich.svelte';
-  import { go } from '$lib/go';
-  import { safeNext } from '$lib/site';
-  import type { Locale } from '$lib/locale';
-  import * as m from '$lib/paraglide/messages.js';
+  import Seo from '#lib/components/Seo.svelte';
+  import Link from '#lib/components/Link.svelte';
+  import Rich from '#lib/components/Rich.svelte';
+  import { go } from '#lib/go.js';
+  import { safeNext } from '#lib/site.js';
+  import type { Locale } from '#lib/locale.js';
+  import * as m from '#lib/paraglide/messages.js';
 
   const locale = $derived((page.data.locale as Locale | undefined) ?? 'en');
   const next = $derived(safeNext(page.url.searchParams.get('next')));
@@ -22,10 +22,10 @@
     error = '';
     submitting = true;
     try {
-      const client = await import('$lib/appwrite.client');
+      const client = await import('#lib/appwrite.client.js');
       await client.signInEmail(email, password);
       await client.refreshSessionCookie();
-      await go(next, locale, { invalidateAll: true });
+      await go(next, locale, { refreshAll: true });
     } catch {
       error = m.login_error();
     } finally {
@@ -34,7 +34,7 @@
   }
 
   async function google() {
-    const client = await import('$lib/appwrite.client');
+    const client = await import('#lib/appwrite.client.js');
     client.signInWithGoogle();
   }
 </script>

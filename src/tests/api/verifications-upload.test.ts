@@ -9,10 +9,11 @@ const { envState, mocks, teamState } = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('$env/dynamic/private', () => ({
-  env: new Proxy(envState, { get: (_, key: string) => envState[key] }),
-}));
-vi.mock('$lib/server/teams', () => ({
+vi.mock(
+  '$app/env/private',
+  () => new Proxy(envState, { get: (_, key: string) => envState[key], has: () => true }),
+);
+vi.mock('#lib/server/teams.js', () => ({
   get ADMIN_TEAM_ID() {
     return teamState.adminTeamId;
   },

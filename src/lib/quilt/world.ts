@@ -1,7 +1,7 @@
 // The site is one quilt. This module is its map: which block sits where, which routes open
 // which block, and where the camera looks. Positions are in "pitch" units (one cell plus one
 // strip of sashing), so CSS and the camera agree without measuring the DOM.
-import { canonicalPath } from '$lib/site';
+import { canonicalPath } from '#lib/site.js';
 import type { PatternName } from './blocks';
 
 export type BlockId =

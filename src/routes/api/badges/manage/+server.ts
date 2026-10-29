@@ -1,10 +1,10 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { getUserRole } from '$lib/server/auth';
+import { getUserRole } from '#lib/server/auth.js';
 import {
   createBadgeDefinition,
   deleteBadgeDefinition,
   listBadgeDefinitions,
-} from '$lib/server/badgeDefs';
+} from '#lib/server/badgeDefs.js';
 
 const VALID_CRITERIA = new Set([
   'task-completion',
@@ -30,7 +30,7 @@ export const POST: RequestHandler = async (event) => {
     label?: string;
     color?: string;
     icon?: string;
-    criteria?: import('$lib/types').BadgeDefinition['criteria'];
+    criteria?: import('#lib/types.js').BadgeDefinition['criteria'];
     taskId?: string;
     description?: string;
   }
@@ -47,7 +47,7 @@ export const POST: RequestHandler = async (event) => {
   const icon = body.icon ? String(body.icon).trim() : undefined;
   const criteria = String(
     body.criteria ?? 'task-completion',
-  ) as import('$lib/types').BadgeDefinition['criteria'];
+  ) as import('#lib/types.js').BadgeDefinition['criteria'];
   const taskId = body.taskId ? String(body.taskId).trim() : undefined;
   const description = body.description ? String(body.description).trim().slice(0, 500) : undefined;
 

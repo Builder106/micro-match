@@ -8,7 +8,7 @@ const { mocks } = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('$lib/server/appwrite', () => ({
+vi.mock('#lib/server/appwrite.js', () => ({
   getTasks: mocks.getTasks,
   getClaims: mocks.getClaims,
   getBadges: mocks.getBadges,

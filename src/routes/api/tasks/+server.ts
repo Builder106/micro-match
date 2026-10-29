@@ -1,9 +1,9 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { createTask, getTasks } from '$lib/server/appwrite';
-import { getUserRole } from '$lib/server/auth';
-import { getVerificationByUserId } from '$lib/server/verifications';
-import type { Task } from '$lib/types';
-import { moderateText } from '$lib/server/contentsafety';
+import { createTask, getTasks } from '#lib/server/appwrite.js';
+import { getUserRole } from '#lib/server/auth.js';
+import { getVerificationByUserId } from '#lib/server/verifications.js';
+import type { Task } from '#lib/types.js';
+import { moderateText } from '#lib/server/contentsafety.js';
 
 export const GET: RequestHandler = async () => {
   const tasks = await getTasks();

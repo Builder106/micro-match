@@ -1,9 +1,14 @@
 import { Client, Account, ID, OAuthProvider, Storage } from 'appwrite';
-import { env as PUBLIC_ENV } from '$env/dynamic/public';
+
+import {
+  PUBLIC_APPWRITE_ENDPOINT,
+  PUBLIC_APPWRITE_PROJECT_ID,
+  PUBLIC_APPWRITE_AVATARS_BUCKET_ID,
+} from '$app/env/public';
 
 const client = new Client()
-  .setEndpoint(PUBLIC_ENV.PUBLIC_APPWRITE_ENDPOINT || 'https://placeholder.example.com')
-  .setProject(PUBLIC_ENV.PUBLIC_APPWRITE_PROJECT_ID || 'placeholder');
+  .setEndpoint(PUBLIC_APPWRITE_ENDPOINT || 'https://placeholder.example.com')
+  .setProject(PUBLIC_APPWRITE_PROJECT_ID || 'placeholder');
 
 export const account = new Account(client);
 export const storage = new Storage(client);
@@ -143,7 +148,7 @@ export async function uploadAvatar(file: File): Promise<{ fileId: string; url: s
 
 export function getAvatarUrl(fileId: string, size = 128): string {
   try {
-    const bucketId = PUBLIC_ENV.PUBLIC_APPWRITE_AVATARS_BUCKET_ID;
+    const bucketId = PUBLIC_APPWRITE_AVATARS_BUCKET_ID;
     if (!bucketId) return '';
     const url = storage.getFilePreview({ bucketId, fileId, width: size, height: size });
     return String(url);

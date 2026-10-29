@@ -1,7 +1,7 @@
-import { env } from '$env/dynamic/private';
+import { APPWRITE_ENDPOINT, APPWRITE_PROJECT_ID } from '$app/env/private';
 import type { RequestEvent } from '@sveltejs/kit';
 
-import type { UserRole, UserPreferences } from '$lib/types';
+import type { UserRole, UserPreferences } from '#lib/types.js';
 export type { UserRole };
 
 function parseBearer(event: RequestEvent): string | null {
@@ -16,8 +16,8 @@ async function getUserFromJWT(
   try {
     const { Client, Account } = await import('node-appwrite');
     const client = new Client()
-      .setEndpoint(env.APPWRITE_ENDPOINT!)
-      .setProject(env.APPWRITE_PROJECT_ID!)
+      .setEndpoint(APPWRITE_ENDPOINT!)
+      .setProject(APPWRITE_PROJECT_ID!)
       .setJWT(jwt);
     const account = new Account(client);
     return await account.get<UserPreferences>();
@@ -46,7 +46,7 @@ export async function getUserRole(event: RequestEvent): Promise<UserRole> {
 
   // Try Appwrite JWT first
   const jwt = parseBearer(event);
-  if (jwt && env.APPWRITE_ENDPOINT && env.APPWRITE_PROJECT_ID) {
+  if (jwt && APPWRITE_ENDPOINT && APPWRITE_PROJECT_ID) {
     const user = await getUserFromJWT(jwt);
     if (user) {
       // Check team memberships first if configured

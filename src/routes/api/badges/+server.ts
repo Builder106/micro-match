@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { listBadgesByUser } from '$lib/server/appwrite';
+import { listBadgesByUser } from '#lib/server/appwrite.js';
 
 // MVP: derive userId from query for demo; later from auth/session
 export const GET: RequestHandler = async ({ url, locals }) => {

@@ -1,7 +1,8 @@
-import { env } from '$env/dynamic/private';
-import { getUserRole } from '$lib/server/auth';
-import { getSession } from '$lib/server/session';
-import type { Handle } from '@sveltejs/kit';
+import type { Handle } from '@sveltejs/kit/hooks';
+import { APPWRITE_ENDPOINT, APPWRITE_PROJECT_ID } from '$app/env/private';
+import { getUserRole } from '#lib/server/auth.js';
+import { getSession } from '#lib/server/session.js';
+
 import {
   directionForLocale,
   localeCookie,
@@ -9,8 +10,8 @@ import {
   localizedPath,
   negotiateLocale,
   type Locale,
-} from '$lib/locale';
-import { paraglideMiddleware } from '$lib/paraglide/server';
+} from '#lib/locale.js';
+import { paraglideMiddleware } from '#lib/paraglide/server.js';
 
 // Polyfills for Appwrite Browser SDK to work in SvelteKit SSR (both during build and at runtime)
 // See https://github.com/appwrite/appwrite/discussions/5435
@@ -82,8 +83,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 
   // Set Appwrite context from server-side variables
   event.locals.appwrite = {
-    endpoint: env.APPWRITE_ENDPOINT || '',
-    projectId: env.APPWRITE_PROJECT_ID || '',
+    endpoint: APPWRITE_ENDPOINT || '',
+    projectId: APPWRITE_PROJECT_ID || '',
   };
 
   // Authorization-relevant role must only ever come from a server-validated

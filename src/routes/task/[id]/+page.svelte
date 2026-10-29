@@ -1,17 +1,17 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { page } from '$app/state';
-  import Seo from '$lib/components/Seo.svelte';
-  import Link from '$lib/components/Link.svelte';
-  import Rich from '$lib/components/Rich.svelte';
-  import PatchPreview from '$lib/components/PatchPreview.svelte';
-  import { deadlineLabel, minutesLabel } from '$lib/time';
-  import { callApi } from '$lib/api';
-  import { taskLang } from '$lib/translation';
-  import { go } from '$lib/go';
-  import type { Locale } from '$lib/locale';
-  import type { Task } from '$lib/types';
-  import * as m from '$lib/paraglide/messages.js';
+  import Seo from '#lib/components/Seo.svelte';
+  import Link from '#lib/components/Link.svelte';
+  import Rich from '#lib/components/Rich.svelte';
+  import PatchPreview from '#lib/components/PatchPreview.svelte';
+  import { deadlineLabel, minutesLabel } from '#lib/time.js';
+  import { callApi } from '#lib/api.js';
+  import { taskLang } from '#lib/translation.js';
+  import { go } from '#lib/go.js';
+  import type { Locale } from '#lib/locale.js';
+  import type { Task } from '#lib/types.js';
+  import * as m from '#lib/paraglide/messages.js';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
@@ -61,7 +61,7 @@
     deleting = true;
     const res = await callApi(`/api/tasks/${data.task.id}`, { method: 'DELETE', fallback: m.task_delete_error() });
     deleting = false;
-    if (res.ok) await go('/tasks', locale, { invalidateAll: true });
+    if (res.ok) await go('/tasks', locale, { refreshAll: true });
     else deleteError = res.error;
   }
 </script>

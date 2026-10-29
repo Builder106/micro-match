@@ -2,10 +2,10 @@
   // A task in the feed: a swatch of cloth with pinked edges (cut but not yet sewn), the
   // minutes it takes, and the brief. The whole swatch is one link to the task.
   import Link from './Link.svelte';
-  import { fabricForTag, threadFor } from '$lib/quilt/fabrics';
-  import { minutesLabel } from '$lib/time';
-  import { taskLang } from '$lib/translation';
-  import * as m from '$lib/paraglide/messages.js';
+  import { fabricForTag, threadFor } from '#lib/quilt/fabrics.js';
+  import { minutesLabel } from '#lib/time.js';
+  import { taskLang } from '#lib/translation.js';
+  import * as m from '#lib/paraglide/messages.js';
 
   type Props = {
     task: { id: string; title: string; shortDescription: string; tags: string[]; sourceTags?: string[]; estimatedMinutes?: number; isVerified?: boolean; language?: string; translation?: { status: string } };

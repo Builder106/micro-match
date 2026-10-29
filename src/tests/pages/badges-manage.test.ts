@@ -5,8 +5,8 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 const { mocks } = vi.hoisted(() => ({
   mocks: { getTasks: vi.fn(), listBadgeDefinitions: vi.fn() },
 }));
-vi.mock('$lib/server/appwrite', () => ({ getTasks: mocks.getTasks }));
-vi.mock('$lib/server/badgeDefs', () => ({ listBadgeDefinitions: mocks.listBadgeDefinitions }));
+vi.mock('#lib/server/appwrite.js', () => ({ getTasks: mocks.getTasks }));
+vi.mock('#lib/server/badgeDefs.js', () => ({ listBadgeDefinitions: mocks.listBadgeDefinitions }));
 
 import { load } from '../../routes/badges/manage/+page.server';
 import { createServerLoadEventFor, requireLoadResult } from '../helpers/createLoadEvent';

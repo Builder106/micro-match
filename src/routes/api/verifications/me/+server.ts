@@ -3,7 +3,7 @@ import {
   getVerificationByUserId,
   withdrawVerification,
   setUserVerificationPref,
-} from '$lib/server/verifications';
+} from '#lib/server/verifications.js';
 
 export const GET: RequestHandler = async (event) => {
   const session = event.locals.session;

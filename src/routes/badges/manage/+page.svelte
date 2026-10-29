@@ -1,14 +1,14 @@
 <script lang="ts">
   import { refreshAll } from '$app/navigation';
-  import Seo from '$lib/components/Seo.svelte';
-  import AccountTabs from '$lib/components/AccountTabs.svelte';
-  import PatchDesigner from '$lib/components/PatchDesigner.svelte';
-  import PatchPreview from '$lib/components/PatchPreview.svelte';
-  import { callApi } from '$lib/api';
-  import { iconValue, resolvePatchIcon, type PatchIcon } from '$lib/quilt/icons';
-  import { swatchName } from '$lib/quilt/fabrics';
-  import { relativeTime } from '$lib/time';
-  import * as m from '$lib/paraglide/messages.js';
+  import Seo from '#lib/components/Seo.svelte';
+  import AccountTabs from '#lib/components/AccountTabs.svelte';
+  import PatchDesigner from '#lib/components/PatchDesigner.svelte';
+  import PatchPreview from '#lib/components/PatchPreview.svelte';
+  import { callApi } from '#lib/api.js';
+  import { iconValue, resolvePatchIcon, type PatchIcon } from '#lib/quilt/icons.js';
+  import { swatchName } from '#lib/quilt/fabrics.js';
+  import { relativeTime } from '#lib/time.js';
+  import * as m from '#lib/paraglide/messages.js';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();

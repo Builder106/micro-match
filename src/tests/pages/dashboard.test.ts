@@ -5,13 +5,16 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 const { mocks } = vi.hoisted(() => ({
   mocks: { getTasks: vi.fn(), getClaims: vi.fn(), getQuiltPatches: vi.fn() },
 }));
-vi.mock('$lib/server/appwrite', () => ({ getTasks: mocks.getTasks, getClaims: mocks.getClaims }));
-vi.mock('$lib/server/quilt', () => ({ getQuiltPatches: mocks.getQuiltPatches }));
+vi.mock('#lib/server/appwrite.js', () => ({
+  getTasks: mocks.getTasks,
+  getClaims: mocks.getClaims,
+}));
+vi.mock('#lib/server/quilt.js', () => ({ getQuiltPatches: mocks.getQuiltPatches }));
 
 import { load } from '../../routes/dashboard/+page.server';
 import { createServerLoadEventFor, requireLoadResult } from '../helpers/createLoadEvent';
 import { isHttpError } from '../helpers/httpError';
-import type { NgoUserData, VolunteerUserData } from '$lib/types';
+import type { NgoUserData, VolunteerUserData } from '#lib/types.js';
 
 function makeEvent(opts: { userRole?: App.Locals['userRole']; userId?: string } = {}) {
   return createServerLoadEventFor<typeof load>({

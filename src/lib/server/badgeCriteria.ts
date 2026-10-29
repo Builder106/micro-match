@@ -11,7 +11,7 @@
 //     engine can match them. Until then, defs with these criteria are stored
 //     but never auto-awarded.
 
-import type { BadgeDefinition } from '$lib/types';
+import type { BadgeDefinition } from '#lib/types.js';
 import { getTaskById } from './appwrite';
 import { listBadgeDefinitions } from './badgeDefs';
 

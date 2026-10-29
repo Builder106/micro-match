@@ -1,7 +1,7 @@
 <script lang="ts">
   // Pins the opposite of the scheme on screen, or goes back to following the system when the
   // choice matches it. The pin lives in <meta name="color-scheme">; CSS picks the label to show.
-  import * as m from '$lib/paraglide/messages.js';
+  import * as m from '#lib/paraglide/messages.js';
 
   const KEY = 'mm-color-scheme';
 

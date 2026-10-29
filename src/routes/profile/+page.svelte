@@ -1,12 +1,12 @@
 <script lang="ts">
   import { page } from '$app/state';
   import { onMount, untrack } from 'svelte';
-  import Seo from '$lib/components/Seo.svelte';
-  import AccountTabs from '$lib/components/AccountTabs.svelte';
-  import VerificationCard from '$lib/components/VerificationCard.svelte';
-  import PatchPreview from '$lib/components/PatchPreview.svelte';
-  import { callApi } from '$lib/api';
-  import * as m from '$lib/paraglide/messages.js';
+  import Seo from '#lib/components/Seo.svelte';
+  import AccountTabs from '#lib/components/AccountTabs.svelte';
+  import VerificationCard from '#lib/components/VerificationCard.svelte';
+  import PatchPreview from '#lib/components/PatchPreview.svelte';
+  import { callApi } from '#lib/api.js';
+  import * as m from '#lib/paraglide/messages.js';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
@@ -31,9 +31,9 @@
 
   onMount(async () => {
     try {
-      const client = await import('$lib/appwrite.client');
+      const client = await import('#lib/appwrite.client.js');
       await client.refreshSessionCookie();
-      const me = await client.account.get<import('$lib/types').UserPreferences>();
+      const me = await client.account.get<import('#lib/types.js').UserPreferences>();
       displayName = me.name ?? '';
       const prefs = me.prefs ?? {};
       if (typeof prefs.bio === 'string') bio = prefs.bio;
@@ -68,7 +68,7 @@
     avatarBusy = true;
     error = '';
     try {
-      const client = await import('$lib/appwrite.client');
+      const client = await import('#lib/appwrite.client.js');
       const up = await client.uploadAvatar(await squareJpeg(file));
       avatarFileId = up.fileId;
       avatarUrl = up.url;
@@ -104,7 +104,7 @@
         error = res.error;
         return;
       }
-      const client = await import('$lib/appwrite.client');
+      const client = await import('#lib/appwrite.client.js');
       await client.refreshSessionCookie();
     }
     saving = false;

@@ -3,8 +3,8 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 const { mocks } = vi.hoisted(() => ({
   mocks: { getClaims: vi.fn(), getUserRole: vi.fn() },
 }));
-vi.mock('$lib/server/appwrite', () => ({ getClaims: mocks.getClaims }));
-vi.mock('$lib/server/auth', () => ({ getUserRole: mocks.getUserRole }));
+vi.mock('#lib/server/appwrite.js', () => ({ getClaims: mocks.getClaims }));
+vi.mock('#lib/server/auth.js', () => ({ getUserRole: mocks.getUserRole }));
 
 import { GET } from '../../routes/api/claims/+server';
 import { createRequestEvent } from '../helpers/createLoadEvent';

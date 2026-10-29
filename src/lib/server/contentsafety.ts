@@ -1,5 +1,5 @@
 // Minimal Azure AI Content Safety text moderation helper with safe fallbacks.
-import { env } from '$env/dynamic/private';
+import { AZURE_CONTENT_SAFETY_ENDPOINT, AZURE_CONTENT_SAFETY_KEY } from '$app/env/private';
 
 export type ModerationCategory = 'Hate' | 'SelfHarm' | 'Sexual' | 'Violence';
 
@@ -25,8 +25,8 @@ export async function moderateText(
   text: string,
   categories: ModerationCategory[] = DEFAULT_CATEGORIES,
 ): Promise<ModerationResult> {
-  const endpoint = env.AZURE_CONTENT_SAFETY_ENDPOINT;
-  const apiKey = env.AZURE_CONTENT_SAFETY_KEY;
+  const endpoint = AZURE_CONTENT_SAFETY_ENDPOINT;
+  const apiKey = AZURE_CONTENT_SAFETY_KEY;
 
   if (!text || text.trim().length === 0) {
     return { blocked: false, reasons: [] };

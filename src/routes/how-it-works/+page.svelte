@@ -1,12 +1,12 @@
 <script lang="ts">
-  import Seo from '$lib/components/Seo.svelte';
-  import Link from '$lib/components/Link.svelte';
-  import Rich from '$lib/components/Rich.svelte';
-  import Scissors from '$lib/components/art/Scissors.svelte';
-  import Swatch from '$lib/components/art/Swatch.svelte';
-  import Pin from '$lib/components/art/Pin.svelte';
-  import Needle from '$lib/components/art/Needle.svelte';
-  import * as m from '$lib/paraglide/messages.js';
+  import Seo from '#lib/components/Seo.svelte';
+  import Link from '#lib/components/Link.svelte';
+  import Rich from '#lib/components/Rich.svelte';
+  import Scissors from '#lib/components/art/Scissors.svelte';
+  import Swatch from '#lib/components/art/Swatch.svelte';
+  import Pin from '#lib/components/art/Pin.svelte';
+  import Needle from '#lib/components/art/Needle.svelte';
+  import * as m from '#lib/paraglide/messages.js';
 </script>
 
 <Seo title={m.how_meta_title()} description={m.how_meta_description()} />

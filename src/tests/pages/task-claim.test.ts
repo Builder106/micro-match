@@ -3,7 +3,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 const { mocks } = vi.hoisted(() => ({ mocks: { getTaskById: vi.fn() } }));
-vi.mock('$lib/server/appwrite', () => ({ getTaskById: mocks.getTaskById }));
+vi.mock('#lib/server/appwrite.js', () => ({ getTaskById: mocks.getTaskById }));
 
 import { load } from '../../routes/task/[id]/claim/+page.server';
 import { createServerLoadEventFor, requireLoadResult } from '../helpers/createLoadEvent';

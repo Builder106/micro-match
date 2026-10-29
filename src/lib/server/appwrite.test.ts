@@ -3,9 +3,10 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 // Force in-memory mode by mocking env to empty. With APPWRITE_* unset, the
 // module's `useAppwrite` flag is false and all CRUD goes through its Maps.
 const { envState } = vi.hoisted(() => ({ envState: {} as Record<string, string | undefined> }));
-vi.mock('$env/dynamic/private', () => ({
-  env: new Proxy(envState, { get: (_, key: string) => envState[key] }),
-}));
+vi.mock(
+  '$app/env/private',
+  () => new Proxy(envState, { get: (_, key: string) => envState[key], has: () => true }),
+);
 vi.mock('node-appwrite', () => ({
   Client: class {
     setEndpoint() {

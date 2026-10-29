@@ -9,8 +9,8 @@ const { mocks } = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('$lib/server/auth', () => ({ getUserRole: mocks.getUserRole }));
-vi.mock('$lib/server/badgeDefs', () => ({
+vi.mock('#lib/server/auth.js', () => ({ getUserRole: mocks.getUserRole }));
+vi.mock('#lib/server/badgeDefs.js', () => ({
   createBadgeDefinition: mocks.createBadgeDefinition,
   listBadgeDefinitions: mocks.listBadgeDefinitions,
   deleteBadgeDefinition: mocks.deleteBadgeDefinition,

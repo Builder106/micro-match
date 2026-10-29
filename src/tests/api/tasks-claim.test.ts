@@ -9,12 +9,12 @@ const { mocks } = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('$lib/server/appwrite', () => ({
+vi.mock('#lib/server/appwrite.js', () => ({
   createClaim: mocks.createClaim,
   getTaskById: mocks.getTaskById,
 }));
-vi.mock('$lib/server/auth', () => ({ getUserRole: mocks.getUserRole }));
-vi.mock('$lib/server/contentsafety', () => ({ moderateText: mocks.moderateText }));
+vi.mock('#lib/server/auth.js', () => ({ getUserRole: mocks.getUserRole }));
+vi.mock('#lib/server/contentsafety.js', () => ({ moderateText: mocks.moderateText }));
 
 import { POST } from '../../routes/api/tasks/[id]/claim/+server';
 import { createRequestEvent } from '../helpers/createLoadEvent';
@@ -48,6 +48,18 @@ describe('POST /api/tasks/[id]/claim', () => {
     const res = await POST(makeEvent());
     expect(res.status).toBe(401);
     expect(mocks.createClaim).not.toHaveBeenCalled();
+  });
+
+  it('returns 400 when the task id is missing', async () => {
+    mocks.getUserRole.mockResolvedValue('volunteer');
+    const event = createRequestEvent({
+      params: {} as { id: string },
+      userId: 'user-1',
+      request: new Request('http://test/api/tasks//claim', { method: 'POST', body: '{}' }),
+    });
+    const res = await POST(event);
+    expect(res.status).toBe(400);
+    expect(mocks.getTaskById).not.toHaveBeenCalled();
   });
 
   it('returns 404 when the task does not exist', async () => {

@@ -2,11 +2,11 @@
   // The quilt's contents: every block as a plain link. It is the way through the site for
   // anyone who would rather read a list than pan a quilt.
   import { page } from '$app/state';
-  import Seo from '$lib/components/Seo.svelte';
-  import Link from '$lib/components/Link.svelte';
-  import LanguagePicker from '$lib/components/LanguagePicker.svelte';
-  import { block } from '$lib/quilt/world';
-  import * as m from '$lib/paraglide/messages.js';
+  import Seo from '#lib/components/Seo.svelte';
+  import Link from '#lib/components/Link.svelte';
+  import LanguagePicker from '#lib/components/LanguagePicker.svelte';
+  import { block } from '#lib/quilt/world.js';
+  import * as m from '#lib/paraglide/messages.js';
 
   const signedIn = $derived(page.data.userRole && page.data.userRole !== 'anonymous');
   const entries = [

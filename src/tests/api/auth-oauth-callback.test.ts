@@ -19,10 +19,15 @@ const { mocks } = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('$env/dynamic/private', () => ({
-  env: mocks.env,
-}));
-vi.mock('$lib/server/session', () => ({
+vi.mock(
+  '$app/env/private',
+  () =>
+    new Proxy(mocks.env, {
+      get: (_, key: string) => (mocks.env as Record<string, string | undefined>)[key],
+      has: () => true,
+    }),
+);
+vi.mock('#lib/server/session.js', () => ({
   createSession: mocks.createSession,
   SESSION_TTL_SECONDS: 1209600,
 }));
@@ -45,7 +50,7 @@ vi.mock('node-appwrite', () => ({
     get = mocks.usersGet;
   },
 }));
-vi.mock('$lib/server/teams', () => ({
+vi.mock('#lib/server/teams.js', () => ({
   get NGO_TEAM_ID() {
     return mocks.ngoTeamId;
   },
@@ -69,7 +74,7 @@ function makeEvent(search: string, protocol = 'https:'): MockEvent {
   });
   const setCalls: MockEvent['setCalls'] = [];
   cookies.set.mockImplementation((name, value, opts) => {
-    setCalls.push({ name, value, opts });
+    setCalls.push({ name, value, opts: opts ?? {} });
   });
   return Object.assign(event, { setCalls });
 }

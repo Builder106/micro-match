@@ -3,10 +3,10 @@ import {
   listVerifications,
   upsertVerification,
   setUserVerificationPref,
-} from '$lib/server/verifications';
-import { isUserAdmin } from '$lib/server/teams';
-import { getUserRole } from '$lib/server/auth';
-import { lookupNonprofitByEin } from '$lib/server/propublica';
+} from '#lib/server/verifications.js';
+import { isUserAdmin } from '#lib/server/teams.js';
+import { getUserRole } from '#lib/server/auth.js';
+import { lookupNonprofitByEin } from '#lib/server/propublica.js';
 
 /**
  * POST /api/verifications

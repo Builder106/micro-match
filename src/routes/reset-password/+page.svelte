@@ -1,8 +1,8 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import Seo from '$lib/components/Seo.svelte';
-  import Link from '$lib/components/Link.svelte';
-  import * as m from '$lib/paraglide/messages.js';
+  import Seo from '#lib/components/Seo.svelte';
+  import Link from '#lib/components/Link.svelte';
+  import * as m from '#lib/paraglide/messages.js';
 
   const userId = page.url.searchParams.get('userId') ?? '';
   const secret = page.url.searchParams.get('secret') ?? '';
@@ -21,7 +21,7 @@
     error = '';
     submitting = true;
     try {
-      const client = await import('$lib/appwrite.client');
+      const client = await import('#lib/appwrite.client.js');
       await client.updateRecovery(userId, secret, password);
       done = true;
     } catch {

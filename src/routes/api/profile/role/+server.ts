@@ -1,13 +1,13 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
+import { APPWRITE_ENDPOINT, APPWRITE_PROJECT_ID, APPWRITE_API_KEY } from '$app/env/private';
 import {
   NGO_TEAM_ID,
   VOLUNTEER_TEAM_ID,
   addUserToTeam,
   removeUserFromTeam,
-} from '$lib/server/teams';
-import { withdrawVerification, setUserVerificationPref } from '$lib/server/verifications';
-import { setTasksVerifiedForOrg } from '$lib/server/appwrite';
+} from '#lib/server/teams.js';
+import { withdrawVerification, setUserVerificationPref } from '#lib/server/verifications.js';
+import { setTasksVerifiedForOrg } from '#lib/server/appwrite.js';
 
 /**
  * POST /api/profile/role
@@ -32,8 +32,8 @@ async function getUserId(event: Parameters<RequestHandler>[0]): Promise<string |
     const jwt = authHeader.slice(7).trim();
     const { Client, Account } = await import('node-appwrite');
     const client = new Client()
-      .setEndpoint(env.APPWRITE_ENDPOINT || '')
-      .setProject(env.APPWRITE_PROJECT_ID || '')
+      .setEndpoint(APPWRITE_ENDPOINT || '')
+      .setProject(APPWRITE_PROJECT_ID || '')
       .setJWT(jwt);
     const account = new Account(client);
     const me = await account.get();
@@ -63,12 +63,12 @@ export const POST: RequestHandler = async (event) => {
 
   // Read current prefs to detect transition direction.
   const { Client, Users } = await import('node-appwrite');
-  const client = new Client()
-    .setEndpoint(env.APPWRITE_ENDPOINT!)
-    .setProject(env.APPWRITE_PROJECT_ID!)
-    .setKey(env.APPWRITE_API_KEY!);
-  const users = new Users(client);
 
+  const client = new Client()
+    .setEndpoint(APPWRITE_ENDPOINT!)
+    .setProject(APPWRITE_PROJECT_ID!)
+    .setKey(APPWRITE_API_KEY!);
+  const users = new Users(client);
   let oldRole: string;
   try {
     const me = await users.get({ userId });
@@ -95,8 +95,11 @@ export const POST: RequestHandler = async (event) => {
 
   // 2. Update prefs.role (read-modify-write so we don't clobber other prefs).
   try {
-    const me = await users.get<import('$lib/types').UserPreferences>({ userId });
-    const nextPrefs: import('$lib/types').UserPreferences = { ...(me?.prefs ?? {}), role: newRole };
+    const me = await users.get<import('#lib/types.js').UserPreferences>({ userId });
+    const nextPrefs: import('#lib/types.js').UserPreferences = {
+      ...(me?.prefs ?? {}),
+      role: newRole,
+    };
     if (downgrading) nextPrefs.verificationStatus = '';
     await users.updatePrefs({ userId, prefs: nextPrefs });
   } catch (err) {

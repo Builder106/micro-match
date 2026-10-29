@@ -1,10 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { locales } from '$lib/locale';
+import { locales } from '#lib/locale.js';
 
 const { envState } = vi.hoisted(() => ({ envState: {} as Record<string, string | undefined> }));
-vi.mock('$env/dynamic/private', () => ({
-  env: new Proxy(envState, { get: (_, key: string) => envState[key] }),
-}));
+vi.mock(
+  '$app/env/private',
+  () => new Proxy(envState, { get: (_, key: string) => envState[key], has: () => true }),
+);
 import { sendEmail, sendVerificationApproved, sendVerificationRejected } from './email';
 
 function setEnv(values: Record<string, string | undefined>) {

@@ -13,9 +13,10 @@ const { envState, mocks } = vi.hoisted(() => ({
     limit: vi.fn(),
   },
 }));
-vi.mock('$env/dynamic/private', () => ({
-  env: new Proxy(envState, { get: (_, key: string) => envState[key] }),
-}));
+vi.mock(
+  '$app/env/private',
+  () => new Proxy(envState, { get: (_, key: string) => envState[key], has: () => true }),
+);
 vi.mock('node-appwrite', () => ({
   Client: class {
     setEndpoint() {

@@ -1,6 +1,6 @@
 // Countries offered on the verification form and what each calls its registration number.
-import * as m from '$lib/paraglide/messages.js';
-import { getLocale } from '$lib/paraglide/runtime.js';
+import * as m from '#lib/paraglide/messages.js';
+import { getLocale } from '#lib/paraglide/runtime.js';
 
 export const COUNTRIES = [
   'US',

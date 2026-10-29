@@ -11,14 +11,14 @@ const { mocks } = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('$lib/server/auth', () => ({ getUserRole: mocks.getUserRole }));
-vi.mock('$lib/server/teams', () => ({ isUserAdmin: mocks.isUserAdmin }));
-vi.mock('$lib/server/verifications', () => ({
+vi.mock('#lib/server/auth.js', () => ({ getUserRole: mocks.getUserRole }));
+vi.mock('#lib/server/teams.js', () => ({ isUserAdmin: mocks.isUserAdmin }));
+vi.mock('#lib/server/verifications.js', () => ({
   upsertVerification: mocks.upsertVerification,
   listVerifications: mocks.listVerifications,
   setUserVerificationPref: mocks.setUserVerificationPref,
 }));
-vi.mock('$lib/server/propublica', () => ({ lookupNonprofitByEin: mocks.lookupNonprofitByEin }));
+vi.mock('#lib/server/propublica.js', () => ({ lookupNonprofitByEin: mocks.lookupNonprofitByEin }));
 
 import { POST, GET } from '../../routes/api/verifications/+server';
 import { createRequestEvent } from '../helpers/createLoadEvent';

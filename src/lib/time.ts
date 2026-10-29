@@ -1,6 +1,6 @@
 // Dates in plain words, in the visitor's language. `now` is a parameter so the wording is testable.
-import * as m from '$lib/paraglide/messages.js';
-import { getLocale } from '$lib/paraglide/runtime.js';
+import * as m from '#lib/paraglide/messages.js';
+import { getLocale } from '#lib/paraglide/runtime.js';
 
 const shortDay = (date: Date) =>
   date.toLocaleDateString(getLocale(), { month: 'short', day: 'numeric' });

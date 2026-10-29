@@ -4,8 +4,8 @@
   import type { Snippet } from 'svelte';
   import Link from '../Link.svelte';
   import BlockCloth from './BlockCloth.svelte';
-  import type { BlockDef, PanelKind } from '$lib/quilt/world';
-  import * as m from '$lib/paraglide/messages.js';
+  import type { BlockDef, PanelKind } from '#lib/quilt/world.js';
+  import * as m from '#lib/paraglide/messages.js';
 
   type Props = {
     kind: PanelKind;

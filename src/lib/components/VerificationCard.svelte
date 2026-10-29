@@ -1,11 +1,11 @@
 <script lang="ts">
   // A nonprofit's verification: its status, and the form to send or update it.
   import { onMount } from 'svelte';
-  import { callApi } from '$lib/api';
-  import { relativeTime } from '$lib/time';
-  import { COUNTRIES, countryName, taxIdLabel } from '$lib/verification';
-  import type { NgoVerification } from '$lib/types';
-  import * as m from '$lib/paraglide/messages.js';
+  import { callApi } from '#lib/api.js';
+  import { relativeTime } from '#lib/time.js';
+  import { COUNTRIES, countryName, taxIdLabel } from '#lib/verification.js';
+  import type { NgoVerification } from '#lib/types.js';
+  import * as m from '#lib/paraglide/messages.js';
 
   let verification = $state<NgoVerification | null>(null);
   let loading = $state(true);

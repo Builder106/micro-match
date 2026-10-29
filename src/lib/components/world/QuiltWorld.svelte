@@ -13,11 +13,11 @@
   import LabelBlock from './LabelBlock.svelte';
   import Link from '../Link.svelte';
   import { createCamera, type Camera } from '$engine/camera';
-  import { BLOCKS, GRID, block, clothFill, focusForPath, seams, toPixels, worldSize, type BlockId, type Point } from '$lib/quilt/world';
-  import type { PatchIcon } from '$lib/quilt/icons';
-  import type { QuiltPatch } from '$lib/quilt/patches';
-  import { taskLang } from '$lib/translation';
-  import * as m from '$lib/paraglide/messages.js';
+  import { BLOCKS, GRID, block, clothFill, focusForPath, seams, toPixels, worldSize, type BlockId, type Point } from '#lib/quilt/world.js';
+  import type { PatchIcon } from '#lib/quilt/icons.js';
+  import type { QuiltPatch } from '#lib/quilt/patches.js';
+  import { taskLang } from '#lib/translation.js';
+  import * as m from '#lib/paraglide/messages.js';
 
   type TaskPreview = { id: string; title: string; estimatedMinutes?: number; language?: string; translation?: { status: string } };
   type Props = {

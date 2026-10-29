@@ -9,11 +9,12 @@ const { envState, mocks } = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('$env/dynamic/private', () => ({
-  env: new Proxy(envState, { get: (_, key: string) => envState[key] }),
-}));
-vi.mock('$lib/server/teams', () => ({ isUserAdmin: mocks.isUserAdmin }));
-vi.mock('$lib/server/verifications', () => ({
+vi.mock(
+  '$app/env/private',
+  () => new Proxy(envState, { get: (_, key: string) => envState[key], has: () => true }),
+);
+vi.mock('#lib/server/teams.js', () => ({ isUserAdmin: mocks.isUserAdmin }));
+vi.mock('#lib/server/verifications.js', () => ({
   getVerificationByUserId: mocks.getVerificationByUserId,
 }));
 vi.mock('node-appwrite', () => ({

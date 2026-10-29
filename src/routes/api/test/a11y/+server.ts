@@ -1,8 +1,8 @@
 import { error, type RequestHandler } from '@sveltejs/kit';
-import { awardBadge, createClaim, createTask, getTaskById } from '$lib/server/appwrite';
-import { createBadgeDefinition, listBadgeDefinitions } from '$lib/server/badgeDefs';
-import { createSession, SESSION_TTL_SECONDS } from '$lib/server/session';
-import { upsertVerification } from '$lib/server/verifications';
+import { awardBadge, createClaim, createTask, getTaskById } from '#lib/server/appwrite.js';
+import { createBadgeDefinition, listBadgeDefinitions } from '#lib/server/badgeDefs.js';
+import { createSession, SESSION_TTL_SECONDS } from '#lib/server/session.js';
+import { upsertVerification } from '#lib/server/verifications.js';
 
 function isHarnessEnabled(): boolean {
   return process.env.NODE_ENV !== 'production' && process.env.PLAYWRIGHT_A11Y_HARNESS === '1';

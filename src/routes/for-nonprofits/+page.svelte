@@ -1,9 +1,9 @@
 <script lang="ts">
-  import Seo from '$lib/components/Seo.svelte';
-  import Link from '$lib/components/Link.svelte';
-  import PatchDesigner from '$lib/components/PatchDesigner.svelte';
-  import type { PatchIcon } from '$lib/quilt/icons';
-  import * as m from '$lib/paraglide/messages.js';
+  import Seo from '#lib/components/Seo.svelte';
+  import Link from '#lib/components/Link.svelte';
+  import PatchDesigner from '#lib/components/PatchDesigner.svelte';
+  import type { PatchIcon } from '#lib/quilt/icons.js';
+  import * as m from '#lib/paraglide/messages.js';
 
   let color = $state('#5E7D4F');
   let icon = $state<PatchIcon>('leaf');

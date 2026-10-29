@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { sitemapXml } from '$lib/sitemap';
+import { sitemapXml } from '#lib/sitemap.js';
 
 export const GET: RequestHandler = ({ url }) =>
   new Response(sitemapXml(url.origin), {

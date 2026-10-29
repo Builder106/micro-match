@@ -2,12 +2,13 @@
 
 import type { ServerLoadEvent, LoadEvent, RequestEvent, Cookies } from '@sveltejs/kit';
 import { vi } from 'vitest';
+import type { RouteId as AppRouteId } from '$app/types';
 
 export type PageLoadEvent<
   Params extends Record<string, string> = Record<string, never>,
   Data extends Record<string, unknown> = Record<string, unknown>,
   ParentData extends Record<string, unknown> = DefaultParentData,
-  RouteId extends string | null = never,
+  RouteId extends AppRouteId | null = never,
 > = LoadEvent<Params, Data, ParentData, RouteId>;
 
 type LoadTracing = ServerLoadEvent['tracing'];
@@ -18,7 +19,7 @@ type DefaultParentData = {
   origin: string;
   locale: 'en' | 'es' | 'fr' | 'de' | 'pt' | 'zh' | 'ar';
 };
-export type CookieSerializeOptions = Parameters<Cookies['set']>[2];
+export type CookieSerializeOptions = NonNullable<Parameters<Cookies['set']>[2]>;
 type MockLocals = Omit<Partial<App.Locals>, 'userRole'> & {
   userRole?: App.Locals['userRole'] | null;
 };
@@ -48,9 +49,9 @@ export interface MockCookies extends Cookies {
   get: ReturnType<typeof vi.fn<(name: string) => string | undefined>>;
   getAll: ReturnType<typeof vi.fn<() => Array<{ name: string; value: string }>>>;
   set: ReturnType<
-    typeof vi.fn<(name: string, value: string, opts: CookieSerializeOptions) => void>
+    typeof vi.fn<(name: string, value: string, opts?: CookieSerializeOptions) => void>
   >;
-  delete: ReturnType<typeof vi.fn<(name: string, opts: CookieSerializeOptions) => void>>;
+  delete: ReturnType<typeof vi.fn<(name: string, opts?: CookieSerializeOptions) => void>>;
   serialize: ReturnType<
     typeof vi.fn<(name: string, value: string, opts?: CookieSerializeOptions) => string>
   >;
@@ -63,12 +64,13 @@ export function createMockCookies(initial: Record<string, string> = {}): MockCoo
     _store: store,
     get: vi.fn((name: string) => store.get(name)),
     getAll: vi.fn(() => Array.from(store.entries()).map(([name, value]) => ({ name, value }))),
-    set: vi.fn((name: string, value: string, _opts: CookieSerializeOptions) => {
+    set: vi.fn((name: string, value: string, _opts?: CookieSerializeOptions) => {
       store.set(name, value);
     }),
-    delete: vi.fn((name: string, _opts: CookieSerializeOptions) => {
+    delete: vi.fn((name: string, _opts?: CookieSerializeOptions) => {
       store.delete(name);
     }),
+    parse: vi.fn() as unknown as Cookies['parse'],
     serialize: vi.fn(
       (name: string, value: string, _opts?: CookieSerializeOptions) =>
         `${name}=${encodeURIComponent(value)}`,
@@ -81,7 +83,7 @@ export function createMockCookies(initial: Record<string, string> = {}): MockCoo
 export interface CreateServerLoadEventOptions<
   Params extends Record<string, string> = Record<string, never>,
   ParentData extends Record<string, unknown> = DefaultParentData,
-  RouteId extends string | null = never,
+  RouteId extends AppRouteId | null = never,
 > {
   url?: URL | string;
   params?: Params;
@@ -111,7 +113,7 @@ export interface CreatePageLoadEventOptions<
   Params extends Record<string, string> = Record<string, never>,
   Data extends Record<string, unknown> = Record<string, unknown>,
   ParentData extends Record<string, unknown> = DefaultParentData,
-  RouteId extends string | null = never,
+  RouteId extends AppRouteId | null = never,
 > {
   url?: URL | string;
   params?: Params;
@@ -129,7 +131,7 @@ export interface CreatePageLoadEventOptions<
 export function createServerLoadEvent<
   Params extends Record<string, string> = Record<string, never>,
   ParentData extends Record<string, unknown> = DefaultParentData,
-  RouteId extends string | null = never,
+  RouteId extends AppRouteId | null = never,
 >(
   options: CreateServerLoadEventOptions<Params, ParentData, RouteId> = {},
 ): ServerLoadEvent<Params, ParentData, RouteId> {
@@ -204,7 +206,7 @@ export function createServerLoadEvent<
 export function createRequestEvent<
   Params extends Record<string, string> = Record<string, never>,
   ParentData extends Record<string, unknown> = DefaultParentData,
-  RouteId extends string | null = never,
+  RouteId extends AppRouteId | null = never,
 >(
   options: CreateServerLoadEventOptions<Params, ParentData, RouteId> = {},
 ): RequestEvent<Params, RouteId> {
@@ -227,7 +229,7 @@ export function createPageLoadEvent<
   Params extends Record<string, string> = Record<string, string>,
   Data extends Record<string, unknown> = Record<string, unknown>,
   ParentData extends Record<string, unknown> = DefaultParentData,
-  RouteId extends string | null = never,
+  RouteId extends AppRouteId | null = never,
 >(
   options: CreatePageLoadEventOptions<Params, Data, ParentData, RouteId> = {},
 ): PageLoadEvent<Params, Data, ParentData, RouteId> {
@@ -268,14 +270,14 @@ export interface CreateLoadEvent {
     Params extends Record<string, string> = Record<string, never>,
     Data extends Record<string, unknown> = Record<string, unknown>,
     ParentData extends Record<string, unknown> = DefaultParentData,
-    RouteId extends string | null = never,
+    RouteId extends AppRouteId | null = never,
   >(
     options: CreatePageLoadEventOptions<Params, Data, ParentData, RouteId> & { type: 'page' },
   ): PageLoadEvent<Params, Data, ParentData, RouteId>;
   <
     Params extends Record<string, string> = Record<string, never>,
     ParentData extends Record<string, unknown> = DefaultParentData,
-    RouteId extends string | null = never,
+    RouteId extends AppRouteId | null = never,
   >(
     options?: CreateServerLoadEventOptions<Params, ParentData, RouteId> & { type?: 'server' },
   ): ServerLoadEvent<Params, ParentData, RouteId>;
@@ -303,7 +305,7 @@ export function createServerLoadEventFor<Handler extends (...args: never[]) => u
   options: CreateServerLoadEventOptions<
     Record<string, string>,
     DefaultParentData,
-    string | null
+    AppRouteId | null
   > = {},
 ): Parameters<Handler>[0] {
   return createServerLoadEvent(options) as Parameters<Handler>[0];

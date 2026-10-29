@@ -6,12 +6,12 @@
   import { onMount } from 'svelte';
   import { gsap } from 'gsap';
   import { idle, startIdle } from '$engine/idle';
-  import { layoutQuilt, polygonPath, linePath, inset } from '$lib/quilt/layout';
-  import { PATCH_ICONS } from '$lib/quilt/icons';
+  import { layoutQuilt, polygonPath, linePath, inset } from '#lib/quilt/layout.js';
+  import { PATCH_ICONS } from '#lib/quilt/icons.js';
   import Needle from './art/Needle.svelte';
-  import type { QuiltPatch } from '$lib/quilt/patches';
-  import * as m from '$lib/paraglide/messages.js';
-  import { getLocale } from '$lib/paraglide/runtime.js';
+  import type { QuiltPatch } from '#lib/quilt/patches.js';
+  import * as m from '#lib/paraglide/messages.js';
+  import { getLocale } from '#lib/paraglide/runtime.js';
 
   type Props = {
     patches: QuiltPatch[];

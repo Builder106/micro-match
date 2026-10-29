@@ -2,8 +2,8 @@
   // The languages, each a link to this same page in it and named in its own language. A full
   // page load, so every string, the direction and the task translations switch together.
   import { page } from '$app/state';
-  import { locales, localizedHref, type Locale } from '$lib/locale';
-  import * as m from '$lib/paraglide/messages.js';
+  import { locales, localizedHref, type Locale } from '#lib/locale.js';
+  import * as m from '#lib/paraglide/messages.js';
 
   const NAMES: Record<Locale, string> = {
     en: 'English',

@@ -1,9 +1,9 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import Seo from '$lib/components/Seo.svelte';
-  import Link from '$lib/components/Link.svelte';
-  import Needle from '$lib/components/art/Needle.svelte';
-  import * as m from '$lib/paraglide/messages.js';
+  import Seo from '#lib/components/Seo.svelte';
+  import Link from '#lib/components/Link.svelte';
+  import Needle from '#lib/components/art/Needle.svelte';
+  import * as m from '#lib/paraglide/messages.js';
 
   const missing = $derived(page.status === 404);
 </script>

@@ -1,22 +1,22 @@
 import type { PageServerLoad } from './$types';
-import { env } from '$env/dynamic/private';
-import { getTaskById } from '$lib/server/appwrite';
-import { getPatchDesignForTask } from '$lib/server/quilt';
-import { getVerificationByUserId } from '$lib/server/verifications';
-import { isSupportedTranslationCode } from '$lib/translation';
+import { APPWRITE_ENDPOINT, APPWRITE_PROJECT_ID, APPWRITE_API_KEY } from '$app/env/private';
+import { getTaskById } from '#lib/server/appwrite.js';
+import { getPatchDesignForTask } from '#lib/server/quilt.js';
+import { getVerificationByUserId } from '#lib/server/verifications.js';
+import { isSupportedTranslationCode } from '#lib/translation.js';
 import { error } from '@sveltejs/kit';
 
 async function lookupOrgName(orgId: string | undefined): Promise<string | null> {
   if (!orgId) return null;
-  if (!env.APPWRITE_ENDPOINT || !env.APPWRITE_PROJECT_ID || !env.APPWRITE_API_KEY) return null;
+  if (!APPWRITE_ENDPOINT || !APPWRITE_PROJECT_ID || !APPWRITE_API_KEY) return null;
   try {
     const { Client, Users } = await import('node-appwrite');
     const client = new Client()
-      .setEndpoint(env.APPWRITE_ENDPOINT)
-      .setProject(env.APPWRITE_PROJECT_ID)
-      .setKey(env.APPWRITE_API_KEY);
+      .setEndpoint(APPWRITE_ENDPOINT)
+      .setProject(APPWRITE_PROJECT_ID)
+      .setKey(APPWRITE_API_KEY);
     const users = new Users(client);
-    const u = await users.get<import('$lib/types').UserPreferences>({ userId: orgId });
+    const u = await users.get<import('#lib/types.js').UserPreferences>({ userId: orgId });
     const prefs = u?.prefs ?? {};
     const orgName =
       typeof prefs.orgName === 'string' && prefs.orgName.trim() ? prefs.orgName.trim() : null;

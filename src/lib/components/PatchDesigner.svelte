@@ -2,9 +2,9 @@
   // Design a patch: the fabric (a swatch or any hex) and the embroidered icon, with a live
   // preview. Nonprofits use it for real in the badge editor; the public page uses it as a demo.
   import PatchPreview from './PatchPreview.svelte';
-  import { SWATCHES, normalizeHex } from '$lib/quilt/fabrics';
-  import { PATCH_ICON_NAMES, PATCH_ICON_LABELS, type PatchIcon } from '$lib/quilt/icons';
-  import * as m from '$lib/paraglide/messages.js';
+  import { SWATCHES, normalizeHex } from '#lib/quilt/fabrics.js';
+  import { PATCH_ICON_NAMES, PATCH_ICON_LABELS, type PatchIcon } from '#lib/quilt/icons.js';
+  import * as m from '#lib/paraglide/messages.js';
 
   type Props = { color?: string; icon?: PatchIcon; label?: string; idPrefix?: string };
   let { color = $bindable('#FF6B6B'), icon = $bindable<PatchIcon>('heart'), label = '', idPrefix = 'patch' }: Props = $props();

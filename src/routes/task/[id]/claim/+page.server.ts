@@ -1,7 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
-import { getTaskById } from '$lib/server/appwrite';
-import { getPatchDesignForTask } from '$lib/server/quilt';
+import { getTaskById } from '#lib/server/appwrite.js';
+import { getPatchDesignForTask } from '#lib/server/quilt.js';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
   const userRole = locals.userRole ?? 'anonymous';

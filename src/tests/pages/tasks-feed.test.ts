@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 const { mocks } = vi.hoisted(() => ({ mocks: { getTasks: vi.fn(), translateTasks: vi.fn() } }));
-vi.mock('$lib/server/appwrite', () => ({ getTasks: mocks.getTasks }));
-vi.mock('$lib/server/taskTranslation', () => ({ translateTasks: mocks.translateTasks }));
+vi.mock('#lib/server/appwrite.js', () => ({ getTasks: mocks.getTasks }));
+vi.mock('#lib/server/taskTranslation.js', () => ({ translateTasks: mocks.translateTasks }));
 
 import { load } from '../../routes/tasks/+page.server';
 import { createServerLoadEventFor, requireLoadResult } from '../helpers/createLoadEvent';

@@ -16,13 +16,11 @@ const { mocks, publicEnvState } = vi.hoisted(() => ({
   publicEnvState: {} as Record<string, string | undefined>,
 }));
 
-vi.mock('$env/static/public', () => ({
-  PUBLIC_APPWRITE_ENDPOINT: 'https://fake.appwrite.io/v1',
-  PUBLIC_APPWRITE_PROJECT_ID: 'proj',
-}));
-vi.mock('$env/dynamic/public', () => ({
-  env: new Proxy(publicEnvState, { get: (_, key: string) => publicEnvState[key] }),
-}));
+vi.mock(
+  '$app/env/public',
+  () =>
+    new Proxy(publicEnvState, { get: (_, key: string) => publicEnvState[key], has: () => true }),
+);
 vi.mock('appwrite', () => ({
   Client: class {
     setEndpoint() {

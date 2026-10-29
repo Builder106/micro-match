@@ -7,14 +7,15 @@ const { mocks } = vi.hoisted(() => ({
   mocks: { listMemberships: vi.fn() },
 }));
 
-vi.mock('$env/dynamic/private', () => ({
-  env: {
+vi.mock('$app/env/private', () => {
+  const env: Record<string, string> = {
     APPWRITE_ENDPOINT: 'https://fake.appwrite.io/v1',
     APPWRITE_PROJECT_ID: 'proj',
     APPWRITE_API_KEY: 'key',
     APPWRITE_ADMIN_TEAM_ID: 'admins-team',
-  },
-}));
+  };
+  return new Proxy(env, { get: (_, key: string) => env[key], has: () => true });
+});
 vi.mock('node-appwrite', () => ({
   Client: class {
     setEndpoint() {

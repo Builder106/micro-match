@@ -1,4 +1,4 @@
-import { env } from '$env/dynamic/private';
+import { NODE_ENV } from '$app/env/private';
 import type { Actions, PageServerLoad } from './$types';
 import { fail } from '@sveltejs/kit';
 
@@ -29,7 +29,7 @@ export const actions: Actions = {
       // For now, we update prefs on the client after navigate; server action just acknowledges.
       return { ok: true, role, displayName, bio, orgName };
     } catch (e) {
-      if (env.NODE_ENV !== 'production') console.error('Profile update failed', e);
+      if (NODE_ENV !== 'production') console.error('Profile update failed', e);
       return fail(400, { message: 'Failed to update profile' });
     }
   },

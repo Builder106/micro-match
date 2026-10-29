@@ -1,6 +1,6 @@
 // The community quilt, read from real claims. Nothing here invents a patch: every patch is a
 // claim, and only claims a person approved count as sewn in.
-import type { BadgeDefinition, Claim, Task } from '$lib/types';
+import type { BadgeDefinition, Claim, Task } from '#lib/types.js';
 import {
   designFor,
   badgeForTask,
@@ -8,7 +8,7 @@ import {
   patchFromClaim,
   type PatchDesign,
   type QuiltPatch,
-} from '$lib/quilt/patches';
+} from '#lib/quilt/patches.js';
 import { getClaims, getTasks } from './appwrite';
 import { listBadgeDefinitions } from './badgeDefs';
 

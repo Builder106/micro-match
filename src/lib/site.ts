@@ -1,7 +1,7 @@
 // Site map: which pages are public (smooth scroll and the motion engine) and which are app
 // pages (native scroll), plus the navigation lists shared by the header and footer.
 import { stripLocale, localizedHref, type Locale } from './locale';
-import * as m from '$lib/paraglide/messages.js';
+import * as m from '#lib/paraglide/messages.js';
 
 export const PUBLIC_PATHS = [
   '/',
