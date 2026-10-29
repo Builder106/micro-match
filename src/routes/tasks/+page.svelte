@@ -18,7 +18,6 @@
   // Keep the URL in step with the filters, so a filtered feed can be shared or bookmarked.
   $effect(() => {
     const search = paramsFromFilters(filters);
-    // eslint-disable-next-line svelte/no-navigation-without-resolve -- this rewrites only the query string of the current route
     if (search !== page.url.search) void goto(`${page.url.pathname}${search}`, { state: {}, shallow: true, replace: true });
   });
 
