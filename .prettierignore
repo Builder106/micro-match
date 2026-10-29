@@ -1,3 +1,8 @@
 # HyperFrames composition sources; inline whitespace affects rendered video
 trailer/
 ui-demo/
+project.inlang/.lix/
+project.inlang/.meta.json
+project.inlang/README.md
+project.inlang/cache/
+src/lib/paraglide/
