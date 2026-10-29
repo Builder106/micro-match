@@ -1,4 +1,3 @@
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getTaskById } from '$lib/server/appwrite';
 import {
@@ -16,15 +15,15 @@ export const POST: RequestHandler = async ({ request }) => {
   try {
     body = (await request.json()) as TranslationRequestBody;
   } catch {
-    return json({ error: 'Invalid JSON body' }, { status: 400 });
+    return Response.json({ error: 'Invalid JSON body' }, { status: 400 });
   }
 
   if (typeof body !== 'object' || body === null) {
-    return json({ error: 'taskIds and locale are required' }, { status: 400 });
+    return Response.json({ error: 'taskIds and locale are required' }, { status: 400 });
   }
   const { taskIds, locale } = body;
   if (!isSupportedTaskLocale(locale)) {
-    return json({ error: 'Unsupported translation language' }, { status: 400 });
+    return Response.json({ error: 'Unsupported translation language' }, { status: 400 });
   }
   if (
     !Array.isArray(taskIds) ||
@@ -32,7 +31,7 @@ export const POST: RequestHandler = async ({ request }) => {
     taskIds.length > MAX_TASK_TRANSLATION_BATCH_SIZE ||
     taskIds.some((id) => typeof id !== 'string' || !id.trim())
   ) {
-    return json(
+    return Response.json(
       { error: `taskIds must contain 1-${MAX_TASK_TRANSLATION_BATCH_SIZE} task IDs` },
       { status: 400 },
     );
@@ -53,5 +52,8 @@ export const POST: RequestHandler = async ({ request }) => {
       translation,
     }),
   );
-  return json({ tasks: displayTasks }, { headers: { 'Cache-Control': 'private, max-age=900' } });
+  return Response.json(
+    { tasks: displayTasks },
+    { headers: { 'Cache-Control': 'private, max-age=900' } },
+  );
 };

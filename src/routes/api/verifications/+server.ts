@@ -1,5 +1,4 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { json } from '@sveltejs/kit';
 import {
   listVerifications,
   upsertVerification,
@@ -21,11 +20,11 @@ import { lookupNonprofitByEin } from '$lib/server/propublica';
 
 export const POST: RequestHandler = async (event) => {
   const role = await getUserRole(event);
-  if (role !== 'ngo') return json({ error: 'Forbidden' }, { status: 403 });
+  if (role !== 'ngo') return Response.json({ error: 'Forbidden' }, { status: 403 });
 
   const session = event.locals.session;
   const userId = session?.user?.id;
-  if (!userId) return json({ error: 'Not signed in' }, { status: 401 });
+  if (!userId) return Response.json({ error: 'Not signed in' }, { status: 401 });
 
   interface VerificationPostPayload {
     orgName?: string;
@@ -37,7 +36,7 @@ export const POST: RequestHandler = async (event) => {
   try {
     body = await event.request.json();
   } catch {
-    return json({ error: 'Invalid JSON body' }, { status: 400 });
+    return Response.json({ error: 'Invalid JSON body' }, { status: 400 });
   }
 
   const orgName = String(body.orgName ?? '').trim();
@@ -47,21 +46,21 @@ export const POST: RequestHandler = async (event) => {
   const taxId = String(body.taxId ?? '').trim();
   const docFileId = body.docFileId ? String(body.docFileId) : undefined;
 
-  if (!orgName) return json({ error: 'orgName is required' }, { status: 400 });
+  if (!orgName) return Response.json({ error: 'orgName is required' }, { status: 400 });
   if (!country || country.length !== 2)
-    return json({ error: 'country must be ISO-3166 alpha-2' }, { status: 400 });
-  if (!taxId) return json({ error: 'taxId is required' }, { status: 400 });
+    return Response.json({ error: 'country must be ISO-3166 alpha-2' }, { status: 400 });
+  if (!taxId) return Response.json({ error: 'taxId is required' }, { status: 400 });
 
   const v = await upsertVerification({ userId, orgName, country, taxId, docFileId });
   await setUserVerificationPref(userId, 'pending', event.locals.locale);
-  return json({ ok: true, verification: v });
+  return Response.json({ ok: true, verification: v });
 };
 
 export const GET: RequestHandler = async (event) => {
   const session = event.locals.session;
   const userId = session?.user?.id;
   if (!userId || !(await isUserAdmin(userId))) {
-    return json({ error: 'Forbidden' }, { status: 403 });
+    return Response.json({ error: 'Forbidden' }, { status: 403 });
   }
 
   const status = event.url.searchParams.get('status') as 'pending' | 'approved' | 'rejected' | null;
@@ -78,5 +77,5 @@ export const GET: RequestHandler = async (event) => {
     }),
   );
 
-  return json({ verifications: enriched });
+  return Response.json({ verifications: enriched });
 };

@@ -1,5 +1,4 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { json } from '@sveltejs/kit';
 import { deleteSession } from '$lib/server/session';
 import { env } from '$env/dynamic/private';
 
@@ -22,5 +21,5 @@ export const POST: RequestHandler = async (event) => {
     secure,
     maxAge: 0,
   });
-  return json({ ok: true });
+  return Response.json({ ok: true });
 };

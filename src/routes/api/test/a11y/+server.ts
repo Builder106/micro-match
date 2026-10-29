@@ -1,4 +1,4 @@
-import { error, json, type RequestHandler } from '@sveltejs/kit';
+import { error, type RequestHandler } from '@sveltejs/kit';
 import { awardBadge, createClaim, createTask, getTaskById } from '$lib/server/appwrite';
 import { createBadgeDefinition, listBadgeDefinitions } from '$lib/server/badgeDefs';
 import { createSession, SESSION_TTL_SECONDS } from '$lib/server/session';
@@ -119,7 +119,9 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
   const namespace = requireNamespace(body.namespace);
 
   if (body.action === 'seed')
-    return json(await seedFixtures(namespace), { headers: { 'cache-control': 'no-store' } });
+    return Response.json(await seedFixtures(namespace), {
+      headers: { 'cache-control': 'no-store' },
+    });
 
   if (body.action === 'session' && body.role && body.role in identities) {
     const identity = namespaceIdentity(namespace, body.role as keyof typeof identities);
@@ -138,11 +140,11 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
       secure: false,
       maxAge: SESSION_TTL_SECONDS,
     });
-    return json(
+    return Response.json(
       { namespace, role: body.role, userId: identity.userId },
       { headers: { 'cache-control': 'no-store' } },
     );
   }
 
-  return json({ error: 'Unsupported accessibility harness action.' }, { status: 400 });
+  return Response.json({ error: 'Unsupported accessibility harness action.' }, { status: 400 });
 };

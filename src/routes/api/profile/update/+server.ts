@@ -1,5 +1,4 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { json } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 
 /**
@@ -41,7 +40,7 @@ async function getUserId(event: Parameters<RequestHandler>[0]): Promise<string |
 
 export const POST: RequestHandler = async (event) => {
   const userId = await getUserId(event);
-  if (!userId) return json({ error: 'Unauthorized' }, { status: 401 });
+  if (!userId) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
   interface UpdateProfileBody {
     displayName?: string;
@@ -54,7 +53,7 @@ export const POST: RequestHandler = async (event) => {
   try {
     body = (await event.request.json()) as UpdateProfileBody;
   } catch {
-    return json({ error: 'Invalid JSON' }, { status: 400 });
+    return Response.json({ error: 'Invalid JSON' }, { status: 400 });
   }
 
   const displayName = typeof body.displayName === 'string' ? body.displayName.trim() : undefined;
@@ -74,7 +73,7 @@ export const POST: RequestHandler = async (event) => {
       await users.updateName({ userId, name: displayName });
     } catch (err) {
       if (env.NODE_ENV !== 'production') console.error('updateName failed', err);
-      return json({ error: 'Could not update name' }, { status: 500 });
+      return Response.json({ error: 'Could not update name' }, { status: 500 });
     }
   }
 
@@ -90,9 +89,9 @@ export const POST: RequestHandler = async (event) => {
       await users.updatePrefs({ userId, prefs: next });
     } catch (err) {
       if (env.NODE_ENV !== 'production') console.error('updatePrefs failed', err);
-      return json({ error: 'Could not update profile' }, { status: 500 });
+      return Response.json({ error: 'Could not update profile' }, { status: 500 });
     }
   }
 
-  return json({ ok: true });
+  return Response.json({ ok: true });
 };

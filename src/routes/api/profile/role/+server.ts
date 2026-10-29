@@ -1,5 +1,4 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { json } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import {
   NGO_TEAM_ID,
@@ -46,7 +45,7 @@ async function getUserId(event: Parameters<RequestHandler>[0]): Promise<string |
 
 export const POST: RequestHandler = async (event) => {
   const userId = await getUserId(event);
-  if (!userId) return json({ error: 'Unauthorized' }, { status: 401 });
+  if (!userId) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
   interface RolePayload {
     newRole?: string;
@@ -55,11 +54,11 @@ export const POST: RequestHandler = async (event) => {
   try {
     body = await event.request.json();
   } catch {
-    return json({ error: 'Invalid JSON' }, { status: 400 });
+    return Response.json({ error: 'Invalid JSON' }, { status: 400 });
   }
   const newRole = String(body?.newRole ?? '').trim();
   if (newRole !== 'volunteer' && newRole !== 'ngo') {
-    return json({ error: 'newRole must be "volunteer" or "ngo"' }, { status: 400 });
+    return Response.json({ error: 'newRole must be "volunteer" or "ngo"' }, { status: 400 });
   }
 
   // Read current prefs to detect transition direction.
@@ -75,7 +74,7 @@ export const POST: RequestHandler = async (event) => {
     const me = await users.get({ userId });
     oldRole = String(me?.prefs?.role ?? '');
   } catch {
-    return json({ error: 'User not found' }, { status: 404 });
+    return Response.json({ error: 'User not found' }, { status: 404 });
   }
 
   const downgrading = oldRole === 'ngo' && newRole === 'volunteer';
@@ -102,7 +101,7 @@ export const POST: RequestHandler = async (event) => {
     await users.updatePrefs({ userId, prefs: nextPrefs });
   } catch (err) {
     console.error('updatePrefs failed', err);
-    return json({ error: 'Could not update profile' }, { status: 500 });
+    return Response.json({ error: 'Could not update profile' }, { status: 500 });
   }
 
   // 3. Reconcile team memberships.
@@ -116,5 +115,5 @@ export const POST: RequestHandler = async (event) => {
     // Continue — prefs are correct, team will be retried on next sign-in.
   }
 
-  return json({ ok: true, role: newRole, downgraded: downgrading, tasksUpdated });
+  return Response.json({ ok: true, role: newRole, downgraded: downgrading, tasksUpdated });
 };

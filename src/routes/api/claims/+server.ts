@@ -1,5 +1,4 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { json } from '@sveltejs/kit';
 import { getClaims } from '$lib/server/appwrite';
 import { getUserRole } from '$lib/server/auth';
 
@@ -14,18 +13,18 @@ export const GET: RequestHandler = async (event) => {
   // Authentication check
   const sessionUserId = locals.session?.user?.id;
   if (!sessionUserId) {
-    return json({ error: 'Authentication required', data: null }, { status: 401 });
+    return Response.json({ error: 'Authentication required', data: null }, { status: 401 });
   }
 
   // Authorization check
   const role = await getUserRole(event);
   if (role === 'anonymous') {
-    return json({ error: 'Invalid session', data: null }, { status: 401 });
+    return Response.json({ error: 'Invalid session', data: null }, { status: 401 });
   }
 
   // Only allow volunteers and NGOs to access their own claims
   if (role !== 'volunteer' && role !== 'ngo' && role !== 'user') {
-    return json({ error: 'Insufficient permissions', data: null }, { status: 403 });
+    return Response.json({ error: 'Insufficient permissions', data: null }, { status: 403 });
   }
 
   try {
@@ -37,7 +36,7 @@ export const GET: RequestHandler = async (event) => {
 
     // Validate status filter
     if (statusFilter && !['pending', 'approved', 'rejected'].includes(statusFilter)) {
-      return json({ error: 'Invalid status filter', data: null }, { status: 400 });
+      return Response.json({ error: 'Invalid status filter', data: null }, { status: 400 });
     }
 
     const claims = await getClaims({ userId: sessionUserId });
@@ -53,7 +52,7 @@ export const GET: RequestHandler = async (event) => {
     const totalCount = filteredClaims.length;
 
     // Response with consistent envelope
-    return json(
+    return Response.json(
       {
         data: paginatedClaims,
         meta: {
@@ -81,7 +80,7 @@ export const GET: RequestHandler = async (event) => {
     });
 
     // Don't leak internal error details
-    return json(
+    return Response.json(
       {
         error: 'Internal server error',
         data: null,

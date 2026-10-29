@@ -1,5 +1,4 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { json } from '@sveltejs/kit';
 import { expireTasks, autoArchiveTasks } from '$lib/server/appwrite';
 import { isUserAdmin } from '$lib/server/teams';
 
@@ -12,13 +11,13 @@ async function requireAdmin(event: Parameters<RequestHandler>[0]): Promise<boole
 }
 
 export const GET: RequestHandler = async (event) => {
-  if (!(await requireAdmin(event))) return json({ error: 'Forbidden' }, { status: 403 });
+  if (!(await requireAdmin(event))) return Response.json({ error: 'Forbidden' }, { status: 403 });
 
   try {
     // Run both maintenance operations
     const [expiredCount, archivedCount] = await Promise.all([expireTasks(), autoArchiveTasks()]);
 
-    return json({
+    return Response.json({
       success: true,
       expiredCount,
       archivedCount,
@@ -26,12 +25,12 @@ export const GET: RequestHandler = async (event) => {
     });
   } catch (error) {
     console.error('Task maintenance error:', error);
-    return json({ error: 'Failed to perform maintenance' }, { status: 500 });
+    return Response.json({ error: 'Failed to perform maintenance' }, { status: 500 });
   }
 };
 
 export const POST: RequestHandler = async (event) => {
-  if (!(await requireAdmin(event))) return json({ error: 'Forbidden' }, { status: 403 });
+  if (!(await requireAdmin(event))) return Response.json({ error: 'Forbidden' }, { status: 403 });
 
   try {
     const body = await event.request.json();
@@ -56,15 +55,15 @@ export const POST: RequestHandler = async (event) => {
         break;
       }
       default:
-        return json(
+        return Response.json(
           { error: 'Invalid action. Use "expire", "archive", or "both"' },
           { status: 400 },
         );
     }
 
-    return json({ success: true, ...result });
+    return Response.json({ success: true, ...result });
   } catch (error) {
     console.error('Task maintenance error:', error);
-    return json({ error: 'Failed to perform maintenance' }, { status: 500 });
+    return Response.json({ error: 'Failed to perform maintenance' }, { status: 500 });
   }
 };

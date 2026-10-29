@@ -1,5 +1,4 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { json } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { ADMIN_TEAM_ID } from '$lib/server/teams';
 
@@ -33,26 +32,29 @@ export const POST: RequestHandler = async (event) => {
         }
       } catch {}
     }
-    if (!userId) return json({ error: 'Not signed in' }, { status: 401 });
+    if (!userId) return Response.json({ error: 'Not signed in' }, { status: 401 });
 
     const bucketId = env.APPWRITE_VERIFICATIONS_BUCKET_ID;
     if (!bucketId)
-      return json(
+      return Response.json(
         { error: 'Verification bucket not configured (set APPWRITE_VERIFICATIONS_BUCKET_ID)' },
         { status: 500 },
       );
 
     const form = await event.request.formData();
     const file = form.get('file');
-    if (!(file instanceof File)) return json({ error: 'Missing file' }, { status: 400 });
+    if (!(file instanceof File)) return Response.json({ error: 'Missing file' }, { status: 400 });
 
     // Reasonable cap: 10 MB per doc
     if (file.size > 10 * 1024 * 1024)
-      return json({ error: 'File too large (max 10 MB)' }, { status: 400 });
+      return Response.json({ error: 'File too large (max 10 MB)' }, { status: 400 });
 
     const allowed = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
     if (!allowed.includes(file.type)) {
-      return json({ error: 'Unsupported file type. Use PDF, PNG, JPG, or WebP.' }, { status: 400 });
+      return Response.json(
+        { error: 'Unsupported file type. Use PDF, PNG, JPG, or WebP.' },
+        { status: 400 },
+      );
     }
 
     const { Client, Storage, ID, Permission, Role } = await import('node-appwrite');
@@ -72,9 +74,9 @@ export const POST: RequestHandler = async (event) => {
     }
 
     const created = await storage.createFile({ bucketId, fileId: ID.unique(), file, permissions });
-    return json({ fileId: created?.$id });
+    return Response.json({ fileId: created?.$id });
   } catch (err) {
     console.error('Verification doc upload error', err);
-    return json({ error: 'Upload failed' }, { status: 500 });
+    return Response.json({ error: 'Upload failed' }, { status: 500 });
   }
 };

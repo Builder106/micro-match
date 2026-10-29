@@ -1,5 +1,4 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { json } from '@sveltejs/kit';
 import { createTask, getTasks } from '$lib/server/appwrite';
 import { getUserRole } from '$lib/server/auth';
 import { getVerificationByUserId } from '$lib/server/verifications';
@@ -20,23 +19,23 @@ export const GET: RequestHandler = async () => {
         language: t.language,
       }) satisfies Partial<Task> & { id: string },
   );
-  return json(result);
+  return Response.json(result);
 };
 
 export const POST: RequestHandler = async (event) => {
   const role = await getUserRole(event);
-  if (role !== 'ngo') return json({ error: 'Forbidden' }, { status: 403 });
+  if (role !== 'ngo') return Response.json({ error: 'Forbidden' }, { status: 403 });
 
   const session = event.locals.session;
   const orgId = session?.user?.id;
   if (!orgId) {
-    return json({ error: 'Unauthorized: No user session found' }, { status: 401 });
+    return Response.json({ error: 'Unauthorized: No user session found' }, { status: 401 });
   }
 
   const { request } = event;
   const body = (await request.json()) as Partial<Task>;
   if (!body?.title || !body?.shortDescription) {
-    return json({ error: 'title and shortDescription are required' }, { status: 400 });
+    return Response.json({ error: 'title and shortDescription are required' }, { status: 400 });
   }
 
   // Content Safety: check title, shortDescription, and description
@@ -45,7 +44,7 @@ export const POST: RequestHandler = async (event) => {
     .join('\n\n');
   const moderation = await moderateText(textToCheck);
   if (moderation.blocked) {
-    return json(
+    return Response.json(
       { error: 'Content failed safety checks', reasons: moderation.reasons },
       { status: 400 },
     );
@@ -70,5 +69,5 @@ export const POST: RequestHandler = async (event) => {
     isVerified,
     lastActivityAt: new Date().toISOString(),
   });
-  return json(created, { status: 201 });
+  return Response.json(created, { status: 201 });
 };

@@ -1,15 +1,14 @@
 import { env } from '$env/dynamic/private';
 import type { RequestHandler } from '@sveltejs/kit';
-import { json } from '@sveltejs/kit';
 import { createSession, SESSION_TTL_SECONDS } from '$lib/server/session';
 
 export const POST: RequestHandler = async (event) => {
   try {
     const body = (await event.request.json()) as { jwt?: string | null };
     const jwt = (body?.jwt ?? '').trim();
-    if (!jwt) return json({ error: 'Missing jwt' }, { status: 400 });
+    if (!jwt) return Response.json({ error: 'Missing jwt' }, { status: 400 });
     if (!env.APPWRITE_ENDPOINT || !env.APPWRITE_PROJECT_ID) {
-      return json({ error: 'Authentication service is unavailable' }, { status: 503 });
+      return Response.json({ error: 'Authentication service is unavailable' }, { status: 503 });
     }
 
     const { Client, Account } = await import('node-appwrite');
@@ -23,12 +22,12 @@ export const POST: RequestHandler = async (event) => {
     try {
       user = await account.get<import('$lib/types').UserPreferences>();
     } catch {
-      return json({ error: 'Invalid jwt' }, { status: 401 });
+      return Response.json({ error: 'Invalid jwt' }, { status: 401 });
     }
 
     const email: string = user?.email ?? '';
     const userId: string = user?.$id ?? '';
-    if (!email || !userId) return json({ error: 'Invalid user' }, { status: 401 });
+    if (!email || !userId) return Response.json({ error: 'Invalid user' }, { status: 401 });
 
     // Derive role from prefs or team if needed
     let role: 'user' | 'ngo' | 'volunteer' = 'user';
@@ -88,9 +87,9 @@ export const POST: RequestHandler = async (event) => {
       maxAge: SESSION_TTL_SECONDS,
     });
 
-    return json({ ok: true, role, email, roleSource });
+    return Response.json({ ok: true, role, email, roleSource });
   } catch (err) {
     if (env.NODE_ENV !== 'production') console.error('Session API error:', err);
-    return json({ error: 'Bad request' }, { status: 400 });
+    return Response.json({ error: 'Bad request' }, { status: 400 });
   }
 };

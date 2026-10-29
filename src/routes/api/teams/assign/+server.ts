@@ -1,5 +1,4 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { json } from '@sveltejs/kit';
 import { getUserRole } from '$lib/server/auth';
 import {
   NGO_TEAM_ID,
@@ -32,10 +31,10 @@ async function getUserId(event: Parameters<RequestHandler>[0]): Promise<string |
 export const POST: RequestHandler = async (event) => {
   // Determine target role from current role detection (prefs or prior memberships)
   const role = await getUserRole(event);
-  if (role !== 'ngo' && role !== 'volunteer') return json({ ok: true });
+  if (role !== 'ngo' && role !== 'volunteer') return Response.json({ ok: true });
 
   const userId = await getUserId(event);
-  if (!userId) return json({ error: 'Unauthorized' }, { status: 401 });
+  if (!userId) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
   const targetTeamId = role === 'ngo' ? NGO_TEAM_ID : VOLUNTEER_TEAM_ID;
   const otherTeamId = role === 'ngo' ? VOLUNTEER_TEAM_ID : NGO_TEAM_ID;
@@ -43,9 +42,9 @@ export const POST: RequestHandler = async (event) => {
   try {
     await removeUserFromTeam(userId, otherTeamId);
     await addUserToTeam(userId, targetTeamId, [role]);
-    return json({ ok: true });
+    return Response.json({ ok: true });
   } catch (e) {
     console.error('Team assign failed', e);
-    return json({ error: 'Team assignment failed' }, { status: 500 });
+    return Response.json({ error: 'Team assignment failed' }, { status: 500 });
   }
 };
