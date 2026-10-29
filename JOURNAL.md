@@ -1,5 +1,9 @@
 # JOURNAL — MicroMatch
 
+## 2026-10-29 - Resolve localized navigation with the app base path #fix #decision
+
+`go()` now passes its runtime-localized URL through SvelteKit's `resolve()` before `goto()`. This keeps locale prefixes and applies the configured base path; the generated route union cannot type the runtime URL directly, so the helper gives `resolve()` a `ResolvedPathname` return type. Prettier now skips ignored Paraglide output left in the persistent source mirror.
+
 ## 2026-10-29 - Finish the SvelteKit 3 migration #fix #decision
 
 Sign-in now falls back to `/dashboard` when a same-origin `next` path does not resolve to a route. The app already used `Response.json` and `refreshAll`; cookie options in the test helpers come from SvelteKit's `Cookies.set`, so the `cookie` package rename does not apply. The dev server has no cross-origin static-asset dependency. The production build exposed a deprecated SvelteKit alias setting, so `$engine` and `$styles` now use package subpath imports. Generated route IDs do not include the locale prefix, so `go()` keeps using `hrefFor()` with the same narrow lint exception as `Link`. Typecheck, tests, lint and build pass on Linux.
