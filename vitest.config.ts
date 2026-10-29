@@ -1,5 +1,4 @@
 import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vitest/config';
 
 // Stands in for SvelteKit's $app/env/* modules: one named export per variable declared in
@@ -24,11 +23,6 @@ const appEnv = {
 
 export default defineConfig({
   plugins: [appEnv],
-  resolve: {
-    alias: {
-      $engine: fileURLToPath(new URL('./src/engine', import.meta.url)),
-    },
-  },
   test: {
     fileParallelism: false,
     environment: 'node',

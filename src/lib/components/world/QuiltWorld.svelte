@@ -12,7 +12,7 @@
   import CommunityBlock from './CommunityBlock.svelte';
   import LabelBlock from './LabelBlock.svelte';
   import Link from '../Link.svelte';
-  import { createCamera, type Camera } from '$engine/camera';
+  import { createCamera, type Camera } from '#engine/camera.js';
   import { BLOCKS, GRID, block, clothFill, focusForPath, seams, toPixels, worldSize, type BlockId, type Point } from '#lib/quilt/world.js';
   import type { PatchIcon } from '#lib/quilt/icons.js';
   import type { QuiltPatch } from '#lib/quilt/patches.js';

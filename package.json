@@ -66,7 +66,10 @@
     "undici": "^6.28.1"
   },
   "imports": {
+    "#engine": "./src/engine/index.js",
+    "#engine/*": "./src/engine/*",
     "#lib": "./src/lib/index.js",
-    "#lib/*": "./src/lib/*"
+    "#lib/*": "./src/lib/*",
+    "#styles/*": "./src/styles/*"
   }
 }

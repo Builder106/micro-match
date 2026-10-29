@@ -1,7 +1,7 @@
 <script lang="ts">
-  import '$styles/tokens.css';
-  import '$styles/base.css';
-  import '$styles/world.css';
+  import '#styles/tokens.css';
+  import '#styles/base.css';
+  import '#styles/world.css';
   import { tick } from 'svelte';
   import { page } from '$app/state';
   import { afterNavigate, beforeNavigate, onNavigate } from '$app/navigation';
@@ -10,7 +10,7 @@
   import CornerTags from '#lib/components/world/CornerTags.svelte';
   import { block, blockForPath, panelKindForPath, type BlockId } from '#lib/quilt/world.js';
   import { canonicalPath } from '#lib/site.js';
-  import { contentIn, contentOut, fold, unfold, resetPanelScroll, smoothPanel, stopSmoothPanel } from '$engine';
+  import { contentIn, contentOut, fold, unfold, resetPanelScroll, smoothPanel, stopSmoothPanel } from '#engine';
   import * as m from '#lib/paraglide/messages.js';
 
   let { children, data } = $props();

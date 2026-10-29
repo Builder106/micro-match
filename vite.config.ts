@@ -12,10 +12,6 @@ export default defineConfig({
       // Pin the Vercel runtime so builds don't depend on the host Node version
       // detection (Bun's compat reports a Node version the adapter rejects).
       adapter: adapter({ runtime: 'nodejs24.x' }),
-      alias: {
-        $engine: 'src/engine',
-        $styles: 'src/styles',
-      },
     }),
     paraglideVitePlugin(paraglideOptions),
   ],

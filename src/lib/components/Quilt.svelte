@@ -5,7 +5,7 @@
   // ticker keeps the chalked next strip's stitch moving while the quilt is on screen.
   import { onMount } from 'svelte';
   import { gsap } from 'gsap';
-  import { idle, startIdle } from '$engine/idle';
+  import { idle, startIdle } from '#engine/idle.js';
   import { layoutQuilt, polygonPath, linePath, inset } from '#lib/quilt/layout.js';
   import { PATCH_ICONS } from '#lib/quilt/icons.js';
   import Needle from './art/Needle.svelte';
