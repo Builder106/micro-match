@@ -1,7 +1,7 @@
 # Original trailer music cue
 
-Status: arrangement specification only. No audio has been rendered. Keep the
-current `public/audio.mp3` and its credit until the replacement is approved.
+Status: rendered from `music/cue.py` and approved on 2026-11-04. It is now
+`public/audio.mp3`.
 
 ## Composition
 

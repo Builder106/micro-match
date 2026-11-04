@@ -19,6 +19,6 @@ Captions are in `compositions/captions.html`. They sit bottom left as signed
 muslin squares, like the labels on the quilt's blocks, and move to the right
 for the Arabic shot so they don't cover the copy.
 
-Sound: `audio.mp3` fades in over the first 1.2 s and out over the last 1.8 s.
-On top of that, one sew at 29.5 s as the patch goes in. Credit the music the
-way `public/CREDITS.md` says when you publish.
+Sound: `audio.mp3` is the original cue from `music/cue.py`. It starts on its
+motif and fades out over the last 1.8 s. On top of that, one sew at 29.5 s as
+the patch goes in.

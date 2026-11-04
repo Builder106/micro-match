@@ -44,6 +44,7 @@ above is a 720p copy for GitHub.
 
 ## Music
 
-"Inspired" by Kevin MacLeod (CC BY 4.0), in `public/audio.mp3`. Keep the
-credit from `public/CREDITS.md` with anything you publish. The sew sound comes
-from `scripts/video/make-sfx.sh`.
+`public/audio.mp3` is an original cue, written in `music/cue.py` from
+`ORIGINAL-CUE.md` and rendered with LMMS through `lmms-cue`. The editable
+project is `music/cue.mmp`. The sew sound comes from
+`scripts/video/make-sfx.sh`.

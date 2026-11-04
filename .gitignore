@@ -78,4 +78,8 @@ PLAN.md
 # copies and the README GIFs are committed)
 e2e/recordings/
 trailer/renders/
+# Cue renders: lmms-cue regenerates these from music/cue.py, and the MP3 ships as public/audio.mp3
+trailer/music/*.wav
+trailer/music/*.mp3
+trailer/music/*.mp4
 ui-demo/renders/

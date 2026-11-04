@@ -1,8 +1,7 @@
 # Credits
 
-Music: "Inspired" by Kevin MacLeod (incompetech.com), licensed under Creative Commons:
-By Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/). Keep this credit with
-anything you publish that uses `audio.mp3`.
+Music: original cue written for this trailer in `music/cue.py` and rendered with LMMS. It
+uses the FluidR3 GM SoundFont (MIT license). No attribution is needed.
 
 Sound effects: synthesized by `scripts/video/make-sfx.sh`.
 

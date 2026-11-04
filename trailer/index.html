@@ -83,10 +83,10 @@
       <audio id="sfx-sew" src="public/sfx_sew.wav" data-start="29.5" data-duration="0.5" data-track-index="21" data-volume="0.5"></audio>
     </div>
     <script>
-      // The bed fades in under the cold open and out over the end card.
+      // The cue opens on its motif, so it starts at full level. It fades out over the end card.
       window.__timelines = window.__timelines || {};
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#music", { volume: 0 }, { volume: 0.85, duration: 1.2, ease: "none" }, 0)
+      tl.set("#music", { volume: 0.85 }, 0)
         .to("#music", { volume: 0, duration: 1.8, ease: "none" }, 43.2);
       window.__timelines.MicroMatchTrailer = tl;
     </script>
