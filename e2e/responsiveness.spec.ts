@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { signInAs } from './harness';
+import { seedNonprofit, signInAs } from './harness';
 
 // No horizontal overflow at 320, 375, 768 and 1440 px, in English and, at the narrowest and
 // widest widths, in every other locale (long German words, right-to-left Arabic). The phone's
@@ -120,7 +120,16 @@ for (const viewport of [
   { width: 1280, height: 720 },
   { width: 320, height: 640 },
 ]) {
-  test(`quilt blocks hold their text in every locale at ${viewport.width}px`, async ({ page }) => {
+  test(`quilt blocks hold their text in every locale at ${viewport.width}px`, async ({
+    page,
+    browser,
+  }) => {
+    // The tasks block previews up to three open tasks, so check it with three, whatever ran before.
+    await seedNonprofit(browser, `quilt-${viewport.width}`, [
+      { title: 'Sort donations at the pantry', minutes: 20, tags: ['food'] },
+      { title: 'Read aloud to a neighbor', minutes: 15, tags: ['read'] },
+      { title: 'Write letters to residents', minutes: 30, tags: ['write'] },
+    ]);
     await page.setViewportSize(viewport);
     const found: string[] = [];
     for (const locale of ['en', ...OTHER_LOCALES]) {

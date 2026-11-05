@@ -264,6 +264,30 @@ main[data-kind='narrow'] {
   }
 }
 
+/* The face height follows the screen height, so a short laptop shows fewer swatches rather than
+   letting them spill past the block. Sizes assume a two-line subtitle, the worst case among the
+   locales. On phones the face grows with its content, so there is nothing to drop. */
+@media (min-width: 900px) {
+  .block[data-block='tasks'] .block__face {
+    container-type: size;
+  }
+  @container (height < 17rem) {
+    .tasks__swatches li:nth-child(n + 3) {
+      display: none;
+    }
+  }
+  @container (height < 14.4rem) {
+    .tasks__swatches li:nth-child(n + 2) {
+      display: none;
+    }
+  }
+  @container (height < 11.7rem) {
+    .tasks__swatches {
+      display: none;
+    }
+  }
+}
+
 /* Title block */
 .block--title .block__face {
   place-items: stretch;
