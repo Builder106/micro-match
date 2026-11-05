@@ -28,4 +28,6 @@ export const variables = defineEnvVars({
   APPWRITE_VOLUNTEER_TEAM_ID: { schema: (input) => input ?? '' },
   APPWRITE_ADMIN_TEAM_ID: { schema: (input) => input ?? '' },
   APPWRITE_VERIFICATIONS_TABLE_ID: { schema: (input) => input ?? '' },
+  APPWRITE_OFFPLATFORM_CLAIMS_TABLE_ID: { schema: (input) => input ?? '' },
+  APPWRITE_VAULT_PROFILES_TABLE_ID: { schema: (input) => input ?? '' },
 });
