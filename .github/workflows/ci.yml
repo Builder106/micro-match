@@ -16,7 +16,7 @@ on:
 
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -128,7 +128,7 @@ jobs:
         uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('bun.lockb', 'package-lock.json') }}
+          key: playwright-${{ runner.os }}-${{ hashFiles('bun.lock') }}
           restore-keys: |
             playwright-${{ runner.os }}-
 
@@ -165,7 +165,7 @@ jobs:
         uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('bun.lockb', 'package-lock.json') }}
+          key: playwright-${{ runner.os }}-${{ hashFiles('bun.lock') }}
           restore-keys: |
             playwright-${{ runner.os }}-
 
@@ -202,7 +202,7 @@ jobs:
         uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('bun.lockb', 'package-lock.json') }}
+          key: playwright-${{ runner.os }}-${{ hashFiles('bun.lock') }}
           restore-keys: |
             playwright-${{ runner.os }}-
 
@@ -239,7 +239,7 @@ jobs:
         uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('bun.lockb', 'package-lock.json') }}
+          key: playwright-${{ runner.os }}-${{ hashFiles('bun.lock') }}
           restore-keys: |
             playwright-${{ runner.os }}-
 
