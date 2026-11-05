@@ -8,7 +8,12 @@ import {
 } from '$app/env/private';
 
 import { defaultLocale, type Locale } from '#lib/locale.js';
-import { renderVerificationApproved, renderVerificationRejected } from './emailTemplates';
+import {
+  renderVaultRequest,
+  renderVerificationApproved,
+  renderVerificationRejected,
+  type VaultRequest,
+} from './emailTemplates';
 
 export type SendArgs = {
   to: string;
@@ -121,6 +126,18 @@ export async function sendVerificationRejected(args: {
       appUrl(),
       args.locale ?? defaultLocale,
     ),
+  });
+}
+
+export async function sendVaultRequest(args: {
+  to: string;
+  claim: VaultRequest;
+  token: string;
+  locale?: Locale;
+}) {
+  return sendEmail({
+    to: args.to,
+    ...renderVaultRequest(args.claim, args.token, appUrl(), args.locale ?? defaultLocale),
   });
 }
 

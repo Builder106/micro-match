@@ -6,7 +6,12 @@ vi.mock(
   '$app/env/private',
   () => new Proxy(envState, { get: (_, key: string) => envState[key], has: () => true }),
 );
-import { sendEmail, sendVerificationApproved, sendVerificationRejected } from './email';
+import {
+  sendEmail,
+  sendVaultRequest,
+  sendVerificationApproved,
+  sendVerificationRejected,
+} from './email';
 
 function setEnv(values: Record<string, string | undefined>) {
   for (const key of Object.keys(envState)) delete envState[key];
@@ -233,5 +238,48 @@ describe('email module (Plunk)', () => {
     await vi.advanceTimersByTimeAsync(10_000);
     expect((await pending).error).toBe('aborted');
     expect(timeoutFetch).toHaveBeenCalledOnce();
+  });
+  it('sends the vault confirmation in every locale with a private link and escaped details', async () => {
+    setEnv({
+      PLUNK_SECRET_KEY: 'secret',
+      PLUNK_FROM_ADDRESS: 'a@b',
+      PUBLIC_APP_URL: 'https://micromatch.app/',
+    });
+    const fetchSpy = vi.fn().mockResolvedValue(response());
+    vi.stubGlobal('fetch', fetchSpy);
+    const claim = {
+      volunteerName: '<b>Jane</b>',
+      orgName: 'Pantry & Co',
+      description: 'Sorted <i>donations</i>\nevery Saturday',
+      date: '2026-10-03',
+      minutes: 90,
+    };
+    for (const locale of locales) {
+      expect(
+        (await sendVaultRequest({ to: 'pat@org.test', claim, token: 'tok_en-1', locale })).ok,
+      ).toBe(true);
+    }
+    expect(
+      (
+        await sendVaultRequest({
+          to: 'pat@org.test',
+          claim: { ...claim, date: undefined, minutes: undefined },
+          token: 't',
+        })
+      ).ok,
+    ).toBe(true);
+    const sent = fetchSpy.mock.calls.map((call) =>
+      JSON.parse((call[1] as RequestInit).body as string),
+    );
+    expect(sent).toHaveLength(locales.length + 1);
+    expect(sent[0].body).toContain('https://micromatch.app/en/vault/confirm/tok_en-1');
+    expect(sent[1].body).toContain('https://micromatch.app/es/vault/confirm/tok_en-1');
+    expect(sent[0].body).toContain('&lt;b&gt;Jane&lt;/b&gt;');
+    expect(sent[0].body).toContain('Pantry &amp; Co');
+    expect(sent[0].body).toContain('Sorted &lt;i&gt;donations&lt;/i&gt;<br />every Saturday');
+    expect(sent[0].body).toContain('2026-10-03, 90 min');
+    expect(sent[0].subject).toContain('<b>Jane</b>');
+    expect(sent[sent.length - 1].body).not.toContain('min<');
+    for (const message of sent) expect(message.subject.length).toBeGreaterThan(5);
   });
 });

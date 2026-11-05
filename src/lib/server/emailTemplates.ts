@@ -361,3 +361,158 @@ export function renderVerificationRejected(
 ) {
   return render(orgName, appUrl, locale, true, reason);
 }
+
+type VaultCopy = {
+  subject: (name: string) => string;
+  preheader: string;
+  heading: string;
+  body: (name: string, orgName: string) => string;
+  reasonLabel: string;
+  followUp: string;
+  action: string;
+  fallback: string;
+  footer: string;
+};
+
+const person = organization;
+
+const vaultCopy: Record<Locale, VaultCopy> = {
+  en: {
+    subject: (name) => `Can you confirm ${name} volunteered with you?`,
+    preheader: 'One click confirms it. No account needed.',
+    heading: 'Did they volunteer with you?',
+    body: (name, orgName) =>
+      `${person(name)} says they volunteered with ${organization(orgName)} and gave your address as the contact.`,
+    reasonLabel: 'What they wrote',
+    followUp:
+      'You do not need an account. Confirming adds a badge to their vault on MicroMatch. If you do not recognize this, choose "No" or ignore the email. The link works for 14 days.',
+    action: 'Review and answer',
+    fallback: "If the button doesn't work, use this link:",
+    footer:
+      'You received this email because someone entered your address on MicroMatch. If you do not know them, ignore it.',
+  },
+  es: {
+    subject: (name) => `¿Puedes confirmar que ${name} fue voluntario con ustedes?`,
+    preheader: 'Un clic basta para confirmarlo. No necesitas cuenta.',
+    heading: '¿Fue voluntario con ustedes?',
+    body: (name, orgName) =>
+      `${person(name)} dice que fue voluntario en ${organization(orgName)} y puso tu correo como contacto.`,
+    reasonLabel: 'Lo que escribió',
+    followUp:
+      'No necesitas una cuenta. Al confirmar, se añade una insignia a su bóveda en MicroMatch. Si no reconoces esto, elige «No» o ignora el correo. El enlace funciona durante 14 días.',
+    action: 'Revisar y responder',
+    fallback: 'Si el botón no funciona, usa este enlace:',
+    footer:
+      'Recibes este correo porque alguien escribió tu dirección en MicroMatch. Si no conoces a esa persona, ignóralo.',
+  },
+  fr: {
+    subject: (name) => `Pouvez-vous confirmer que ${name} a été bénévole chez vous ?`,
+    preheader: 'Un clic suffit. Aucun compte nécessaire.',
+    heading: 'A-t-il ou a-t-elle été bénévole chez vous ?',
+    body: (name, orgName) =>
+      `${person(name)} indique avoir été bénévole auprès de ${organization(orgName)} et a donné votre adresse comme contact.`,
+    reasonLabel: 'Ce qui a été écrit',
+    followUp:
+      'Aucun compte n’est nécessaire. En confirmant, vous ajoutez un badge à son coffre sur MicroMatch. Si vous ne reconnaissez pas cette demande, choisissez « Non » ou ignorez l’e-mail. Le lien reste valable 14 jours.',
+    action: 'Examiner et répondre',
+    fallback: 'Si le bouton ne fonctionne pas, utilisez ce lien :',
+    footer:
+      'Vous recevez cet e-mail parce que quelqu’un a saisi votre adresse sur MicroMatch. Si vous ne connaissez pas cette personne, ignorez-le.',
+  },
+  de: {
+    subject: (name) => `Können Sie bestätigen, dass ${name} bei Ihnen mitgeholfen hat?`,
+    preheader: 'Ein Klick genügt. Kein Konto nötig.',
+    heading: 'Hat diese Person bei Ihnen mitgeholfen?',
+    body: (name, orgName) =>
+      `${person(name)} gibt an, bei ${organization(orgName)} ehrenamtlich mitgeholfen zu haben, und hat Ihre Adresse als Kontakt angegeben.`,
+    reasonLabel: 'Das wurde geschrieben',
+    followUp:
+      'Sie brauchen kein Konto. Mit Ihrer Bestätigung erhält die Person ein Abzeichen in ihrem Tresor auf MicroMatch. Wenn Sie das nicht zuordnen können, wählen Sie „Nein“ oder ignorieren Sie die E-Mail. Der Link gilt 14 Tage.',
+    action: 'Prüfen und antworten',
+    fallback: 'Falls die Schaltfläche nicht funktioniert, nutzen Sie diesen Link:',
+    footer:
+      'Sie erhalten diese E-Mail, weil jemand Ihre Adresse auf MicroMatch eingegeben hat. Kennen Sie die Person nicht, ignorieren Sie sie.',
+  },
+  pt: {
+    subject: (name) => `Você pode confirmar que ${name} foi voluntário(a) com vocês?`,
+    preheader: 'Um clique confirma. Não precisa de conta.',
+    heading: 'Essa pessoa foi voluntária com vocês?',
+    body: (name, orgName) =>
+      `${person(name)} diz que foi voluntário(a) em ${organization(orgName)} e informou seu e-mail como contato.`,
+    reasonLabel: 'O que a pessoa escreveu',
+    followUp:
+      'Você não precisa de conta. Ao confirmar, um selo é adicionado ao cofre dela no MicroMatch. Se você não reconhece isso, escolha “Não” ou ignore o e-mail. O link vale por 14 dias.',
+    action: 'Revisar e responder',
+    fallback: 'Se o botão não funcionar, use este link:',
+    footer:
+      'Você recebeu este e-mail porque alguém digitou seu endereço no MicroMatch. Se não conhece a pessoa, ignore.',
+  },
+  zh: {
+    subject: (name) => `能否确认 ${name} 曾在贵处做志愿者？`,
+    preheader: '点一下即可确认，无需账号。',
+    heading: '对方是否在贵处做过志愿者？',
+    body: (name, orgName) =>
+      `${person(name)} 说自己曾在 ${organization(orgName)} 做志愿者，并填写了您的邮箱作为联系人。`,
+    reasonLabel: '对方填写的内容',
+    followUp:
+      '您无需注册账号。确认后，对方在 MicroMatch 的徽章库中会新增一枚徽章。如果您不认识此人，请选择“否”或忽略这封邮件。链接 14 天内有效。',
+    action: '查看并回复',
+    fallback: '如果按钮无法使用，请打开此链接：',
+    footer: '您收到此邮件是因为有人在 MicroMatch 填写了您的邮箱。如果您不认识对方，请忽略。',
+  },
+  ar: {
+    subject: (name) => `هل يمكنك تأكيد أن ${name} تطوّع لديكم؟`,
+    preheader: 'نقرة واحدة تكفي. لا حاجة إلى حساب.',
+    heading: 'هل تطوّع هذا الشخص لديكم؟',
+    body: (name, orgName) =>
+      `يقول ${person(name)} إنه تطوّع لدى ${organization(orgName)} وذكر بريدك الإلكتروني جهةَ اتصال.`,
+    reasonLabel: 'ما كتبه',
+    followUp:
+      'لا تحتاج إلى حساب. عند التأكيد تُضاف شارة إلى خزانته على MicroMatch. إذا لم تتعرّف على هذا الطلب فاختر «لا» أو تجاهل الرسالة. الرابط صالح لمدة 14 يومًا.',
+    action: 'راجِع وأجب',
+    fallback: 'إذا لم يعمل الزر، استخدم هذا الرابط:',
+    footer:
+      'تتلقى هذا البريد لأن شخصًا أدخل عنوانك على MicroMatch. إذا كنت لا تعرفه فتجاهل الرسالة.',
+  },
+};
+
+export type VaultRequest = {
+  volunteerName: string;
+  orgName: string;
+  description: string;
+  date?: string;
+  minutes?: number;
+};
+
+/** The note that asks an organization's contact to confirm volunteer work done outside MicroMatch. */
+export function renderVaultRequest(
+  claim: VaultRequest,
+  token: string,
+  appUrl: string,
+  locale: Locale = defaultLocale,
+) {
+  const message = vaultCopy[locale];
+  const base = appUrl.replace(/\/$/, '');
+  const facts = [claim.date, claim.minutes ? `${claim.minutes} min` : '']
+    .filter(Boolean)
+    .join(', ');
+  return {
+    subject: message.subject(claim.volunteerName),
+    html: renderMessage({
+      locale,
+      subject: message.subject(claim.volunteerName),
+      preheader: message.preheader,
+      heading: message.heading,
+      body: message.body(claim.volunteerName, claim.orgName),
+      reasonLabel: message.reasonLabel,
+      reason: facts ? `${claim.description}\n${facts}` : claim.description,
+      followUp: message.followUp,
+      action: message.action,
+      fallback: message.fallback,
+      footer: message.footer,
+      href: `${base}${localizedPath(`/vault/confirm/${token}`, locale)}`,
+      assetBase: base,
+      patch: 'pinned',
+    }),
+  };
+}
