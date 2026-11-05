@@ -36,6 +36,8 @@ async function verifyStaging() {
     ['APPWRITE_BADGES_TABLE_ID', 'badges_qa'],
     ['APPWRITE_VERIFICATIONS_TABLE_ID', 'ngoVerifications_qa'],
     ['APPWRITE_BADGE_DEFS_TABLE_ID', 'badgeDefinitions_qa'],
+    ['APPWRITE_OFFPLATFORM_CLAIMS_TABLE_ID', 'offplatformClaims_qa'],
+    ['APPWRITE_VAULT_PROFILES_TABLE_ID', 'vaultProfiles_qa'],
     ['APPWRITE_NGO_TEAM_ID', 'ngo_qa'],
     ['APPWRITE_VOLUNTEER_TEAM_ID', 'volunteer_qa'],
     ['APPWRITE_ADMIN_TEAM_ID', 'admins_qa'],
