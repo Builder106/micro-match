@@ -66,6 +66,8 @@ through the Console):
 | `badges` table       | `APPWRITE_BADGES_TABLE_ID`                                        | Awarded-badge instances                                   |
 | `badgeDefinitions`   | `APPWRITE_BADGE_DEFS_TABLE_ID`                                    | Org-owned templates                                       |
 | `ngoVerifications`   | `APPWRITE_VERIFICATIONS_TABLE_ID`                                 | NGO verification queue                                    |
+| `offplatformClaims`  | `APPWRITE_OFFPLATFORM_CLAIMS_TABLE_ID`                            | Vault claims awaiting an organization's confirmation      |
+| `vaultProfiles`      | `APPWRITE_VAULT_PROFILES_TABLE_ID`                                | Opt-in public vault pages                                 |
 | Avatars bucket       | `APPWRITE_AVATARS_BUCKET_ID`, `PUBLIC_APPWRITE_AVATARS_BUCKET_ID` | File previews use the public variable in client code      |
 | Verification uploads | `APPWRITE_VERIFICATIONS_BUCKET_ID`                                | Set to `avatars`; file permissions keep documents private |
 | `volunteers` team    | `APPWRITE_VOLUNTEER_TEAM_ID`                                      | Created on first profile save                             |

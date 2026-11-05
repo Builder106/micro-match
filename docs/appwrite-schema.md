@@ -68,12 +68,14 @@ Tracks volunteer task claims and proof-of-work submissions.
 
 Records badges earned by volunteers.
 
-| Attribute   | Type     | Size / Constraint | Description         |
-| :---------- | :------- | :---------------- | :------------------ |
-| `userId`    | String   | 64                | Volunteer user ID   |
-| `label`     | String   | 128               | Badge title         |
-| `awardedAt` | Datetime | Default:`now()`   | Timestamp awarded   |
-| `taskId`    | String   | 64                | Originating task ID |
+| Attribute   | Type     | Size / Constraint | Description                                       |
+| :---------- | :------- | :---------------- | :------------------------------------------------ |
+| `userId`    | String   | 64                | Volunteer user ID                                 |
+| `label`     | String   | 128               | Badge title                                       |
+| `awardedAt` | Datetime | Default:`now()`   | Timestamp awarded                                 |
+| `taskId`    | String   | 64                | Originating task ID                               |
+| `source`    | String   | 16, optional      | `task` or `offplatform`; unset reads as `task`    |
+| `orgName`   | String   | 80, optional      | Organization that confirmed an off-platform badge |
 
 ---
 
@@ -89,6 +91,50 @@ Custom badge templates defined by NGOs.
 | `triggerTag`    | String  | 64                | Task tag triggering award  |
 | `requiredCount` | Integer | Min: 1            | Required claims count      |
 | `orgId`         | String  | 64                | NGO organization owner ID  |
+
+### 5. `offplatformClaims`
+
+Volunteer work done outside MicroMatch, waiting for the organization's contact to confirm it. Env var: `APPWRITE_OFFPLATFORM_CLAIMS_TABLE_ID`. Server-only: give the table no client permissions.
+
+| Attribute       | Type     | Size / Constraint                                                | Description                                                       |
+| :-------------- | :------- | :--------------------------------------------------------------- | :---------------------------------------------------------------- |
+| `userId`        | String   | 64                                                               | Volunteer who logged the work                                     |
+| `volunteerName` | String   | 80                                                               | Name the organization knows them by                               |
+| `orgName`       | String   | 80                                                               | Organization                                                      |
+| `contactEmail`  | String   | 254                                                              | Contact who receives the confirmation email                       |
+| `description`   | String   | 500                                                              | What the volunteer did                                            |
+| `date`          | String   | 10, optional                                                     | Day of the work, `YYYY-MM-DD`                                     |
+| `minutes`       | Integer  | Min: 1, Max: 60000, optional                                     | Time spent                                                        |
+| `status`        | String   | Enum (`pending`, `verified`, `rejected`, `expired`, `withdrawn`) | Lifecycle; an unanswered claim reads as expired after `expiresAt` |
+| `tokenHash`     | String   | 64                                                               | SHA-256 of the emailed token; the token is never stored           |
+| `expiresAt`     | Datetime |                                                                  | 14 days after sending                                             |
+| `locale`        | String   | 8                                                                | Language of the email                                             |
+| `createdAt`     | Datetime |                                                                  | Send time; the daily limits count from it                         |
+| `resolvedAt`    | Datetime | Optional                                                         | When the contact answered or the claim closed                     |
+
+#### Indexes
+
+- `userId` (Key, ASC)
+- `contactEmail` (Key, ASC)
+- `tokenHash` (Key, ASC)
+
+### 6. `vaultProfiles`
+
+A volunteer's opt-in public vault page. Env var: `APPWRITE_VAULT_PROFILES_TABLE_ID`. Server-only.
+
+| Attribute     | Type    | Size / Constraint | Description                                                         |
+| :------------ | :------ | :---------------- | :------------------------------------------------------------------ |
+| `userId`      | String  | 64                | Owner                                                               |
+| `handle`      | String  | 30                | 3 to 30 lowercase letters, digits or hyphens; page is `/v/<handle>` |
+| `displayName` | String  | 60                | Name shown on the page                                              |
+| `isPublic`    | Boolean | Default: `false`  | The page 404s until this is `true`                                  |
+
+#### Indexes
+
+- `userId` (Key, ASC)
+- `handle` (Unique, ASC)
+
+The public page shows badge label, organization, source and date. It never shows the contact address or the description.
 
 ---
 

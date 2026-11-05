@@ -1,5 +1,11 @@
 # JOURNAL — MicroMatch
 
+## 2026-11-04 - Build the single-player badge vault #decision #milestone
+
+A volunteer can now log work done elsewhere. We email the organization's contact, and their answer mints a badge. The contact opens a page and presses a button; the link itself changes nothing, because mail scanners open links and would confirm every claim. Only the token's SHA-256 is stored. Limits: 5 unanswered claims per volunteer, 5 emails a day per volunteer, 3 a day per address across everyone, and the volunteer's own address is refused. A resend replaces the old link. Expiry is read from `expiresAt`, with no write. The public page at `/v/<handle>` is off until the volunteer opts in and shows only badge label, organization, source and date.
+
+Feature code sits on a small `Table` interface (`rowStore.ts`) with a Map backend and an Appwrite backend, so the rules are tested once. Two Appwrite tables (`offplatformClaims`, `vaultProfiles`) and two badge columns (`source`, `orgName`) must be created by hand before this works in production; `docs/appwrite-schema.md` has the column lists. Not done: a plain-text email part (the Plunk helper sends HTML only), DKIM and SPF checks on the sending domain, and a guard against a double-clicked confirm minting two badges, which needs a conditional write Appwrite lacks.
+
 ## 2026-10-29 - Resolve localized navigation with the app base path #fix #decision
 
 `go()` now passes its runtime-localized URL through SvelteKit's `resolve()` before `goto()`. This keeps locale prefixes and applies the configured base path; the generated route union cannot type the runtime URL directly, so the helper gives `resolve()` a `ResolvedPathname` return type. Prettier now skips ignored Paraglide output left in the persistent source mirror.
