@@ -604,6 +604,22 @@ describe('appwrite (Appwrite-backed mode) — badges', () => {
     expect(badge).toEqual(expect.objectContaining({ id: 'badge-1', userId: 'user-1' }));
   });
 
+  it('awardBadge stores where an off-platform badge came from, and reads it back', async () => {
+    mocks.createRow.mockResolvedValue({ ...badgeRow, source: 'offplatform', orgName: 'Pantry' });
+    const badge = await awardBadge({
+      userId: 'user-1',
+      label: 'Pantry',
+      source: 'offplatform',
+      orgName: 'Pantry',
+    });
+    expect(mocks.createRow).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ source: 'offplatform', orgName: 'Pantry' }),
+      }),
+    );
+    expect(badge).toMatchObject({ source: 'offplatform', orgName: 'Pantry' });
+  });
+
   it('listBadgesByUser maps rows and returns [] when the query fails', async () => {
     mocks.listRows.mockResolvedValueOnce({ rows: [badgeRow] });
     expect(await listBadgesByUser('user-1')).toEqual([expect.objectContaining({ id: 'badge-1' })]);

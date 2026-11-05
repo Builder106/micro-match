@@ -37,6 +37,40 @@ export type Badge = {
   label: string;
   color?: string;
   awardedAt: string;
+  /** Where the badge came from. Unset means an approved task. */
+  source?: 'task' | 'offplatform';
+  /** The organization an off-platform badge was confirmed by. */
+  orgName?: string;
+};
+
+export type OffplatformClaimStatus = 'pending' | 'verified' | 'rejected' | 'expired' | 'withdrawn';
+
+/** Volunteer work done elsewhere, waiting for the organization's contact to confirm it. */
+export type OffplatformClaim = {
+  id: string;
+  userId: string;
+  volunteerName: string;
+  orgName: string;
+  contactEmail: string;
+  description: string;
+  /** Day the work happened (YYYY-MM-DD). */
+  date?: string;
+  minutes?: number;
+  status: OffplatformClaimStatus;
+  /** SHA-256 of the emailed token. The token itself is never stored. */
+  tokenHash: string;
+  expiresAt: string;
+  locale: string;
+  createdAt: string;
+  resolvedAt?: string;
+};
+
+export type VaultProfile = {
+  id: string;
+  userId: string;
+  handle: string;
+  displayName: string;
+  isPublic: boolean;
 };
 
 export type BadgeDefinition = {

@@ -93,7 +93,22 @@ type DbBadgeRow = import('node-appwrite').Models.Row & {
   label: string;
   color?: string | null;
   awardedAt?: string;
+  source?: 'task' | 'offplatform' | null;
+  orgName?: string | null;
 };
+
+function badgeFromRow(d: DbBadgeRow): Badge {
+  return {
+    id: d.$id,
+    userId: d.userID, // Map database userID to code userId
+    taskId: d.taskID ?? undefined, // Map database taskID to code taskId
+    label: d.label,
+    color: d.color ?? undefined,
+    awardedAt: d.awardedAt ?? d.$createdAt,
+    source: d.source ?? undefined,
+    orgName: d.orgName ?? undefined,
+  };
+}
 
 export async function getTasks(filters?: {
   orgId?: string;
@@ -460,17 +475,7 @@ export async function listBadgesByUser(userId: string): Promise<Badge[]> {
         queries: [Query.equal('userID', userId), Query.limit(100)],
       });
       const rows = res.rows;
-      return rows.map(
-        (d) =>
-          ({
-            id: d.$id,
-            userId: d.userID, // Map database userID to code userId
-            taskId: d.taskID ?? undefined, // Map database taskID to code taskId
-            label: d.label,
-            color: d.color ?? undefined,
-            awardedAt: d.awardedAt ?? d.$createdAt,
-          }) as Badge,
-      );
+      return rows.map(badgeFromRow);
     } catch {
       // If userID attribute doesn't exist in schema, return empty array
       console.warn('Could not query badges by userID, schema may be missing userID attribute');
@@ -494,17 +499,7 @@ export async function getBadges(): Promise<Badge[]> {
         ],
       });
       const rows = res.rows;
-      return rows.map(
-        (d) =>
-          ({
-            id: d.$id,
-            userId: d.userID, // Map database userID to code userId
-            taskId: d.taskID ?? undefined, // Map database taskID to code taskId
-            label: d.label,
-            color: d.color ?? undefined,
-            awardedAt: d.awardedAt ?? d.$createdAt,
-          }) as Badge,
-      );
+      return rows.map(badgeFromRow);
     } catch {
       console.warn('Could not query badges, schema may be missing required attributes');
       return [];
@@ -529,6 +524,8 @@ export async function awardBadge(
       awardedAt: input.awardedAt ?? now,
       ...(input.taskId ? { taskID: input.taskId } : {}),
       ...(input.color ? { color: input.color } : {}),
+      ...(input.source ? { source: input.source } : {}),
+      ...(input.orgName ? { orgName: input.orgName } : {}),
     };
 
     const d = await tables.createRow<DbBadgeRow>({
@@ -537,14 +534,7 @@ export async function awardBadge(
       rowId: ID.unique(),
       data: payload,
     });
-    return {
-      id: d.$id,
-      userId: d.userID, // Map database userID to code userId
-      taskId: d.taskID ?? undefined, // Map database taskID to code taskId
-      label: d.label,
-      color: d.color ?? undefined,
-      awardedAt: d.awardedAt ?? d.$createdAt,
-    } as Badge;
+    return badgeFromRow(d);
   });
 }
 
