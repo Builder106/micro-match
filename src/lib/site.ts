@@ -61,6 +61,7 @@ export function appNav(role: Role, isAdmin: boolean): NavItem[] {
       { href: '/badges/manage', label: m.nav_patches() },
     );
   }
+  if (role !== 'ngo') items.push({ href: '/vault', label: m.nav_vault() });
   if (isAdmin) items.push({ href: '/admin/verifications', label: m.nav_verifications() });
   items.push({ href: '/profile', label: m.nav_profile() });
   return items;

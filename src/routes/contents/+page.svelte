@@ -47,6 +47,7 @@
   <ul class="plain">
     {#if signedIn}
       <li><Link href="/dashboard" class="link">{m.block_account_title()}</Link></li>
+      <li><Link href="/vault" class="link">{m.nav_vault()}</Link></li>
       <li><Link href="/profile" class="link">{m.nav_profile()}</Link></li>
     {:else}
       <li><Link href="/login" class="link">{m.menu_sign_in()}</Link></li>

@@ -210,14 +210,24 @@ const ACCOUNT_PATHS = [
   '/profile',
   '/org',
   '/badges',
+  '/vault',
   '/admin',
   '/login',
   '/signup',
   '/forgot-password',
   '/reset-password',
 ];
-const WORK_PATHS = ['/tasks', '/task', '/dashboard', '/profile', '/org', '/badges', '/admin'];
-const NARROW_PATHS = ['/login', '/signup', '/forgot-password', '/reset-password'];
+const WORK_PATHS = [
+  '/tasks',
+  '/task',
+  '/dashboard',
+  '/profile',
+  '/org',
+  '/badges',
+  '/vault',
+  '/admin',
+];
+const NARROW_PATHS = ['/login', '/signup', '/forgot-password', '/reset-password', '/vault/confirm'];
 const LABEL_PATHS = ['/privacy', '/terms', '/cookies'];
 
 const within = (path: string, roots: string[]) =>

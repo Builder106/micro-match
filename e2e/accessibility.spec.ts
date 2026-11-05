@@ -224,6 +224,12 @@ test.describe('axe, signed-in surfaces and states', () => {
   const surfaces: { name: string; role: 'volunteer' | 'ngo' | 'admin'; path: () => string }[] = [
     { name: 'volunteer dashboard', role: 'volunteer', path: () => '/dashboard' },
     { name: 'volunteer profile', role: 'volunteer', path: () => '/profile' },
+    { name: 'badge vault', role: 'volunteer', path: () => '/vault' },
+    {
+      name: 'closed confirmation link',
+      role: 'volunteer',
+      path: () => '/vault/confirm/closed-link',
+    },
     { name: 'task as volunteer', role: 'volunteer', path: () => `/task/${seeded.taskIds[0]}` },
     { name: 'claim form', role: 'volunteer', path: () => `/task/${seeded.taskIds[0]}/claim` },
     { name: 'nonprofit dashboard', role: 'ngo', path: () => '/dashboard' },

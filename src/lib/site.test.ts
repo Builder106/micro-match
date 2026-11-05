@@ -30,6 +30,7 @@ describe('site map', () => {
     expect(appNav('volunteer', false).map((i) => i.label)).toEqual([
       'My block',
       'Tasks',
+      'Vault',
       'Profile',
     ]);
     expect(appNav('ngo', true).map((i) => i.href)).toEqual([

@@ -62,6 +62,9 @@ describe('blockForPath', () => {
     ['/en/task/abc/claim', 'tasks'],
     ['/en/dashboard', 'account'],
     ['/en/badges/manage', 'account'],
+    ['/en/vault', 'account'],
+    ['/en/vault/confirm/abc', 'account'],
+    ['/en/v/jane', null],
     ['/en/login', 'account'],
     ['/en/privacy', 'label'],
     ['/en/impact', 'community'],
@@ -77,6 +80,9 @@ describe('panelKindForPath', () => {
   it('opens no panel at home, and narrow, work or read panels elsewhere', () => {
     expect(panelKindForPath('/en')).toBeNull();
     expect(panelKindForPath('/en/signup')).toBe('narrow');
+    expect(panelKindForPath('/en/vault/confirm/abc')).toBe('narrow');
+    expect(panelKindForPath('/en/vault')).toBe('work');
+    expect(panelKindForPath('/en/v/jane')).toBe('read');
     expect(panelKindForPath('/en/tasks')).toBe('work');
     expect(panelKindForPath('/en/admin/verifications')).toBe('work');
     expect(panelKindForPath('/en/help')).toBe('read');
