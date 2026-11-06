@@ -19,6 +19,10 @@
 
 > **A micro-volunteering platform connecting nonprofits with skilled volunteers.** Complete quick 5 to 30-minute missions, help verified charities, and earn skill badges.
 
+<p align="center">
+  <img src="assets/screenshot.png" alt="The MicroMatch home page laid out as a patchwork quilt. One block reads Small tasks, sewn into something warm, with Find a task and I run a nonprofit buttons. Beside it is an empty community block, with neighbouring blocks for tasks, how a patch is made, and volunteers." width="880">
+</p>
+
 ## 💡 What is MicroMatch?
 
 Nonprofits and community organizations often need quick help with specific tasks (translating a document, designing a flyer, reviewing data, or writing copy), but recruiting full-time volunteers is slow and difficult. MicroMatch breaks volunteering down into bite-sized missions that busy people can complete in under 30 minutes.
