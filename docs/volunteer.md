@@ -19,5 +19,5 @@
 
 ## Badges & level
 
-- On approval of your submission, a badge is issued and your level rises.
+- When your submission is approved, you receive a badge and your level rises.
 - View progress on `/dashboard`.

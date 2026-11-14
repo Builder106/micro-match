@@ -1,6 +1,6 @@
 # MicroMatch — Platform Overview
 
-MicroMatch is a micro‑volunteering platform that pairs NGOs with bite‑sized tasks and helps volunteers complete them quickly with just‑in‑time learning.
+MicroMatch is a micro‑volunteering platform where NGOs post short tasks and volunteers can find the resources they need to complete them.
 
 ## Key capabilities
 
@@ -20,7 +20,7 @@ MicroMatch is a micro‑volunteering platform that pairs NGOs with bite‑sized 
 
 ## Core pages
 
-- `/en/`or`/en/tasks`: English task feed
+- `/en/` or `/en/tasks`: English task feed
 - `/fr/task/[id]`: French task details with French task-field translation
 - `/en/task/[id]/claim`: Submit proof and notes
 - `/en/org`: Post a task (NGO only)
@@ -32,7 +32,7 @@ MicroMatch is a micro‑volunteering platform that pairs NGOs with bite‑sized 
 - The locale prefix controls the page language: `/es/tasks` selects Spanish and `/ar/dashboard` selects Arabic with right-to-left document direction.
 - LibreTranslate translates user-created task display fields server-side. Feeds and dashboards translate after the original data renders; task detail pages keep the original content available while translation loads.
 - Legacy `/task/[id]?lang=<code>` links redirect to the canonical `/<locale>/task/[id]` form.
-- A chip “Auto‑translated” appears when task content is translated.
+- An “Auto‑translated” chip appears when task content is translated.
 
 ## Safety & moderation
 
