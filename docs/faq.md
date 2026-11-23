@@ -8,7 +8,7 @@ Browsing the public task feed and viewing task details is open to all visitors. 
 
 ### Can I switch between Volunteer and NGO roles
 
-Yes. MicroMatch supports full role mobility. You can toggle your role under `/profile`. If you downgrade from NGO to Volunteer, any active NGO verification application is safely withdrawn, and the verified status on your posted tasks is cleared.
+Yes. You can switch roles under `/profile`. If you switch from NGO to Volunteer, any active NGO verification application is withdrawn, and the verified status on your posted tasks is cleared.
 
 ---
 
