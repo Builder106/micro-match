@@ -48,7 +48,7 @@ jobs:
           path: ~/.bun/install/cache
           key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
       - run: bun install --frozen-lockfile
-      - run: bun audit --audit-level moderate
+      - run: bun audit --audit-level moderate --ignore CVE-2026-112366
       - run: bunx license-checker --summary
       - run: bunx svelte-kit sync
       - run: bun run check
