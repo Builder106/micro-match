@@ -83,10 +83,11 @@ describe('openTable with Appwrite credentials', () => {
     expect(await table.update('gone', { note: 'x' })).toBeUndefined();
   });
 
-  it('falls back to memory when no table id is given', async () => {
+  it('refuses every call when no table id is given, instead of using memory', async () => {
     const table = openTable<Row>('');
-    const row = await table.create({ owner: 'x' });
-    expect(row.id).toMatch(/^mem-/);
+    await expect(table.create({ owner: 'x' })).rejects.toThrow('table id is not set');
+    await expect(table.list()).rejects.toThrow('table id is not set');
+    await expect(table.update('r1', {})).rejects.toThrow('table id is not set');
     expect(mocks.createRow).not.toHaveBeenCalled();
   });
 });

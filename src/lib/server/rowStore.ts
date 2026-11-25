@@ -47,6 +47,14 @@ function memoryTable<T extends Doc>(): Table<T> {
   };
 }
 
+/** Stands in for a table whose id is unset while Appwrite is live, so nothing goes to a Map. */
+function missingTable<T extends Doc>(): Table<T> {
+  const refuse = async (): Promise<never> => {
+    throw new Error('Appwrite is configured but this table id is not set');
+  };
+  return { create: refuse, list: refuse, update: refuse } as Table<T>;
+}
+
 type AppwriteRow = import('node-appwrite').Models.Row;
 
 /** Appwrite's `$id` becomes `id`; its `$`-prefixed metadata and null columns are dropped. */
@@ -99,14 +107,18 @@ function appwriteTable<T extends Doc>(tableId: string): Table<T> {
   };
 }
 
-/** The Appwrite table when credentials and a table id are set, otherwise a Map. */
+/**
+ * The Appwrite table when credentials and a table id are set, otherwise a Map. If Appwrite is
+ * live but the table id is empty, every call throws: a Map there would lose rows between
+ * server instances while emails still go out. It throws on use, not here, so builds still load.
+ */
 export function openTable<T extends Doc>(tableId: string): Table<T> {
   const live =
     process.env.PLAYWRIGHT_A11Y_HARNESS !== '1' &&
     !!APPWRITE_ENDPOINT &&
     !!APPWRITE_PROJECT_ID &&
     !!APPWRITE_API_KEY &&
-    !!APPWRITE_DB_ID &&
-    !!tableId;
-  return live ? appwriteTable<T>(tableId) : memoryTable<T>();
+    !!APPWRITE_DB_ID;
+  if (!live) return memoryTable<T>();
+  return tableId ? appwriteTable<T>(tableId) : missingTable<T>();
 }
