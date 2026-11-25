@@ -121,8 +121,11 @@ export async function withdrawClaim(
 ): Promise<boolean> {
   const claim = (await claims.list({ userId })).find((c) => c.id === claimId);
   if (!claim || settle(claim, now).status !== 'pending') return false;
-  await claims.update(claim.id, { status: 'withdrawn', resolvedAt: now.toISOString() });
-  return true;
+  const updated = await claims.update(claim.id, {
+    status: 'withdrawn',
+    resolvedAt: now.toISOString(),
+  });
+  return !!updated;
 }
 
 export async function listUserClaims(
@@ -149,16 +152,24 @@ export async function resolveClaim(
   const claim = await getClaimByToken(token, now);
   if (!claim) return 'notFound';
   if (claim.status !== 'pending') return 'closed';
-  await claims.update(claim.id, { status: decision, resolvedAt: now.toISOString() });
+  // Close the link first so a repeat click cannot mint twice. A row that vanished means no badge.
+  const closed = await claims.update(claim.id, { status: decision, resolvedAt: now.toISOString() });
+  if (!closed) return 'notFound';
   if (decision === 'verified') {
-    await awardBadge({
-      userId: claim.userId,
-      label: claim.orgName,
-      color: OFFPLATFORM_COLOR,
-      source: 'offplatform',
-      orgName: claim.orgName,
-      awardedAt: now.toISOString(),
-    });
+    try {
+      await awardBadge({
+        userId: claim.userId,
+        label: claim.orgName,
+        color: OFFPLATFORM_COLOR,
+        source: 'offplatform',
+        orgName: claim.orgName,
+        awardedAt: now.toISOString(),
+      });
+    } catch (error) {
+      // No badge was minted, so reopen the claim and let the organization try again.
+      await claims.update(claim.id, { status: 'pending' }).catch(() => {});
+      throw error;
+    }
   }
   return 'ok';
 }

@@ -47,14 +47,6 @@ function memoryTable<T extends Doc>(): Table<T> {
   };
 }
 
-/** Stands in for a table whose id is unset while Appwrite is live, so nothing goes to a Map. */
-function missingTable<T extends Doc>(): Table<T> {
-  const refuse = async (): Promise<never> => {
-    throw new Error('Appwrite is configured but this table id is not set');
-  };
-  return { create: refuse, list: refuse, update: refuse } as Table<T>;
-}
-
 type AppwriteRow = import('node-appwrite').Models.Row;
 
 /** Appwrite's `$id` becomes `id`; its `$`-prefixed metadata and null columns are dropped. */
@@ -100,11 +92,21 @@ function appwriteTable<T extends Doc>(tableId: string): Table<T> {
       const { tables } = await connect();
       try {
         return fromRow<T>(await tables.updateRow({ databaseId, tableId, rowId: id, data: patch }));
-      } catch {
-        return undefined;
+      } catch (error) {
+        // Only a missing row reads as "not found"; any other failure must reach the caller.
+        if ((error as { code?: number }).code === 404) return undefined;
+        throw error;
       }
     },
   };
+}
+
+/** Stands in for a table whose id is unset while Appwrite is live, so nothing goes to a Map. */
+function missingTable<T extends Doc>(): Table<T> {
+  const refuse = async (): Promise<never> => {
+    throw new Error('Appwrite is configured but this table id is not set');
+  };
+  return { create: refuse, list: refuse, update: refuse } as Table<T>;
 }
 
 /**

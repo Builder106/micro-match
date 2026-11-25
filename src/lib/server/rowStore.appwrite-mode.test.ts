@@ -79,8 +79,13 @@ describe('openTable with Appwrite credentials', () => {
     mocks.updateRow.mockResolvedValueOnce({ ...raw, note: 'hi' });
     const table = openTable<Row>('t1');
     expect(await table.update('r1', { note: 'hi' })).toEqual({ id: 'r1', owner: 'x', note: 'hi' });
-    mocks.updateRow.mockRejectedValueOnce(new Error('404'));
+    mocks.updateRow.mockRejectedValueOnce(Object.assign(new Error('not found'), { code: 404 }));
     expect(await table.update('gone', { note: 'x' })).toBeUndefined();
+  });
+
+  it('rethrows an update failure that is not a missing row', async () => {
+    mocks.updateRow.mockRejectedValueOnce(Object.assign(new Error('down'), { code: 503 }));
+    await expect(openTable<Row>('t1').update('r1', { note: 'x' })).rejects.toThrow('down');
   });
 
   it('refuses every call when no table id is given, instead of using memory', async () => {
