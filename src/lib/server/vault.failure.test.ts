@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { OffplatformClaim } from '#lib/types.js';
 
 const { store, awardBadge } = vi.hoisted(() => ({
-  store: { rows: new Map<string, unknown>(), failUpdates: false },
+  store: { rows: new Map<string, unknown>(), failUpdates: false, throwOnReopen: false },
   awardBadge: vi.fn(),
 }));
 
@@ -18,6 +18,9 @@ vi.mock('./rowStore', () => ({
         Object.entries(where).every(([k, v]) => (row as Record<string, unknown>)[k] === v),
       ),
     update: async (id: string, patch: object) => {
+      if (store.throwOnReopen && (patch as { status?: string }).status === 'pending') {
+        throw new Error('reopen failed');
+      }
       const row = store.rows.get(id);
       if (!row || store.failUpdates) return undefined;
       const next = { ...row, ...patch };
@@ -55,6 +58,7 @@ describe('vault when a write fails', () => {
   beforeEach(() => {
     store.rows.clear();
     store.failUpdates = false;
+    store.throwOnReopen = false;
     awardBadge.mockReset();
   });
 
@@ -74,6 +78,13 @@ describe('vault when a write fails', () => {
     awardBadge.mockResolvedValueOnce({});
     expect(await resolveClaim(token, 'verified', now)).toBe('ok');
     expect(status(claim.id)).toBe('verified');
+  });
+
+  it('still surfaces the minting error when reopening the claim also throws', async () => {
+    const { token } = await open();
+    store.throwOnReopen = true;
+    awardBadge.mockRejectedValueOnce(new Error('down'));
+    await expect(resolveClaim(token, 'verified', now)).rejects.toThrow('down');
   });
 
   it('does not report a withdrawal that was not saved', async () => {
