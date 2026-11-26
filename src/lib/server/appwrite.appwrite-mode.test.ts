@@ -607,6 +607,7 @@ describe('appwrite (Appwrite-backed mode) — badges', () => {
   it('awardBadge stores where an off-platform badge came from, and reads it back', async () => {
     mocks.createRow.mockResolvedValue({ ...badgeRow, source: 'offplatform', orgName: 'Pantry' });
     const badge = await awardBadge({
+      id: 'vault_claim-1',
       userId: 'user-1',
       label: 'Pantry',
       source: 'offplatform',
@@ -614,6 +615,7 @@ describe('appwrite (Appwrite-backed mode) — badges', () => {
     });
     expect(mocks.createRow).toHaveBeenCalledWith(
       expect.objectContaining({
+        rowId: 'vault_claim-1',
         data: expect.objectContaining({ source: 'offplatform', orgName: 'Pantry' }),
       }),
     );

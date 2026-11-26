@@ -131,6 +131,17 @@ describe('claim lifecycle', () => {
     expect((await listUserClaims(userId, now))[0]?.status).toBe('verified');
   });
 
+  it('concurrent confirms only mint one badge', async () => {
+    const userId = fresh();
+    const { token } = await open(userId, { orgName: 'Library Archives' });
+    const results = await Promise.all([
+      resolveClaim(token, 'verified', now),
+      resolveClaim(token, 'verified', now),
+    ]);
+    expect(results.sort()).toEqual(['closed', 'ok']);
+    expect(await listBadgesByUser(userId)).toHaveLength(1);
+  });
+
   it('declining mints nothing', async () => {
     const userId = fresh();
     const { token } = await open(userId);

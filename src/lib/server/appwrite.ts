@@ -508,11 +508,15 @@ export async function getBadges(): Promise<Badge[]> {
 }
 
 export async function awardBadge(
-  input: Omit<Badge, 'id' | 'awardedAt'> & { awardedAt?: string },
+  input: Omit<Badge, 'id' | 'awardedAt'> & { id?: string; awardedAt?: string },
 ): Promise<Badge> {
   if (!useAppwrite) {
-    const id = newMemId();
-    const created: Badge = { id, awardedAt: input.awardedAt ?? new Date().toISOString(), ...input };
+    const id = input.id ?? newMemId();
+    if (inMemory.badges.has(id)) {
+      throw Object.assign(new Error('Badge already exists'), { code: 409 });
+    }
+    const { id: _id, ...rest } = input;
+    const created: Badge = { id, awardedAt: input.awardedAt ?? new Date().toISOString(), ...rest };
     inMemory.badges.set(id, created);
     return created;
   }
@@ -531,7 +535,7 @@ export async function awardBadge(
     const d = await tables.createRow<DbBadgeRow>({
       databaseId: dbId,
       tableId: badgesTable,
-      rowId: ID.unique(),
+      rowId: input.id ?? ID.unique(),
       data: payload,
     });
     return badgeFromRow(d);

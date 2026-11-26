@@ -87,6 +87,13 @@ describe('vault when a write fails', () => {
     await expect(resolveClaim(token, 'verified', now)).rejects.toThrow('down');
   });
 
+  it('treats a duplicate badge conflict as already closed without reopening', async () => {
+    const { claim, token } = await open();
+    awardBadge.mockRejectedValueOnce(Object.assign(new Error('conflict'), { code: 409 }));
+    expect(await resolveClaim(token, 'verified', now)).toBe('closed');
+    expect(status(claim.id)).toBe('verified');
+  });
+
   it('does not report a withdrawal that was not saved', async () => {
     const { claim } = await open();
     store.failUpdates = true;

@@ -156,8 +156,11 @@ export async function resolveClaim(
   const closed = await claims.update(claim.id, { status: decision, resolvedAt: now.toISOString() });
   if (!closed) return 'notFound';
   if (decision === 'verified') {
+    const badgeId =
+      claim.id.length <= 30 ? `vault_${claim.id}` : `v_${hashToken(claim.id).slice(0, 32)}`;
     try {
       await awardBadge({
+        id: badgeId,
         userId: claim.userId,
         label: claim.orgName,
         color: OFFPLATFORM_COLOR,
@@ -166,6 +169,9 @@ export async function resolveClaim(
         awardedAt: now.toISOString(),
       });
     } catch (error) {
+      if (error && typeof error === 'object' && 'code' in error && error.code === 409) {
+        return 'closed';
+      }
       // No badge was minted, so reopen the claim and let the organization try again.
       await claims.update(claim.id, { status: 'pending' }).catch(() => {});
       throw error;
