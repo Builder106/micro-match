@@ -156,8 +156,7 @@ export async function resolveClaim(
   const closed = await claims.update(claim.id, { status: decision, resolvedAt: now.toISOString() });
   if (!closed) return 'notFound';
   if (decision === 'verified') {
-    const badgeId =
-      claim.id.length <= 30 ? `vault_${claim.id}` : `v_${hashToken(claim.id).slice(0, 32)}`;
+    const badgeId = `v_${hashToken(claim.id).slice(0, 32)}`;
     try {
       await awardBadge({
         id: badgeId,
