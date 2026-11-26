@@ -13,6 +13,9 @@ const claimsTable = process.env.APPWRITE_CLAIMS_TABLE_ID ?? 'claims';
 const badgesTable = process.env.APPWRITE_BADGES_TABLE_ID ?? 'badges';
 const verificationsTable = process.env.APPWRITE_VERIFICATIONS_TABLE_ID ?? 'ngoVerifications';
 const badgeDefsTable = process.env.APPWRITE_BADGE_DEFS_TABLE_ID ?? 'badgeDefinitions';
+const offplatformClaimsTable =
+  process.env.APPWRITE_OFFPLATFORM_CLAIMS_TABLE_ID ?? 'offplatformClaims';
+const vaultProfilesTable = process.env.APPWRITE_VAULT_PROFILES_TABLE_ID ?? 'vaultProfiles';
 const avatarsBucket = process.env.APPWRITE_AVATARS_BUCKET_ID ?? 'avatars';
 const verificationsBucket = process.env.APPWRITE_VERIFICATIONS_BUCKET_ID ?? avatarsBucket;
 const ngoTeam = process.env.APPWRITE_NGO_TEAM_ID ?? 'ngo';
@@ -62,16 +65,34 @@ async function verifyStaging() {
   let hasError = false;
 
   // Row reads prove that the database and tables exist without schema scopes.
-  const requiredTables = [tasksTable, claimsTable, badgesTable, verificationsTable, badgeDefsTable];
+  const requiredTables = [
+    tasksTable,
+    claimsTable,
+    badgesTable,
+    verificationsTable,
+    badgeDefsTable,
+    offplatformClaimsTable,
+    vaultProfilesTable,
+  ];
   for (const tableId of requiredTables) {
     try {
       const queries =
-        tableId === tasksTable ? [Query.select(['evergreen']), Query.limit(1)] : [Query.limit(1)];
+        tableId === tasksTable
+          ? [Query.select(['evergreen']), Query.limit(1)]
+          : tableId === badgesTable
+            ? [Query.select(['source', 'orgName']), Query.limit(1)]
+            : [Query.limit(1)];
       const rows = await tables.listRows({ databaseId: dbId, tableId, queries });
       console.log(`✓ Table "${tableId}" is accessible (${rows.total} rows).`);
     } catch (err) {
       console.error(
-        `✗ Failed to read table "${tableId}"${tableId === tasksTable ? ' with its evergreen column' : ''}:`,
+        `✗ Failed to read table "${tableId}"${
+          tableId === tasksTable
+            ? ' with its evergreen column'
+            : tableId === badgesTable
+              ? ' with its source/orgName columns'
+              : ''
+        }:`,
         err instanceof Error ? err.message : err,
       );
       hasError = true;
