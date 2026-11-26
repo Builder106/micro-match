@@ -1,5 +1,9 @@
 # JOURNAL — MicroMatch
 
+## 2026-11-26 - Harden badge vault confirmation and staging check #decision
+
+Off-platform badge confirmation now passes a deterministic badge row ID (`vault_<claimId>`, or a hashed ID for longer claim IDs) to `awardBadge`, so concurrent confirm clicks fail with a `409` conflict at the Appwrite row-ID check instead of minting duplicate badges. A `409` from `awardBadge` closes as `'closed'` without reopening the claim. `scripts/verify-staging.ts` now also checks `offplatformClaims_qa`, `vaultProfiles_qa`, and `badges_qa` (`source`, `orgName`). Verified in Appwrite (`micromatch-prod`) that `offplatformClaims`, `vaultProfiles`, their `_qa` tables, and the `badges` `source`/`orgName` columns are already provisioned and enabled, and `APPWRITE_OFFPLATFORM_CLAIMS_TABLE_ID` / `APPWRITE_VAULT_PROFILES_TABLE_ID` are set in Vercel Production and Preview (`staging`).
+
 ## 2026-11-04 - Build the single-player badge vault #decision #milestone
 
 A volunteer can now log work done elsewhere. We email the organization's contact, and their answer mints a badge. The contact opens a page and presses a button; the link itself changes nothing, because mail scanners open links and would confirm every claim. Only the token's SHA-256 is stored. Limits: 5 unanswered claims per volunteer, 5 emails a day per volunteer, 3 a day per address across everyone, and the volunteer's own address is refused. A resend replaces the old link. Expiry is read from `expiresAt`, with no write. The public page at `/v/<handle>` is off until the volunteer opts in and shows only badge label, organization, source and date.
